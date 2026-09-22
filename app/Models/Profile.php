@@ -18,7 +18,7 @@ class Profile extends Model implements HasMedia
     /** @var array<int, string> */
     protected $translatable = ['headline', 'bio_short', 'bio_full'];
 
-    /** @var array<int, string> */
+    /** @var list<string> */
     protected $fillable = [
         'name',
         'headline',

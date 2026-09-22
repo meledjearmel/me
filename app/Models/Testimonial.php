@@ -18,7 +18,7 @@ class Testimonial extends Model
     /** @var array<int, string> */
     protected $translatable = ['content'];
 
-    /** @var array<int, string> */
+    /** @var list<string> */
     protected $fillable = [
         'author_name',
         'author_email',
@@ -38,6 +38,7 @@ class Testimonial extends Model
         ];
     }
 
+    /** @return BelongsTo<Project, $this> */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);

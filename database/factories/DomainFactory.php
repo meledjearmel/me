@@ -17,7 +17,7 @@ class DomainFactory extends Factory
      */
     public function definition(): array
     {
-        $label = fake()->unique()->words(2, true);
+        $label = fake()->unique()->word().' '.fake()->word();
 
         return [
             'key' => str(fake()->unique()->word())->slug()->toString(),

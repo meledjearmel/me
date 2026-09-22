@@ -18,7 +18,7 @@ class SkillFactory extends Factory
      */
     public function definition(): array
     {
-        $name = fake()->words(2, true);
+        $name = fake()->word().' '.fake()->word();
 
         return [
             'domain_id' => Domain::factory(),

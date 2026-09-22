@@ -13,7 +13,7 @@ class Contact extends Model
     /** @use HasFactory<ContactFactory> */
     use HasFactory, SoftDeletes;
 
-    /** @var array<int, string> */
+    /** @var list<string> */
     protected $fillable = [
         'name',
         'email',
@@ -24,11 +24,8 @@ class Contact extends Model
         'user_agent',
     ];
 
-    /** @return array<string, string> */
-    protected function casts(): array
-    {
-        return [
-            'status' => ContactStatus::class,
-        ];
-    }
+    /** @var array<string, class-string> */
+    protected $casts = [
+        'status' => ContactStatus::class,
+    ];
 }

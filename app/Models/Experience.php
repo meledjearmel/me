@@ -17,7 +17,7 @@ class Experience extends Model
     /** @var array<int, string> */
     protected $translatable = ['role', 'description'];
 
-    /** @var array<int, string> */
+    /** @var list<string> */
     protected $fillable = [
         'company',
         'role',
@@ -37,6 +37,7 @@ class Experience extends Model
         ];
     }
 
+    /** @return HasMany<ExperienceHighlight, $this> */
     public function highlights(): HasMany
     {
         return $this->hasMany(ExperienceHighlight::class);

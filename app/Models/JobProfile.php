@@ -17,7 +17,7 @@ class JobProfile extends Model
     /** @var array<int, string> */
     protected $translatable = ['label', 'description', 'cv_description'];
 
-    /** @var array<int, string> */
+    /** @var list<string> */
     protected $fillable = [
         'key',
         'label',
@@ -27,6 +27,7 @@ class JobProfile extends Model
         'sort_order',
     ];
 
+    /** @return BelongsToMany<Project, $this> */
     public function projects(): BelongsToMany
     {
         return $this->belongsToMany(Project::class, 'project_job_profile');

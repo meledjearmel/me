@@ -19,10 +19,10 @@ class Education extends Model
      */
     protected $table = 'educations';
 
-    /** @var array<int, string> */
+    /** @var list<string> */
     protected $translatable = ['degree', 'field', 'description'];
 
-    /** @var array<int, string> */
+    /** @var list<string> */
     protected $fillable = [
         'institution',
         'degree',

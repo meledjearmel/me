@@ -17,13 +17,14 @@ class ExperienceHighlight extends Model
     /** @var array<int, string> */
     protected $translatable = ['text'];
 
-    /** @var array<int, string> */
+    /** @var list<string> */
     protected $fillable = [
         'experience_id',
         'text',
         'sort_order',
     ];
 
+    /** @return BelongsTo<Experience, $this> */
     public function experience(): BelongsTo
     {
         return $this->belongsTo(Experience::class);

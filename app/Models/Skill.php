@@ -17,7 +17,7 @@ class Skill extends Model
     /** @var array<int, string> */
     protected $translatable = ['name', 'description'];
 
-    /** @var array<int, string> */
+    /** @var list<string> */
     protected $fillable = [
         'domain_id',
         'name',
@@ -25,6 +25,7 @@ class Skill extends Model
         'sort_order',
     ];
 
+    /** @return BelongsTo<Domain, $this> */
     public function domain(): BelongsTo
     {
         return $this->belongsTo(Domain::class);

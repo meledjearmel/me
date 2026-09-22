@@ -18,7 +18,7 @@ class ProjectFactory extends Factory
      */
     public function definition(): array
     {
-        $title = fake()->unique()->words(3, true);
+        $title = fake()->unique()->word().' '.fake()->word().' '.fake()->word();
 
         return [
             'title' => [

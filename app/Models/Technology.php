@@ -14,7 +14,7 @@ class Technology extends Model
     /** @use HasFactory<TechnologyFactory> */
     use HasFactory, SoftDeletes;
 
-    /** @var array<int, string> */
+    /** @var list<string> */
     protected $fillable = [
         'name',
         'category',
@@ -29,6 +29,7 @@ class Technology extends Model
         ];
     }
 
+    /** @return BelongsToMany<Project, $this> */
     public function projects(): BelongsToMany
     {
         return $this->belongsToMany(Project::class, 'project_technology');

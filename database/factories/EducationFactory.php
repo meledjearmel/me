@@ -17,8 +17,8 @@ class EducationFactory extends Factory
      */
     public function definition(): array
     {
-        $degree = fake()->words(2, true);
-        $field = fake()->words(2, true);
+        $degree = fake()->word().' '.fake()->word();
+        $field = fake()->word().' '.fake()->word();
         $startDate = fake()->dateTimeBetween('-10 years', '-3 years');
 
         return [

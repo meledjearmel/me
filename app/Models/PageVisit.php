@@ -13,7 +13,7 @@ class PageVisit extends Model
     /** @use HasFactory<PageVisitFactory> */
     use HasFactory, SoftDeletes;
 
-    /** @var array<int, string> */
+    /** @var list<string> */
     protected $fillable = [
         'visitable_type',
         'visitable_id',
@@ -23,6 +23,7 @@ class PageVisit extends Model
         'duration_seconds',
     ];
 
+    /** @return MorphTo<Model, $this> */
     public function visitable(): MorphTo
     {
         return $this->morphTo();

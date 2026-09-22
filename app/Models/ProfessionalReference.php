@@ -13,7 +13,7 @@ class ProfessionalReference extends Model
     /** @use HasFactory<ProfessionalReferenceFactory> */
     use HasFactory, SoftDeletes;
 
-    /** @var array<int, string> */
+    /** @var list<string> */
     protected $fillable = [
         'name',
         'role',
@@ -36,6 +36,7 @@ class ProfessionalReference extends Model
         ];
     }
 
+    /** @return BelongsTo<Project, $this> */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);

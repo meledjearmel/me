@@ -18,7 +18,7 @@ class Domain extends Model
     /** @var array<int, string> */
     protected $translatable = ['label'];
 
-    /** @var array<int, string> */
+    /** @var list<string> */
     protected $fillable = [
         'key',
         'label',
@@ -27,11 +27,13 @@ class Domain extends Model
         'sort_order',
     ];
 
+    /** @return HasMany<Skill, $this> */
     public function skills(): HasMany
     {
         return $this->hasMany(Skill::class);
     }
 
+    /** @return BelongsToMany<Project, $this> */
     public function projects(): BelongsToMany
     {
         return $this->belongsToMany(Project::class, 'project_domain');

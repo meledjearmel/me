@@ -10,4 +10,9 @@ parameters:
         - database/
         - routes/
 
+    # Config vendor-publié par spatie/laravel-medialibrary : référence la classe
+    # Pro (payante) TemporaryUpload, jamais installée puisqu'on n'utilise pas Pro.
+    excludePaths:
+        - config/media-library.php
+
     level: 7

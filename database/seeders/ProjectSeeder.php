@@ -20,9 +20,17 @@ class ProjectSeeder extends Seeder
         $technologies = Technology::all();
 
         Project::factory()->count(10)->create()->each(function (Project $project) use ($domains, $jobProfiles, $technologies): void {
-            $project->domains()->attach($domains->random(random_int(1, min(2, $domains->count()))));
-            $project->jobProfiles()->attach($jobProfiles->random(random_int(1, min(2, $jobProfiles->count()))));
-            $project->technologies()->attach($technologies->random(random_int(2, min(5, $technologies->count()))));
+            if ($domains->isNotEmpty()) {
+                $project->domains()->attach($domains->random(min(2, $domains->count())));
+            }
+
+            if ($jobProfiles->isNotEmpty()) {
+                $project->jobProfiles()->attach($jobProfiles->random(min(2, $jobProfiles->count())));
+            }
+
+            if ($technologies->isNotEmpty()) {
+                $project->technologies()->attach($technologies->random(min(5, $technologies->count())));
+            }
         });
     }
 }
