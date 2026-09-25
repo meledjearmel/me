@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import ContactController from '@/actions/App/Http/Controllers/ContactController';
 import PageHero from '@/components/public/page-hero';
+import PhoneLink from '@/components/public/phone-link';
 import PublicShell from '@/components/public/public-shell';
 import { useLocale, useTranslations } from '@/lib/i18n';
 import type { PublicProfile } from '@/types';
@@ -28,6 +29,15 @@ function ContactMeta({ profile }: { profile: PublicProfile }) {
                     <a href={`mailto:${profile.email}`}>{profile.email}</a>
                 </dd>
             </div>
+
+            {profile.phone && (
+                <div>
+                    <dt>{t.contact.phoneLabel}</dt>
+                    <dd className="pub-meta__links">
+                        <PhoneLink phone={profile.phone} />
+                    </dd>
+                </div>
+            )}
 
             {profile.location && (
                 <div>
@@ -214,6 +224,12 @@ export default function Contact() {
                             <a className="pub-contact__mail" href={`mailto:${props.profile.email}`}>
                                 {props.profile.email}
                             </a>
+                            {props.profile.phone && (
+                                <PhoneLink
+                                    className="pub-contact__phone"
+                                    phone={props.profile.phone}
+                                />
+                            )}
                         </aside>
                     </div>
                 </section>

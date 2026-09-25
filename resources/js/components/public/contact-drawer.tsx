@@ -2,6 +2,7 @@ import { Form, usePage } from '@inertiajs/react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useEffect, useState } from 'react';
 import ContactController from '@/actions/App/Http/Controllers/ContactController';
+import PhoneLink from '@/components/public/phone-link';
 import { useContactDrawer } from '@/lib/contact-drawer';
 import { useLocale, useTranslations } from '@/lib/i18n';
 import type { PublicProfile } from '@/types';
@@ -164,6 +165,12 @@ export default function ContactDrawer() {
                         >
                             {profile.email}
                         </a>
+                        {profile.phone && (
+                            <PhoneLink
+                                className="pub-drawer__phone"
+                                phone={profile.phone}
+                            />
+                        )}
                         {socials.length > 0 && (
                             <nav
                                 className="pub-drawer__socials"

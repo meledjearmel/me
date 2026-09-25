@@ -1818,7 +1818,7 @@ html.dark.pub-scroll::-webkit-scrollbar-thumb {
 /* ---------- Carte de projet ---------- */
 .pub-card {
     position: relative;
-    min-height: clamp(248px, 30vw, 380px);
+    min-height: clamp(220px, 26.7vw, 320px);
     overflow: hidden;
     border-radius: clamp(16px, 2vw, 28px);
     background: var(--accent);
@@ -2433,6 +2433,20 @@ html.dark.pub-scroll::-webkit-scrollbar-thumb {
 
 .pub-footer__bar a:hover {
     text-decoration-color: currentColor;
+}
+
+/* mobile : texte centré, avec de la place sous lui pour le bouton flottant */
+@media (max-width: 707px) {
+    .pub-footer__bar {
+        flex-direction: column;
+        justify-content: center;
+        padding-bottom: 5.5rem;
+        text-align: center;
+    }
+
+    .pub-footer__bar nav {
+        justify-content: center;
+    }
 }
 
 /* =====================================================================
@@ -4102,7 +4116,7 @@ html.dark.pub-scroll::-webkit-scrollbar-thumb {
 }
 
 .pub-card--compact {
-    min-height: clamp(300px, 30vw, 400px);
+    min-height: clamp(190px, 22.7vw, 272px);
 }
 
 @media (max-width: 900px) {
@@ -4633,6 +4647,37 @@ html.dark.pub-scroll::-webkit-scrollbar-thumb {
     color: var(--pub-bg);
 }
 
+.pub-phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: inherit;
+    white-space: nowrap;
+}
+
+.pub-phone__icon {
+    flex-shrink: 0;
+    width: 1.1em;
+    height: 1.1em;
+}
+
+.pub-contact__phone,
+.pub-drawer__phone {
+    display: flex;
+    margin-top: 0.75rem;
+}
+
+.pub-contact__phone {
+    font-family: var(--pub-font-display);
+    font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+    letter-spacing: -0.02em;
+}
+
+.pub-drawer__phone {
+    font-size: 18px;
+    font-weight: 500;
+}
+
 .pub-contact__mail {
     color: inherit;
     font-family: var(--pub-font-display);
@@ -4659,6 +4704,13 @@ html.dark.pub-scroll::-webkit-scrollbar-thumb {
     z-index: 90;
     width: 60px;
     height: 60px;
+}
+
+/* mobile : bouton collé dans le coin, sous le texte du pied de page */
+@media (max-width: 707px) {
+    .pub-fab {
+        bottom: 14px;
+    }
 }
 
 .pub-fab__main {
