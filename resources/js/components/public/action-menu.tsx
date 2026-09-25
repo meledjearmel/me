@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUp, Handshake, MessageSquareQuote, Plus } from 'lucide-react';
+import { ArrowUp, Handshake, MessageSquareQuote, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import EngageDialog from '@/components/public/engage-dialog';
@@ -133,26 +133,54 @@ export default function ActionMenu() {
                                         action.run();
                                     }}
                                 >
-                                    {action.icon}
-                                    <span className="pub-fab__label">{action.label}</span>
+                                    <span className="pub-fab__pill">
+                                        <span className="pub-fab__glyph">{action.icon}</span>
+                                        <span className="pub-fab__label">{action.label}</span>
+                                    </span>
                                 </motion.button>
                             );
                         })}
                 </AnimatePresence>
 
-                <button
+                <motion.button
                     type="button"
                     className="pub-fab__main"
                     aria-expanded={open}
                     aria-haspopup="true"
                     aria-label={t.fab.label}
+                    layout
+                    style={{ borderRadius: 999 }}
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                    whileTap={{ scale: 0.94 }}
                     onClick={() => setOpen((current) => !current)}
                 >
-                    <Plus size={28} aria-hidden="true" />
-                    <span className="pub-fab__tip" aria-hidden="true">
-                        {t.fab.label}
-                    </span>
-                </button>
+                    <AnimatePresence mode="popLayout" initial={false}>
+                        {open ? (
+                            <motion.span
+                                key="icon"
+                                className="pub-fab__icon"
+                                aria-hidden="true"
+                                initial={{ opacity: 0, rotate: -90, scale: 0.4 }}
+                                animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                                exit={{ opacity: 0, rotate: 90, scale: 0.4 }}
+                                transition={{ duration: 0.25 }}
+                            >
+                                <X size={26} />
+                            </motion.span>
+                        ) : (
+                            <motion.span
+                                key="title"
+                                className="pub-fab__title"
+                                initial={{ opacity: 0, x: -12 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 12 }}
+                                transition={{ duration: 0.25 }}
+                            >
+                                {t.fab.label}
+                            </motion.span>
+                        )}
+                    </AnimatePresence>
+                </motion.button>
             </div>
 
             <ReviewDialog open={reviewOpen} onOpenChange={setReviewOpen} />

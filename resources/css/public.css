@@ -4657,58 +4657,37 @@ html.dark.pub-scroll::-webkit-scrollbar-thumb {
 }
 
 .pub-fab__main {
-    position: relative;
+    position: absolute;
+    right: 0;
+    bottom: 0;
     z-index: 2;
-    display: grid;
-    place-items: center;
-    width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: 60px;
+    min-width: 60px;
+    padding: 0 1.6rem;
     border: 0;
-    border-radius: 50%;
     background: var(--pub-gold);
     color: #060606;
+    font: inherit;
+    font-weight: 600;
+    white-space: nowrap;
     cursor: pointer;
     box-shadow:
         0 14px 30px -10px rgb(0 0 0 / 0.45),
         inset 0 -3px 0 rgb(0 0 0 / 0.08);
-    transition: transform 0.35s var(--pub-ease-spring);
 }
 
-.pub-fab__main:hover {
-    transform: scale(1.08);
+.pub-fab.is-open .pub-fab__main {
+    padding: 0;
+    width: 60px;
 }
 
-.pub-fab__main svg {
-    transition: transform 0.4s var(--pub-ease-spring);
-}
-
-.pub-fab.is-open .pub-fab__main svg {
-    transform: rotate(135deg);
-}
-
-/* infobulle au survol, tant que l'éventail est fermé */
-.pub-fab__tip {
-    position: absolute;
-    right: calc(100% + 12px);
-    top: 50%;
-    padding: 0.5rem 0.9rem;
-    border-radius: 999px;
-    background: var(--pub-text);
-    color: var(--pub-bg);
-    font-size: 0.9rem;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transform: translate(8px, -50%);
-    transition:
-        opacity 0.2s ease,
-        transform 0.3s var(--pub-ease-spring);
-}
-
-.pub-fab:not(.is-open) .pub-fab__main:hover .pub-fab__tip,
-.pub-fab:not(.is-open) .pub-fab__main:focus-visible .pub-fab__tip {
-    opacity: 1;
-    transform: translate(0, -50%);
+.pub-fab__icon,
+.pub-fab__title {
+    display: grid;
+    place-items: center;
 }
 
 .pub-fab__item {
@@ -4716,35 +4695,69 @@ html.dark.pub-scroll::-webkit-scrollbar-thumb {
     right: 4px;
     bottom: 4px;
     z-index: 1;
-    display: grid;
-    place-items: center;
     width: 52px;
     height: 52px;
-    border: 1px solid color-mix(in oklab, var(--pub-text) 18%, transparent);
-    border-radius: 50%;
-    background: var(--pub-bg);
+    padding: 0;
+    border: 0;
+    background: none;
     color: var(--pub-text);
     cursor: pointer;
-    box-shadow: 0 12px 26px -12px rgb(0 0 0 / 0.5);
 }
 
-.pub-fab__item:hover {
-    background: var(--pub-text);
-    color: var(--pub-bg);
+.pub-fab__item:hover,
+.pub-fab__item:focus-visible {
+    z-index: 3;
+}
+
+/* pastille : l'icône reste fixe, le titre sort de l'icône vers la gauche */
+.pub-fab__pill {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    height: 52px;
+    border: 1px solid color-mix(in oklab, var(--pub-text) 18%, transparent);
+    border-radius: 999px;
+    background: var(--pub-bg);
+    box-shadow: 0 12px 26px -12px rgb(0 0 0 / 0.5);
+    transition:
+        background 0.25s ease,
+        color 0.25s ease;
+}
+
+.pub-fab__glyph {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 50px;
+    height: 50px;
 }
 
 .pub-fab__label {
-    position: absolute;
-    right: calc(100% + 10px);
-    top: 50%;
-    padding: 0.4rem 0.8rem;
-    border-radius: 999px;
-    background: var(--pub-text);
-    color: var(--pub-bg);
+    max-width: 0;
+    overflow: hidden;
     font-size: 0.85rem;
     white-space: nowrap;
-    pointer-events: none;
-    transform: translateY(-50%);
+    clip-path: inset(0 0 0 100%);
+    transition:
+        max-width 0.45s var(--pub-ease-spring),
+        padding 0.45s var(--pub-ease-spring),
+        clip-path 0.45s ease;
+}
+
+.pub-fab__item:hover .pub-fab__pill,
+.pub-fab__item:focus-visible .pub-fab__pill {
+    background: var(--pub-text);
+    color: var(--pub-bg);
+}
+
+.pub-fab__item:hover .pub-fab__label,
+.pub-fab__item:focus-visible .pub-fab__label {
+    max-width: 200px;
+    padding-left: 1rem;
+    clip-path: inset(0 0 0 0);
 }
 
 /* ---------- Fenêtres d'avis et de collaboration ---------- */
@@ -4833,12 +4846,6 @@ html.dark.pub-scroll::-webkit-scrollbar-thumb {
 .pub-tabs button[aria-selected='true'] {
     background: var(--pub-text);
     color: var(--pub-bg);
-}
-
-@media (max-width: 560px) {
-    .pub-fab__label {
-        font-size: 0.8rem;
-    }
 }
 
 /* Fenêtres à formulaire : champs sur deux colonnes et espacements serrés,
