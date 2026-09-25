@@ -23,7 +23,8 @@ class ProfileController extends Controller
     /**
      * Modifier le profil
      *
-     * Avec `photo` ou `cv_photo` (images), ou `cv_file_fr` / `cv_file_en` (CV en PDF, 10 Mo max),
+     * Avec `photo` ou `cv_photo` (images), `cv_file_fr` / `cv_file_en` (CV en PDF, 10 Mo max) ou `music`
+     * (bande audio du site : MP3, OGG, WAV, M4A ou AAC, 20 Mo max),
      * envoyer un `POST` en `multipart/form-data` avec le champ `_method=PATCH` : PHP ne lit pas les
      * fichiers d'une requête `PATCH` directe. Un nouveau fichier remplace l'ancien.
      */
@@ -31,12 +32,16 @@ class ProfileController extends Controller
     {
         $profile = Profile::query()->firstOrFail();
 
-        $profile->update($request->safe()->except(['photo', 'cv_photo', 'cv_file_fr', 'cv_file_en']));
+        $profile->update($request->safe()->except(['photo', 'cv_photo', 'cv_file_fr', 'cv_file_en', 'music']));
 
         foreach (Profile::CV_LOCALES as $locale) {
             if ($request->hasFile('cv_file_'.$locale)) {
                 $profile->addMediaFromRequest('cv_file_'.$locale)->toMediaCollection(Profile::cvFileCollection($locale));
             }
+        }
+
+        if ($request->hasFile('music')) {
+            $profile->addMediaFromRequest('music')->toMediaCollection('music');
         }
 
         if ($request->hasFile('photo')) {
@@ -46,6 +51,20 @@ class ProfileController extends Controller
         if ($request->hasFile('cv_photo')) {
             $profile->addMediaFromRequest('cv_photo')->toMediaCollection('cv_photo');
         }
+
+        return new ProfileResource($profile->refresh());
+    }
+
+    /**
+     * Retirer la bande audio uploadée
+     *
+     * Sans fichier, le lecteur du site revient à la piste par défaut.
+     */
+    public function destroyMusic(): ProfileResource
+    {
+        $profile = Profile::query()->firstOrFail();
+
+        $profile->clearMediaCollection('music');
 
         return new ProfileResource($profile->refresh());
     }

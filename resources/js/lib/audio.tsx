@@ -1,3 +1,4 @@
+import { usePage } from '@inertiajs/react';
 import {
     createContext,
     useContext,
@@ -17,13 +18,14 @@ type AudioState = {
 
 const AudioContext = createContext<AudioState | null>(null);
 
-export const PLACEHOLDER_TRACK = '/audio/journey.mp3';
+export const FALLBACK_TRACK = '/audio/journey.mp3';
 
 /**
  * Fournit un lecteur audio unique, monté dans le layout persistant des pages
  * publiques : la musique continue de jouer quand on change de page.
  */
 export function AudioProvider({ children }: { children: ReactNode }) {
+    const { musicUrl } = usePage<{ musicUrl?: string | null }>().props;
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [playing, setPlaying] = useState(false);
     const [time, setTime] = useState(0);
@@ -93,7 +95,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
             {children}
             <audio
                 ref={audioRef}
-                src={PLACEHOLDER_TRACK}
+                src={musicUrl || FALLBACK_TRACK}
                 preload="metadata"
                 loop
             />

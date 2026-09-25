@@ -165,6 +165,7 @@ export type Profile = {
     cv_first_name?: string | null;
     photo_url?: string | null;
     cv_photo_url?: string | null;
+    music?: { file_name: string; url: string } | null;
     cv_files?: Record<'fr' | 'en', { file_name: string; url: string } | null>;
 };
 

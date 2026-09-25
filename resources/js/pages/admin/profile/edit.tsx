@@ -73,6 +73,49 @@ export default function ProfileEdit({ profile }: { profile: Profile }) {
                                 </div>
                             </div>
 
+                            <div className="grid content-start gap-2">
+                                <Label htmlFor="music">Bande audio du site</Label>
+                                {profile.music && (
+                                    <div className="flex items-center justify-between gap-2 text-sm">
+                                        <audio
+                                            src={profile.music.url}
+                                            controls
+                                            className="h-9 min-w-0 flex-1"
+                                        />
+                                        <Button
+                                            type="button"
+                                            variant="destructive"
+                                            size="sm"
+                                            onClick={() => {
+                                                if (
+                                                    confirm(
+                                                        'Retirer cette bande audio ? La piste par défaut sera utilisée.',
+                                                    )
+                                                ) {
+                                                    router.delete(
+                                                        ProfileController.destroyMusic.url(),
+                                                    );
+                                                }
+                                            }}
+                                        >
+                                            Retirer
+                                        </Button>
+                                    </div>
+                                )}
+                                <Input
+                                    id="music"
+                                    name="music"
+                                    type="file"
+                                    accept="audio/*"
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    Sans fichier, la piste par défaut est
+                                    utilisée. MP3, OGG, WAV, M4A ou AAC, 20 Mo
+                                    max.
+                                </p>
+                                <FieldError>{errors.music}</FieldError>
+                            </div>
+
                             <div className="grid gap-6 sm:grid-cols-2">
                                 {(['fr', 'en'] as const).map((locale) => {
                                     const file = profile.cv_files?.[locale];

@@ -43,6 +43,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
 
         Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
         Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('profile/music', [ProfileController::class, 'destroyMusic'])->name('profile.music.destroy');
         Route::delete('profile/cv/{locale}', [ProfileController::class, 'destroyCv'])
             ->whereIn('locale', Profile::CV_LOCALES)
             ->name('profile.cv.destroy');

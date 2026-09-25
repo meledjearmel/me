@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('profile/music', [ProfileController::class, 'destroyMusic'])->name('profile.music.destroy');
     Route::delete('profile/cv/{locale}', [ProfileController::class, 'destroyCv'])
         ->whereIn('locale', Profile::CV_LOCALES)
         ->name('profile.cv.destroy');

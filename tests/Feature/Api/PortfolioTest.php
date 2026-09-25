@@ -176,6 +176,22 @@ test('les CV PDF du profil s\'envoient en multipart, se listent et se retirent',
 
     $this->deleteJson('/api/v1/profile/cv/de')->assertNotFound();
 
+    $response = $this->post(route('api.v1.profile.update'), [
+        '_method' => 'PATCH',
+        'name' => $profile->name,
+        'headline' => $profile->getTranslations('headline'),
+        'bio_short' => $profile->getTranslations('bio_short'),
+        'bio_full' => $profile->getTranslations('bio_full'),
+        'email' => $profile->email,
+        'music' => UploadedFile::fake()->create('track.mp3', 500, 'audio/mpeg'),
+    ], ['Accept' => 'application/json'])->assertOk();
+
+    expect($response->json('music.file_name'))->toBe('track.mp3');
+
+    $this->deleteJson(route('api.v1.profile.music.destroy'))
+        ->assertOk()
+        ->assertJsonPath('music', null);
+
     $this->post(route('api.v1.profile.update'), [
         '_method' => 'PATCH',
         'name' => $profile->name,

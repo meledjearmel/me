@@ -46,6 +46,8 @@ class Profile extends Model implements HasMedia
         $this->addMediaCollection('photo')->singleFile();
         // Photo du CV : distincte de celle du site (cadrage et fond adaptés au document).
         $this->addMediaCollection('cv_photo')->singleFile();
+        // Bande audio du site : sans fichier, le lecteur utilise la piste par défaut.
+        $this->addMediaCollection('music')->singleFile();
         // CV fourni en PDF, par langue : s'il existe, il remplace le CV généré.
         foreach (self::CV_LOCALES as $locale) {
             $this->addMediaCollection(self::cvFileCollection($locale))

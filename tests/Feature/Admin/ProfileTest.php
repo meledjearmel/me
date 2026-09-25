@@ -195,3 +195,26 @@ test('an uploaded CV replaces the generated one, and each language falls back to
     expect($generator->pdf($jobProfile, 'fr'))->toBe('%PDF-fr')
         ->and($generator->pdf($jobProfile, 'en'))->toBe('%PDF-en');
 });
+
+test('the site audio track can be uploaded and removed', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+    $profile = Profile::factory()->create();
+
+    $this->actingAs($user)->patch(route('admin.profile.update'), [
+        'name' => $profile->name,
+        'headline' => $profile->getTranslations('headline'),
+        'bio_short' => $profile->getTranslations('bio_short'),
+        'bio_full' => $profile->getTranslations('bio_full'),
+        'email' => $profile->email,
+        'music' => UploadedFile::fake()->create('track.mp3', 500, 'audio/mpeg'),
+    ])->assertRedirect(route('admin.profile.edit'));
+
+    expect($profile->fresh()->getFirstMedia('music')?->file_name)->toBe('track.mp3');
+
+    $this->actingAs($user)->delete(route('admin.profile.music.destroy'))
+        ->assertRedirect(route('admin.profile.edit'));
+
+    expect($profile->fresh()->getFirstMedia('music'))->toBeNull();
+});

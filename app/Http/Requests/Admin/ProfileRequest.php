@@ -30,6 +30,7 @@ class ProfileRequest extends FormRequest
             'social_links.linkedin' => ['nullable', 'url', 'max:255'],
             'photo' => ['nullable', 'image', 'max:5120'],
             'cv_photo' => ['nullable', 'image', 'max:5120'],
+            'music' => ['nullable', 'file', 'mimes:mp3,ogg,wav,m4a,aac', 'max:20480'],
             'cv_file_fr' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
             'cv_file_en' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
         ];
