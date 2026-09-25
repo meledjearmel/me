@@ -34,7 +34,7 @@ test('a single request cannot add more than the allowed batch', function (mixed 
 })->with([0, -5, 26, 'abc', null]);
 
 test('congratulations are rate limited', function () {
-    foreach (range(1, 12) as $ignored) {
+    foreach (range(1, 60) as $ignored) {
         $this->postJson('/fr/congratulations', ['count' => 1])->assertOk();
     }
 

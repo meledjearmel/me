@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-/** Délai de regroupement des clics avant l'envoi au serveur. */
-const FLUSH_DELAY = 800;
+/** Délai de regroupement des clics avant l'envoi au serveur (30 requêtes/min au maximum, sous la limite de débit). */
+const FLUSH_DELAY = 2000;
 /** Doit rester aligné sur CongratulationController::MAX_PER_REQUEST. */
 const MAX_PER_REQUEST = 25;
 

@@ -39,7 +39,7 @@ Route::prefix('{locale}')->middleware(['locale', LogPageVisit::class, ShareSiteP
         ->middleware('throttle:5,1')
         ->name('engagements.store');
     Route::post('congratulations', [CongratulationController::class, 'store'])
-        ->middleware('throttle:12,1')
+        ->middleware('throttle:60,1')
         ->name('congratulations.store');
 });
 
