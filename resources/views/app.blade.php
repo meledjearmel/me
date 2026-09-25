@@ -4,6 +4,10 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
+        {{-- Le site gère lui-même son mode jour/nuit : on demande à l'extension
+             Dark Reader de ne pas recolorer la page. --}}
+        <meta name="darkreader-lock">
+
         {{-- Inline script to detect system dark mode preference and apply it immediately --}}
         <script>
             (function() {

@@ -2,19 +2,24 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concerns\PaginatesAdminLists;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\JobProfileRequest;
 use App\Models\JobProfile;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class JobProfileController extends Controller
 {
-    public function index(): Response
+    use PaginatesAdminLists;
+
+    public function index(Request $request): Response
     {
         return Inertia::render('admin/job-profiles/index', [
-            'jobProfiles' => JobProfile::query()->orderBy('sort_order')->get(),
+            'jobProfiles' => $this->paginateList(JobProfile::query()->orderBy('sort_order'), $request, ['key', 'label->fr', 'label->en'], ['status']),
+            'filters' => $this->listFilters($request, ['status']),
         ]);
     }
 
@@ -30,6 +35,13 @@ class JobProfileController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Profil métier créé.')]);
 
         return to_route('admin.job-profiles.index');
+    }
+
+    public function show(JobProfile $jobProfile): Response
+    {
+        return Inertia::render('admin/job-profiles/show', [
+            'jobProfile' => $jobProfile->load(['projects' => fn ($query) => $query->orderBy('sort_order')]),
+        ]);
     }
 
     public function edit(JobProfile $jobProfile): Response

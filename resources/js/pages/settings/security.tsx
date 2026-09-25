@@ -2,10 +2,14 @@ import { Form, Head } from '@inertiajs/react';
 import { useRef } from 'react';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
 import Heading from '@/components/heading';
-import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
+import {
+    Field,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+} from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import { edit } from '@/routes/security';
 import type { Props as ManagePasskeysProps } from '@/components/manage-passkeys';
 import ManagePasskeys from '@/components/manage-passkeys';
@@ -24,15 +28,15 @@ export default function Security(props: Props) {
 
     return (
         <>
-            <Head title="Security settings" />
+            <Head title="Sécurité" />
 
-            <h1 className="sr-only">Security settings</h1>
+            <h1 className="sr-only">Paramètres de sécurité</h1>
 
             <div className="space-y-6">
                 <Heading
                     variant="small"
-                    title="Update password"
-                    description="Ensure your account is using a long, random password to stay secure"
+                    title="Modifier le mot de passe"
+                    description="Utilisez un mot de passe long et aléatoire pour sécuriser votre compte"
                 />
 
                 <Form
@@ -58,11 +62,11 @@ export default function Security(props: Props) {
                     className="space-y-6"
                 >
                     {({ errors, processing }) => (
-                        <>
-                            <div className="grid gap-2">
-                                <Label htmlFor="current_password">
-                                    Current password
-                                </Label>
+                        <FieldGroup>
+                            <Field data-invalid={!!errors.current_password}>
+                                <FieldLabel htmlFor="current_password">
+                                    Mot de passe actuel
+                                </FieldLabel>
 
                                 <PasswordInput
                                     id="current_password"
@@ -70,14 +74,18 @@ export default function Security(props: Props) {
                                     name="current_password"
                                     className="mt-1 block w-full"
                                     autoComplete="current-password"
-                                    placeholder="Current password"
+                                    placeholder="Mot de passe actuel"
                                 />
 
-                                <InputError message={errors.current_password} />
-                            </div>
+                                <FieldError>
+                                    {errors.current_password}
+                                </FieldError>
+                            </Field>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="password">New password</Label>
+                            <Field data-invalid={!!errors.password}>
+                                <FieldLabel htmlFor="password">
+                                    Nouveau mot de passe
+                                </FieldLabel>
 
                                 <PasswordInput
                                     id="password"
@@ -85,41 +93,43 @@ export default function Security(props: Props) {
                                     name="password"
                                     className="mt-1 block w-full"
                                     autoComplete="new-password"
-                                    placeholder="New password"
+                                    placeholder="Nouveau mot de passe"
                                     passwordrules={props.passwordRules}
                                 />
 
-                                <InputError message={errors.password} />
-                            </div>
+                                <FieldError>{errors.password}</FieldError>
+                            </Field>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="password_confirmation">
-                                    Confirm password
-                                </Label>
+                            <Field
+                                data-invalid={!!errors.password_confirmation}
+                            >
+                                <FieldLabel htmlFor="password_confirmation">
+                                    Confirmer le mot de passe
+                                </FieldLabel>
 
                                 <PasswordInput
                                     id="password_confirmation"
                                     name="password_confirmation"
                                     className="mt-1 block w-full"
                                     autoComplete="new-password"
-                                    placeholder="Confirm password"
+                                    placeholder="Confirmer le mot de passe"
                                     passwordrules={props.passwordRules}
                                 />
 
-                                <InputError
-                                    message={errors.password_confirmation}
-                                />
-                            </div>
+                                <FieldError>
+                                    {errors.password_confirmation}
+                                </FieldError>
+                            </Field>
 
                             <div className="flex items-center gap-4">
                                 <Button
                                     disabled={processing}
                                     data-test="update-password-button"
                                 >
-                                    Save
+                                    Enregistrer
                                 </Button>
                             </div>
-                        </>
+                        </FieldGroup>
                     )}
                 </Form>
             </div>
@@ -141,7 +151,7 @@ export default function Security(props: Props) {
 Security.layout = {
     breadcrumbs: [
         {
-            title: 'Security settings',
+            title: 'Sécurité',
             href: edit(),
         },
     ],

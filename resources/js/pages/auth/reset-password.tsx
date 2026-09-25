@@ -1,9 +1,9 @@
 import { Form, Head } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { update } from '@/routes/password';
 
@@ -16,7 +16,7 @@ type Props = {
 export default function ResetPassword({ token, email, passwordRules }: Props) {
     return (
         <>
-            <Head title="Reset password" />
+            <Head title="Réinitialiser le mot de passe" />
 
             <Form
                 {...update.form()}
@@ -25,8 +25,10 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
             >
                 {({ processing, errors }) => (
                     <div className="grid gap-6">
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
+                        <Field data-invalid={!!errors.email}>
+                            <FieldLabel htmlFor="email">
+                                Adresse e-mail
+                            </FieldLabel>
                             <Input
                                 id="email"
                                 type="email"
@@ -40,39 +42,41 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                                 message={errors.email}
                                 className="mt-2"
                             />
-                        </div>
+                        </Field>
 
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
+                        <Field data-invalid={!!errors.password}>
+                            <FieldLabel htmlFor="password">
+                                Nouveau mot de passe
+                            </FieldLabel>
                             <PasswordInput
                                 id="password"
                                 name="password"
                                 autoComplete="new-password"
                                 className="mt-1 block w-full"
                                 autoFocus
-                                placeholder="Password"
+                                placeholder="Nouveau mot de passe"
                                 passwordrules={passwordRules}
                             />
-                            <InputError message={errors.password} />
-                        </div>
+                            <FieldError>{errors.password}</FieldError>
+                        </Field>
 
-                        <div className="grid gap-2">
-                            <Label htmlFor="password_confirmation">
-                                Confirm password
-                            </Label>
+                        <Field data-invalid={!!errors.password_confirmation}>
+                            <FieldLabel htmlFor="password_confirmation">
+                                Confirmer le mot de passe
+                            </FieldLabel>
                             <PasswordInput
                                 id="password_confirmation"
                                 name="password_confirmation"
                                 autoComplete="new-password"
                                 className="mt-1 block w-full"
-                                placeholder="Confirm password"
+                                placeholder="Confirmer le mot de passe"
                                 passwordrules={passwordRules}
                             />
                             <InputError
                                 message={errors.password_confirmation}
                                 className="mt-2"
                             />
-                        </div>
+                        </Field>
 
                         <Button
                             type="submit"
@@ -81,7 +85,7 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                             data-test="reset-password-button"
                         >
                             {processing && <Spinner />}
-                            Reset password
+                            Réinitialiser le mot de passe
                         </Button>
                     </div>
                 )}
@@ -91,6 +95,6 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
 }
 
 ResetPassword.layout = {
-    title: 'Reset password',
-    description: 'Please enter your new password below',
+    title: 'Réinitialiser le mot de passe',
+    description: 'Saisissez votre nouveau mot de passe ci-dessous',
 };

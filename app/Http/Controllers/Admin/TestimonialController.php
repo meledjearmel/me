@@ -2,20 +2,32 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concerns\PaginatesAdminLists;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\TestimonialRequest;
 use App\Models\Project;
 use App\Models\Testimonial;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class TestimonialController extends Controller
 {
-    public function index(): Response
+    use PaginatesAdminLists;
+
+    public function index(Request $request): Response
     {
         return Inertia::render('admin/testimonials/index', [
-            'testimonials' => Testimonial::query()->with('project')->latest('submitted_at')->get(),
+            'testimonials' => $this->paginateList(Testimonial::query()->with('project')->latest('submitted_at'), $request, ['author_name', 'author_email', 'author_role', 'content->fr', 'content->en'], ['status', 'is_featured']),
+            'filters' => $this->listFilters($request, ['status', 'is_featured']),
+        ]);
+    }
+
+    public function show(Testimonial $testimonial): Response
+    {
+        return Inertia::render('admin/testimonials/show', [
+            'testimonial' => $testimonial->load('project'),
         ]);
     }
 

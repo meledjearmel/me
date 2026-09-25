@@ -1,9 +1,9 @@
 import { Link } from '@inertiajs/react';
 import {
-    BookOpen,
     Briefcase,
     FolderGit2,
     GraduationCap,
+    Handshake,
     LayoutGrid,
     Layers,
     Mail,
@@ -14,7 +14,6 @@ import {
     Wrench,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -28,6 +27,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { index as contactsIndex } from '@/routes/admin/contacts';
+import { index as engagementsIndex } from '@/routes/admin/engagements';
 import { index as domainsIndex } from '@/routes/admin/domains';
 import { index as educationsIndex } from '@/routes/admin/educations';
 import { index as experiencesIndex } from '@/routes/admin/experiences';
@@ -42,7 +42,7 @@ import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Tableau de bord',
         href: dashboard(),
         icon: LayoutGrid,
     },
@@ -59,20 +59,8 @@ const contentNavItems: NavItem[] = [
     { title: 'Projets', href: projectsIndex(), icon: FolderGit2 },
     { title: 'Avis', href: testimonialsIndex(), icon: MessageSquareQuote },
     { title: 'Contacts', href: contactsIndex(), icon: Mail },
+    { title: 'Collaborations', href: engagementsIndex(), icon: Handshake },
     { title: 'Références', href: referencesIndex(), icon: UserCheck },
-];
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: FolderGit2,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
 ];
 
 export function AppSidebar() {
@@ -90,13 +78,13 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            <SidebarContent>
+            {/* Les deux groupes de menus sont centrés verticalement dans la barre. */}
+            <SidebarContent className="justify-center gap-4">
                 <NavMain items={mainNavItems} />
                 <NavMain items={contentNavItems} label="Contenu" />
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

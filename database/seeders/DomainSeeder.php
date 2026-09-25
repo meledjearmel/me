@@ -35,11 +35,18 @@ class DomainSeeder extends Seeder
                 'sort_order' => 3,
             ],
             [
+                'key' => 'management',
+                'label' => ['fr' => 'Management', 'en' => 'Management'],
+                'color' => '#0EA5E9',
+                'icon' => 'users',
+                'sort_order' => 4,
+            ],
+            [
                 'key' => 'design',
                 'label' => ['fr' => 'Design', 'en' => 'Design'],
                 'color' => '#F472B6',
                 'icon' => 'palette',
-                'sort_order' => 4,
+                'sort_order' => 5,
             ],
         ];
 

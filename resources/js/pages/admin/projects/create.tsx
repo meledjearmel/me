@@ -2,12 +2,17 @@ import { Form, Head } from '@inertiajs/react';
 import ProjectController from '@/actions/App/Http/Controllers/Admin/ProjectController';
 import CheckboxGroup from '@/components/admin/checkbox-group';
 import Heading from '@/components/heading';
-import InputError from '@/components/input-error';
 import TranslatableField from '@/components/translatable-field';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+    Field,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+} from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { NativeSelect } from '@/components/ui/native-select';
+import FormSelect from '@/components/admin/form-select';
 import { PROJECT_STATUSES } from '@/lib/admin-options';
 import { index as projectsIndex } from '@/routes/admin/projects';
 import type { Domain, JobProfile, Project, Technology } from '@/types';
@@ -34,7 +39,7 @@ export default function ProjectCreate({
 
                 <Form {...ProjectController.store.form()} className="space-y-6">
                     {({ processing, errors }) => (
-                        <>
+                        <FieldGroup>
                             <TranslatableField
                                 name="title"
                                 label="Titre"
@@ -45,11 +50,11 @@ export default function ProjectCreate({
                                 }}
                             />
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="slug">Slug *</Label>
+                            <Field data-invalid={!!errors.slug}>
+                                <FieldLabel htmlFor="slug">Slug *</FieldLabel>
                                 <Input id="slug" name="slug" required />
-                                <InputError message={errors.slug} />
-                            </div>
+                                <FieldError>{errors.slug}</FieldError>
+                            </Field>
 
                             <TranslatableField
                                 name="context"
@@ -85,22 +90,28 @@ export default function ProjectCreate({
                             />
 
                             <div className="grid gap-2 sm:grid-cols-2">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="repo_url">URL dépôt</Label>
+                                <Field data-invalid={!!errors.repo_url}>
+                                    <FieldLabel htmlFor="repo_url">
+                                        URL dépôt
+                                    </FieldLabel>
                                     <Input id="repo_url" name="repo_url" />
-                                    <InputError message={errors.repo_url} />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="demo_url">URL démo</Label>
+                                    <FieldError>{errors.repo_url}</FieldError>
+                                </Field>
+                                <Field data-invalid={!!errors.demo_url}>
+                                    <FieldLabel htmlFor="demo_url">
+                                        URL démo
+                                    </FieldLabel>
                                     <Input id="demo_url" name="demo_url" />
-                                    <InputError message={errors.demo_url} />
-                                </div>
+                                    <FieldError>{errors.demo_url}</FieldError>
+                                </Field>
                             </div>
 
                             <div className="grid gap-2 sm:grid-cols-2">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="status">Statut *</Label>
-                                    <NativeSelect
+                                <Field data-invalid={!!errors.status}>
+                                    <FieldLabel htmlFor="status">
+                                        Statut *
+                                    </FieldLabel>
+                                    <FormSelect
                                         id="status"
                                         name="status"
                                         required
@@ -114,54 +125,86 @@ export default function ProjectCreate({
                                                 {status.label}
                                             </option>
                                         ))}
-                                    </NativeSelect>
-                                    <InputError message={errors.status} />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="sort_order">Ordre</Label>
+                                    </FormSelect>
+                                    <FieldError>{errors.status}</FieldError>
+                                </Field>
+                                <Field data-invalid={!!errors.sort_order}>
+                                    <FieldLabel htmlFor="sort_order">
+                                        Ordre
+                                    </FieldLabel>
                                     <Input
                                         id="sort_order"
                                         name="sort_order"
                                         type="number"
                                         defaultValue={0}
                                     />
-                                    <InputError message={errors.sort_order} />
-                                </div>
+                                    <FieldError>{errors.sort_order}</FieldError>
+                                </Field>
                             </div>
 
-                            <div className="flex items-center gap-2">
+                            <Field data-invalid={!!errors.accent_color}>
+                                <FieldLabel htmlFor="accent_color">
+                                    Couleur d'accent (cartes de l'accueil)
+                                </FieldLabel>
+                                <input
+                                    id="accent_color"
+                                    name="accent_color"
+                                    type="color"
+                                    defaultValue="#3456c8"
+                                    className="h-10 w-20 cursor-pointer rounded-md border"
+                                />
+                                <FieldError>{errors.accent_color}</FieldError>
+                            </Field>
+
+                            <Field orientation="horizontal">
                                 <input
                                     type="hidden"
                                     name="is_featured"
                                     value="0"
                                 />
-                                <input
+                                <Checkbox
                                     id="is_featured"
-                                    type="checkbox"
                                     name="is_featured"
                                     value="1"
-                                    className="size-4"
                                 />
-                                <Label htmlFor="is_featured">
+                                <FieldLabel htmlFor="is_featured">
                                     Mettre en avant
-                                </Label>
-                            </div>
+                                </FieldLabel>
+                            </Field>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="cover">
+                            <Field orientation="horizontal">
+                                <input
+                                    type="hidden"
+                                    name="is_open_source"
+                                    value="0"
+                                />
+                                <Checkbox
+                                    id="is_open_source"
+                                    name="is_open_source"
+                                    value="1"
+                                />
+                                <FieldLabel htmlFor="is_open_source">
+                                    Projet open source (badge sur la carte)
+                                </FieldLabel>
+                            </Field>
+
+                            <Field data-invalid={!!errors.cover}>
+                                <FieldLabel htmlFor="cover">
                                     Image de couverture
-                                </Label>
+                                </FieldLabel>
                                 <Input
                                     id="cover"
                                     name="cover"
                                     type="file"
                                     accept="image/*"
                                 />
-                                <InputError message={errors.cover} />
-                            </div>
+                                <FieldError>{errors.cover}</FieldError>
+                            </Field>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="gallery">Galerie</Label>
+                            <Field data-invalid={!!errors.gallery}>
+                                <FieldLabel htmlFor="gallery">
+                                    Galerie
+                                </FieldLabel>
                                 <Input
                                     id="gallery"
                                     name="gallery"
@@ -169,8 +212,8 @@ export default function ProjectCreate({
                                     accept="image/*"
                                     multiple
                                 />
-                                <InputError message={errors.gallery} />
-                            </div>
+                                <FieldError>{errors.gallery}</FieldError>
+                            </Field>
 
                             <CheckboxGroup
                                 label="Domaines"
@@ -209,7 +252,7 @@ export default function ProjectCreate({
                             />
 
                             <Button disabled={processing}>Créer</Button>
-                        </>
+                        </FieldGroup>
                     )}
                 </Form>
             </div>

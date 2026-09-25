@@ -2,20 +2,25 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concerns\PaginatesAdminLists;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ExperienceRequest;
 use App\Models\Experience;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ExperienceController extends Controller
 {
-    public function index(): Response
+    use PaginatesAdminLists;
+
+    public function index(Request $request): Response
     {
         return Inertia::render('admin/experiences/index', [
-            'experiences' => Experience::query()->orderBy('sort_order')->get(),
+            'experiences' => $this->paginateList(Experience::query()->orderBy('sort_order'), $request, ['company', 'role->fr', 'role->en', 'location'], ['status']),
+            'filters' => $this->listFilters($request, ['status']),
         ]);
     }
 
@@ -35,6 +40,13 @@ class ExperienceController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Expérience créée.')]);
 
         return to_route('admin.experiences.index');
+    }
+
+    public function show(Experience $experience): Response
+    {
+        return Inertia::render('admin/experiences/show', [
+            'experience' => $experience->load('highlights'),
+        ]);
     }
 
     public function edit(Experience $experience): Response

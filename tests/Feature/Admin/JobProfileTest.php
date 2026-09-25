@@ -57,3 +57,17 @@ test('creating a job profile requires the mandatory fields', function () {
         'key', 'label.fr', 'label.en', 'description.fr', 'description.en', 'cv_description.fr', 'cv_description.en',
     ]);
 });
+
+test('the short hero title cannot exceed 15 characters', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->post(route('admin.job-profiles.store'), [
+        'key' => 'devops',
+        'label' => ['fr' => 'Ingénieur DevOps et infrastructure', 'en' => 'DevOps and infrastructure engineer'],
+        'hero_title' => ['fr' => 'Ingénieur DevOps qui', 'en' => 'DevOps Engineer who'],
+        'description' => ['fr' => 'Description', 'en' => 'Description'],
+        'cv_description' => ['fr' => 'CV', 'en' => 'CV'],
+    ]);
+
+    $response->assertSessionHasErrors(['hero_title.fr', 'hero_title.en']);
+});

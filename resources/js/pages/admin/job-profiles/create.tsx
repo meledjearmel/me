@@ -1,11 +1,17 @@
 import { Form, Head } from '@inertiajs/react';
 import JobProfileController from '@/actions/App/Http/Controllers/Admin/JobProfileController';
+import FormSelect from '@/components/admin/form-select';
 import Heading from '@/components/heading';
-import InputError from '@/components/input-error';
 import TranslatableField from '@/components/translatable-field';
+import {
+    Field,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+} from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { PUBLICATION_STATUSES } from '@/lib/admin-options';
 import { index as jobProfilesIndex } from '@/routes/admin/job-profiles';
 
 export default function JobProfileCreate() {
@@ -24,16 +30,16 @@ export default function JobProfileCreate() {
                     className="space-y-6"
                 >
                     {({ processing, errors }) => (
-                        <>
-                            <div className="grid gap-2">
-                                <Label htmlFor="key">Clé *</Label>
+                        <FieldGroup>
+                            <Field data-invalid={!!errors.key}>
+                                <FieldLabel htmlFor="key">Clé *</FieldLabel>
                                 <Input id="key" name="key" required />
-                                <InputError message={errors.key} />
-                            </div>
+                                <FieldError>{errors.key}</FieldError>
+                            </Field>
 
                             <TranslatableField
                                 name="label"
-                                label="Libellé"
+                                label="Titre long (libellé)"
                                 required
                                 errors={{
                                     fr: errors['label.fr'],
@@ -53,6 +59,25 @@ export default function JobProfileCreate() {
                             />
 
                             <TranslatableField
+                                name="hero_title"
+                                label="Titre court du hero (15 max)"
+                                maxLength={15}
+                                errors={{
+                                    fr: errors['hero_title.fr'],
+                                    en: errors['hero_title.en'],
+                                }}
+                            />
+
+                            <TranslatableField
+                                name="hero_words"
+                                label="Mots du hero (3, séparés par des virgules)"
+                                errors={{
+                                    fr: errors['hero_words.fr'],
+                                    en: errors['hero_words.en'],
+                                }}
+                            />
+
+                            <TranslatableField
                                 name="cv_description"
                                 label="Description CV (jamais publique)"
                                 textarea
@@ -63,19 +88,43 @@ export default function JobProfileCreate() {
                                 }}
                             />
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="sort_order">Ordre</Label>
+                            <Field data-invalid={!!errors.status}>
+                                <FieldLabel htmlFor="status">
+                                    Statut *
+                                </FieldLabel>
+                                <FormSelect
+                                    id="status"
+                                    name="status"
+                                    required
+                                    defaultValue="published"
+                                >
+                                    {PUBLICATION_STATUSES.map((status) => (
+                                        <option
+                                            key={status.value}
+                                            value={status.value}
+                                        >
+                                            {status.label}
+                                        </option>
+                                    ))}
+                                </FormSelect>
+                                <FieldError>{errors.status}</FieldError>
+                            </Field>
+
+                            <Field data-invalid={!!errors.sort_order}>
+                                <FieldLabel htmlFor="sort_order">
+                                    Ordre
+                                </FieldLabel>
                                 <Input
                                     id="sort_order"
                                     name="sort_order"
                                     type="number"
                                     defaultValue={0}
                                 />
-                                <InputError message={errors.sort_order} />
-                            </div>
+                                <FieldError>{errors.sort_order}</FieldError>
+                            </Field>
 
                             <Button disabled={processing}>Créer</Button>
-                        </>
+                        </FieldGroup>
                     )}
                 </Form>
             </div>

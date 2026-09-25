@@ -1,13 +1,19 @@
 import { Form, Head } from '@inertiajs/react';
 import ExperienceController from '@/actions/App/Http/Controllers/Admin/ExperienceController';
+import FormSelect from '@/components/admin/form-select';
 import HighlightsField from '@/components/admin/highlights-field';
 import Heading from '@/components/heading';
-import InputError from '@/components/input-error';
 import TranslatableField from '@/components/translatable-field';
+import {
+    Field,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+} from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { index as experiencesIndex } from '@/routes/admin/experiences';
+import { PUBLICATION_STATUSES } from '@/lib/admin-options';
 import type { Experience } from '@/types';
 
 export default function ExperienceEdit({
@@ -30,17 +36,19 @@ export default function ExperienceEdit({
                     className="space-y-6"
                 >
                     {({ processing, errors }) => (
-                        <>
-                            <div className="grid gap-2">
-                                <Label htmlFor="company">Entreprise *</Label>
+                        <FieldGroup>
+                            <Field data-invalid={!!errors.company}>
+                                <FieldLabel htmlFor="company">
+                                    Entreprise *
+                                </FieldLabel>
                                 <Input
                                     id="company"
                                     name="company"
                                     defaultValue={experience.company}
                                     required
                                 />
-                                <InputError message={errors.company} />
-                            </div>
+                                <FieldError>{errors.company}</FieldError>
+                            </Field>
 
                             <TranslatableField
                                 name="role"
@@ -53,19 +61,21 @@ export default function ExperienceEdit({
                                 }}
                             />
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="location">Lieu</Label>
+                            <Field data-invalid={!!errors.location}>
+                                <FieldLabel htmlFor="location">Lieu</FieldLabel>
                                 <Input
                                     id="location"
                                     name="location"
                                     defaultValue={experience.location ?? ''}
                                 />
-                                <InputError message={errors.location} />
-                            </div>
+                                <FieldError>{errors.location}</FieldError>
+                            </Field>
 
                             <div className="grid gap-2 sm:grid-cols-2">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="start_date">Début *</Label>
+                                <Field data-invalid={!!errors.start_date}>
+                                    <FieldLabel htmlFor="start_date">
+                                        Début *
+                                    </FieldLabel>
                                     <Input
                                         id="start_date"
                                         name="start_date"
@@ -73,20 +83,20 @@ export default function ExperienceEdit({
                                         defaultValue={experience.start_date}
                                         required
                                     />
-                                    <InputError message={errors.start_date} />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="end_date">
+                                    <FieldError>{errors.start_date}</FieldError>
+                                </Field>
+                                <Field data-invalid={!!errors.end_date}>
+                                    <FieldLabel htmlFor="end_date">
                                         Fin (vide = poste actuel)
-                                    </Label>
+                                    </FieldLabel>
                                     <Input
                                         id="end_date"
                                         name="end_date"
                                         type="date"
                                         defaultValue={experience.end_date ?? ''}
                                     />
-                                    <InputError message={errors.end_date} />
-                                </div>
+                                    <FieldError>{errors.end_date}</FieldError>
+                                </Field>
                             </div>
 
                             <TranslatableField
@@ -107,19 +117,43 @@ export default function ExperienceEdit({
                                 errors={errors}
                             />
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="sort_order">Ordre</Label>
+                            <Field data-invalid={!!errors.status}>
+                                <FieldLabel htmlFor="status">
+                                    Statut *
+                                </FieldLabel>
+                                <FormSelect
+                                    id="status"
+                                    name="status"
+                                    required
+                                    defaultValue={experience.status}
+                                >
+                                    {PUBLICATION_STATUSES.map((status) => (
+                                        <option
+                                            key={status.value}
+                                            value={status.value}
+                                        >
+                                            {status.label}
+                                        </option>
+                                    ))}
+                                </FormSelect>
+                                <FieldError>{errors.status}</FieldError>
+                            </Field>
+
+                            <Field data-invalid={!!errors.sort_order}>
+                                <FieldLabel htmlFor="sort_order">
+                                    Ordre
+                                </FieldLabel>
                                 <Input
                                     id="sort_order"
                                     name="sort_order"
                                     type="number"
                                     defaultValue={experience.sort_order}
                                 />
-                                <InputError message={errors.sort_order} />
-                            </div>
+                                <FieldError>{errors.sort_order}</FieldError>
+                            </Field>
 
                             <Button disabled={processing}>Enregistrer</Button>
-                        </>
+                        </FieldGroup>
                     )}
                 </Form>
             </div>

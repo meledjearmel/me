@@ -15,6 +15,8 @@ class ProfileRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'cv_last_name' => ['nullable', 'string', 'max:255'],
+            'cv_first_name' => ['nullable', 'string', 'max:255'],
             'headline.fr' => ['required', 'string', 'max:255'],
             'headline.en' => ['required', 'string', 'max:255'],
             'bio_short.fr' => ['required', 'string'],
@@ -27,6 +29,7 @@ class ProfileRequest extends FormRequest
             'social_links.github' => ['nullable', 'url', 'max:255'],
             'social_links.linkedin' => ['nullable', 'url', 'max:255'],
             'photo' => ['nullable', 'image', 'max:5120'],
+            'cv_photo' => ['nullable', 'image', 'max:5120'],
         ];
     }
 }

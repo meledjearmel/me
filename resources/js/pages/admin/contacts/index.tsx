@@ -1,19 +1,17 @@
 import { Head, Link } from '@inertiajs/react';
-import { SquarePen } from 'lucide-react';
+import { Eye, SquarePen } from 'lucide-react';
+import {
+    destroy,
+    edit,
+    show,
+    index as pageIndex,
+} from '@/routes/admin/contacts';
 import DeleteButton from '@/components/admin/delete-button';
+import { FilterSelect, ResourceList } from '@/components/admin/data-list';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
-import { destroy, edit, index as contactsIndex } from '@/routes/admin/contacts';
-import type { Contact } from '@/types';
+import type { ListFilters, Paginated, Contact } from '@/types';
 
 const STATUS_VARIANT = {
     new: 'default',
@@ -21,62 +19,87 @@ const STATUS_VARIANT = {
     replied: 'outline',
 } as const;
 
-export default function ContactsIndex({ contacts }: { contacts: Contact[] }) {
+const STATUS_LABEL = {
+    new: 'Nouveau',
+    read: 'Lu',
+    replied: 'Répondu',
+} as const;
+
+export default function ContactsIndex({
+    contacts,
+    filters,
+}: {
+    contacts: Paginated<Contact>;
+    filters: ListFilters;
+}) {
     return (
         <>
             <Head title="Contacts" />
 
-            <div className="space-y-6 p-4">
-                <Heading
-                    title="Contacts"
-                    description="Messages reçus depuis le formulaire de contact"
-                />
+            <div className="flex flex-col gap-6 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                    <Heading
+                        title="Contacts"
+                        description="Messages reçus depuis le formulaire de contact"
+                    />
+                </div>
 
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Nom</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Sujet</TableHead>
-                            <TableHead>Statut</TableHead>
-                            <TableHead className="text-right">
-                                Actions
-                            </TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {contacts.map((contact) => (
-                            <TableRow key={contact.id}>
-                                <TableCell>{contact.name}</TableCell>
-                                <TableCell>{contact.email}</TableCell>
-                                <TableCell>{contact.subject}</TableCell>
-                                <TableCell>
-                                    <Badge
-                                        variant={STATUS_VARIANT[contact.status]}
-                                    >
-                                        {contact.status}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell className="flex justify-end gap-1">
-                                    <Button variant="ghost" size="icon" asChild>
-                                        <Link href={edit(contact.id)}>
-                                            <SquarePen />
-                                        </Link>
-                                    </Button>
-                                    <DeleteButton
-                                        href={destroy.url(contact.id)}
-                                        confirmMessage={`Supprimer le message de "${contact.name}" ?`}
-                                    />
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                <ResourceList
+                    paginator={contacts}
+                    filters={filters}
+                    searchPlaceholder="Nom, email, sujet, message…"
+                    columns={[
+                        { header: 'Nom', cell: (row) => row.name },
+                        { header: 'Email', cell: (row) => row.email },
+                        { header: 'Sujet', cell: (row) => row.subject },
+                        {
+                            header: 'Statut',
+                            cell: (row) => (
+                                <Badge variant={STATUS_VARIANT[row.status]}>
+                                    {STATUS_LABEL[row.status]}
+                                </Badge>
+                            ),
+                        },
+                    ]}
+                    filterControls={(state) => (
+                        <>
+                            <FilterSelect
+                                state={state}
+                                name="status"
+                                value={filters.status}
+                                label="Statut"
+                                options={[
+                                    { value: 'new', label: 'Nouveau' },
+                                    { value: 'read', label: 'Lu' },
+                                    { value: 'replied', label: 'Répondu' },
+                                ]}
+                            />
+                        </>
+                    )}
+                    actions={(row) => (
+                        <>
+                            <Button variant="ghost" size="icon" asChild>
+                                <Link href={show(row.id)} aria-label="Voir">
+                                    <Eye />
+                                </Link>
+                            </Button>
+                            <Button variant="ghost" size="icon" asChild>
+                                <Link href={edit(row.id)} aria-label="Modifier">
+                                    <SquarePen />
+                                </Link>
+                            </Button>
+                            <DeleteButton
+                                href={destroy.url(row.id)}
+                                confirmMessage={`Supprimer le message de "${row.name}" ?`}
+                            />
+                        </>
+                    )}
+                />
             </div>
         </>
     );
 }
 
 ContactsIndex.layout = {
-    breadcrumbs: [{ title: 'Contacts', href: contactsIndex() }],
+    breadcrumbs: [{ title: 'Contacts', href: pageIndex() }],
 };

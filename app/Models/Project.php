@@ -28,21 +28,21 @@ class Project extends Model implements HasMedia
         'context',
         'realization',
         'result',
+        'accent_color',
         'repo_url',
         'demo_url',
         'is_featured',
+        'is_open_source',
         'status',
         'sort_order',
     ];
 
-    /** @return array<string, string> */
-    protected function casts(): array
-    {
-        return [
-            'is_featured' => 'boolean',
-            'status' => ProjectStatus::class,
-        ];
-    }
+    /** @var array<string, string> */
+    protected $casts = [
+        'is_featured' => 'boolean',
+        'is_open_source' => 'boolean',
+        'status' => ProjectStatus::class,
+    ];
 
     public function registerMediaCollections(): void
     {

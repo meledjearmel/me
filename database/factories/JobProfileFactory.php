@@ -29,6 +29,14 @@ class JobProfileFactory extends Factory
                 'fr' => fake()->sentence(),
                 'en' => fake()->sentence(),
             ],
+            'hero_title' => [
+                'fr' => $label.' qui',
+                'en' => $label.' who',
+            ],
+            'hero_words' => [
+                'fr' => 'Code, Conçoit, Livre',
+                'en' => 'Codes, Builds, Ships',
+            ],
             'cv_description' => [
                 'fr' => fake()->paragraphs(2, true),
                 'en' => fake()->paragraphs(2, true),

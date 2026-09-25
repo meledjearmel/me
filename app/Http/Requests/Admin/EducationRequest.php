@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\PublicationStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class EducationRequest extends FormRequest
 {
@@ -24,6 +26,7 @@ class EducationRequest extends FormRequest
             'description.fr' => ['nullable', 'string'],
             'description.en' => ['nullable', 'string'],
             'sort_order' => ['integer'],
+            'status' => ['sometimes', Rule::enum(PublicationStatus::class)],
         ];
     }
 }

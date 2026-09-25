@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'Armel Meledje',
-            'email' => 'test@example.com',
+            'email' => 'me@armeldev.xyz',
         ]);
 
         $this->call([
@@ -31,8 +31,12 @@ class DatabaseSeeder extends Seeder
             EducationSeeder::class,
             ExperienceSeeder::class,
             ProjectSeeder::class,
-            TestimonialSeeder::class,
             ProfessionalReferenceSeeder::class,
         ]);
+
+        // Témoignages fictifs : uniquement pour visualiser le site en local.
+        if (! app()->isProduction()) {
+            $this->call(TestimonialSeeder::class);
+        }
     }
 }

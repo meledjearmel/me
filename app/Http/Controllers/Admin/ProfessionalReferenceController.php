@@ -2,20 +2,25 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concerns\PaginatesAdminLists;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ProfessionalReferenceRequest;
 use App\Models\ProfessionalReference;
 use App\Models\Project;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ProfessionalReferenceController extends Controller
 {
-    public function index(): Response
+    use PaginatesAdminLists;
+
+    public function index(Request $request): Response
     {
         return Inertia::render('admin/professional-references/index', [
-            'professionalReferences' => ProfessionalReference::query()->with('project')->latest()->get(),
+            'professionalReferences' => $this->paginateList(ProfessionalReference::query()->with('project')->latest(), $request, ['name', 'role', 'company', 'email'], ['is_public']),
+            'filters' => $this->listFilters($request, ['is_public']),
         ]);
     }
 
@@ -33,6 +38,13 @@ class ProfessionalReferenceController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Référence créée.')]);
 
         return to_route('admin.professional-references.index');
+    }
+
+    public function show(ProfessionalReference $professionalReference): Response
+    {
+        return Inertia::render('admin/professional-references/show', [
+            'professionalReference' => $professionalReference->load('project'),
+        ]);
     }
 
     public function edit(ProfessionalReference $professionalReference): Response

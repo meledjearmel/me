@@ -11,4 +11,6 @@ enum TechnologyCategory: string
     case Securite = 'securite';
     case Infra = 'infra';
     case Ia = 'ia';
+    case Design = 'design';
+    case Cms = 'cms';
 }

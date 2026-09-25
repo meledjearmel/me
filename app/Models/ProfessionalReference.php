@@ -27,14 +27,11 @@ class ProfessionalReference extends Model
         'notes',
     ];
 
-    /** @return array<string, string> */
-    protected function casts(): array
-    {
-        return [
-            'is_public' => 'boolean',
-            'visible_fields' => 'array',
-        ];
-    }
+    /** @var array<string, string> */
+    protected $casts = [
+        'is_public' => 'boolean',
+        'visible_fields' => 'array',
+    ];
 
     /** @return BelongsTo<Project, $this> */
     public function project(): BelongsTo

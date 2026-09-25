@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\PublicationStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class SkillRequest extends FormRequest
 {
@@ -19,7 +21,12 @@ class SkillRequest extends FormRequest
             'name.en' => ['required', 'string', 'max:255'],
             'description.fr' => ['nullable', 'string'],
             'description.en' => ['nullable', 'string'],
+            'details.fr' => ['nullable', 'string'],
+            'details.en' => ['nullable', 'string'],
+            'technologies' => ['array'],
+            'technologies.*' => ['integer', 'exists:technologies,id'],
             'sort_order' => ['integer'],
+            'status' => ['sometimes', Rule::enum(PublicationStatus::class)],
         ];
     }
 }

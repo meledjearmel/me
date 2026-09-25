@@ -1,11 +1,15 @@
 import { Form, Head } from '@inertiajs/react';
 import TechnologyController from '@/actions/App/Http/Controllers/Admin/TechnologyController';
 import Heading from '@/components/heading';
-import InputError from '@/components/input-error';
+import {
+    Field,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+} from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { NativeSelect } from '@/components/ui/native-select';
+import FormSelect from '@/components/admin/form-select';
 import { TECHNOLOGY_CATEGORIES } from '@/lib/admin-options';
 import { index as technologiesIndex } from '@/routes/admin/technologies';
 
@@ -25,16 +29,18 @@ export default function TechnologyCreate() {
                     className="space-y-6"
                 >
                     {({ processing, errors }) => (
-                        <>
-                            <div className="grid gap-2">
-                                <Label htmlFor="name">Nom *</Label>
+                        <FieldGroup>
+                            <Field data-invalid={!!errors.name}>
+                                <FieldLabel htmlFor="name">Nom *</FieldLabel>
                                 <Input id="name" name="name" required />
-                                <InputError message={errors.name} />
-                            </div>
+                                <FieldError>{errors.name}</FieldError>
+                            </Field>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="category">Catégorie *</Label>
-                                <NativeSelect
+                            <Field data-invalid={!!errors.category}>
+                                <FieldLabel htmlFor="category">
+                                    Catégorie *
+                                </FieldLabel>
+                                <FormSelect
                                     id="category"
                                     name="category"
                                     required
@@ -51,18 +57,18 @@ export default function TechnologyCreate() {
                                             {category.label}
                                         </option>
                                     ))}
-                                </NativeSelect>
-                                <InputError message={errors.category} />
-                            </div>
+                                </FormSelect>
+                                <FieldError>{errors.category}</FieldError>
+                            </Field>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="icon">Icône</Label>
+                            <Field data-invalid={!!errors.icon}>
+                                <FieldLabel htmlFor="icon">Icône</FieldLabel>
                                 <Input id="icon" name="icon" />
-                                <InputError message={errors.icon} />
-                            </div>
+                                <FieldError>{errors.icon}</FieldError>
+                            </Field>
 
                             <Button disabled={processing}>Créer</Button>
-                        </>
+                        </FieldGroup>
                     )}
                 </Form>
             </div>

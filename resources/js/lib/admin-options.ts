@@ -6,6 +6,8 @@ export const TECHNOLOGY_CATEGORIES = [
     { value: 'securite', label: 'Sécurité' },
     { value: 'infra', label: 'Infra' },
     { value: 'ia', label: 'IA' },
+    { value: 'design', label: 'Design' },
+    { value: 'cms', label: 'CMS' },
 ] as const;
 
 export const PROJECT_STATUSES = [
@@ -32,4 +34,9 @@ export const REFERENCE_VISIBLE_FIELDS = [
     { value: 'email', label: 'Email' },
     { value: 'phone', label: 'Téléphone' },
     { value: 'relationship', label: 'Relation' },
+] as const;
+
+export const PUBLICATION_STATUSES = [
+    { value: 'published', label: 'Publié' },
+    { value: 'draft', label: 'Brouillon' },
 ] as const;

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concerns\PaginatesAdminLists;
+use App\Concerns\SavesProjects;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ProjectRequest;
 use App\Models\Domain;
@@ -9,16 +11,20 @@ use App\Models\JobProfile;
 use App\Models\Project;
 use App\Models\Technology;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ProjectController extends Controller
 {
-    public function index(): Response
+    use PaginatesAdminLists, SavesProjects;
+
+    public function index(Request $request): Response
     {
         return Inertia::render('admin/projects/index', [
-            'projects' => Project::query()->orderBy('sort_order')->get(),
+            'projects' => $this->paginateList(Project::query()->orderBy('sort_order'), $request, ['title->fr', 'title->en', 'slug'], ['status', 'is_featured', 'is_open_source']),
+            'filters' => $this->listFilters($request, ['status', 'is_featured', 'is_open_source']),
         ]);
     }
 
@@ -30,9 +36,7 @@ class ProjectController extends Controller
     public function store(ProjectRequest $request): RedirectResponse
     {
         $project = DB::transaction(function () use ($request): Project {
-            $project = Project::query()->create($request->safe()->except([
-                'cover', 'gallery', 'domains', 'job_profiles', 'technologies', 'related_projects',
-            ]));
+            $project = Project::query()->create($this->projectAttributes($request));
 
             $this->syncRelations($project, $request);
 
@@ -44,6 +48,19 @@ class ProjectController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Projet créé.')]);
 
         return to_route('admin.projects.index');
+    }
+
+    public function show(Project $project): Response
+    {
+        return Inertia::render('admin/projects/show', [
+            'project' => [
+                ...$project->load(['domains', 'jobProfiles', 'technologies', 'relatedProjects'])->toArray(),
+                'job_profiles' => $project->jobProfiles,
+                'related_projects' => $project->relatedProjects,
+                'cover_url' => $project->getFirstMediaUrl('cover') ?: null,
+                'gallery_urls' => $project->getMedia('gallery')->map->getUrl()->values(),
+            ],
+        ]);
     }
 
     public function edit(Project $project): Response
@@ -65,9 +82,7 @@ class ProjectController extends Controller
     public function update(ProjectRequest $request, Project $project): RedirectResponse
     {
         DB::transaction(function () use ($request, $project): void {
-            $project->update($request->safe()->except([
-                'cover', 'gallery', 'domains', 'job_profiles', 'technologies', 'related_projects',
-            ]));
+            $project->update($this->projectAttributes($request));
 
             $this->syncRelations($project, $request);
         });
@@ -97,57 +112,5 @@ class ProjectController extends Controller
             'technologies' => Technology::query()->orderBy('name')->get(),
             'projects' => Project::query()->orderBy('sort_order')->get(['id', 'title', 'slug']),
         ];
-    }
-
-    private function syncRelations(Project $project, ProjectRequest $request): void
-    {
-        $project->domains()->sync($request->validated('domains', []));
-        $project->jobProfiles()->sync($request->validated('job_profiles', []));
-        $project->technologies()->sync($request->validated('technologies', []));
-        $this->syncRelatedProjects($project, $request->validated('related_projects', []));
-    }
-
-    /**
-     * Maintient la relation "projets liés" symétrique : chaque paire est stockée
-     * dans les deux sens pour que le groupement apparaisse depuis chaque projet.
-     *
-     * @param  array<int, int>  $relatedIds
-     */
-    private function syncRelatedProjects(Project $project, array $relatedIds): void
-    {
-        DB::table('project_related')
-            ->where('project_id', $project->id)
-            ->orWhere('related_project_id', $project->id)
-            ->delete();
-
-        foreach ($relatedIds as $relatedId) {
-            DB::table('project_related')->insert(['project_id' => $project->id, 'related_project_id' => $relatedId]);
-            DB::table('project_related')->insert(['project_id' => $relatedId, 'related_project_id' => $project->id]);
-        }
-    }
-
-    /** @return array<int, int> */
-    private function relatedProjectIds(Project $project): array
-    {
-        return DB::table('project_related')
-            ->where('project_id', $project->id)
-            ->orWhere('related_project_id', $project->id)
-            ->get()
-            ->flatMap(fn ($row) => [$row->project_id, $row->related_project_id])
-            ->reject(fn (int $id): bool => $id === $project->id)
-            ->unique()
-            ->values()
-            ->all();
-    }
-
-    private function syncMedia(Project $project, ProjectRequest $request): void
-    {
-        if ($request->hasFile('cover')) {
-            $project->addMediaFromRequest('cover')->toMediaCollection('cover');
-        }
-
-        foreach ($request->file('gallery', []) as $file) {
-            $project->addMedia($file)->toMediaCollection('gallery');
-        }
     }
 }

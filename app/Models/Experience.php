@@ -2,17 +2,23 @@
 
 namespace App\Models;
 
+use App\Concerns\HasPublicationStatus;
 use Database\Factories\ExperienceFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Spatie\Translatable\HasTranslations;
 
+/**
+ * @property Carbon $start_date
+ * @property Carbon|null $end_date
+ */
 class Experience extends Model
 {
     /** @use HasFactory<ExperienceFactory> */
-    use HasFactory, HasTranslations, SoftDeletes;
+    use HasFactory, HasPublicationStatus, HasTranslations, SoftDeletes;
 
     /** @var array<int, string> */
     protected $translatable = ['role', 'description'];
@@ -28,14 +34,11 @@ class Experience extends Model
         'sort_order',
     ];
 
-    /** @return array<string, string> */
-    protected function casts(): array
-    {
-        return [
-            'start_date' => 'date',
-            'end_date' => 'date',
-        ];
-    }
+    /** @var array<string, string> */
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
+    ];
 
     /** @return HasMany<ExperienceHighlight, $this> */
     public function highlights(): HasMany

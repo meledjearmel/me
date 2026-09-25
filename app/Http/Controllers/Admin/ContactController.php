@@ -2,20 +2,36 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concerns\PaginatesAdminLists;
 use App\Enums\ContactStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ContactRequest;
 use App\Models\Contact;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ContactController extends Controller
 {
-    public function index(): Response
+    use PaginatesAdminLists;
+
+    public function index(Request $request): Response
     {
         return Inertia::render('admin/contacts/index', [
-            'contacts' => Contact::query()->latest()->get(),
+            'contacts' => $this->paginateList(Contact::query()->latest(), $request, ['name', 'email', 'subject', 'message'], ['status']),
+            'filters' => $this->listFilters($request, ['status']),
+        ]);
+    }
+
+    public function show(Contact $contact): Response
+    {
+        if ($contact->status === ContactStatus::New) {
+            $contact->update(['status' => ContactStatus::Read]);
+        }
+
+        return Inertia::render('admin/contacts/show', [
+            'contact' => $contact,
         ]);
     }
 

@@ -1,11 +1,16 @@
 import { Form, Head } from '@inertiajs/react';
 import ProfessionalReferenceController from '@/actions/App/Http/Controllers/Admin/ProfessionalReferenceController';
 import Heading from '@/components/heading';
-import InputError from '@/components/input-error';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+    Field,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+} from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { NativeSelect } from '@/components/ui/native-select';
+import FormSelect from '@/components/admin/form-select';
 import { Textarea } from '@/components/ui/textarea';
 import { REFERENCE_VISIBLE_FIELDS } from '@/lib/admin-options';
 import { index as referencesIndex } from '@/routes/admin/professional-references';
@@ -28,52 +33,62 @@ export default function ProfessionalReferenceCreate({
                     className="space-y-6"
                 >
                     {({ processing, errors }) => (
-                        <>
-                            <div className="grid gap-2">
-                                <Label htmlFor="name">Nom *</Label>
+                        <FieldGroup>
+                            <Field data-invalid={!!errors.name}>
+                                <FieldLabel htmlFor="name">Nom *</FieldLabel>
                                 <Input id="name" name="name" required />
-                                <InputError message={errors.name} />
-                            </div>
+                                <FieldError>{errors.name}</FieldError>
+                            </Field>
 
                             <div className="grid gap-2 sm:grid-cols-2">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="role">Rôle</Label>
+                                <Field data-invalid={!!errors.role}>
+                                    <FieldLabel htmlFor="role">Rôle</FieldLabel>
                                     <Input id="role" name="role" />
-                                    <InputError message={errors.role} />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="company">Société</Label>
+                                    <FieldError>{errors.role}</FieldError>
+                                </Field>
+                                <Field data-invalid={!!errors.company}>
+                                    <FieldLabel htmlFor="company">
+                                        Société
+                                    </FieldLabel>
                                     <Input id="company" name="company" />
-                                    <InputError message={errors.company} />
-                                </div>
+                                    <FieldError>{errors.company}</FieldError>
+                                </Field>
                             </div>
 
                             <div className="grid gap-2 sm:grid-cols-2">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="email">Email</Label>
+                                <Field data-invalid={!!errors.email}>
+                                    <FieldLabel htmlFor="email">
+                                        Email
+                                    </FieldLabel>
                                     <Input
                                         id="email"
                                         name="email"
                                         type="email"
                                     />
-                                    <InputError message={errors.email} />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="phone">Téléphone</Label>
+                                    <FieldError>{errors.email}</FieldError>
+                                </Field>
+                                <Field data-invalid={!!errors.phone}>
+                                    <FieldLabel htmlFor="phone">
+                                        Téléphone
+                                    </FieldLabel>
                                     <Input id="phone" name="phone" />
-                                    <InputError message={errors.phone} />
-                                </div>
+                                    <FieldError>{errors.phone}</FieldError>
+                                </Field>
                             </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="relationship">Relation</Label>
+                            <Field data-invalid={!!errors.relationship}>
+                                <FieldLabel htmlFor="relationship">
+                                    Relation
+                                </FieldLabel>
                                 <Input id="relationship" name="relationship" />
-                                <InputError message={errors.relationship} />
-                            </div>
+                                <FieldError>{errors.relationship}</FieldError>
+                            </Field>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="project_id">Projet lié</Label>
-                                <NativeSelect
+                            <Field data-invalid={!!errors.project_id}>
+                                <FieldLabel htmlFor="project_id">
+                                    Projet lié
+                                </FieldLabel>
+                                <FormSelect
                                     id="project_id"
                                     name="project_id"
                                     defaultValue=""
@@ -87,59 +102,63 @@ export default function ProfessionalReferenceCreate({
                                             {project.title.fr}
                                         </option>
                                     ))}
-                                </NativeSelect>
-                                <InputError message={errors.project_id} />
-                            </div>
+                                </FormSelect>
+                                <FieldError>{errors.project_id}</FieldError>
+                            </Field>
 
-                            <div className="flex items-center gap-2">
+                            <Field orientation="horizontal">
                                 <input
                                     type="hidden"
                                     name="is_public"
                                     value="0"
                                 />
-                                <input
+                                <Checkbox
                                     id="is_public"
-                                    type="checkbox"
                                     name="is_public"
                                     value="1"
-                                    className="size-4"
                                 />
-                                <Label htmlFor="is_public">
-                                    Visible publiquement
-                                </Label>
-                            </div>
+                                <FieldLabel htmlFor="is_public">
+                                    Inclure dans le CV envoyé
+                                </FieldLabel>
+                            </Field>
 
-                            <div className="grid gap-2">
-                                <Label>Champs visibles</Label>
+                            <Field data-invalid={!!errors.visible_fields}>
+                                <FieldLabel>
+                                    Champs affichés sur le CV
+                                </FieldLabel>
                                 <div className="grid grid-cols-2 gap-2">
                                     {REFERENCE_VISIBLE_FIELDS.map((field) => (
-                                        <label
+                                        <Field
                                             key={field.value}
-                                            className="flex items-center gap-2 text-sm"
+                                            orientation="horizontal"
                                         >
-                                            <input
-                                                type="checkbox"
+                                            <Checkbox
+                                                id={`visible_fields-${field.value}`}
                                                 name="visible_fields[]"
                                                 value={field.value}
-                                                className="size-4"
                                             />
-                                            {field.label}
-                                        </label>
+                                            <FieldLabel
+                                                htmlFor={`visible_fields-${field.value}`}
+                                                className="font-normal"
+                                            >
+                                                {field.label}
+                                            </FieldLabel>
+                                        </Field>
                                     ))}
                                 </div>
-                                <InputError message={errors.visible_fields} />
-                            </div>
+                                <FieldError>{errors.visible_fields}</FieldError>
+                            </Field>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="notes">
-                                    Notes (privées, jamais publiques)
-                                </Label>
+                            <Field data-invalid={!!errors.notes}>
+                                <FieldLabel htmlFor="notes">
+                                    Notes (privées, jamais sur le CV)
+                                </FieldLabel>
                                 <Textarea id="notes" name="notes" />
-                                <InputError message={errors.notes} />
-                            </div>
+                                <FieldError>{errors.notes}</FieldError>
+                            </Field>
 
                             <Button disabled={processing}>Créer</Button>
-                        </>
+                        </FieldGroup>
                     )}
                 </Form>
             </div>

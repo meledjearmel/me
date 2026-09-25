@@ -1,9 +1,8 @@
 import { usePasskeyRegister } from '@laravel/passkeys/react';
 import { useState } from 'react';
-import InputError from '@/components/input-error';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 
 type Props = {
     onSuccess: () => void;
@@ -59,7 +58,7 @@ export default function PasskeyRegistration({ onSuccess }: Props) {
     if (!isSupported) {
         return (
             <div className="text-sm text-muted-foreground">
-                Passkeys are not supported in this browser.
+                Les clés d’accès ne sont pas prises en charge par ce navigateur.
             </div>
         );
     }
@@ -67,7 +66,7 @@ export default function PasskeyRegistration({ onSuccess }: Props) {
     if (!showForm) {
         return (
             <Button variant="outline" onClick={() => setShowForm(true)}>
-                Add passkey
+                Ajouter une clé d’accès
             </Button>
         );
     }
@@ -77,30 +76,34 @@ export default function PasskeyRegistration({ onSuccess }: Props) {
             onSubmit={handleSubmit}
             className="space-y-4 rounded-lg border border-border bg-muted/50 p-4"
         >
-            <div className="grid gap-2">
-                <Label htmlFor="passkey-name">Passkey name</Label>
+            <Field>
+                <FieldLabel htmlFor="passkey-name">
+                    Nom de la clé d’accès
+                </FieldLabel>
                 <Input
                     id="passkey-name"
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g., MacBook Pro, iPhone"
+                    placeholder="ex. MacBook Pro, iPhone"
                     className="mt-1 block w-full border-foreground/20"
                     autoFocus
                 />
                 <p className="text-xs text-muted-foreground">
-                    A name helps you identify this passkey later.
+                    Un nom vous aidera à reconnaître cette clé plus tard.
                 </p>
-            </div>
+            </Field>
 
-            {error && <InputError message={error} />}
+            {error && <FieldError>{error}</FieldError>}
 
             <div className="flex gap-2">
                 <Button type="submit" disabled={isLoading || !name.trim()}>
-                    {isLoading ? 'Registering...' : 'Register passkey'}
+                    {isLoading
+                        ? 'Enregistrement…'
+                        : 'Enregistrer la clé d’accès'}
                 </Button>
                 <Button type="button" variant="ghost" onClick={handleCancel}>
-                    Cancel
+                    Annuler
                 </Button>
             </div>
         </form>

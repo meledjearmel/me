@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\PublicationStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ExperienceRequest extends FormRequest
 {
@@ -23,6 +25,7 @@ class ExperienceRequest extends FormRequest
             'description.fr' => ['nullable', 'string'],
             'description.en' => ['nullable', 'string'],
             'sort_order' => ['integer'],
+            'status' => ['sometimes', Rule::enum(PublicationStatus::class)],
             'highlights' => ['array'],
             'highlights.*.id' => ['nullable', 'integer', 'exists:experience_highlights,id'],
             'highlights.*.text.fr' => ['required', 'string'],

@@ -21,6 +21,8 @@ class Profile extends Model implements HasMedia
     /** @var list<string> */
     protected $fillable = [
         'name',
+        'cv_last_name',
+        'cv_first_name',
         'headline',
         'bio_short',
         'bio_full',
@@ -30,16 +32,16 @@ class Profile extends Model implements HasMedia
         'social_links',
     ];
 
-    /** @return array<string, string> */
-    protected function casts(): array
-    {
-        return [
-            'social_links' => 'array',
-        ];
-    }
+    /** @var array<string, string> */
+    protected $casts = [
+        'social_links' => 'array',
+    ];
 
     public function registerMediaCollections(): void
     {
+        // Photo affichée sur le site.
         $this->addMediaCollection('photo')->singleFile();
+        // Photo du CV : distincte de celle du site (cadrage et fond adaptés au document).
+        $this->addMediaCollection('cv_photo')->singleFile();
     }
 }

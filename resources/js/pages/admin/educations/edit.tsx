@@ -1,12 +1,18 @@
 import { Form, Head } from '@inertiajs/react';
 import EducationController from '@/actions/App/Http/Controllers/Admin/EducationController';
+import FormSelect from '@/components/admin/form-select';
 import Heading from '@/components/heading';
-import InputError from '@/components/input-error';
 import TranslatableField from '@/components/translatable-field';
+import {
+    Field,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+} from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { index as educationsIndex } from '@/routes/admin/educations';
+import { PUBLICATION_STATUSES } from '@/lib/admin-options';
 import type { Education } from '@/types';
 
 export default function EducationEdit({ education }: { education: Education }) {
@@ -25,19 +31,19 @@ export default function EducationEdit({ education }: { education: Education }) {
                     className="space-y-6"
                 >
                     {({ processing, errors }) => (
-                        <>
-                            <div className="grid gap-2">
-                                <Label htmlFor="institution">
+                        <FieldGroup>
+                            <Field data-invalid={!!errors.institution}>
+                                <FieldLabel htmlFor="institution">
                                     Établissement *
-                                </Label>
+                                </FieldLabel>
                                 <Input
                                     id="institution"
                                     name="institution"
                                     defaultValue={education.institution}
                                     required
                                 />
-                                <InputError message={errors.institution} />
-                            </div>
+                                <FieldError>{errors.institution}</FieldError>
+                            </Field>
 
                             <TranslatableField
                                 name="degree"
@@ -62,8 +68,10 @@ export default function EducationEdit({ education }: { education: Education }) {
                             />
 
                             <div className="grid gap-2 sm:grid-cols-2">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="start_date">Début *</Label>
+                                <Field data-invalid={!!errors.start_date}>
+                                    <FieldLabel htmlFor="start_date">
+                                        Début *
+                                    </FieldLabel>
                                     <Input
                                         id="start_date"
                                         name="start_date"
@@ -71,18 +79,20 @@ export default function EducationEdit({ education }: { education: Education }) {
                                         defaultValue={education.start_date}
                                         required
                                     />
-                                    <InputError message={errors.start_date} />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="end_date">Fin</Label>
+                                    <FieldError>{errors.start_date}</FieldError>
+                                </Field>
+                                <Field data-invalid={!!errors.end_date}>
+                                    <FieldLabel htmlFor="end_date">
+                                        Fin
+                                    </FieldLabel>
                                     <Input
                                         id="end_date"
                                         name="end_date"
                                         type="date"
                                         defaultValue={education.end_date ?? ''}
                                     />
-                                    <InputError message={errors.end_date} />
-                                </div>
+                                    <FieldError>{errors.end_date}</FieldError>
+                                </Field>
                             </div>
 
                             <TranslatableField
@@ -98,19 +108,43 @@ export default function EducationEdit({ education }: { education: Education }) {
                                 }}
                             />
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="sort_order">Ordre</Label>
+                            <Field data-invalid={!!errors.status}>
+                                <FieldLabel htmlFor="status">
+                                    Statut *
+                                </FieldLabel>
+                                <FormSelect
+                                    id="status"
+                                    name="status"
+                                    required
+                                    defaultValue={education.status}
+                                >
+                                    {PUBLICATION_STATUSES.map((status) => (
+                                        <option
+                                            key={status.value}
+                                            value={status.value}
+                                        >
+                                            {status.label}
+                                        </option>
+                                    ))}
+                                </FormSelect>
+                                <FieldError>{errors.status}</FieldError>
+                            </Field>
+
+                            <Field data-invalid={!!errors.sort_order}>
+                                <FieldLabel htmlFor="sort_order">
+                                    Ordre
+                                </FieldLabel>
                                 <Input
                                     id="sort_order"
                                     name="sort_order"
                                     type="number"
                                     defaultValue={education.sort_order}
                                 />
-                                <InputError message={errors.sort_order} />
-                            </div>
+                                <FieldError>{errors.sort_order}</FieldError>
+                            </Field>
 
                             <Button disabled={processing}>Enregistrer</Button>
-                        </>
+                        </FieldGroup>
                     )}
                 </Form>
             </div>

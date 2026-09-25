@@ -1,23 +1,17 @@
 import { Head, Link } from '@inertiajs/react';
-import { SquarePen } from 'lucide-react';
-import DeleteButton from '@/components/admin/delete-button';
-import Heading from '@/components/heading';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
+import { Eye, SquarePen } from 'lucide-react';
 import {
     destroy,
     edit,
-    index as testimonialsIndex,
+    show,
+    index as pageIndex,
 } from '@/routes/admin/testimonials';
-import type { Testimonial } from '@/types';
+import DeleteButton from '@/components/admin/delete-button';
+import { FilterSelect, ResourceList } from '@/components/admin/data-list';
+import Heading from '@/components/heading';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import type { ListFilters, Paginated, Testimonial } from '@/types';
 
 const STATUS_VARIANT = {
     pending: 'secondary',
@@ -25,68 +19,103 @@ const STATUS_VARIANT = {
     rejected: 'destructive',
 } as const;
 
+const STATUS_LABEL = {
+    pending: 'En attente',
+    approved: 'Approuvé',
+    rejected: 'Refusé',
+} as const;
+
 export default function TestimonialsIndex({
     testimonials,
+    filters,
 }: {
-    testimonials: Testimonial[];
+    testimonials: Paginated<Testimonial>;
+    filters: ListFilters;
 }) {
     return (
         <>
             <Head title="Avis" />
 
-            <div className="space-y-6 p-4">
-                <Heading
-                    title="Avis"
-                    description="Modération des avis soumis publiquement"
-                />
+            <div className="flex flex-col gap-6 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                    <Heading
+                        title="Avis"
+                        description="Modération des avis soumis publiquement"
+                    />
+                </div>
 
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Auteur</TableHead>
-                            <TableHead>Projet</TableHead>
-                            <TableHead>Statut</TableHead>
-                            <TableHead className="text-right">
-                                Actions
-                            </TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {testimonials.map((testimonial) => (
-                            <TableRow key={testimonial.id}>
-                                <TableCell>{testimonial.author_name}</TableCell>
-                                <TableCell>
-                                    {testimonial.project?.title.fr ?? 'Général'}
-                                </TableCell>
-                                <TableCell>
-                                    <Badge
-                                        variant={
-                                            STATUS_VARIANT[testimonial.status]
-                                        }
-                                    >
-                                        {testimonial.status}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell className="flex justify-end gap-1">
-                                    <Button variant="ghost" size="icon" asChild>
-                                        <Link href={edit(testimonial.id)}>
-                                            <SquarePen />
-                                        </Link>
-                                    </Button>
-                                    <DeleteButton
-                                        href={destroy.url(testimonial.id)}
-                                        confirmMessage={`Supprimer l'avis de "${testimonial.author_name}" ?`}
-                                    />
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                <ResourceList
+                    paginator={testimonials}
+                    filters={filters}
+                    searchPlaceholder="Auteur, email, contenu…"
+                    columns={[
+                        { header: 'Auteur', cell: (row) => row.author_name },
+                        {
+                            header: 'Projet',
+                            cell: (row) => row.project?.title.fr ?? 'Général',
+                        },
+                        {
+                            header: 'Statut',
+                            cell: (row) => (
+                                <Badge variant={STATUS_VARIANT[row.status]}>
+                                    {STATUS_LABEL[row.status]}
+                                </Badge>
+                            ),
+                        },
+                        {
+                            header: 'À la une',
+                            cell: (row) => (row.is_featured ? '★' : ''),
+                        },
+                    ]}
+                    filterControls={(state) => (
+                        <>
+                            <FilterSelect
+                                state={state}
+                                name="status"
+                                value={filters.status}
+                                label="Statut"
+                                options={[
+                                    { value: 'pending', label: 'En attente' },
+                                    { value: 'approved', label: 'Approuvé' },
+                                    { value: 'rejected', label: 'Refusé' },
+                                ]}
+                            />
+                            <FilterSelect
+                                state={state}
+                                name="is_featured"
+                                value={filters.is_featured}
+                                label="À la une"
+                                options={[
+                                    { value: '1', label: 'À la une' },
+                                    { value: '0', label: 'Pas à la une' },
+                                ]}
+                            />
+                        </>
+                    )}
+                    actions={(row) => (
+                        <>
+                            <Button variant="ghost" size="icon" asChild>
+                                <Link href={show(row.id)} aria-label="Voir">
+                                    <Eye />
+                                </Link>
+                            </Button>
+                            <Button variant="ghost" size="icon" asChild>
+                                <Link href={edit(row.id)} aria-label="Modifier">
+                                    <SquarePen />
+                                </Link>
+                            </Button>
+                            <DeleteButton
+                                href={destroy.url(row.id)}
+                                confirmMessage={`Supprimer l'avis de "${row.author_name}" ?`}
+                            />
+                        </>
+                    )}
+                />
             </div>
         </>
     );
 }
 
 TestimonialsIndex.layout = {
-    breadcrumbs: [{ title: 'Avis', href: testimonialsIndex() }],
+    breadcrumbs: [{ title: 'Avis', href: pageIndex() }],
 };

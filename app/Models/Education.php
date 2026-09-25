@@ -2,16 +2,22 @@
 
 namespace App\Models;
 
+use App\Concerns\HasPublicationStatus;
 use Database\Factories\EducationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Spatie\Translatable\HasTranslations;
 
+/**
+ * @property Carbon $start_date
+ * @property Carbon|null $end_date
+ */
 class Education extends Model
 {
     /** @use HasFactory<EducationFactory> */
-    use HasFactory, HasTranslations, SoftDeletes;
+    use HasFactory, HasPublicationStatus, HasTranslations, SoftDeletes;
 
     /**
      * "Education" est traité comme indénombrable par l'inflecteur Laravel
@@ -33,12 +39,9 @@ class Education extends Model
         'sort_order',
     ];
 
-    /** @return array<string, string> */
-    protected function casts(): array
-    {
-        return [
-            'start_date' => 'date',
-            'end_date' => 'date',
-        ];
-    }
+    /** @var array<string, string> */
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
+    ];
 }

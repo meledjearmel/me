@@ -1,8 +1,13 @@
 import { Form, Head } from '@inertiajs/react';
 import ProfileController from '@/actions/App/Http/Controllers/Admin/ProfileController';
 import Heading from '@/components/heading';
-import InputError from '@/components/input-error';
 import TranslatableField from '@/components/translatable-field';
+import {
+    Field,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+} from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,35 +30,94 @@ export default function ProfileEdit({ profile }: { profile: Profile }) {
                     className="space-y-6"
                 >
                     {({ processing, errors }) => (
-                        <>
-                            {profile.photo_url && (
-                                <img
-                                    src={profile.photo_url}
-                                    alt={profile.name}
-                                    className="size-24 rounded-full object-cover"
-                                />
-                            )}
+                        <FieldGroup>
+                            <div className="grid gap-6 sm:grid-cols-2">
+                                <div className="grid content-start gap-2">
+                                    {profile.photo_url && (
+                                        <img
+                                            src={profile.photo_url}
+                                            alt={profile.name}
+                                            className="size-24 rounded-full object-cover"
+                                        />
+                                    )}
+                                    <Label htmlFor="photo">
+                                        Photo du profil (affichée sur le site)
+                                    </Label>
+                                    <Input
+                                        id="photo"
+                                        name="photo"
+                                        type="file"
+                                        accept="image/*"
+                                    />
+                                    <FieldError>{errors.photo}</FieldError>
+                                </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="photo">Photo</Label>
-                                <Input
-                                    id="photo"
-                                    name="photo"
-                                    type="file"
-                                    accept="image/*"
-                                />
-                                <InputError message={errors.photo} />
+                                <div className="grid content-start gap-2">
+                                    {profile.cv_photo_url && (
+                                        <img
+                                            src={profile.cv_photo_url}
+                                            alt={`${profile.name} (CV)`}
+                                            className="size-24 rounded-full object-cover"
+                                        />
+                                    )}
+                                    <Label htmlFor="cv_photo">
+                                        Photo du CV (distincte de celle du site)
+                                    </Label>
+                                    <Input
+                                        id="cv_photo"
+                                        name="cv_photo"
+                                        type="file"
+                                        accept="image/*"
+                                    />
+                                    <FieldError>{errors.cv_photo}</FieldError>
+                                </div>
                             </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="name">Nom *</Label>
+                            <Field data-invalid={!!errors.name}>
+                                <FieldLabel htmlFor="name">Nom *</FieldLabel>
                                 <Input
                                     id="name"
                                     name="name"
                                     defaultValue={profile.name}
                                     required
                                 />
-                                <InputError message={errors.name} />
+                                <FieldError>{errors.name}</FieldError>
+                            </Field>
+
+                            <div className="grid gap-6 sm:grid-cols-2">
+                                <Field data-invalid={!!errors.cv_last_name}>
+                                    <FieldLabel htmlFor="cv_last_name">
+                                        Nom sur le CV
+                                    </FieldLabel>
+                                    <Input
+                                        id="cv_last_name"
+                                        name="cv_last_name"
+                                        defaultValue={
+                                            profile.cv_last_name ?? ''
+                                        }
+                                        placeholder="MELEDJE GNAGNE"
+                                    />
+                                    <FieldError>
+                                        {errors.cv_last_name}
+                                    </FieldError>
+                                </Field>
+
+                                <Field data-invalid={!!errors.cv_first_name}>
+                                    <FieldLabel htmlFor="cv_first_name">
+                                        Prénoms sur le CV
+                                    </FieldLabel>
+                                    <Input
+                                        id="cv_first_name"
+                                        name="cv_first_name"
+                                        defaultValue={
+                                            profile.cv_first_name ?? ''
+                                        }
+                                        placeholder="Christian Armel"
+                                    />
+                                    <FieldError>
+                                        {errors.cv_first_name}
+                                    </FieldError>
+                                </Field>
                             </div>
 
                             <TranslatableField
@@ -92,8 +156,10 @@ export default function ProfileEdit({ profile }: { profile: Profile }) {
                             />
 
                             <div className="grid gap-2 sm:grid-cols-2">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="email">Email *</Label>
+                                <Field data-invalid={!!errors.email}>
+                                    <FieldLabel htmlFor="email">
+                                        Email *
+                                    </FieldLabel>
                                     <Input
                                         id="email"
                                         name="email"
@@ -101,34 +167,42 @@ export default function ProfileEdit({ profile }: { profile: Profile }) {
                                         defaultValue={profile.email}
                                         required
                                     />
-                                    <InputError message={errors.email} />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="phone">Téléphone</Label>
+                                    <FieldError>{errors.email}</FieldError>
+                                </Field>
+                                <Field data-invalid={!!errors.phone}>
+                                    <FieldLabel htmlFor="phone">
+                                        Téléphone
+                                    </FieldLabel>
                                     <Input
                                         id="phone"
                                         name="phone"
                                         defaultValue={profile.phone ?? ''}
                                     />
-                                    <InputError message={errors.phone} />
-                                </div>
+                                    <FieldError>{errors.phone}</FieldError>
+                                </Field>
                             </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="location">Localisation</Label>
+                            <Field data-invalid={!!errors.location}>
+                                <FieldLabel htmlFor="location">
+                                    Localisation
+                                </FieldLabel>
                                 <Input
                                     id="location"
                                     name="location"
                                     defaultValue={profile.location ?? ''}
                                 />
-                                <InputError message={errors.location} />
-                            </div>
+                                <FieldError>{errors.location}</FieldError>
+                            </Field>
 
                             <div className="grid gap-2 sm:grid-cols-2">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="social_links_github">
+                                <Field
+                                    data-invalid={
+                                        !!errors['social_links.github']
+                                    }
+                                >
+                                    <FieldLabel htmlFor="social_links_github">
                                         GitHub
-                                    </Label>
+                                    </FieldLabel>
                                     <Input
                                         id="social_links_github"
                                         name="social_links[github]"
@@ -136,14 +210,18 @@ export default function ProfileEdit({ profile }: { profile: Profile }) {
                                             profile.social_links?.github ?? ''
                                         }
                                     />
-                                    <InputError
-                                        message={errors['social_links.github']}
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="social_links_linkedin">
+                                    <FieldError>
+                                        {errors['social_links.github']}
+                                    </FieldError>
+                                </Field>
+                                <Field
+                                    data-invalid={
+                                        !!errors['social_links.linkedin']
+                                    }
+                                >
+                                    <FieldLabel htmlFor="social_links_linkedin">
                                         LinkedIn
-                                    </Label>
+                                    </FieldLabel>
                                     <Input
                                         id="social_links_linkedin"
                                         name="social_links[linkedin]"
@@ -151,16 +229,14 @@ export default function ProfileEdit({ profile }: { profile: Profile }) {
                                             profile.social_links?.linkedin ?? ''
                                         }
                                     />
-                                    <InputError
-                                        message={
-                                            errors['social_links.linkedin']
-                                        }
-                                    />
-                                </div>
+                                    <FieldError>
+                                        {errors['social_links.linkedin']}
+                                    </FieldError>
+                                </Field>
                             </div>
 
                             <Button disabled={processing}>Enregistrer</Button>
-                        </>
+                        </FieldGroup>
                     )}
                 </Form>
             </div>

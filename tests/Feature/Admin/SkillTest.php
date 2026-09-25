@@ -2,6 +2,7 @@
 
 use App\Models\Domain;
 use App\Models\Skill;
+use App\Models\Technology;
 use App\Models\User;
 
 test('guests are redirected to the login page', function () {
@@ -52,4 +53,34 @@ test('creating a skill requires the mandatory fields', function () {
     $response = $this->actingAs($user)->post(route('admin.skills.store'), []);
 
     $response->assertSessionHasErrors(['domain_id', 'name.fr', 'name.en']);
+});
+
+test('a skill keeps its details and its technologies in the chosen order', function () {
+    $user = User::factory()->create();
+    $domain = Domain::factory()->create();
+    [$first, $second] = Technology::factory()->count(2)->create();
+
+    $this->actingAs($user)->post(route('admin.skills.store'), [
+        'domain_id' => $domain->id,
+        'name' => ['fr' => 'Laravel', 'en' => 'Laravel'],
+        'details' => ['fr' => 'Détails FR', 'en' => 'Details EN'],
+        'technologies' => [$second->id, $first->id],
+        'sort_order' => 1,
+    ])->assertRedirect(route('admin.skills.index'));
+
+    $skill = Skill::query()->firstOrFail();
+
+    expect($skill->getTranslation('details', 'en'))->toBe('Details EN')
+        ->and($skill->technologies->pluck('id')->all())->toBe([$second->id, $first->id]);
+});
+
+test('a skill rejects unknown technologies', function () {
+    $user = User::factory()->create();
+    $domain = Domain::factory()->create();
+
+    $this->actingAs($user)->post(route('admin.skills.store'), [
+        'domain_id' => $domain->id,
+        'name' => ['fr' => 'Laravel', 'en' => 'Laravel'],
+        'technologies' => [9999],
+    ])->assertSessionHasErrors('technologies.0');
 });

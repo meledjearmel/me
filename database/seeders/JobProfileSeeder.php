@@ -20,6 +20,8 @@ class JobProfileSeeder extends Seeder
                     'fr' => 'Conception et développement d\'applications full-stack.',
                     'en' => 'Design and development of full-stack applications.',
                 ],
+                'hero_title' => ['fr' => 'Développeur qui', 'en' => 'Developer who'],
+                'hero_words' => ['fr' => 'Code, Conçoit, Livre', 'en' => 'Codes, Builds, Ships'],
                 'cv_description' => [
                     'fr' => 'Contenu à finaliser à partir du CV "Ingénieur de conception — Génie logiciel".',
                     'en' => 'Content to finalize from the "Software Engineer" CV.',
@@ -33,6 +35,8 @@ class JobProfileSeeder extends Seeder
                     'fr' => 'Gestion et support des systèmes d\'information.',
                     'en' => 'Management and support of information systems.',
                 ],
+                'hero_title' => ['fr' => 'Chargé IT qui', 'en' => 'IT Officer who'],
+                'hero_words' => ['fr' => 'Sécurise, Dépanne, Optimise', 'en' => 'Secures, Supports, Optimizes'],
                 'cv_description' => [
                     'fr' => 'Contenu à finaliser à partir du CV "Chargé IT".',
                     'en' => 'Content to finalize from the "IT Officer" CV.',
@@ -46,6 +50,8 @@ class JobProfileSeeder extends Seeder
                     'fr' => 'Pilotage technique d\'équipes et d\'architectures.',
                     'en' => 'Technical leadership of teams and architectures.',
                 ],
+                'hero_title' => ['fr' => 'Lead Tech qui', 'en' => 'Tech Lead who'],
+                'hero_words' => ['fr' => 'Guide, Structure, Tranche', 'en' => 'Guides, Architects, Decides'],
                 'cv_description' => [
                     'fr' => 'Contenu à finaliser à partir du CV "Lead Technique".',
                     'en' => 'Content to finalize from the "Tech Lead" CV.',
@@ -59,6 +65,8 @@ class JobProfileSeeder extends Seeder
                     'fr' => 'Pilotage de projets informatiques de bout en bout.',
                     'en' => 'End-to-end management of IT projects.',
                 ],
+                'hero_title' => ['fr' => 'Chef projet qui', 'en' => 'IT Manager who'],
+                'hero_words' => ['fr' => 'Planifie, Coordonne, Livre', 'en' => 'Plans, Coordinates, Delivers'],
                 'cv_description' => [
                     'fr' => 'Contenu à finaliser à partir du CV "Chef de Projet informatique".',
                     'en' => 'Content to finalize from the "IT Project Manager" CV.',

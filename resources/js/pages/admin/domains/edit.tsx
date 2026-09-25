@@ -1,12 +1,18 @@
 import { Form, Head } from '@inertiajs/react';
 import DomainController from '@/actions/App/Http/Controllers/Admin/DomainController';
+import FormSelect from '@/components/admin/form-select';
 import Heading from '@/components/heading';
-import InputError from '@/components/input-error';
 import TranslatableField from '@/components/translatable-field';
+import {
+    Field,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+} from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { index as domainsIndex } from '@/routes/admin/domains';
+import { PUBLICATION_STATUSES } from '@/lib/admin-options';
 import type { Domain } from '@/types';
 
 export default function DomainEdit({ domain }: { domain: Domain }) {
@@ -25,17 +31,17 @@ export default function DomainEdit({ domain }: { domain: Domain }) {
                     className="space-y-6"
                 >
                     {({ processing, errors }) => (
-                        <>
-                            <div className="grid gap-2">
-                                <Label htmlFor="key">Clé *</Label>
+                        <FieldGroup>
+                            <Field data-invalid={!!errors.key}>
+                                <FieldLabel htmlFor="key">Clé *</FieldLabel>
                                 <Input
                                     id="key"
                                     name="key"
                                     defaultValue={domain.key}
                                     required
                                 />
-                                <InputError message={errors.key} />
-                            </div>
+                                <FieldError>{errors.key}</FieldError>
+                            </Field>
 
                             <TranslatableField
                                 name="label"
@@ -48,41 +54,67 @@ export default function DomainEdit({ domain }: { domain: Domain }) {
                                 }}
                             />
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="color">Couleur (hex) *</Label>
+                            <Field data-invalid={!!errors.color}>
+                                <FieldLabel htmlFor="color">
+                                    Couleur (hex) *
+                                </FieldLabel>
                                 <Input
                                     id="color"
                                     name="color"
                                     defaultValue={domain.color}
                                     required
                                 />
-                                <InputError message={errors.color} />
-                            </div>
+                                <FieldError>{errors.color}</FieldError>
+                            </Field>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="icon">Icône *</Label>
+                            <Field data-invalid={!!errors.icon}>
+                                <FieldLabel htmlFor="icon">Icône *</FieldLabel>
                                 <Input
                                     id="icon"
                                     name="icon"
                                     defaultValue={domain.icon}
                                     required
                                 />
-                                <InputError message={errors.icon} />
-                            </div>
+                                <FieldError>{errors.icon}</FieldError>
+                            </Field>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="sort_order">Ordre</Label>
+                            <Field data-invalid={!!errors.status}>
+                                <FieldLabel htmlFor="status">
+                                    Statut *
+                                </FieldLabel>
+                                <FormSelect
+                                    id="status"
+                                    name="status"
+                                    required
+                                    defaultValue={domain.status}
+                                >
+                                    {PUBLICATION_STATUSES.map((status) => (
+                                        <option
+                                            key={status.value}
+                                            value={status.value}
+                                        >
+                                            {status.label}
+                                        </option>
+                                    ))}
+                                </FormSelect>
+                                <FieldError>{errors.status}</FieldError>
+                            </Field>
+
+                            <Field data-invalid={!!errors.sort_order}>
+                                <FieldLabel htmlFor="sort_order">
+                                    Ordre
+                                </FieldLabel>
                                 <Input
                                     id="sort_order"
                                     name="sort_order"
                                     type="number"
                                     defaultValue={domain.sort_order}
                                 />
-                                <InputError message={errors.sort_order} />
-                            </div>
+                                <FieldError>{errors.sort_order}</FieldError>
+                            </Field>
 
                             <Button disabled={processing}>Enregistrer</Button>
-                        </>
+                        </FieldGroup>
                     )}
                 </Form>
             </div>

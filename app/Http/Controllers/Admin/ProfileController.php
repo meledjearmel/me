@@ -19,6 +19,7 @@ class ProfileController extends Controller
             'profile' => [
                 ...$profile->toArray(),
                 'photo_url' => $profile->getFirstMediaUrl('photo') ?: null,
+                'cv_photo_url' => $profile->getFirstMediaUrl('cv_photo') ?: null,
             ],
         ]);
     }
@@ -27,10 +28,14 @@ class ProfileController extends Controller
     {
         $profile = Profile::query()->firstOrFail();
 
-        $profile->update($request->safe()->except('photo'));
+        $profile->update($request->safe()->except(['photo', 'cv_photo']));
 
         if ($request->hasFile('photo')) {
             $profile->addMediaFromRequest('photo')->toMediaCollection('photo');
+        }
+
+        if ($request->hasFile('cv_photo')) {
+            $profile->addMediaFromRequest('cv_photo')->toMediaCollection('cv_photo');
         }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Profil mis à jour.')]);

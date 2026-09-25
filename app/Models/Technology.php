@@ -21,13 +21,10 @@ class Technology extends Model
         'icon',
     ];
 
-    /** @return array<string, string> */
-    protected function casts(): array
-    {
-        return [
-            'category' => TechnologyCategory::class,
-        ];
-    }
+    /** @var array<string, class-string> */
+    protected $casts = [
+        'category' => TechnologyCategory::class,
+    ];
 
     /** @return BelongsToMany<Project, $this> */
     public function projects(): BelongsToMany

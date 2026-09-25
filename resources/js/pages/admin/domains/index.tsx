@@ -1,95 +1,123 @@
 import { Head, Link } from '@inertiajs/react';
-import { Plus, SquarePen } from 'lucide-react';
+import { Plus, Eye, SquarePen } from 'lucide-react';
+import { index as pageIndex } from '@/routes/admin/domains';
 import DomainController from '@/actions/App/Http/Controllers/Admin/DomainController';
 import DeleteButton from '@/components/admin/delete-button';
+import { FilterSelect, ResourceList } from '@/components/admin/data-list';
 import Heading from '@/components/heading';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
-import { index as domainsIndex } from '@/routes/admin/domains';
-import type { Domain } from '@/types';
+import type { ListFilters, Paginated, Domain } from '@/types';
 
-export default function DomainsIndex({ domains }: { domains: Domain[] }) {
+export default function DomainsIndex({
+    domains,
+    filters,
+}: {
+    domains: Paginated<Domain>;
+    filters: ListFilters;
+}) {
     return (
         <>
             <Head title="Domaines" />
 
-            <div className="space-y-6 p-4">
-                <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-6 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                     <Heading
                         title="Domaines"
-                        description="Dev, Infra, Sécurité, Design..."
+                        description="Dev, Infra, Sécurité, Design…"
                     />
                     <Button asChild>
                         <Link href={DomainController.create()}>
-                            <Plus /> Nouveau domaine
+                            <Plus data-icon="inline-start" /> Nouveau domaine
                         </Link>
                     </Button>
                 </div>
 
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Clé</TableHead>
-                            <TableHead>Libellé (FR)</TableHead>
-                            <TableHead>Couleur</TableHead>
-                            <TableHead>Ordre</TableHead>
-                            <TableHead className="text-right">
-                                Actions
-                            </TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {domains.map((domain) => (
-                            <TableRow key={domain.id}>
-                                <TableCell className="font-mono text-xs">
-                                    {domain.key}
-                                </TableCell>
-                                <TableCell>{domain.label.fr}</TableCell>
-                                <TableCell>
-                                    <span className="inline-flex items-center gap-2">
-                                        <span
-                                            className="size-3 rounded-full border"
-                                            style={{
-                                                backgroundColor: domain.color,
-                                            }}
-                                        />
-                                        {domain.color}
-                                    </span>
-                                </TableCell>
-                                <TableCell>{domain.sort_order}</TableCell>
-                                <TableCell className="flex justify-end gap-1">
-                                    <Button variant="ghost" size="icon" asChild>
-                                        <Link
-                                            href={DomainController.edit(
-                                                domain.id,
-                                            )}
-                                        >
-                                            <SquarePen />
-                                        </Link>
-                                    </Button>
-                                    <DeleteButton
-                                        href={DomainController.destroy.url(
-                                            domain.id,
-                                        )}
-                                        confirmMessage={`Supprimer le domaine "${domain.label.fr}" ?`}
+                <ResourceList
+                    paginator={domains}
+                    filters={filters}
+                    searchPlaceholder="Clé ou libellé…"
+                    columns={[
+                        {
+                            header: 'Clé',
+                            className: 'font-mono text-xs',
+                            cell: (row) => row.key,
+                        },
+                        { header: 'Libellé (FR)', cell: (row) => row.label.fr },
+                        {
+                            header: 'Couleur',
+                            cell: (row) => (
+                                <span className="inline-flex items-center gap-2">
+                                    <span
+                                        className="size-3 rounded-full border"
+                                        style={{ backgroundColor: row.color }}
                                     />
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                                    {row.color}
+                                </span>
+                            ),
+                        },
+                        { header: 'Ordre', cell: (row) => row.sort_order },
+                        {
+                            header: 'Statut',
+                            cell: (row) => (
+                                <Badge
+                                    variant={
+                                        row.status === 'published'
+                                            ? 'default'
+                                            : 'secondary'
+                                    }
+                                >
+                                    {row.status === 'published'
+                                        ? 'Publié'
+                                        : 'Brouillon'}
+                                </Badge>
+                            ),
+                        },
+                    ]}
+                    filterControls={(state) => (
+                        <>
+                            <FilterSelect
+                                state={state}
+                                name="status"
+                                value={filters.status}
+                                label="Statut"
+                                options={[
+                                    { value: 'published', label: 'Publié' },
+                                    { value: 'draft', label: 'Brouillon' },
+                                ]}
+                            />
+                        </>
+                    )}
+                    actions={(row) => (
+                        <>
+                            <Button variant="ghost" size="icon" asChild>
+                                <Link
+                                    href={DomainController.show(row.id)}
+                                    aria-label="Voir"
+                                >
+                                    <Eye />
+                                </Link>
+                            </Button>
+                            <Button variant="ghost" size="icon" asChild>
+                                <Link
+                                    href={DomainController.edit(row.id)}
+                                    aria-label="Modifier"
+                                >
+                                    <SquarePen />
+                                </Link>
+                            </Button>
+                            <DeleteButton
+                                href={DomainController.destroy.url(row.id)}
+                                confirmMessage={`Supprimer le domaine "${row.label.fr}" ?`}
+                            />
+                        </>
+                    )}
+                />
             </div>
         </>
     );
 }
 
 DomainsIndex.layout = {
-    breadcrumbs: [{ title: 'Domaines', href: domainsIndex() }],
+    breadcrumbs: [{ title: 'Domaines', href: pageIndex() }],
 };

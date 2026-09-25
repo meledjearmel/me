@@ -1,10 +1,14 @@
 import { Form, Head } from '@inertiajs/react';
 import ContactController from '@/actions/App/Http/Controllers/Admin/ContactController';
 import Heading from '@/components/heading';
-import InputError from '@/components/input-error';
+import {
+    Field,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
+} from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { NativeSelect } from '@/components/ui/native-select';
+import FormSelect from '@/components/admin/form-select';
 import { CONTACT_STATUSES } from '@/lib/admin-options';
 import { index as contactsIndex } from '@/routes/admin/contacts';
 import type { Contact } from '@/types';
@@ -32,10 +36,12 @@ export default function ContactEdit({ contact }: { contact: Contact }) {
                     className="space-y-6"
                 >
                     {({ processing, errors }) => (
-                        <>
-                            <div className="grid gap-2">
-                                <Label htmlFor="status">Statut *</Label>
-                                <NativeSelect
+                        <FieldGroup>
+                            <Field data-invalid={!!errors.status}>
+                                <FieldLabel htmlFor="status">
+                                    Statut *
+                                </FieldLabel>
+                                <FormSelect
                                     id="status"
                                     name="status"
                                     required
@@ -49,12 +55,12 @@ export default function ContactEdit({ contact }: { contact: Contact }) {
                                             {status.label}
                                         </option>
                                     ))}
-                                </NativeSelect>
-                                <InputError message={errors.status} />
-                            </div>
+                                </FormSelect>
+                                <FieldError>{errors.status}</FieldError>
+                            </Field>
 
                             <Button disabled={processing}>Enregistrer</Button>
-                        </>
+                        </FieldGroup>
                     )}
                 </Form>
             </div>

@@ -1,4 +1,11 @@
-import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+    Field,
+    FieldGroup,
+    FieldLabel,
+    FieldLegend,
+    FieldSet,
+} from '@/components/ui/field';
 
 type CheckboxGroupProps = {
     label: string;
@@ -14,27 +21,28 @@ export default function CheckboxGroup({
     defaultSelectedIds = [],
 }: CheckboxGroupProps) {
     return (
-        <div className="grid gap-2">
-            <Label>{label}</Label>
-            <div className="grid max-h-48 grid-cols-2 gap-2 overflow-y-auto rounded-md border p-3">
+        <FieldSet>
+            <FieldLegend variant="label">{label}</FieldLegend>
+            <FieldGroup className="grid max-h-48 grid-cols-2 gap-2 overflow-y-auto rounded-md border p-3">
                 {options.map((option) => (
-                    <label
-                        key={option.id}
-                        className="flex items-center gap-2 text-sm"
-                    >
-                        <input
-                            type="checkbox"
+                    <Field key={option.id} orientation="horizontal">
+                        <Checkbox
+                            id={`${name}-${option.id}`}
                             name={`${name}[]`}
                             value={option.id}
                             defaultChecked={defaultSelectedIds.includes(
                                 option.id,
                             )}
-                            className="size-4"
                         />
-                        {option.label}
-                    </label>
+                        <FieldLabel
+                            htmlFor={`${name}-${option.id}`}
+                            className="font-normal"
+                        >
+                            {option.label}
+                        </FieldLabel>
+                    </Field>
                 ))}
-            </div>
-        </div>
+            </FieldGroup>
+        </FieldSet>
     );
 }

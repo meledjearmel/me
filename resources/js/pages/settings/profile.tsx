@@ -3,9 +3,9 @@ import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileCo
 import DeleteUser from '@/components/delete-user';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { edit } from '@/routes/profile';
 import type { Auth } from '@/types';
 
@@ -18,15 +18,15 @@ export default function Profile() {
 
     return (
         <>
-            <Head title="Profile settings" />
+            <Head title="Profil" />
 
-            <h1 className="sr-only">Profile settings</h1>
+            <h1 className="sr-only">Paramètres du profil</h1>
 
             <div className="space-y-6">
                 <Heading
                     variant="small"
-                    title="Profile"
-                    description="Update your name and email address"
+                    title="Profil"
+                    description="Modifiez votre nom et votre adresse e-mail"
                 />
 
                 <Form
@@ -37,9 +37,9 @@ export default function Profile() {
                     className="space-y-6"
                 >
                     {({ processing, errors }) => (
-                        <>
-                            <div className="grid gap-2">
-                                <Label htmlFor="name">Name</Label>
+                        <FieldGroup>
+                            <Field>
+                                <FieldLabel htmlFor="name">Nom</FieldLabel>
 
                                 <Input
                                     id="name"
@@ -48,17 +48,19 @@ export default function Profile() {
                                     name="name"
                                     required
                                     autoComplete="name"
-                                    placeholder="Full name"
+                                    placeholder="Nom complet"
                                 />
 
                                 <InputError
                                     className="mt-2"
                                     message={errors.name}
                                 />
-                            </div>
+                            </Field>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                            <Field>
+                                <FieldLabel htmlFor="email">
+                                    Adresse e-mail
+                                </FieldLabel>
 
                                 <Input
                                     id="email"
@@ -68,24 +70,24 @@ export default function Profile() {
                                     name="email"
                                     required
                                     autoComplete="username"
-                                    placeholder="Email address"
+                                    placeholder="Adresse e-mail"
                                 />
 
                                 <InputError
                                     className="mt-2"
                                     message={errors.email}
                                 />
-                            </div>
+                            </Field>
 
                             <div className="flex items-center gap-4">
                                 <Button
                                     disabled={processing}
                                     data-test="update-profile-button"
                                 >
-                                    Save
+                                    Enregistrer
                                 </Button>
                             </div>
-                        </>
+                        </FieldGroup>
                     )}
                 </Form>
             </div>
@@ -98,7 +100,7 @@ export default function Profile() {
 Profile.layout = {
     breadcrumbs: [
         {
-            title: 'Profile settings',
+            title: 'Profil',
             href: edit(),
         },
     ],

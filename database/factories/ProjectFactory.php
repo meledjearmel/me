@@ -38,9 +38,11 @@ class ProjectFactory extends Factory
                 'fr' => fake()->paragraph(),
                 'en' => fake()->paragraph(),
             ],
+            'accent_color' => fake()->randomElement(['#3456c8', '#e0714f', '#2f8f6b', '#8b5cc7', '#c79a1f']),
             'repo_url' => fake()->boolean(60) ? fake()->url() : null,
             'demo_url' => fake()->boolean(40) ? fake()->url() : null,
             'is_featured' => fake()->boolean(20),
+            'is_open_source' => false,
             'status' => ProjectStatus::Published,
             'sort_order' => fake()->numberBetween(0, 10),
         ];

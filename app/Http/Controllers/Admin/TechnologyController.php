@@ -2,19 +2,24 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concerns\PaginatesAdminLists;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\TechnologyRequest;
 use App\Models\Technology;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class TechnologyController extends Controller
 {
-    public function index(): Response
+    use PaginatesAdminLists;
+
+    public function index(Request $request): Response
     {
         return Inertia::render('admin/technologies/index', [
-            'technologies' => Technology::query()->orderBy('name')->get(),
+            'technologies' => $this->paginateList(Technology::query()->orderBy('name'), $request, ['name'], ['category']),
+            'filters' => $this->listFilters($request, ['category']),
         ]);
     }
 
@@ -30,6 +35,13 @@ class TechnologyController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Technologie créée.')]);
 
         return to_route('admin.technologies.index');
+    }
+
+    public function show(Technology $technology): Response
+    {
+        return Inertia::render('admin/technologies/show', [
+            'technology' => $technology->load(['projects' => fn ($query) => $query->orderBy('sort_order')]),
+        ]);
     }
 
     public function edit(Technology $technology): Response

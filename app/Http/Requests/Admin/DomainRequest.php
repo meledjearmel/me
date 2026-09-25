@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\PublicationStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -21,6 +22,7 @@ class DomainRequest extends FormRequest
             'color' => ['required', 'string', 'max:255'],
             'icon' => ['required', 'string', 'max:255'],
             'sort_order' => ['integer'],
+            'status' => ['sometimes', Rule::enum(PublicationStatus::class)],
         ];
     }
 }
