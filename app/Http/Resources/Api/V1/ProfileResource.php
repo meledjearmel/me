@@ -30,6 +30,16 @@ class ProfileResource extends JsonResource
             'social_links' => $this->social_links,
             'photo_url' => $this->getFirstMediaUrl('photo') ?: null,
             'cv_photo_url' => $this->getFirstMediaUrl('cv_photo') ?: null,
+            /** CV PDF uploadé par langue (`null` si absent : le CV est alors généré, ou repris de l'autre langue). */
+            'cv_files' => collect(Profile::CV_LOCALES)
+                ->mapWithKeys(function (string $locale): array {
+                    $media = $this->getFirstMedia(Profile::cvFileCollection($locale));
+
+                    return [$locale => $media === null ? null : [
+                        'file_name' => $media->file_name,
+                        'url' => $media->getUrl(),
+                    ]];
+                }),
         ];
     }
 }

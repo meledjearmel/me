@@ -173,9 +173,24 @@ class CvGenerator
             ->all();
     }
 
-    /** Le PDF du CV, sous forme de contenu binaire. */
+    /**
+     * Le PDF du CV, sous forme de contenu binaire : le CV uploadé pour la langue
+     * s'il existe, sinon celui de l'autre langue (chacun sert de secours à
+     * l'autre), sinon le CV généré.
+     */
     public function pdf(JobProfile $jobProfile, string $locale): string
     {
+        $profile = Profile::query()->first();
+        $locales = [$locale, ...array_diff(Profile::CV_LOCALES, [$locale])];
+
+        foreach ($locales as $candidate) {
+            $uploaded = $profile?->getFirstMedia(Profile::cvFileCollection($candidate));
+
+            if ($uploaded !== null && is_file($uploaded->getPath())) {
+                return (string) file_get_contents($uploaded->getPath());
+            }
+        }
+
         return Pdf::loadView('cv.document', ['cv' => $this->data($jobProfile, $locale)])
             ->setPaper('a4')
             ->output();

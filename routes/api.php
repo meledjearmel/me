@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\V1\ProjectController;
 use App\Http\Controllers\Api\V1\SkillController;
 use App\Http\Controllers\Api\V1\TechnologyController;
 use App\Http\Controllers\Api\V1\TestimonialController;
+use App\Models\Profile;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->name('api.v1.')->group(function (): void {
@@ -42,5 +43,8 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
 
         Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
         Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('profile/cv/{locale}', [ProfileController::class, 'destroyCv'])
+            ->whereIn('locale', Profile::CV_LOCALES)
+            ->name('profile.cv.destroy');
     });
 });

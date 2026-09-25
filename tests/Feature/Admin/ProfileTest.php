@@ -124,3 +124,74 @@ test('the CV identity is saved from the admin and never exposed on the public si
 
     $this->get('/fr')->assertInertia(fn ($page) => $page->missing('profile.cv_last_name')->missing('profile.cv_first_name'));
 });
+
+test('a CV PDF can be uploaded per language, replaced and removed', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+    $profile = Profile::factory()->create();
+    $payload = [
+        'name' => $profile->name,
+        'headline' => $profile->getTranslations('headline'),
+        'bio_short' => $profile->getTranslations('bio_short'),
+        'bio_full' => $profile->getTranslations('bio_full'),
+        'email' => $profile->email,
+    ];
+
+    $this->actingAs($user)->patch(route('admin.profile.update'), $payload + [
+        'cv_file_fr' => UploadedFile::fake()->createWithContent('cv-fr.pdf', '%PDF-1.4'),
+        'cv_file_en' => UploadedFile::fake()->createWithContent('cv-en.pdf', '%PDF-1.4'),
+    ])->assertSessionHasNoErrors();
+
+    expect($profile->fresh()->getFirstMedia('cv_file_fr')?->file_name)->toBe('cv-fr.pdf')
+        ->and($profile->fresh()->getFirstMedia('cv_file_en')?->file_name)->toBe('cv-en.pdf');
+
+    $this->actingAs($user)->patch(route('admin.profile.update'), $payload + [
+        'cv_file_fr' => UploadedFile::fake()->createWithContent('nouveau.pdf', '%PDF-1.4'),
+    ]);
+
+    expect($profile->fresh()->getMedia('cv_file_fr'))->toHaveCount(1)
+        ->and($profile->fresh()->getFirstMedia('cv_file_fr')?->file_name)->toBe('nouveau.pdf');
+
+    $this->actingAs($user)->delete(route('admin.profile.cv.destroy', 'fr'))
+        ->assertRedirect(route('admin.profile.edit'));
+
+    expect($profile->fresh()->getFirstMedia('cv_file_fr'))->toBeNull()
+        ->and($profile->fresh()->getFirstMedia('cv_file_en'))->not->toBeNull();
+});
+
+test('only PDF files are accepted as a CV', function () {
+    Storage::fake('public');
+
+    $user = User::factory()->create();
+    $profile = Profile::factory()->create();
+
+    $this->actingAs($user)->patch(route('admin.profile.update'), [
+        'name' => $profile->name,
+        'headline' => $profile->getTranslations('headline'),
+        'bio_short' => $profile->getTranslations('bio_short'),
+        'bio_full' => $profile->getTranslations('bio_full'),
+        'email' => $profile->email,
+        'cv_file_fr' => UploadedFile::fake()->create('cv.docx', 100, 'application/msword'),
+    ])->assertSessionHasErrors('cv_file_fr');
+});
+
+test('an uploaded CV replaces the generated one, and each language falls back to the other', function () {
+    Storage::fake('public');
+
+    $profile = Profile::factory()->create();
+    $jobProfile = JobProfile::factory()->create();
+    $generator = app(CvGenerator::class);
+
+    expect($generator->pdf($jobProfile, 'fr'))->not->toStartWith('%PDF-fr');
+
+    $profile->addMedia(UploadedFile::fake()->createWithContent('cv-fr.pdf', '%PDF-fr'))->toMediaCollection('cv_file_fr');
+
+    expect($generator->pdf($jobProfile, 'fr'))->toBe('%PDF-fr')
+        ->and($generator->pdf($jobProfile, 'en'))->toBe('%PDF-fr');
+
+    $profile->addMedia(UploadedFile::fake()->createWithContent('cv-en.pdf', '%PDF-en'))->toMediaCollection('cv_file_en');
+
+    expect($generator->pdf($jobProfile, 'fr'))->toBe('%PDF-fr')
+        ->and($generator->pdf($jobProfile, 'en'))->toBe('%PDF-en');
+});

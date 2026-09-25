@@ -152,3 +152,37 @@ test('les photos du profil s\'envoient en multipart', function () {
 
     expect($response->json('photo_url'))->not->toBeNull();
 });
+
+test('les CV PDF du profil s\'envoient en multipart, se listent et se retirent', function () {
+    Storage::fake('public');
+    $profile = Profile::factory()->create();
+
+    $response = $this->post(route('api.v1.profile.update'), [
+        '_method' => 'PATCH',
+        'name' => $profile->name,
+        'headline' => $profile->getTranslations('headline'),
+        'bio_short' => $profile->getTranslations('bio_short'),
+        'bio_full' => $profile->getTranslations('bio_full'),
+        'email' => $profile->email,
+        'cv_file_fr' => UploadedFile::fake()->createWithContent('cv-fr.pdf', '%PDF-1.4'),
+    ], ['Accept' => 'application/json'])->assertOk();
+
+    expect($response->json('cv_files.fr.file_name'))->toBe('cv-fr.pdf')
+        ->and($response->json('cv_files.en'))->toBeNull();
+
+    $this->deleteJson(route('api.v1.profile.cv.destroy', 'fr'))
+        ->assertOk()
+        ->assertJsonPath('cv_files.fr', null);
+
+    $this->deleteJson('/api/v1/profile/cv/de')->assertNotFound();
+
+    $this->post(route('api.v1.profile.update'), [
+        '_method' => 'PATCH',
+        'name' => $profile->name,
+        'headline' => $profile->getTranslations('headline'),
+        'bio_short' => $profile->getTranslations('bio_short'),
+        'bio_full' => $profile->getTranslations('bio_full'),
+        'email' => $profile->email,
+        'cv_file_en' => UploadedFile::fake()->create('cv.docx', 10, 'application/msword'),
+    ], ['Accept' => 'application/json'])->assertUnprocessable()->assertJsonValidationErrors('cv_file_en');
+});
