@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,12 +16,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Armel Meledje',
-            'email' => 'me@armeldev.xyz',
-        ]);
+        $this->seedAdministrator();
 
         $this->call([
             DomainSeeder::class,
@@ -34,9 +30,37 @@ class DatabaseSeeder extends Seeder
             ProfessionalReferenceSeeder::class,
         ]);
 
-        // Témoignages fictifs : uniquement pour visualiser le site en local.
-        if (! app()->isProduction()) {
+        // Données générées (avis fictifs) :
+        // uniquement pour travailler en local, jamais en production.
+        if (app()->environment('local')) {
             $this->call(TestimonialSeeder::class);
+        }
+    }
+
+    /**
+     * Crée mon compte s'il n'existe pas encore (jamais écrasé au re-seed).
+     * Mot de passe initial : `ADMIN_PASSWORD`, à changer après la première connexion ;
+     * à défaut, un mot de passe aléatoire est généré et affiché une seule fois.
+     */
+    private function seedAdministrator(): void
+    {
+        $email = 'me@armeldev.xyz';
+
+        if (User::query()->where('email', $email)->exists()) {
+            return;
+        }
+
+        $password = config('app.admin_password') ?: Str::password(20);
+
+        User::query()->create([
+            'name' => 'Armel Meledje',
+            'email' => $email,
+            'password' => $password,
+            'email_verified_at' => now(),
+        ]);
+
+        if (! config('app.admin_password')) {
+            $this->command?->warn("Compte {$email} créé, mot de passe : {$password}");
         }
     }
 }

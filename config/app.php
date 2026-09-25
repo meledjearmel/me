@@ -13,6 +13,18 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Mot de passe initial de l'administrateur
+    |--------------------------------------------------------------------------
+    |
+    | Utilisé une seule fois par le seeder pour créer le compte ; à changer
+    | après la première connexion.
+    |
+    */
+
+    'admin_password' => env('ADMIN_PASSWORD'),
+
     'name' => env('APP_NAME', 'Laravel'),
 
     /*
