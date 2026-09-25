@@ -43,3 +43,7 @@ yarn-error.log
 /opencode.json
 /opencode.jsonc
 /docs
+/composer.lock
+/package-lock.json
+/yarn.lock
+/bun.lock
