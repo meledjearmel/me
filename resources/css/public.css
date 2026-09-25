@@ -1303,7 +1303,7 @@ html.pub-theming .pub *::after {
     transform: scale(1);
 }
 
-/* ---------- Barre de défilement fine ---------- */
+/* ---------- Barre de défilement fine (toute l'application) ---------- */
 /*
  * Volontairement sans scrollbar-width / scrollbar-color : dans Chrome, ces
  * propriétés standard désactivent les règles ::-webkit-scrollbar et imposent
@@ -1313,27 +1313,33 @@ html.pub-scroll {
     overscroll-behavior-y: none;
 }
 
-html.pub-scroll::-webkit-scrollbar {
+*::-webkit-scrollbar {
     width: 3px;
+    height: 3px;
 }
 
-html.pub-scroll::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
     background: rgb(6 6 6 / 0.55);
     border-radius: 99px;
 }
 
-html.dark.pub-scroll::-webkit-scrollbar-thumb {
+.dark *::-webkit-scrollbar-thumb {
     background: rgb(255 249 233 / 0.6);
 }
 
 /* Firefox n'a pas ::-webkit-scrollbar : on se rabat sur la version standard */
 @supports not selector(::-webkit-scrollbar) {
-    html.pub-scroll {
+    * {
         scrollbar-width: thin;
         scrollbar-color: rgb(6 6 6 / 0.55) transparent;
     }
 
-    html.dark.pub-scroll {
+    .dark * {
         scrollbar-color: rgb(255 249 233 / 0.6) transparent;
     }
 }
