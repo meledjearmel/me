@@ -1,2 +1,8 @@
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /login
+Disallow: /api
+
+Sitemap: https://me.armeldev.xyz/sitemap.xml

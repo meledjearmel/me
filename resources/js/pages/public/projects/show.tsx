@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import PageHero from '@/components/public/page-hero';
 import {
     accentStyle,
@@ -7,9 +7,10 @@ import {
     ProjectStory,
     ReadNext,
 } from '@/components/public/project-parts';
+import Seo from '@/components/public/seo';
 import PublicShell from '@/components/public/public-shell';
-import { useLocalizedPath, useTranslations } from '@/lib/i18n';
-import type { PublicProject } from '@/types';
+import { useLocale, useLocalizedPath, useTranslations } from '@/lib/i18n';
+import type { PublicProfile, PublicProject } from '@/types';
 
 /** Première phrase d'un texte : sert de chapô dans le bandeau. */
 const firstSentence = (text: string) => {
@@ -26,19 +27,45 @@ export default function ProjectShow({
     nextProject: PublicProject | null;
 }) {
     const t = useTranslations();
+    const locale = useLocale();
+    const { props } = usePage<{ siteUrl: string; profile: PublicProfile }>();
     const path = useLocalizedPath();
     const otherRelated = project.related_projects.filter((related) => related.id !== nextProject?.id);
 
     return (
         <>
-            <Head title={project.title}>
-                <meta name="description" content={project.result} />
-                <meta property="og:title" content={project.title} />
-                <meta property="og:description" content={project.result} />
-                {project.cover_url && (
-                    <meta property="og:image" content={project.cover_url} />
-                )}
-            </Head>
+            <Seo
+                title={project.title}
+                description={project.result}
+                image={project.cover_url}
+                type="article"
+                jsonLd={[
+                    {
+                        '@type': 'CreativeWork',
+                        name: project.title,
+                        description: project.result,
+                        image: project.cover_url ?? undefined,
+                        inLanguage: locale,
+                        author: { '@type': 'Person', name: props.profile.name },
+                        keywords: project.technologies
+                            .map((technology) => technology.name)
+                            .join(', '),
+                        codeRepository: project.repo_url ?? undefined,
+                    },
+                    {
+                        '@type': 'BreadcrumbList',
+                        itemListElement: [
+                            [t.projects.title, `/${locale}/projects`],
+                            [project.title, `/${locale}/projects/${project.slug}`],
+                        ].map(([name, item], index) => ({
+                            '@type': 'ListItem',
+                            position: index + 1,
+                            name,
+                            item: `${props.siteUrl}${item}`,
+                        })),
+                    },
+                ]}
+            />
 
             <PublicShell overHero>
                 <div className="pub-project" style={accentStyle(project.accent_color)}>

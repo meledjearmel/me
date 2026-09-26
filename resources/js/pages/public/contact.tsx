@@ -1,7 +1,8 @@
-import { Form, Head, usePage } from '@inertiajs/react';
+import { Form, usePage } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import ContactController from '@/actions/App/Http/Controllers/ContactController';
+import Seo from '@/components/public/seo';
 import PageHero from '@/components/public/page-hero';
 import PhoneLink from '@/components/public/phone-link';
 import PublicShell from '@/components/public/public-shell';
@@ -86,9 +87,7 @@ export default function Contact() {
 
     return (
         <>
-            <Head title={t.contact.title}>
-                <meta name="description" content={t.contactDrawer.intro} />
-            </Head>
+            <Seo title={t.contact.title} description={t.contactDrawer.intro} />
 
             <PublicShell overHero>
                 <PageHero

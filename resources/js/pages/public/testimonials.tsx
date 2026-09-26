@@ -1,5 +1,5 @@
-import { Head } from '@inertiajs/react';
 import { motion } from 'framer-motion';
+import Seo from '@/components/public/seo';
 import PageHero from '@/components/public/page-hero';
 import PublicShell from '@/components/public/public-shell';
 import { OPEN_REVIEW_EVENT } from '@/components/public/action-menu';
@@ -25,9 +25,7 @@ export default function Testimonials({
 
     return (
         <>
-            <Head title={t.testimonials.pageTitle}>
-                <meta name="description" content={t.testimonials.lead} />
-            </Head>
+            <Seo title={t.testimonials.pageTitle} description={t.testimonials.lead} />
 
             <PublicShell overHero>
                 <PageHero

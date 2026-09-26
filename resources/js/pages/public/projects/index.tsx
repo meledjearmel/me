@@ -1,7 +1,7 @@
-import { Head } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMemo, useState } from 'react';
 import type { CSSProperties } from 'react';
+import Seo from '@/components/public/seo';
 import PageHero from '@/components/public/page-hero';
 import ProjectCard from '@/components/public/project-card';
 import PublicShell from '@/components/public/public-shell';
@@ -66,9 +66,7 @@ export default function ProjectsIndex({
 
     return (
         <>
-            <Head title={t.projects.title}>
-                <meta name="description" content={t.projects.hook} />
-            </Head>
+            <Seo title={t.projects.title} description={t.projects.hook} />
 
             <PublicShell overHero>
                 <PageHero

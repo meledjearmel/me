@@ -17,6 +17,7 @@ class ShareSitePublicData
     {
         Inertia::share([
             'profile' => fn () => new ProfileResource(Profile::query()->firstOrFail()),
+            'siteUrl' => rtrim((string) config('app.url'), '/'),
             'visitCount' => fn () => PageVisit::query()->count(),
             // Profils proposés dans la fenêtre « Embauche » : chacun a son CV.
             'cvProfiles' => fn () => JobProfile::query()

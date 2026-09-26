@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EngagementController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SkillController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\TestimonialSubmissionController;
@@ -17,6 +18,8 @@ use App\Http\Middleware\ShareSitePublicData;
 use Illuminate\Support\Facades\Route;
 
 Route::pattern('locale', implode('|', SetLocale::LOCALES));
+
+Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
 
 Route::get('/', function () {
     $locale = request()->getPreferredLanguage(SetLocale::LOCALES) ?? SetLocale::LOCALES[0];

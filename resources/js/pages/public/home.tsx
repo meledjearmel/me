@@ -1,9 +1,10 @@
-import { Head, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 import FeaturedProjects from '@/components/public/featured-projects';
 import Hero from '@/components/public/hero';
 import Intro from '@/components/public/intro';
 import Testimonials from '@/components/public/testimonials';
 import PublicShell from '@/components/public/public-shell';
+import Seo from '@/components/public/seo';
 import { useLocale } from '@/lib/i18n';
 import type {
     PublicJobProfile,
@@ -16,6 +17,7 @@ import type {
 type SharedProps = {
     profile: PublicProfile;
     visitCount: number;
+    siteUrl: string;
 };
 
 export default function Home({
@@ -36,23 +38,31 @@ export default function Home({
 
     return (
         <>
-            <Head title={props.profile.name}>
-                <meta name="description" content={props.profile.headline} />
-                <meta property="og:title" content={props.profile.name} />
-                <meta
-                    property="og:description"
-                    content={props.profile.headline}
-                />
-                {props.profile.photo_url && (
-                    <meta
-                        property="og:image"
-                        content={props.profile.photo_url}
-                    />
-                )}
-                <link rel="alternate" hrefLang="fr" href="/fr" />
-                <link rel="alternate" hrefLang="en" href="/en" />
-                <link rel="canonical" href={`/${locale}`} />
-            </Head>
+            <Seo
+                title={props.profile.headline}
+                description={props.profile.bio_short || props.profile.headline}
+                type="profile"
+                jsonLd={[
+                    {
+                        '@type': 'Person',
+                        name: props.profile.name,
+                        jobTitle: props.profile.headline,
+                        description: props.profile.bio_short,
+                        url: `${props.siteUrl}/${locale}`,
+                        image: props.profile.photo_url ?? undefined,
+                        address: props.profile.location ?? undefined,
+                        sameAs: Object.values(
+                            props.profile.social_links ?? {},
+                        ).filter(Boolean),
+                    },
+                    {
+                        '@type': 'WebSite',
+                        name: props.profile.name,
+                        url: props.siteUrl,
+                        inLanguage: locale,
+                    },
+                ]}
+            />
 
             <PublicShell overHero>
                 <Hero profile={props.profile} jobProfiles={jobProfiles} />

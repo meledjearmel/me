@@ -1,4 +1,5 @@
-import { Head, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
+import Seo from '@/components/public/seo';
 import AboutFacts from '@/components/public/about-facts';
 import AboutIntro from '@/components/public/about-intro';
 import AboutStory from '@/components/public/about-story';
@@ -29,9 +30,7 @@ export default function About({
 
     return (
         <>
-            <Head title={t.about.title}>
-                <meta name="description" content={props.profile.bio_short} />
-            </Head>
+            <Seo title={t.about.title} description={props.profile.bio_short} />
 
             <PublicShell overHero>
                 <AboutIntro years={yearsOfExperience} />

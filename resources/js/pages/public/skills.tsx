@@ -1,6 +1,7 @@
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import type { CSSProperties } from 'react';
+import Seo from '@/components/public/seo';
 import PageHero from '@/components/public/page-hero';
 import PublicShell from '@/components/public/public-shell';
 import SkillDomains, { domainAnchor } from '@/components/public/skill-domains';
@@ -25,9 +26,7 @@ export default function Skills({
 
     return (
         <>
-            <Head title={t.skills.title}>
-                <meta name="description" content={t.skills.hook} />
-            </Head>
+            <Seo title={t.skills.title} description={t.skills.hook} />
 
             <PublicShell overHero>
                 <PageHero
