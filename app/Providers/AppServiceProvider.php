@@ -6,9 +6,12 @@ use Carbon\CarbonImmutable;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -29,6 +32,20 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->configureApiDocs();
+        $this->configureRateLimiting();
+    }
+
+    /**
+     * Limites de l'assistant : par minute et par jour et par visiteur, plus un
+     * plafond global pour ne jamais vider le quota gratuit des fournisseurs.
+     */
+    protected function configureRateLimiting(): void
+    {
+        RateLimiter::for('chat', fn (Request $request): array => [
+            Limit::perMinute(config('ai.chat.limits.per_minute'))->by($request->ip()),
+            Limit::perDay(config('ai.chat.limits.per_day'))->by($request->ip()),
+            Limit::perDay(config('ai.chat.limits.global_per_day'))->by('chat-global'),
+        ]);
     }
 
     /**
