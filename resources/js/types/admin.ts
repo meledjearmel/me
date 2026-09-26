@@ -17,6 +17,24 @@ export type Domain = {
     projects_count?: number;
 };
 
+export type MusicGenre = {
+    id: number;
+    key: string;
+    label: Translatable;
+    sort_order: number;
+    tracks_count?: number;
+};
+
+export type Track = {
+    id: number;
+    music_genre_id: number;
+    title: string;
+    artist: string | null;
+    sort_order: number;
+    audio_url?: string | null;
+    genre?: MusicGenre;
+};
+
 export type Technology = {
     id: number;
     name: string;

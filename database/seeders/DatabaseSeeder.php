@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             DomainSeeder::class,
+            MusicGenreSeeder::class,
             TechnologySeeder::class,
             JobProfileSeeder::class,
             ProfileSeeder::class,

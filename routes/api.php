@@ -8,12 +8,14 @@ use App\Http\Controllers\Api\V1\EducationController;
 use App\Http\Controllers\Api\V1\EngagementController;
 use App\Http\Controllers\Api\V1\ExperienceController;
 use App\Http\Controllers\Api\V1\JobProfileController;
+use App\Http\Controllers\Api\V1\MusicGenreController;
 use App\Http\Controllers\Api\V1\ProfessionalReferenceController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\ProjectController;
 use App\Http\Controllers\Api\V1\SkillController;
 use App\Http\Controllers\Api\V1\TechnologyController;
 use App\Http\Controllers\Api\V1\TestimonialController;
+use App\Http\Controllers\Api\V1\TrackController;
 use App\Models\Profile;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +35,8 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('testimonials', TestimonialController::class)->except('store');
 
         Route::apiResource('domains', DomainController::class);
+        Route::apiResource('music-genres', MusicGenreController::class);
+        Route::apiResource('tracks', TrackController::class);
         Route::apiResource('technologies', TechnologyController::class);
         Route::apiResource('job-profiles', JobProfileController::class);
         Route::apiResource('skills', SkillController::class);

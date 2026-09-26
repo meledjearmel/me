@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import {
     Briefcase,
+    Disc3,
     FolderGit2,
     GraduationCap,
     Handshake,
@@ -8,6 +9,7 @@ import {
     Layers,
     Mail,
     MessageSquareQuote,
+    Music,
     Sparkles,
     User,
     UserCheck,
@@ -37,7 +39,9 @@ import { index as referencesIndex } from '@/routes/admin/professional-references
 import { index as projectsIndex } from '@/routes/admin/projects';
 import { index as skillsIndex } from '@/routes/admin/skills';
 import { index as technologiesIndex } from '@/routes/admin/technologies';
+import { index as musicGenresIndex } from '@/routes/admin/music-genres';
 import { index as testimonialsIndex } from '@/routes/admin/testimonials';
+import { index as tracksIndex } from '@/routes/admin/tracks';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
@@ -51,6 +55,8 @@ const mainNavItems: NavItem[] = [
 const contentNavItems: NavItem[] = [
     { title: 'Profil', href: profileEdit(), icon: User },
     { title: 'Domaines', href: domainsIndex(), icon: Layers },
+    { title: 'Registres musique', href: musicGenresIndex(), icon: Disc3 },
+    { title: 'Pistes musique', href: tracksIndex(), icon: Music },
     { title: 'Technologies', href: technologiesIndex(), icon: Wrench },
     { title: 'Profils métier', href: jobProfilesIndex(), icon: Briefcase },
     { title: 'Compétences', href: skillsIndex(), icon: Sparkles },
