@@ -2456,6 +2456,13 @@ html.pub-scroll {
     }
 }
 
+/* mobile, thème jour : la barre remonte sur les collines claires, où le texte blanc disparaît */
+@media (max-width: 707px) {
+    :root:not(.dark) .pub-footer__bar {
+        color: var(--pub-ink);
+    }
+}
+
 /* =====================================================================
    Tiroir de contact
    ===================================================================== */
