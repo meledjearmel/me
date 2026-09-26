@@ -2,7 +2,7 @@ import { Link, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import LanguageSwitch from '@/components/public/language-switch';
 import MobileMenu from '@/components/public/mobile-menu';
-import MusicButton from '@/components/public/music-button';
+import MusicControl from '@/components/public/music-control';
 import ThemeToggle from '@/components/public/theme-toggle';
 import { useContactDrawer } from '@/lib/contact-drawer';
 import { useLocalizedPath, useTranslations } from '@/lib/i18n';
@@ -167,7 +167,7 @@ export default function SiteHeader({ overHero = false }: { overHero?: boolean })
 
             <div className="pub-nav__side pub-nav__tools">
                 <LanguageSwitch />
-                <MusicButton />
+                <MusicControl />
                 <ThemeToggle />
             </div>
 

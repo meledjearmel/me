@@ -90,3 +90,17 @@ export type PublicTestimonial = {
     author_role: string | null;
     content: string;
 };
+
+export type PlaylistTrack = {
+    id: number;
+    title: string;
+    artist: string | null;
+    url: string;
+};
+
+export type PlaylistGenre = {
+    id: number;
+    key: string;
+    label: string;
+    tracks: PlaylistTrack[];
+};
