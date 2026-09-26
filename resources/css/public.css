@@ -4831,6 +4831,41 @@ html.pub-scroll {
     clip-path: inset(0 0 0 0);
 }
 
+/* mobile : boutons plus compacts (après les règles de base pour les surcharger) */
+@media (max-width: 707px) {
+    .pub-fab {
+        width: 48px;
+        height: 48px;
+    }
+
+    .pub-fab__main {
+        height: 48px;
+        min-width: 48px;
+        padding: 0 1.1rem;
+        font-size: 0.9rem;
+    }
+
+    .pub-fab.is-open .pub-fab__main {
+        width: 48px;
+    }
+
+    .pub-fab__item {
+        right: 2px;
+        bottom: 2px;
+        width: 44px;
+        height: 44px;
+    }
+
+    .pub-fab__pill {
+        height: 44px;
+    }
+
+    .pub-fab__glyph {
+        width: 42px;
+        height: 42px;
+    }
+}
+
 /* ---------- Fenêtres d'avis et de collaboration ---------- */
 .pub-modal--form {
     --pub-drawer-line: color-mix(in oklab, var(--pub-text) 25%, transparent);

@@ -7,6 +7,7 @@ import type { ChatAvatarState } from '@/components/public/chat-avatar';
 import ChatRichText from '@/components/public/chat-rich-text';
 import { useAppearance } from '@/hooks/use-appearance';
 import { CHAT_MAX_LENGTH, useChat } from '@/hooks/use-chat';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { useLocalizedPath, useTranslations } from '@/lib/i18n';
 
 /**
@@ -41,6 +42,7 @@ export default function ChatAssistant() {
     const t = useTranslations();
     const path = useLocalizedPath();
     const night = useNight();
+    const compact = useMediaQuery('(max-width: 707px)');
     const name = night ? 'Lumi' : 'Armi';
     const reduceMotion = useReducedMotion();
     const chat = useChat(path('chat'));
@@ -308,7 +310,11 @@ export default function ChatAssistant() {
                 aria-controls="pub-chat-panel"
                 onClick={() => (open ? close() : setOpen(true))}
             >
-                <ChatAvatar state={avatarState} size={64} night={night} />
+                <ChatAvatar
+                    state={avatarState}
+                    size={compact ? 48 : 64}
+                    night={night}
+                />
                 <span className="pub-chat__hint" aria-hidden="true">
                     {fill(t.chat.open)}
                 </span>
