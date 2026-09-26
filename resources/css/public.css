@@ -1021,6 +1021,7 @@ html.pub-theming .pub *::after {
     overflow: hidden;
     font-size: 0.6875em;
     letter-spacing: -0.01em;
+    text-align: center;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -5186,4 +5187,404 @@ html.pub-scroll {
     font-size: 0.9rem;
     font-style: normal;
     opacity: 0.65;
+}
+
+/* ---------- Assistant de discussion ---------- */
+
+/* Avatar du chat : dessiné en CSS, piloté par les fichiers armi-day / lumi-night (voir chat-avatar.tsx). */
+.pub-chatavatar {
+    position: relative;
+    display: inline-block;
+    flex: none;
+    width: var(--avatar-size, 56px);
+    height: var(--avatar-size, 56px);
+}
+
+.pub-chatavatar__ear,
+.pub-chatavatar__body {
+    position: absolute;
+    border-radius: 50%;
+}
+
+.pub-chatavatar__body {
+    z-index: 1;
+    translate: -50% -50%;
+    background: radial-gradient(
+        circle at 35% 28%,
+        color-mix(in oklab, var(--avatar-body) 68%, white),
+        var(--avatar-body) 58%,
+        color-mix(in oklab, var(--avatar-body) 82%, black)
+    );
+    box-shadow: inset calc(var(--avatar-size) * -0.05) calc(var(--avatar-size) * -0.07) calc(var(--avatar-size) * 0.1)
+        rgb(0 0 0 / 0.16);
+}
+
+/* Oreillettes : disques plaqués sur les côtés, à demi cachés par le corps. */
+.pub-chatavatar__ear {
+    z-index: 0;
+    background: color-mix(in oklab, var(--avatar-body) 74%, black);
+    transition: translate var(--avatar-ms, 0ms) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pub-chatavatar__face {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    transition: transform var(--avatar-ms, 0ms) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pub-chatavatar__eye {
+    position: absolute;
+    border-radius: 999px;
+    background: var(--avatar-eyes);
+    translate: -50% -50%;
+    transition:
+        left var(--avatar-ms, 0ms) cubic-bezier(0.4, 0, 0.2, 1),
+        top var(--avatar-ms, 0ms) cubic-bezier(0.4, 0, 0.2, 1),
+        width var(--avatar-ms, 0ms) cubic-bezier(0.4, 0, 0.2, 1),
+        height var(--avatar-ms, 0ms) cubic-bezier(0.4, 0, 0.2, 1),
+        rotate var(--avatar-ms, 0ms) cubic-bezier(0.4, 0, 0.2, 1),
+        scale var(--avatar-blink-ms, 120ms) ease-in-out;
+}
+
+/* respiration lente pendant le sommeil, petit rebond quand il est content */
+.pub-chatavatar.is-sleeping {
+    animation: pub-chatavatar-breathe 4.2s ease-in-out infinite;
+}
+
+.pub-chatavatar.is-happy {
+    animation: pub-chatavatar-bounce 0.55s ease-out 3;
+}
+
+@keyframes pub-chatavatar-breathe {
+    50% {
+        scale: 1.04;
+    }
+}
+
+@keyframes pub-chatavatar-bounce {
+    40% {
+        translate: 0 -9%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pub-chatavatar {
+        animation: none !important;
+    }
+
+    .pub-chatavatar *,
+    .pub-chatavatar__eye {
+        transition: none !important;
+    }
+}
+
+/* Lanceur (bas gauche, face au bouton d'actions) et panneau de discussion */
+.pub-chat {
+    position: fixed;
+    left: clamp(14px, 2.4vw, 28px);
+    bottom: clamp(22px, calc(4.5vw + 5px), 70px);
+    z-index: 90;
+}
+
+.pub-chat__launcher {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--pub-text);
+    font: inherit;
+    cursor: pointer;
+}
+
+.pub-chat__launcher:focus-visible,
+.pub-chat__icon:focus-visible,
+.pub-chat__send:focus-visible {
+    outline: 3px solid var(--pub-gold);
+    outline-offset: 3px;
+}
+
+.pub-chat__launcher .pub-chatavatar {
+    filter: drop-shadow(0 12px 14px rgb(0 0 0 / 0.28));
+    transition: transform 0.35s var(--pub-ease-spring);
+}
+
+.pub-chat__launcher:hover .pub-chatavatar {
+    transform: translateY(-4px) scale(1.06);
+}
+
+.pub-chat__hint {
+    padding: 0.5rem 0.9rem;
+    border: 1px solid color-mix(in oklab, var(--pub-text) 25%, transparent);
+    background: var(--pub-bg);
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 4px 4px 0 var(--pub-gold);
+}
+
+.pub-chat.is-open .pub-chat__hint {
+    display: none;
+}
+
+.pub-chat__panel {
+    position: absolute;
+    left: 0;
+    bottom: calc(64px + 16px);
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+    width: min(380px, calc(100vw - 28px));
+    height: min(560px, calc(100dvh - 170px));
+    border: 1px solid color-mix(in oklab, var(--pub-text) 28%, transparent);
+    background: var(--pub-bg);
+    color: var(--pub-text);
+    box-shadow:
+        6px 6px 0 var(--pub-gold),
+        0 30px 60px -24px rgb(0 0 0 / 0.45);
+    overflow: hidden;
+}
+
+.pub-chat__head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 0.9rem 0.85rem 1.1rem;
+    border-bottom: 1px solid color-mix(in oklab, var(--pub-text) 22%, transparent);
+}
+
+.pub-chat__who {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+}
+
+.pub-chat__who strong {
+    font-family: var(--pub-font-display);
+    font-size: 1.35rem;
+    font-weight: 400;
+    line-height: 1.1;
+}
+
+.pub-chat__who span {
+    font-family: var(--pub-font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.65;
+}
+
+.pub-chat__icon {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.pub-chat__icon:hover {
+    background: var(--pub-surface);
+}
+
+.pub-chat__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.pub-chat__msg {
+    max-width: 88%;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.93rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.pub-chat__msg p {
+    margin: 0;
+}
+
+.pub-chat__msg p + p,
+.pub-chat__msg p + ul,
+.pub-chat__msg ul + p {
+    margin-top: 0.45rem;
+}
+
+.pub-chat__msg ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    list-style: disc;
+}
+
+.pub-chat__msg li + li {
+    margin-top: 0.35rem;
+}
+
+.pub-chat__msg a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.pub-chat__msg.is-assistant {
+    align-self: flex-start;
+    background: var(--pub-surface);
+}
+
+.pub-chat__msg.is-user {
+    align-self: flex-end;
+    background: var(--pub-gold);
+    color: #060606;
+}
+
+.pub-chat__suggestions {
+    display: grid;
+    gap: 0.4rem;
+    margin-top: 0.2rem;
+}
+
+.pub-chat__suggestions button {
+    padding: 0.55rem 0.8rem;
+    border: 1px dashed color-mix(in oklab, var(--pub-text) 40%, transparent);
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 0.88rem;
+    text-align: left;
+    cursor: pointer;
+}
+
+.pub-chat__suggestions button:hover {
+    background: var(--pub-surface);
+}
+
+.pub-chat__dots {
+    display: flex;
+    gap: 5px;
+    padding: 0.25rem 0.1rem;
+}
+
+.pub-chat__dots i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentcolor;
+    opacity: 0.45;
+    animation: pub-chat-dot 1.1s ease-in-out infinite;
+}
+
+.pub-chat__dots i:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.pub-chat__dots i:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes pub-chat-dot {
+    40% {
+        opacity: 1;
+        translate: 0 -4px;
+    }
+}
+
+.pub-chat__error {
+    padding: 0.6rem 0.8rem;
+    border-left: 3px solid var(--pub-coral);
+    background: color-mix(in oklab, var(--pub-coral) 14%, transparent);
+    font-size: 0.88rem;
+    line-height: 1.4;
+}
+
+.pub-chat__error p {
+    margin: 0 0 0.4rem;
+}
+
+.pub-chat__error button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+}
+
+.pub-chat__form {
+    display: flex;
+    border-top: 1px solid color-mix(in oklab, var(--pub-text) 22%, transparent);
+}
+
+.pub-chat__form input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.9rem 1rem;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    /* 16px minimum : sinon iOS zoome sur le champ */
+    font: inherit;
+    font-size: 1rem;
+}
+
+.pub-chat__form input:focus-visible {
+    outline: 0;
+    box-shadow: inset 0 -3px 0 var(--pub-gold);
+}
+
+.pub-chat__send {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    border: 0;
+    background: var(--pub-gold);
+    color: #060606;
+    cursor: pointer;
+}
+
+.pub-chat__send:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.pub-chat__note {
+    margin: 0;
+    padding: 0.4rem 1rem 0.6rem;
+    font-size: 0.72rem;
+    opacity: 0.6;
+    text-align: center;
+}
+
+/* mobile : le panneau prend la largeur de l'écran et remplace le lanceur */
+@media (max-width: 707px) {
+    .pub-chat {
+        bottom: 14px;
+    }
+
+    .pub-chat__hint {
+        display: none;
+    }
+
+    .pub-chat__panel {
+        position: fixed;
+        left: 14px;
+        right: 14px;
+        bottom: 14px;
+        width: auto;
+        height: min(76dvh, 640px);
+    }
+
+    .pub-chat.is-open .pub-chat__launcher {
+        display: none;
+    }
 }

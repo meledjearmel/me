@@ -1,6 +1,7 @@
 import { usePage } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import ActionMenu from '@/components/public/action-menu';
+import ChatAssistant from '@/components/public/chat-assistant';
 import SiteFooter from '@/components/public/site-footer';
 import SiteHeader from '@/components/public/site-header';
 import { useSmoothAnchors } from '@/hooks/use-smooth-anchors';
@@ -28,6 +29,7 @@ export default function PublicShell({
                 socialLinks={props.profile.social_links}
             />
             <ActionMenu />
+            <ChatAssistant />
         </div>
     );
 }
