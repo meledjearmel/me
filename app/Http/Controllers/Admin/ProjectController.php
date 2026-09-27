@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ProjectController extends Controller
 {
@@ -72,7 +73,10 @@ class ProjectController extends Controller
                 ...$project->toArray(),
                 'job_profiles' => $project->jobProfiles,
                 'cover_url' => $project->getFirstMediaUrl('cover') ?: null,
-                'gallery_urls' => $project->getMedia('gallery')->map->getUrl()->values(),
+                'gallery' => $project->getMedia('gallery')->map(fn ($media): array => [
+                    'id' => $media->id,
+                    'url' => $media->getUrl(),
+                ])->values(),
             ],
             'relatedProjectIds' => $this->relatedProjectIds($project),
             ...$this->formOptions(),
@@ -101,6 +105,29 @@ class ProjectController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Projet supprimé.')]);
 
         return to_route('admin.projects.index');
+    }
+
+    public function destroyCover(Project $project): RedirectResponse
+    {
+        $project->clearMediaCollection('cover');
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Couverture retirée.')]);
+
+        return back();
+    }
+
+    public function destroyGalleryImage(Project $project, Media $media): RedirectResponse
+    {
+        abort_unless(
+            $media->model_type === Project::class && (int) $media->model_id === $project->id && $media->collection_name === 'gallery',
+            404,
+        );
+
+        $media->delete();
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Image retirée de la galerie.')]);
+
+        return back();
     }
 
     /** @return array<string, mixed> */

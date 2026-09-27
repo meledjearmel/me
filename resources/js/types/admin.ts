@@ -129,6 +129,7 @@ export type Project = {
     technologies?: Technology[];
     cover_url?: string | null;
     gallery_urls?: string[];
+    gallery?: { id: number; url: string }[];
 };
 
 export type Testimonial = {

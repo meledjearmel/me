@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * @tags Projets
@@ -71,6 +72,8 @@ class ProjectController extends Controller
      *
      * Avec des fichiers, envoyer un `POST` en `multipart/form-data` avec le champ `_method=PUT` :
      * PHP ne lit pas les fichiers d'une requête `PUT` directe. La galerie s'enrichit ; la couverture est remplacée.
+     * Pour retirer une image, utiliser `DELETE /projects/{project}/cover` ou
+     * `DELETE /projects/{project}/gallery/{media}`.
      */
     public function update(ProjectRequest $request, Project $project): ProjectResource
     {
@@ -93,6 +96,31 @@ class ProjectController extends Controller
         $project->delete();
 
         return response()->noContent();
+    }
+
+    /**
+     * Retirer la couverture
+     */
+    public function destroyCover(Project $project): ProjectResource
+    {
+        $project->clearMediaCollection('cover');
+
+        return $this->respond($project);
+    }
+
+    /**
+     * Retirer une image de la galerie
+     */
+    public function destroyGalleryImage(Project $project, Media $media): ProjectResource
+    {
+        abort_unless(
+            $media->model_type === Project::class && (int) $media->model_id === $project->id && $media->collection_name === 'gallery',
+            404,
+        );
+
+        $media->delete();
+
+        return $this->respond($project);
     }
 
     private function respond(Project $project): ProjectResource

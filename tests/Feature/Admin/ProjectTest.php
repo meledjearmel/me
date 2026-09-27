@@ -71,3 +71,42 @@ test('creating a project requires the mandatory fields', function () {
 
     $response->assertSessionHasErrors(['title.fr', 'title.en', 'slug', 'context.fr', 'realization.fr', 'result.fr', 'status']);
 });
+
+test('authenticated users can remove the cover of a project', function () {
+    Storage::fake('public');
+    $user = User::factory()->create();
+    $project = Project::factory()->create();
+    $project->addMedia(UploadedFile::fake()->image('cover.jpg'))->toMediaCollection('cover');
+
+    $this->actingAs($user)->delete(route('admin.projects.cover.destroy', $project))
+        ->assertRedirect();
+
+    expect($project->fresh()->getFirstMedia('cover'))->toBeNull();
+});
+
+test('authenticated users can remove one image from the gallery', function () {
+    Storage::fake('public');
+    $user = User::factory()->create();
+    $project = Project::factory()->create();
+    $kept = $project->addMedia(UploadedFile::fake()->image('a.jpg'))->toMediaCollection('gallery');
+    $removed = $project->addMedia(UploadedFile::fake()->image('b.jpg'))->toMediaCollection('gallery');
+
+    $this->actingAs($user)->delete(route('admin.projects.gallery.destroy', [$project, $removed]))
+        ->assertRedirect();
+
+    $project->refresh();
+    expect($project->getMedia('gallery')->pluck('id')->all())->toBe([$kept->id]);
+});
+
+test('a gallery image cannot be removed through another project', function () {
+    Storage::fake('public');
+    $user = User::factory()->create();
+    $project = Project::factory()->create();
+    $otherProject = Project::factory()->create();
+    $media = $otherProject->addMedia(UploadedFile::fake()->image('a.jpg'))->toMediaCollection('gallery');
+
+    $this->actingAs($user)->delete(route('admin.projects.gallery.destroy', [$project, $media]))
+        ->assertNotFound();
+
+    expect($otherProject->fresh()->getMedia('gallery'))->toHaveCount(1);
+});

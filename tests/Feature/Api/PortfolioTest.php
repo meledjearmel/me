@@ -82,6 +82,42 @@ test('les projets se filtrent par statut et se suppriment', function () {
     expect(Project::query()->count())->toBe(1);
 });
 
+test('la couverture d\'un projet peut être retirée', function () {
+    Storage::fake('public');
+    $project = Project::factory()->create();
+    $project->addMedia(UploadedFile::fake()->image('cover.jpg'))->toMediaCollection('cover');
+
+    $this->deleteJson(route('api.v1.projects.cover.destroy', $project))
+        ->assertOk()
+        ->assertJsonPath('cover_url', null);
+
+    expect($project->fresh()->getFirstMedia('cover'))->toBeNull();
+});
+
+test('une image de la galerie peut être retirée', function () {
+    Storage::fake('public');
+    $project = Project::factory()->create();
+    $kept = $project->addMedia(UploadedFile::fake()->image('a.jpg'))->toMediaCollection('gallery');
+    $removed = $project->addMedia(UploadedFile::fake()->image('b.jpg'))->toMediaCollection('gallery');
+
+    $response = $this->deleteJson(route('api.v1.projects.gallery.destroy', [$project, $removed]))
+        ->assertOk();
+
+    expect($response->json('gallery'))->toHaveCount(1)
+        ->and($response->json('gallery.0.id'))->toBe($kept->id);
+});
+
+test('on ne peut pas retirer le média d\'un autre projet', function () {
+    Storage::fake('public');
+    $project = Project::factory()->create();
+    $otherProject = Project::factory()->create();
+    $media = $otherProject->addMedia(UploadedFile::fake()->image('a.jpg'))->toMediaCollection('gallery');
+
+    $this->deleteJson(route('api.v1.projects.gallery.destroy', [$project, $media]))->assertNotFound();
+
+    expect($otherProject->fresh()->getMedia('gallery'))->toHaveCount(1);
+});
+
 test('une expérience gère ses points marquants', function () {
     $payload = [
         'company' => 'Acme',

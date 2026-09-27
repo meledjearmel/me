@@ -41,6 +41,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('educations', EducationController::class);
     Route::resource('experiences', ExperienceController::class);
     Route::resource('projects', ProjectController::class);
+    Route::delete('projects/{project}/cover', [ProjectController::class, 'destroyCover'])->name('projects.cover.destroy');
+    Route::delete('projects/{project}/gallery/{media}', [ProjectController::class, 'destroyGalleryImage'])->name('projects.gallery.destroy');
     Route::resource('professional-references', ProfessionalReferenceController::class);
 
     Route::resource('testimonials', TestimonialController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);

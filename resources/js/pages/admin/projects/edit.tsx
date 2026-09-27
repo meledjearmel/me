@@ -1,4 +1,4 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, router } from '@inertiajs/react';
 import ProjectController from '@/actions/App/Http/Controllers/Admin/ProjectController';
 import CheckboxGroup from '@/components/admin/checkbox-group';
 import Heading from '@/components/heading';
@@ -224,11 +224,33 @@ export default function ProjectEdit({
                                     Image de couverture
                                 </FieldLabel>
                                 {project.cover_url && (
-                                    <img
-                                        src={project.cover_url}
-                                        alt=""
-                                        className="h-32 w-auto rounded-md border object-cover"
-                                    />
+                                    <div className="flex items-center gap-2">
+                                        <img
+                                            src={project.cover_url}
+                                            alt=""
+                                            className="h-32 w-auto rounded-md border object-cover"
+                                        />
+                                        <Button
+                                            type="button"
+                                            variant="destructive"
+                                            size="sm"
+                                            onClick={() => {
+                                                if (
+                                                    confirm(
+                                                        'Retirer la couverture de ce projet ?',
+                                                    )
+                                                ) {
+                                                    router.delete(
+                                                        ProjectController.destroyCover.url(
+                                                            project.id,
+                                                        ),
+                                                    );
+                                                }
+                                            }}
+                                        >
+                                            Retirer
+                                        </Button>
+                                    </div>
                                 )}
                                 <Input
                                     id="cover"
@@ -243,19 +265,47 @@ export default function ProjectEdit({
                                 <FieldLabel htmlFor="gallery">
                                     Galerie (ajout)
                                 </FieldLabel>
-                                {project.gallery_urls &&
-                                    project.gallery_urls.length > 0 && (
-                                        <div className="flex flex-wrap gap-2">
-                                            {project.gallery_urls.map((url) => (
+                                {project.gallery && project.gallery.length > 0 && (
+                                    <div className="flex flex-wrap gap-2">
+                                        {project.gallery.map((image) => (
+                                            <div
+                                                key={image.id}
+                                                className="relative"
+                                            >
                                                 <img
-                                                    key={url}
-                                                    src={url}
+                                                    src={image.url}
                                                     alt=""
                                                     className="h-20 w-auto rounded-md border object-cover"
                                                 />
-                                            ))}
-                                        </div>
-                                    )}
+                                                <Button
+                                                    type="button"
+                                                    variant="destructive"
+                                                    size="icon"
+                                                    className="absolute -top-2 -right-2 size-6"
+                                                    aria-label="Retirer cette image"
+                                                    onClick={() => {
+                                                        if (
+                                                            confirm(
+                                                                'Retirer cette image de la galerie ?',
+                                                            )
+                                                        ) {
+                                                            router.delete(
+                                                                ProjectController.destroyGalleryImage.url(
+                                                                    [
+                                                                        project.id,
+                                                                        image.id,
+                                                                    ],
+                                                                ),
+                                                            );
+                                                        }
+                                                    }}
+                                                >
+                                                    ×
+                                                </Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                                 <Input
                                     id="gallery"
                                     name="gallery"

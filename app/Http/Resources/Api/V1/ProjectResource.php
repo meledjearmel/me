@@ -46,7 +46,11 @@ class ProjectResource extends JsonResource
             'status' => $this->status,
             'sort_order' => $this->sort_order,
             'cover_url' => $this->getFirstMediaUrl('cover') ?: null,
-            'gallery_urls' => $this->getMedia('gallery')->map->getUrl()->values(),
+            /** Galerie : `id` sert à cibler `DELETE /projects/{project}/gallery/{id}`. */
+            'gallery' => $this->getMedia('gallery')->map(fn ($media): array => [
+                'id' => $media->id,
+                'url' => $media->getUrl(),
+            ])->values(),
             'domains' => DomainResource::collection($this->whenLoaded('domains')),
             'job_profiles' => JobProfileResource::collection($this->whenLoaded('jobProfiles')),
             'technologies' => TechnologyResource::collection($this->whenLoaded('technologies')),
