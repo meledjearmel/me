@@ -5957,9 +5957,8 @@ html.pub-scroll {
     z-index: 60;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    width: 16rem;
-    padding: 0.875rem 1rem;
+    width: max-content;
+    padding: 0.5rem 1rem;
     border: 1px solid #c9c9c9;
     border-radius: 1.25rem;
     background: #dfdcd5;
@@ -5978,27 +5977,6 @@ html.pub-scroll {
     position: absolute;
     inset: -0.875rem 0 auto;
     height: 0.875rem;
-}
-
-.pub-mini__meta {
-    min-width: 0;
-}
-
-.pub-mini__title {
-    overflow: hidden;
-    font-size: 0.8125rem;
-    font-weight: 700;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.pub-mini__artist {
-    overflow: hidden;
-    margin-top: 0.125rem;
-    font-size: 0.6875rem;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    opacity: 0.65;
 }
 
 @keyframes pub-mini-in {

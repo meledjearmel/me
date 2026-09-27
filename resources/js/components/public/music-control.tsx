@@ -1,9 +1,8 @@
 import { SkipBack, SkipForward } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import MusicButton from '@/components/public/music-button';
-import PlayerSlider from '@/components/public/player-slider';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { formatTime, useAudioPlayer } from '@/lib/audio';
+import { useAudioPlayer } from '@/lib/audio';
 import { useTranslations } from '@/lib/i18n';
 
 /** Grand écran avec un vrai pointeur : le mini lecteur s'ouvre au survol. */
@@ -17,8 +16,7 @@ const CLOSE_DELAY = 180;
  */
 export default function MusicControl() {
     const t = useTranslations();
-    const { playing, time, duration, currentTrack, toggle, seek, next, previous } =
-        useAudioPlayer();
+    const { playing, currentTrack, toggle, next, previous } = useAudioPlayer();
     const enabled = useMediaQuery(MINI_PLAYER_QUERY);
     const [open, setOpen] = useState(false);
     const closeTimer = useRef<number | undefined>(undefined);
@@ -52,27 +50,6 @@ export default function MusicControl() {
 
             {enabled && open && (
                 <div className="pub-mini" role="group" aria-label={title}>
-                    <div className="pub-mini__meta">
-                        <p className="pub-mini__title">{title}</p>
-                        {currentTrack.artist && (
-                            <p className="pub-mini__artist">
-                                {currentTrack.artist}
-                            </p>
-                        )}
-                    </div>
-
-                    <PlayerSlider
-                        time={time}
-                        duration={duration}
-                        label={title}
-                        onSeek={seek}
-                    />
-
-                    <div className="pub-recorder__times">
-                        <span>{formatTime(time)}</span>
-                        <span>{formatTime(duration)}</span>
-                    </div>
-
                     <div className="pub-mini__controls">
                         <button
                             type="button"
