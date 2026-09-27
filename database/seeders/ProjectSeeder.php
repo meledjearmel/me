@@ -42,6 +42,7 @@ class ProjectSeeder extends Seeder
         $this->relate('gesmar', 'gesmar-verif');
         $this->relate('aps-connect', 'app-station');
         $this->relate('aps-connect', 'laravel-app-pairing');
+        $this->relate('portfolio', 'me-admin');
     }
 
     /** Liaison symétrique : les deux sens sont attachés. */
@@ -368,6 +369,47 @@ class ProjectSeeder extends Seeder
                 'result' => [
                     'fr' => 'Publiée en open source, en version alpha.',
                     'en' => 'Published as open source, in alpha.',
+                ],
+            ],
+            [
+                'slug' => 'portfolio',
+                'title' => ['fr' => 'Portfolio', 'en' => 'Portfolio'],
+                'featured' => true,
+                'accent' => '#ec4899',
+                'domains' => ['dev', 'design'],
+                'jobs' => ['full-stack', 'lead-tech'],
+                'tech' => ['PHP', 'Laravel', 'Inertia', 'React', 'TypeScript', 'Vite', 'TailwindCSS', 'Fortify (2FA)', 'Pest', 'SQLite'],
+                'context' => [
+                    'fr' => 'Le site que vous consultez : un portfolio bilingue présentant mon parcours, mes compétences et mes projets, avec sa propre administration pour tout gérer sans toucher au code.',
+                    'en' => 'The site you are browsing: a bilingual portfolio presenting my background, skills and projects, with its own administration to manage everything without touching the code.',
+                ],
+                'realization' => [
+                    'fr' => "Génération d'un CV en PDF adapté au profil métier demandé et envoyé par mail, transitions de page et de thème animées, avis modérés avec mise en avant, statut brouillon/publié par ressource, tableau de bord d'audience et de contenu. Authentification à deux facteurs et passkeys, traductions par langue et médias gérés via Spatie Translatable et MediaLibrary.",
+                    'en' => 'PDF résumé generation tailored to the requested job profile and sent by e-mail, animated page and theme transitions, moderated reviews with featured picks, draft/published status per resource, an audience and content dashboard. Two-factor authentication and passkeys, per-language translations and media handled through Spatie Translatable and MediaLibrary.',
+                ],
+                'result' => [
+                    'fr' => 'En production sur ce domaine, avec une administration dédiée et une application mobile compagnon pour la gérer à distance.',
+                    'en' => 'In production on this domain, with a dedicated administration and a companion mobile app to manage it remotely.',
+                ],
+            ],
+            [
+                'slug' => 'me-admin',
+                'title' => ['fr' => 'Me Admin', 'en' => 'Me Admin'],
+                'accent' => '#6d28d9',
+                'domains' => ['dev'],
+                'jobs' => ['full-stack'],
+                'tech' => ['Flutter'],
+                'context' => [
+                    'fr' => "L'application mobile compagnon de ce portfolio : gérer l'administration (contenu, avis, messages, projets) depuis un téléphone, sans ouvrir de navigateur.",
+                    'en' => 'The companion mobile app to this portfolio: manage the administration (content, reviews, messages, projects) from a phone, without opening a browser.',
+                ],
+                'realization' => [
+                    'fr' => "Application Flutter (Riverpod, go_router) qui consomme l'API du portfolio : tableau de bord, boîte de réception (messages, demandes de collaboration, avis) avec détail et modération, CRUD complet du contenu (projets avec galerie, compétences, formations, technologies, profils métier, domaines), connexion à deux facteurs, verrouillage par code et biométrie, jeton d'accès en stockage sécurisé, notifications push (Firebase Cloud Messaging).",
+                    'en' => "A Flutter app (Riverpod, go_router) that consumes the portfolio's API: a dashboard, an inbox (messages, collaboration requests, reviews) with detail views and moderation, full content CRUD (projects with a gallery, skills, education, technologies, job profiles, domains), two-factor login, PIN and biometric lock, a securely stored access token, and push notifications (Firebase Cloud Messaging).",
+                ],
+                'result' => [
+                    'fr' => 'En développement actif, avec des tests unitaires sur les points sensibles (jetons, notifications push).',
+                    'en' => 'Under active development, with unit tests covering the sensitive parts (tokens, push notifications).',
                 ],
             ],
         ];
