@@ -8,11 +8,46 @@ import StarField from '@/components/public/star-field';
  * plus nets devant.
  */
 const CLOUDS = [
-    { src: '/images/hero/cloud-1.png', top: '4%', width: 'clamp(320px, 46vw, 760px)', opacity: 0.95, duration: 140, delay: 0 },
-    { src: '/images/hero/cloud-3.png', top: '30%', width: 'clamp(240px, 32vw, 520px)', opacity: 0.85, duration: 105, delay: -55 },
-    { src: '/images/hero/cloud-2.png', top: '12%', width: 'clamp(200px, 26vw, 420px)', opacity: 0.8, duration: 120, delay: -25 },
-    { src: '/images/hero/cloud-1.png', top: '52%', width: 'clamp(260px, 36vw, 600px)', opacity: 0.6, duration: 170, delay: -110 },
-    { src: '/images/hero/cloud-3.png', top: '66%', width: 'clamp(200px, 28vw, 460px)', opacity: 0.55, duration: 150, delay: -70 },
+    {
+        src: '/images/hero/cloud-1.png',
+        top: '4%',
+        width: 'clamp(320px, 46vw, 760px)',
+        opacity: 0.95,
+        duration: 140,
+        delay: 0,
+    },
+    {
+        src: '/images/hero/cloud-3.png',
+        top: '30%',
+        width: 'clamp(240px, 32vw, 520px)',
+        opacity: 0.85,
+        duration: 105,
+        delay: -55,
+    },
+    {
+        src: '/images/hero/cloud-2.png',
+        top: '12%',
+        width: 'clamp(200px, 26vw, 420px)',
+        opacity: 0.8,
+        duration: 120,
+        delay: -25,
+    },
+    {
+        src: '/images/hero/cloud-1.png',
+        top: '52%',
+        width: 'clamp(260px, 36vw, 600px)',
+        opacity: 0.6,
+        duration: 170,
+        delay: -110,
+    },
+    {
+        src: '/images/hero/cloud-3.png',
+        top: '66%',
+        width: 'clamp(200px, 28vw, 460px)',
+        opacity: 0.55,
+        duration: 150,
+        delay: -70,
+    },
 ] as const;
 
 /**

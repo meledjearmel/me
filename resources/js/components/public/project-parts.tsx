@@ -10,7 +10,10 @@ import { useLocalizedPath, useTranslations } from '@/lib/i18n';
 import type { PublicProject, PublicTechnology } from '@/types';
 
 /** Variables CSS d'un projet : sa couleur d'accent et la couleur de texte lisible dessus. */
-export function accentStyle(accentColor: string | null, index = 0): CSSProperties {
+export function accentStyle(
+    accentColor: string | null,
+    index = 0,
+): CSSProperties {
     const accent = accentFor(accentColor, index);
 
     return {
@@ -32,7 +35,9 @@ export function ProjectMeta({ project }: { project: PublicProject }) {
         >
             <div>
                 <dt>{t.projects.domainsLabel}</dt>
-                <dd>{project.domains.map((domain) => domain.label).join(' · ')}</dd>
+                <dd>
+                    {project.domains.map((domain) => domain.label).join(' · ')}
+                </dd>
             </div>
 
             {project.is_open_source && (
@@ -62,12 +67,20 @@ export function ProjectMeta({ project }: { project: PublicProject }) {
                     <dt>{t.projects.linksLabel}</dt>
                     <dd className="pub-meta__links">
                         {project.repo_url && (
-                            <a href={project.repo_url} target="_blank" rel="noreferrer">
+                            <a
+                                href={project.repo_url}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
                                 {t.projects.code} ↗
                             </a>
                         )}
                         {project.demo_url && (
-                            <a href={project.demo_url} target="_blank" rel="noreferrer">
+                            <a
+                                href={project.demo_url}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
                                 {t.projects.demo} ↗
                             </a>
                         )}
@@ -91,7 +104,10 @@ function LedgerSection({
     tone?: 'plain' | 'accent';
 }) {
     return (
-        <section className={`pub-ledger pub-ledger--${tone}`} aria-label={label}>
+        <section
+            className={`pub-ledger pub-ledger--${tone}`}
+            aria-label={label}
+        >
             <div className="site-wrap pub-ledger__grid">
                 <div className="pub-ledger__rail">
                     <span className="pub-ledger__num" aria-hidden="true">
@@ -106,26 +122,38 @@ function LedgerSection({
 }
 
 /** Technologies regroupées par catégorie, avec leurs logos. */
-function TechnologyRows({ technologies }: { technologies: PublicTechnology[] }) {
+function TechnologyRows({
+    technologies,
+}: {
+    technologies: PublicTechnology[];
+}) {
     const t = useTranslations();
     const categories = t.projects.techCategory as Record<string, string>;
     const groups = Object.entries(
-        technologies.reduce<Record<string, PublicTechnology[]>>((carry, technology) => {
-            (carry[technology.category] ??= []).push(technology);
+        technologies.reduce<Record<string, PublicTechnology[]>>(
+            (carry, technology) => {
+                (carry[technology.category] ??= []).push(technology);
 
-            return carry;
-        }, {}),
+                return carry;
+            },
+            {},
+        ),
     );
 
     return (
         <div className="pub-ledger__rows">
             {groups.map(([category, items]) => (
                 <div key={category} className="pub-ledger__row">
-                    <p className="pub-ledger__key">{categories[category] ?? category}</p>
+                    <p className="pub-ledger__key">
+                        {categories[category] ?? category}
+                    </p>
                     <ul className="pub-ledger__tools">
                         {items.map((technology) => (
                             <li key={technology.id}>
-                                <TechIcon technology={technology} className="pub-logo" />
+                                <TechIcon
+                                    technology={technology}
+                                    className="pub-logo"
+                                />
                                 <span>{technology.name}</span>
                             </li>
                         ))}
@@ -149,14 +177,24 @@ export function ProjectStory({ project }: { project: PublicProject }) {
     return (
         <>
             <LedgerSection number={next()} label={t.projects.context}>
-                <ScrollText text={project.context} className="pub-ledger__text" />
+                <ScrollText
+                    text={project.context}
+                    className="pub-ledger__text"
+                />
             </LedgerSection>
 
             <LedgerSection number={next()} label={t.projects.realization}>
-                <ScrollText text={project.realization} className="pub-ledger__text" />
+                <ScrollText
+                    text={project.realization}
+                    className="pub-ledger__text"
+                />
             </LedgerSection>
 
-            <LedgerSection number={next()} label={t.projects.result} tone="accent">
+            <LedgerSection
+                number={next()}
+                label={t.projects.result}
+                tone="accent"
+            >
                 <ScrollText
                     text={project.result}
                     className="pub-ledger__text pub-ledger__text--big"
@@ -205,10 +243,16 @@ export function ReadNext({ project }: { project: PublicProject }) {
     const fill = useTransform(progress, [0, 1], ['0%', '100%']);
 
     return (
-        <section ref={ref} className="pub-readnext" style={accentStyle(project.accent_color)}>
+        <section
+            ref={ref}
+            className="pub-readnext"
+            style={accentStyle(project.accent_color)}
+        >
             <div className="site-wrap pub-readnext__grid">
                 <div className="pub-readnext__copy">
-                    <p className="pub-readnext__kicker">{t.projects.readNext}</p>
+                    <p className="pub-readnext__kicker">
+                        {t.projects.readNext}
+                    </p>
                     <Link
                         href={path(`projects/${project.slug}`)}
                         className="pub-readnext__title"
@@ -218,7 +262,13 @@ export function ReadNext({ project }: { project: PublicProject }) {
                     </Link>
                     <p className="pub-readnext__desc">{project.result}</p>
                     <div className="pub-readnext__bar" aria-hidden="true">
-                        <motion.i style={reduceMotion ? { width: '100%' } : { width: fill }} />
+                        <motion.i
+                            style={
+                                reduceMotion
+                                    ? { width: '100%' }
+                                    : { width: fill }
+                            }
+                        />
                     </div>
                 </div>
 

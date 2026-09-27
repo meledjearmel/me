@@ -52,37 +52,72 @@ export default function ReviewDialog({
                     {({ processing, errors }) => (
                         <>
                             {/* Piège anti-spam : jamais rempli par un humain. */}
-                            <input type="text" name="website" tabIndex={-1} autoComplete="off" hidden aria-hidden="true" />
+                            <input
+                                type="text"
+                                name="website"
+                                tabIndex={-1}
+                                autoComplete="off"
+                                hidden
+                                aria-hidden="true"
+                            />
 
                             <div className="pub-drawer__fields">
                                 <label className="pub-drawer__field">
                                     <span>{t.fab.yourName}</span>
-                                    <input name="author_name" autoComplete="name" required />
-                                    {errors.author_name && <small>{errors.author_name}</small>}
+                                    <input
+                                        name="author_name"
+                                        autoComplete="name"
+                                        required
+                                    />
+                                    {errors.author_name && (
+                                        <small>{errors.author_name}</small>
+                                    )}
                                 </label>
 
                                 <label className="pub-drawer__field">
                                     <span>{t.fab.yourEmail}</span>
-                                    <input type="email" name="author_email" autoComplete="email" required />
+                                    <input
+                                        type="email"
+                                        name="author_email"
+                                        autoComplete="email"
+                                        required
+                                    />
                                     <em>{t.fab.emailNote}</em>
-                                    {errors.author_email && <small>{errors.author_email}</small>}
+                                    {errors.author_email && (
+                                        <small>{errors.author_email}</small>
+                                    )}
                                 </label>
 
                                 <label className="pub-drawer__field pub-drawer__field--wide">
                                     <span>{t.fab.yourRole}</span>
                                     <input name="author_role" />
-                                    {errors.author_role && <small>{errors.author_role}</small>}
+                                    {errors.author_role && (
+                                        <small>{errors.author_role}</small>
+                                    )}
                                 </label>
 
                                 <label className="pub-drawer__field pub-drawer__field--wide">
                                     <span>{t.fab.yourReview}</span>
-                                    <textarea name="content" rows={4} required minLength={20} />
-                                    {errors.content && <small>{errors.content}</small>}
+                                    <textarea
+                                        name="content"
+                                        rows={4}
+                                        required
+                                        minLength={20}
+                                    />
+                                    {errors.content && (
+                                        <small>{errors.content}</small>
+                                    )}
                                 </label>
                             </div>
 
-                            <button type="submit" className="pub-drawer__send" disabled={processing}>
-                                {processing ? t.contact.sending : t.fab.reviewSend}
+                            <button
+                                type="submit"
+                                className="pub-drawer__send"
+                                disabled={processing}
+                            >
+                                {processing
+                                    ? t.contact.sending
+                                    : t.fab.reviewSend}
                                 <span aria-hidden="true">→</span>
                             </button>
                         </>

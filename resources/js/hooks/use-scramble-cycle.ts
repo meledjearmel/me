@@ -42,7 +42,9 @@ export function useScrambleCycle(words: string[], holdMs = 2800): string {
                         .map((char, position) =>
                             position < revealed || char === ' ' || char === '—'
                                 ? char
-                                : GLYPHS[Math.floor(Math.random() * GLYPHS.length)],
+                                : GLYPHS[
+                                      Math.floor(Math.random() * GLYPHS.length)
+                                  ],
                         )
                         .join(''),
                 );

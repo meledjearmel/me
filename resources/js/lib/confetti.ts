@@ -1,4 +1,11 @@
-const COLORS = ['#ffd93d', '#ff6b4a', '#3a86ff', '#34d399', '#f472b6', '#fff9e9'];
+const COLORS = [
+    '#ffd93d',
+    '#ff6b4a',
+    '#3a86ff',
+    '#34d399',
+    '#f472b6',
+    '#fff9e9',
+];
 const COUNT = 90;
 const GRAVITY = 0.32;
 const DRAG = 0.985;
@@ -92,7 +99,12 @@ export function burstConfetti(originX: number, originY: number): void {
             context.translate(piece.x, piece.y);
             context.rotate(piece.rotation);
             context.fillStyle = piece.color;
-            context.fillRect(-piece.size / 2, -piece.size / 4, piece.size, piece.size / 2);
+            context.fillRect(
+                -piece.size / 2,
+                -piece.size / 4,
+                piece.size,
+                piece.size / 2,
+            );
             context.restore();
         }
 

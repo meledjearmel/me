@@ -103,7 +103,12 @@ export default function Skyline({
 
                     return (
                         <g key={index}>
-                            <rect x={x} y={top} width={width} height={height + 4} />
+                            <rect
+                                x={x}
+                                y={top}
+                                width={width}
+                                height={height + 4}
+                            />
                             <Roofs x={x} width={width} top={top} roof={roof} />
                         </g>
                     );

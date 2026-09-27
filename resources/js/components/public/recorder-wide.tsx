@@ -61,7 +61,9 @@ export default function RecorderWide({ onClose }: { onClose: () => void }) {
                 break;
             case 'ArrowDown':
                 event.preventDefault();
-                setCursor((index) => Math.min(index + 1, tab.tracks.length - 1));
+                setCursor((index) =>
+                    Math.min(index + 1, tab.tracks.length - 1),
+                );
                 break;
             case 'ArrowUp':
                 event.preventDefault();
@@ -127,7 +129,9 @@ export default function RecorderWide({ onClose }: { onClose: () => void }) {
                     <p className="pub-wide__eyebrow">{t.hero.nowPlaying}</p>
                     <p className="pub-wide__title">{title}</p>
                     {currentTrack.artist && (
-                        <p className="pub-wide__artist">{currentTrack.artist}</p>
+                        <p className="pub-wide__artist">
+                            {currentTrack.artist}
+                        </p>
                     )}
                 </div>
 

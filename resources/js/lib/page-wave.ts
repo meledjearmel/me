@@ -18,7 +18,9 @@ export function waveKeyframes(): string[] {
 
         const edge = Array.from({ length: POINTS + 1 }, (_, point) => {
             const x = (point / POINTS) * 100;
-            const y = base + AMPLITUDE * Math.sin((x / 100) * WAVES * Math.PI * 2 + phase);
+            const y =
+                base +
+                AMPLITUDE * Math.sin((x / 100) * WAVES * Math.PI * 2 + phase);
 
             return `${x.toFixed(2)}% ${y.toFixed(2)}%`;
         });

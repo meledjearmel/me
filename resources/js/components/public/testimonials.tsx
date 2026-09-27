@@ -26,11 +26,7 @@ const POSITIONS = [0, 1, -1] as const;
 
 function QuoteIcon() {
     return (
-        <svg
-            className="pub-testi__icon"
-            viewBox="0 0 82 82"
-            aria-hidden="true"
-        >
+        <svg className="pub-testi__icon" viewBox="0 0 82 82" aria-hidden="true">
             <path
                 fill="currentColor"
                 d="M14 50c0-13 8-24 22-29l2 6c-8 3-12 8-12 14h10v22H14V50Zm32 0c0-13 8-24 22-29l2 6c-8 3-12 8-12 14h10v22H46V50Z"
@@ -144,9 +140,13 @@ export default function Testimonials({
                             {t.testimonials.title}
                         </h2>
 
-                            {total > testimonials.length && (
-                            <Link href={path('testimonials')} className="pub-testi__all">
-                                {t.testimonials.all} ({total}) <span aria-hidden="true">→</span>
+                        {total > testimonials.length && (
+                            <Link
+                                href={path('testimonials')}
+                                className="pub-testi__all"
+                            >
+                                {t.testimonials.all} ({total}){' '}
+                                <span aria-hidden="true">→</span>
                             </Link>
                         )}
                     </header>
@@ -164,7 +164,11 @@ export default function Testimonials({
                 </div>
             </section>
 
-            <div ref={scrubRef} className="pub-testi__scrub" aria-hidden="true" />
+            <div
+                ref={scrubRef}
+                className="pub-testi__scrub"
+                aria-hidden="true"
+            />
         </>
     );
 }

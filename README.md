@@ -16,12 +16,14 @@ l'administration permet de tout gérer sans toucher au code.
 ## Fonctionnalités
 
 **Site public** (`/fr`, `/en`)
+
 - Accueil, à propos, compétences, projets et page de chaque projet, contact, avis
 - Bouton flottant : laisser un avis, proposer une collaboration (freelance ou embauche), remonter en haut
 - Une demande d'embauche génère le CV adapté au profil métier choisi, en PDF, et l'envoie par mail
 - Transitions de page et de thème animées, contenu traduit par langue
 
 **Administration** (`/admin`, connexion requise)
+
 - CRUD complet : profil, domaines, technologies, profils métier, compétences, formations, expériences, projets, références
 - Modération des avis (dont 3 avis « à la une » maximum), messages de contact et demandes de collaboration
 - Statut de publication (brouillon / publié) sur domaines, profils métier, compétences, formations et expériences : un brouillon n'apparaît ni sur le site ni sur le CV
@@ -54,12 +56,12 @@ Les données fictives (avis d'exemple) ne sont ajoutées qu'en environnement `lo
 
 Variables utiles du `.env` :
 
-| Variable | Rôle |
-| --- | --- |
-| `APP_LOCALE`, `APP_FALLBACK_LOCALE` | Langue par défaut (`fr`) |
-| `QUEUE_CONNECTION` | `database` : les mails et les notifications push partent par la file d'attente |
-| `MAIL_*` | Serveur SMTP ; en local, Mailpit (`127.0.0.1:1025`, interface sur le port 8025) |
-| `FIREBASE_CREDENTIALS` | Notifications push de l'app mobile d'administration (`kreait/laravel-firebase`, optionnel) : chemin absolu vers le JSON du compte de service Firebase, à déposer dans `storage/app/private/` (jamais suivi par Git). Sans lui, les notifications sont simplement journalisées et ignorées. |
+| Variable                            | Rôle                                                                                                                                                                                                                                                                                       |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `APP_LOCALE`, `APP_FALLBACK_LOCALE` | Langue par défaut (`fr`)                                                                                                                                                                                                                                                                   |
+| `QUEUE_CONNECTION`                  | `database` : les mails et les notifications push partent par la file d'attente                                                                                                                                                                                                             |
+| `MAIL_*`                            | Serveur SMTP ; en local, Mailpit (`127.0.0.1:1025`, interface sur le port 8025)                                                                                                                                                                                                            |
+| `FIREBASE_CREDENTIALS`              | Notifications push de l'app mobile d'administration (`kreait/laravel-firebase`, optionnel) : chemin absolu vers le JSON du compte de service Firebase, à déposer dans `storage/app/private/` (jamais suivi par Git). Sans lui, les notifications sont simplement journalisées et ignorées. |
 
 En production, il faut configurer `MAIL_*` et garder un worker actif :
 

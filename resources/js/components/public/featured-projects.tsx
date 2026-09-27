@@ -31,13 +31,19 @@ export default function FeaturedProjects({
             aria-labelledby="pub-featured-title"
         >
             <h2 className="pub-featured__lead">{t.home.stackTitle}</h2>
-            <TechMarquee technologies={technologies} label={t.home.stackLabel} />
+            <TechMarquee
+                technologies={technologies}
+                label={t.home.stackLabel}
+            />
 
             <div className="site-wrap">
                 <header className="pub-featured__head">
                     <div>
                         <p className="pub-kicker">{t.home.featuredKicker}</p>
-                        <h2 id="pub-featured-title" className="pub-featured__title">
+                        <h2
+                            id="pub-featured-title"
+                            className="pub-featured__title"
+                        >
                             {t.home.featuredTitle}
                         </h2>
                     </div>

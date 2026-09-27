@@ -94,11 +94,14 @@ export function AudioProvider({ children }: { children: ReactNode }) {
         }
     }, [currentTrack.url]);
 
-    const selectTrack = useCallback((track: PlaylistTrack, autoplay: boolean) => {
-        resumeRef.current = autoplay;
-        setTime(0);
-        setCurrentId(track.id);
-    }, []);
+    const selectTrack = useCallback(
+        (track: PlaylistTrack, autoplay: boolean) => {
+            resumeRef.current = autoplay;
+            setTime(0);
+            setCurrentId(track.id);
+        },
+        [],
+    );
 
     const step = useCallback(
         (direction: 1 | -1, autoplay: boolean) => {
@@ -116,8 +119,11 @@ export function AudioProvider({ children }: { children: ReactNode }) {
                 return;
             }
 
-            const index = queue.findIndex((track) => track.id === currentTrack.id);
-            const target = queue[(index + direction + queue.length) % queue.length];
+            const index = queue.findIndex(
+                (track) => track.id === currentTrack.id,
+            );
+            const target =
+                queue[(index + direction + queue.length) % queue.length];
 
             selectTrack(target, autoplay);
         },

@@ -28,7 +28,9 @@ export default function ProjectsIndex({
 }) {
     const t = useTranslations();
     // Un domaine (son id), les projets open source, ou tous les projets (null).
-    const [activeFilter, setActiveFilter] = useState<number | 'open-source' | null>(null);
+    const [activeFilter, setActiveFilter] = useState<
+        number | 'open-source' | null
+    >(null);
 
     const usedDomains = useMemo(
         () =>
@@ -53,14 +55,18 @@ export default function ProjectsIndex({
         [projects],
     );
 
-    const openSourceCount = projects.filter((project) => project.is_open_source).length;
+    const openSourceCount = projects.filter(
+        (project) => project.is_open_source,
+    ).length;
 
     const visibleProjects =
         activeFilter === 'open-source'
             ? projects.filter((project) => project.is_open_source)
             : activeFilter
               ? projects.filter((project) =>
-                    project.domains.some((domain) => domain.id === activeFilter),
+                    project.domains.some(
+                        (domain) => domain.id === activeFilter,
+                    ),
                 )
               : projects;
 
@@ -124,7 +130,11 @@ export default function ProjectsIndex({
                                     key={domain.id}
                                     type="button"
                                     className="pub-filter"
-                                    style={{ '--domain': domain.color } as CSSProperties}
+                                    style={
+                                        {
+                                            '--domain': domain.color,
+                                        } as CSSProperties
+                                    }
                                     onClick={() => setActiveFilter(domain.id)}
                                     aria-pressed={activeFilter === domain.id}
                                 >
@@ -138,8 +148,12 @@ export default function ProjectsIndex({
                                 <button
                                     type="button"
                                     className="pub-filter"
-                                    onClick={() => setActiveFilter('open-source')}
-                                    aria-pressed={activeFilter === 'open-source'}
+                                    onClick={() =>
+                                        setActiveFilter('open-source')
+                                    }
+                                    aria-pressed={
+                                        activeFilter === 'open-source'
+                                    }
                                 >
                                     <svg viewBox="0 0 24 24" aria-hidden="true">
                                         <circle cx="6" cy="6" r="2.4" />
@@ -159,7 +173,10 @@ export default function ProjectsIndex({
                                     <motion.div
                                         key={project.id}
                                         layout
-                                        className={spanFor(index, visibleProjects.length)}
+                                        className={spanFor(
+                                            index,
+                                            visibleProjects.length,
+                                        )}
                                         initial={{ opacity: 0, scale: 0.94 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0, scale: 0.94 }}

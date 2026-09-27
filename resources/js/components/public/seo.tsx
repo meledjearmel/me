@@ -70,22 +70,19 @@ export default function Seo({
             <meta property="og:description" content={description} />
             <meta property="og:url" content={canonical} />
             <meta property="og:locale" content={OG_LOCALES[locale]} />
-            <meta
-                property="og:locale:alternate"
-                content={OG_LOCALES[other]}
-            />
+            <meta property="og:locale:alternate" content={OG_LOCALES[other]} />
             <meta name="twitter:title" content={fullTitle} />
             <meta name="twitter:description" content={description} />
-            <meta
-                name="twitter:card"
-                content="summary_large_image"
-            />
+            <meta name="twitter:card" content="summary_large_image" />
             <meta property="og:image" content={imageUrl} />
             <meta name="twitter:image" content={imageUrl} />
 
             {blocks.map((block, index) => (
                 <script key={index} type="application/ld+json">
-                    {JSON.stringify({ '@context': 'https://schema.org', ...block })}
+                    {JSON.stringify({
+                        '@context': 'https://schema.org',
+                        ...block,
+                    })}
                 </script>
             ))}
             {children}

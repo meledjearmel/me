@@ -26,7 +26,11 @@ export function useSmoothAnchors(): void {
                     ? event.target.closest<HTMLAnchorElement>('a[href*="#"]')
                     : null;
 
-            if (!link || link.target === '_blank' || link.hasAttribute('download')) {
+            if (
+                !link ||
+                link.target === '_blank' ||
+                link.hasAttribute('download')
+            ) {
                 return;
             }
 
@@ -40,7 +44,9 @@ export function useSmoothAnchors(): void {
                 return;
             }
 
-            const target = document.getElementById(decodeURIComponent(url.hash.slice(1)));
+            const target = document.getElementById(
+                decodeURIComponent(url.hash.slice(1)),
+            );
 
             if (!target) {
                 return;
@@ -48,7 +54,9 @@ export function useSmoothAnchors(): void {
 
             event.preventDefault();
 
-            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const reduceMotion = window.matchMedia(
+                '(prefers-reduced-motion: reduce)',
+            ).matches;
 
             target.scrollIntoView({
                 behavior: reduceMotion ? 'auto' : 'smooth',

@@ -84,7 +84,10 @@ export default function ExperienceList({
                                             id={panelId}
                                             className="pub-exp__panel"
                                             initial={{ height: 0, opacity: 0 }}
-                                            animate={{ height: 'auto', opacity: 1 }}
+                                            animate={{
+                                                height: 'auto',
+                                                opacity: 1,
+                                            }}
                                             exit={{ height: 0, opacity: 0 }}
                                             transition={{
                                                 duration: 0.45,
@@ -99,13 +102,19 @@ export default function ExperienceList({
                                                 )}
 
                                                 {experience.description && (
-                                                    <p>{experience.description}</p>
+                                                    <p>
+                                                        {experience.description}
+                                                    </p>
                                                 )}
 
-                                                {experience.highlights.length > 0 && (
+                                                {experience.highlights.length >
+                                                    0 && (
                                                     <ul>
                                                         {experience.highlights.map(
-                                                            (highlight, index) => (
+                                                            (
+                                                                highlight,
+                                                                index,
+                                                            ) => (
                                                                 <li key={index}>
                                                                     {highlight}
                                                                 </li>

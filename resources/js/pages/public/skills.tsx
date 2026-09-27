@@ -51,10 +51,17 @@ export default function Skills({
                                     <li key={domain.id}>
                                         <a
                                             href={`#${domainAnchor(domain)}`}
-                                            style={{ '--domain': domain.color } as CSSProperties}
+                                            style={
+                                                {
+                                                    '--domain': domain.color,
+                                                } as CSSProperties
+                                            }
                                         >
                                             <span className="pub-jump__num">
-                                                {String(index + 1).padStart(2, '0')}
+                                                {String(index + 1).padStart(
+                                                    2,
+                                                    '0',
+                                                )}
                                             </span>
                                             <span className="pub-jump__name">
                                                 {domain.label}
@@ -78,7 +85,10 @@ export default function Skills({
 
                 <section className="pub-toolbox" aria-label={t.home.stackTitle}>
                     <h2 className="pub-featured__lead">{t.home.stackTitle}</h2>
-                    <TechMarquee technologies={technologies} label={t.home.stackLabel} />
+                    <TechMarquee
+                        technologies={technologies}
+                        label={t.home.stackLabel}
+                    />
                 </section>
 
                 <section className="pub-facts">

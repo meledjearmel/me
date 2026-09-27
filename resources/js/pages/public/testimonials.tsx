@@ -25,7 +25,10 @@ export default function Testimonials({
 
     return (
         <>
-            <Seo title={t.testimonials.pageTitle} description={t.testimonials.lead} />
+            <Seo
+                title={t.testimonials.pageTitle}
+                description={t.testimonials.lead}
+            />
 
             <PublicShell overHero>
                 <PageHero
@@ -38,7 +41,11 @@ export default function Testimonials({
                             <button
                                 type="button"
                                 className="pub-page-hero__back pub-reviews__cta"
-                                onClick={() => window.dispatchEvent(new Event(OPEN_REVIEW_EVENT))}
+                                onClick={() =>
+                                    window.dispatchEvent(
+                                        new Event(OPEN_REVIEW_EVENT),
+                                    )
+                                }
                             >
                                 {t.fab.review} →
                             </button>
@@ -46,14 +53,19 @@ export default function Testimonials({
                     }
                 />
 
-                <section className="pub-reviews" aria-label={t.testimonials.kicker}>
+                <section
+                    className="pub-reviews"
+                    aria-label={t.testimonials.kicker}
+                >
                     <div className="site-wrap">
                         <p className="pub-reviews__count">
                             {testimonials.length} {t.testimonials.countLabel}
                         </p>
 
                         {testimonials.length === 0 ? (
-                            <p className="pub-reviews__empty">{t.testimonials.empty}</p>
+                            <p className="pub-reviews__empty">
+                                {t.testimonials.empty}
+                            </p>
                         ) : (
                             <ul className="pub-reviews__grid">
                                 {testimonials.map((testimonial, index) => (
@@ -70,15 +82,30 @@ export default function Testimonials({
                                         }}
                                     >
                                         <figure>
-                                            <blockquote>{testimonial.content}</blockquote>
+                                            <blockquote>
+                                                {testimonial.content}
+                                            </blockquote>
                                             <figcaption>
-                                                <span className="pub-review__avatar" aria-hidden="true">
-                                                    {initials(testimonial.author_name)}
+                                                <span
+                                                    className="pub-review__avatar"
+                                                    aria-hidden="true"
+                                                >
+                                                    {initials(
+                                                        testimonial.author_name,
+                                                    )}
                                                 </span>
                                                 <span>
-                                                    <strong>{testimonial.author_name}</strong>
+                                                    <strong>
+                                                        {
+                                                            testimonial.author_name
+                                                        }
+                                                    </strong>
                                                     {testimonial.author_role && (
-                                                        <em>{testimonial.author_role}</em>
+                                                        <em>
+                                                            {
+                                                                testimonial.author_role
+                                                            }
+                                                        </em>
                                                     )}
                                                 </span>
                                             </figcaption>

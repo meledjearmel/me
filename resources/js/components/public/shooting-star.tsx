@@ -53,10 +53,22 @@ export default function ShootingStar() {
             const width = hero.offsetWidth;
 
             // Départ en haut et descente peu profonde, pour ne pas traverser le titre.
-            star.style.setProperty('--m-top', `${Math.round(random(0.05, 0.28) * height)}px`);
-            star.style.setProperty('--m-len', `${Math.round(random(130, 260))}px`);
-            star.style.setProperty('--m-angle', `${random(7, 13).toFixed(1)}deg`);
-            star.style.setProperty('--m-travel', `${Math.round(width * 1.15 + 260)}px`);
+            star.style.setProperty(
+                '--m-top',
+                `${Math.round(random(0.05, 0.28) * height)}px`,
+            );
+            star.style.setProperty(
+                '--m-len',
+                `${Math.round(random(130, 260))}px`,
+            );
+            star.style.setProperty(
+                '--m-angle',
+                `${random(7, 13).toFixed(1)}deg`,
+            );
+            star.style.setProperty(
+                '--m-travel',
+                `${Math.round(width * 1.15 + 260)}px`,
+            );
             star.style.animation = 'none';
             void star.offsetWidth; // relecture : sans elle, la même animation ne repart pas
             star.style.animation = `pub-meteor-fly ${random(1.1, 1.8).toFixed(2)}s linear`;
@@ -85,7 +97,10 @@ export default function ShootingStar() {
             wasNight = night;
         });
 
-        observer.observe(root, { attributes: true, attributeFilter: ['class'] });
+        observer.observe(root, {
+            attributes: true,
+            attributeFilter: ['class'],
+        });
         schedule(1500);
 
         return () => {

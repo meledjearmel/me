@@ -36,14 +36,24 @@ export default function PubDialog({
 
                 <Dialog.Content
                     className="pub-modal pub-modal--form"
-                    aria-describedby={description ? 'pub-dialog-description' : undefined}
+                    aria-describedby={
+                        description ? 'pub-dialog-description' : undefined
+                    }
                 >
-                    <Dialog.Close className="pub-modal__close" aria-label={t.skills.close} />
+                    <Dialog.Close
+                        className="pub-modal__close"
+                        aria-label={t.skills.close}
+                    />
 
-                    <Dialog.Title className="pub-modal__title">{title}</Dialog.Title>
+                    <Dialog.Title className="pub-modal__title">
+                        {title}
+                    </Dialog.Title>
 
                     {description && (
-                        <p id="pub-dialog-description" className="pub-modal__lead">
+                        <p
+                            id="pub-dialog-description"
+                            className="pub-modal__lead"
+                        >
                             {description}
                         </p>
                     )}
@@ -69,13 +79,21 @@ export function DialogDone({
 }) {
     return (
         <div className="pub-drawer__done pub-dialog__done" role="status">
-            <svg className="pub-drawer__check" viewBox="0 0 64 64" aria-hidden="true">
+            <svg
+                className="pub-drawer__check"
+                viewBox="0 0 64 64"
+                aria-hidden="true"
+            >
                 <circle cx="32" cy="32" r="28" />
                 <path d="M19 33l9 9 17-19" />
             </svg>
             <h3>{title}</h3>
             <p>{text}</p>
-            <button type="button" className="pub-contact__again" onClick={onClose}>
+            <button
+                type="button"
+                className="pub-contact__again"
+                onClick={onClose}
+            >
                 {closeLabel}
             </button>
         </div>

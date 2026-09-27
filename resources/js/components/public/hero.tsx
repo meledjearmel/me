@@ -54,14 +54,23 @@ export default function Hero({
                 <h1 className="sr-only">
                     {profile.name} —{' '}
                     {jobProfiles
-                        .map((jobProfile) => `${jobProfile.hero_title} ${jobProfile.hero_words.join(', ')}`)
+                        .map(
+                            (jobProfile) =>
+                                `${jobProfile.hero_title} ${jobProfile.hero_words.join(', ')}`,
+                        )
                         .join(' · ')}
                 </h1>
 
-                <motion.div className="pub-hero__title" aria-hidden="true" {...reveal(0.1)}>
+                <motion.div
+                    className="pub-hero__title"
+                    aria-hidden="true"
+                    {...reveal(0.1)}
+                >
                     <div
                         className="pub-hero__lines"
-                        style={{ '--pub-verb-chars': longestWord } as CSSProperties}
+                        style={
+                            { '--pub-verb-chars': longestWord } as CSSProperties
+                        }
                     >
                         <RollingText
                             text={title}

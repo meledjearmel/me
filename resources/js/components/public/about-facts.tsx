@@ -52,7 +52,10 @@ export default function AboutFacts({
     const path = useLocalizedPath();
     const time = useLocalTime();
     const locale = useLocale();
-    const congrats = useCongratulations(congratulations, path('congratulations'));
+    const congrats = useCongratulations(
+        congratulations,
+        path('congratulations'),
+    );
     const languages = [
         { name: t.about.langFrench, note: t.about.langFrenchNote, score: 5 },
         {
@@ -76,7 +79,10 @@ export default function AboutFacts({
                 </h2>
 
                 <div className="pub-facts__grid">
-                    <motion.article className="pub-fact pub-fact--sand" {...card(0)}>
+                    <motion.article
+                        className="pub-fact pub-fact--sand"
+                        {...card(0)}
+                    >
                         <p className="pub-fact__label">
                             {t.about.timeLabel} · {t.about.timeCity}
                         </p>
@@ -90,7 +96,8 @@ export default function AboutFacts({
                         className="pub-fact pub-fact--coral pub-fact--action"
                         data-cursor-label={t.about.congrats}
                         onClick={(event) => {
-                            const box = event.currentTarget.getBoundingClientRect();
+                            const box =
+                                event.currentTarget.getBoundingClientRect();
                             // Au clavier, le clic n'a pas de position : on part du centre de la carte.
                             const x = event.clientX || box.left + box.width / 2;
                             const y = event.clientY || box.top + box.height / 2;
@@ -100,22 +107,40 @@ export default function AboutFacts({
                         }}
                         {...card(0.08)}
                     >
-                        <span className="pub-fact__label">{t.about.distinctionLabel}</span>
-                        <span className="pub-fact__medium">{t.about.distinction}</span>
+                        <span className="pub-fact__label">
+                            {t.about.distinctionLabel}
+                        </span>
+                        <span className="pub-fact__medium">
+                            {t.about.distinction}
+                        </span>
                         <span className="pub-fact__count" aria-live="polite">
-                            <strong>{congrats.total.toLocaleString(locale)}</strong>{' '}
+                            <strong>
+                                {congrats.total.toLocaleString(locale)}
+                            </strong>{' '}
                             {t.about.congratsReceived}
                         </span>
                     </motion.button>
 
-                    <motion.article className="pub-fact pub-fact--green" {...card(0.16)}>
-                        <p className="pub-fact__label">{t.about.languagesLabel}</p>
+                    <motion.article
+                        className="pub-fact pub-fact--green"
+                        {...card(0.16)}
+                    >
+                        <p className="pub-fact__label">
+                            {t.about.languagesLabel}
+                        </p>
                         <ul className="pub-langs">
                             {languages.map((language) => (
-                                <li key={language.name} className="pub-langs__row">
+                                <li
+                                    key={language.name}
+                                    className="pub-langs__row"
+                                >
                                     <span className="pub-langs__text">
-                                        <span className="pub-langs__name">{language.name}</span>
-                                        <span className="pub-langs__note">{language.note}</span>
+                                        <span className="pub-langs__name">
+                                            {language.name}
+                                        </span>
+                                        <span className="pub-langs__note">
+                                            {language.note}
+                                        </span>
                                     </span>
                                     <span
                                         className="pub-langs__dots"
@@ -125,7 +150,11 @@ export default function AboutFacts({
                                         {[1, 2, 3, 4, 5].map((dot) => (
                                             <span
                                                 key={dot}
-                                                className={dot <= language.score ? 'is-on' : ''}
+                                                className={
+                                                    dot <= language.score
+                                                        ? 'is-on'
+                                                        : ''
+                                                }
                                             />
                                         ))}
                                     </span>

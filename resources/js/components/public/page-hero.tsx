@@ -40,12 +40,19 @@ export default function PageHero({
                         {eyebrow}
                     </motion.p>
 
-                    <motion.h1 id={id} className="pub-page-hero__title" {...reveal(0.1)}>
+                    <motion.h1
+                        id={id}
+                        className="pub-page-hero__title"
+                        {...reveal(0.1)}
+                    >
                         <Letters text={title} />
                     </motion.h1>
 
                     {(lead ?? children) && (
-                        <motion.div className="pub-page-hero__lead" {...reveal(0.25)}>
+                        <motion.div
+                            className="pub-page-hero__lead"
+                            {...reveal(0.25)}
+                        >
                             {lead ?? children}
                         </motion.div>
                     )}

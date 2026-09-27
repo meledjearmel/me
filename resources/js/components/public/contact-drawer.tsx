@@ -56,7 +56,10 @@ export default function ContactDrawer() {
 
                     <div className="pub-drawer__body">
                         <p className="pub-drawer__eyebrow">
-                            <span className="pub-drawer__dot" aria-hidden="true" />
+                            <span
+                                className="pub-drawer__dot"
+                                aria-hidden="true"
+                            />
                             {t.contactDrawer.eyebrow}
                         </p>
 
@@ -122,7 +125,9 @@ export default function ContactDrawer() {
                                                     required
                                                 />
                                                 {errors.email && (
-                                                    <small>{errors.email}</small>
+                                                    <small>
+                                                        {errors.email}
+                                                    </small>
                                                 )}
                                             </label>
 
@@ -134,7 +139,9 @@ export default function ContactDrawer() {
                                                     required
                                                 />
                                                 {errors.message && (
-                                                    <small>{errors.message}</small>
+                                                    <small>
+                                                        {errors.message}
+                                                    </small>
                                                 )}
                                             </label>
                                         </div>

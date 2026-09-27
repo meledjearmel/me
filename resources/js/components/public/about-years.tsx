@@ -43,7 +43,11 @@ export default function AboutYears({ years }: { years: number }) {
     }
 
     return (
-        <section ref={sectionRef} className="pub-years" aria-label={t.about.yearsLabel}>
+        <section
+            ref={sectionRef}
+            className="pub-years"
+            aria-label={t.about.yearsLabel}
+        >
             <div className="site-wrap">
                 <div className="pub-years__inner">
                     <p className="pub-years__num" aria-hidden="true">

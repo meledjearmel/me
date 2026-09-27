@@ -55,7 +55,9 @@ export default function Polaroids({ photos }: { photos: Polaroid[] }) {
                 >
                     <span
                         className="pub-polaroid__photo"
-                        style={{ aspectRatio: `${photo.width} / ${photo.height}` }}
+                        style={{
+                            aspectRatio: `${photo.width} / ${photo.height}`,
+                        }}
                     >
                         <img
                             src={photo.src}

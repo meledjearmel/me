@@ -40,13 +40,18 @@ export default function SkillDialog({
         .filter(Boolean);
 
     return (
-        <Dialog.Root open={skill !== null} onOpenChange={(open) => !open && onClose()}>
+        <Dialog.Root
+            open={skill !== null}
+            onOpenChange={(open) => !open && onClose()}
+        >
             <Dialog.Portal container={container ?? undefined}>
                 <Dialog.Overlay className="pub-modal__scrim" />
 
                 <Dialog.Content
                     className="pub-modal"
-                    style={{ '--domain': current?.domain.color } as CSSProperties}
+                    style={
+                        { '--domain': current?.domain.color } as CSSProperties
+                    }
                     aria-describedby={undefined}
                 >
                     {current && (
@@ -66,7 +71,9 @@ export default function SkillDialog({
                             </Dialog.Title>
 
                             {current.description && current.details && (
-                                <p className="pub-modal__lead">{current.description}</p>
+                                <p className="pub-modal__lead">
+                                    {current.description}
+                                </p>
                             )}
 
                             <div className="pub-modal__body">
@@ -81,15 +88,19 @@ export default function SkillDialog({
                                         {t.skills.tools}
                                     </p>
                                     <ul>
-                                        {current.technologies.map((technology) => (
-                                            <li key={technology.id}>
-                                                <TechIcon
-                                                    technology={technology}
-                                                    className="pub-logo"
-                                                />
-                                                <span>{technology.name}</span>
-                                            </li>
-                                        ))}
+                                        {current.technologies.map(
+                                            (technology) => (
+                                                <li key={technology.id}>
+                                                    <TechIcon
+                                                        technology={technology}
+                                                        className="pub-logo"
+                                                    />
+                                                    <span>
+                                                        {technology.name}
+                                                    </span>
+                                                </li>
+                                            ),
+                                        )}
                                     </ul>
                                 </div>
                             )}

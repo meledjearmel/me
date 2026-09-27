@@ -1258,7 +1258,8 @@ html.pub-theming .pub *::after {
 }
 
 /* navigateurs sans backdrop-filter : version encre + liseré crème */
-@supports not ((backdrop-filter: invert(1)) or (-webkit-backdrop-filter: invert(1))) {
+@supports not
+((backdrop-filter: invert(1)) or (-webkit-backdrop-filter: invert(1))) {
     .pub-cursor__dot {
         background: #060606;
         box-shadow: 0 0 0 1.5px #fff9e9;
@@ -1753,9 +1754,7 @@ html.pub-scroll {
  * sinon les cartes se retrouvent collées, voire recouvertes.
  */
 .pub-featured {
-    padding-bottom: calc(
-        clamp(100px, 16vw, 230px) + clamp(3rem, 7vw, 7rem)
-    );
+    padding-bottom: calc(clamp(100px, 16vw, 230px) + clamp(3rem, 7vw, 7rem));
 }
 
 .pub-kicker {
@@ -2143,7 +2142,8 @@ html.pub-scroll {
     height: 0;
     margin: auto 0 0;
     border: 0;
-    border-top: 1px solid color-mix(in oklab, var(--pub-glass-ink) 50%, transparent);
+    border-top: 1px solid
+        color-mix(in oklab, var(--pub-glass-ink) 50%, transparent);
 }
 
 .pub-testi__author {
@@ -2967,7 +2967,8 @@ html.pub-scroll {
 }
 
 .pub-exp__item {
-    border-bottom: 1px solid color-mix(in oklab, var(--pub-text) 22%, transparent);
+    border-bottom: 1px solid
+        color-mix(in oklab, var(--pub-text) 22%, transparent);
 }
 
 .pub-exp__head {
@@ -4066,7 +4067,8 @@ html.pub-scroll {
 .pub-projects {
     position: relative;
     z-index: 10;
-    padding: clamp(2.5rem, 6vw, 5rem) 0 calc(clamp(96px, 16vw, 240px) + clamp(3rem, 7vw, 6rem));
+    padding: clamp(2.5rem, 6vw, 5rem) 0
+        calc(clamp(96px, 16vw, 240px) + clamp(3rem, 7vw, 6rem));
     background: var(--pub-bg);
 }
 
@@ -4440,7 +4442,8 @@ html.pub-scroll {
 .pub-readnext {
     position: relative;
     z-index: 10;
-    padding: clamp(4rem, 9vw, 8rem) 0 calc(clamp(96px, 16vw, 240px) + clamp(3rem, 7vw, 6rem));
+    padding: clamp(4rem, 9vw, 8rem) 0
+        calc(clamp(96px, 16vw, 240px) + clamp(3rem, 7vw, 6rem));
     background: var(--pub-text);
     color: var(--pub-bg);
 }
@@ -4568,7 +4571,8 @@ html.pub-scroll {
 
     position: relative;
     z-index: 10;
-    padding: clamp(2.5rem, 6vw, 5rem) 0 calc(clamp(96px, 16vw, 240px) + clamp(3rem, 7vw, 6rem));
+    padding: clamp(2.5rem, 6vw, 5rem) 0
+        calc(clamp(96px, 16vw, 240px) + clamp(3rem, 7vw, 6rem));
     background: var(--pub-bg);
 }
 
@@ -5142,7 +5146,8 @@ html.pub-scroll {
 .pub-reviews {
     position: relative;
     z-index: 10;
-    padding: clamp(2.5rem, 6vw, 5rem) 0 calc(clamp(96px, 16vw, 240px) + clamp(3rem, 7vw, 6rem));
+    padding: clamp(2.5rem, 6vw, 5rem) 0
+        calc(clamp(96px, 16vw, 240px) + clamp(3rem, 7vw, 6rem));
     background: var(--pub-bg);
 }
 
@@ -5257,7 +5262,8 @@ html.pub-scroll {
         var(--avatar-body) 58%,
         color-mix(in oklab, var(--avatar-body) 82%, black)
     );
-    box-shadow: inset calc(var(--avatar-size) * -0.05) calc(var(--avatar-size) * -0.07) calc(var(--avatar-size) * 0.1)
+    box-shadow: inset calc(var(--avatar-size) * -0.05)
+        calc(var(--avatar-size) * -0.07) calc(var(--avatar-size) * 0.1)
         rgb(0 0 0 / 0.16);
 }
 
@@ -5460,7 +5466,8 @@ html.pub-scroll {
     align-items: center;
     gap: 0.75rem;
     padding: 0.85rem 0.9rem 0.85rem 1.1rem;
-    border-bottom: 1px solid color-mix(in oklab, var(--pub-text) 22%, transparent);
+    border-bottom: 1px solid
+        color-mix(in oklab, var(--pub-text) 22%, transparent);
 }
 
 .pub-chat__who {

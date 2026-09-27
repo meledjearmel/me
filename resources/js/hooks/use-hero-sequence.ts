@@ -32,7 +32,9 @@ export function useHeroSequence(
                 return;
             }
 
-            setProfileIndex((current) => (current + 1) % Math.max(profileCount, 1));
+            setProfileIndex(
+                (current) => (current + 1) % Math.max(profileCount, 1),
+            );
             setWordIndex(0);
         }, wordMs);
 

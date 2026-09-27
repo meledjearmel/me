@@ -30,7 +30,9 @@ export default function ProjectShow({
     const locale = useLocale();
     const { props } = usePage<{ siteUrl: string; profile: PublicProfile }>();
     const path = useLocalizedPath();
-    const otherRelated = project.related_projects.filter((related) => related.id !== nextProject?.id);
+    const otherRelated = project.related_projects.filter(
+        (related) => related.id !== nextProject?.id,
+    );
 
     return (
         <>
@@ -56,7 +58,10 @@ export default function ProjectShow({
                         '@type': 'BreadcrumbList',
                         itemListElement: [
                             [t.projects.title, `/${locale}/projects`],
-                            [project.title, `/${locale}/projects/${project.slug}`],
+                            [
+                                project.title,
+                                `/${locale}/projects/${project.slug}`,
+                            ],
                         ].map(([name, item], index) => ({
                             '@type': 'ListItem',
                             position: index + 1,
@@ -68,16 +73,24 @@ export default function ProjectShow({
             />
 
             <PublicShell overHero>
-                <div className="pub-project" style={accentStyle(project.accent_color)}>
+                <div
+                    className="pub-project"
+                    style={accentStyle(project.accent_color)}
+                >
                     <PageHero
                         id="pub-project-title"
-                        eyebrow={project.domains.map((domain) => domain.label).join(' · ')}
+                        eyebrow={project.domains
+                            .map((domain) => domain.label)
+                            .join(' · ')}
                         title={project.title}
                         aside={<ProjectMeta project={project} />}
                         lead={
                             <>
                                 <p>{firstSentence(project.context)}</p>
-                                <Link href={path('projects')} className="pub-page-hero__back">
+                                <Link
+                                    href={path('projects')}
+                                    className="pub-page-hero__back"
+                                >
                                     {t.projects.back}
                                 </Link>
                             </>
@@ -94,15 +107,26 @@ export default function ProjectShow({
                     <ProjectGallery urls={project.gallery_urls} />
 
                     {otherRelated.length > 0 && (
-                        <section className="pub-related" aria-label={t.projects.related}>
+                        <section
+                            className="pub-related"
+                            aria-label={t.projects.related}
+                        >
                             <div className="site-wrap">
-                                <p className="pub-related__label">{t.projects.related}</p>
+                                <p className="pub-related__label">
+                                    {t.projects.related}
+                                </p>
                                 <ul>
                                     {otherRelated.map((related) => (
                                         <li key={related.id}>
-                                            <Link href={path(`projects/${related.slug}`)}>
+                                            <Link
+                                                href={path(
+                                                    `projects/${related.slug}`,
+                                                )}
+                                            >
                                                 {related.title}
-                                                <span aria-hidden="true">→</span>
+                                                <span aria-hidden="true">
+                                                    →
+                                                </span>
                                             </Link>
                                         </li>
                                     ))}

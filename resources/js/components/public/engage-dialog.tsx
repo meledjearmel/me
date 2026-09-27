@@ -37,7 +37,11 @@ function BudgetField({ errors }: { errors: Record<string, string> }) {
             <input type="hidden" name="budget_type" value={type} />
 
             <div className="pub-budget__row">
-                <div className="pub-budget__type" role="group" aria-label={t.fab.budget}>
+                <div
+                    className="pub-budget__type"
+                    role="group"
+                    aria-label={t.fab.budget}
+                >
                     {(['fixed', 'period'] as const).map((option) => (
                         <button
                             key={option}
@@ -45,7 +49,9 @@ function BudgetField({ errors }: { errors: Record<string, string> }) {
                             aria-pressed={type === option}
                             onClick={() => setType(option)}
                         >
-                            {option === 'fixed' ? t.fab.budgetFixed : t.fab.budgetPeriod}
+                            {option === 'fixed'
+                                ? t.fab.budgetFixed
+                                : t.fab.budgetPeriod}
                         </button>
                     ))}
                 </div>
@@ -60,7 +66,11 @@ function BudgetField({ errors }: { errors: Record<string, string> }) {
                     aria-label={t.fab.budgetAmount}
                 />
 
-                <select name="budget_currency" defaultValue="CHF" aria-label="Devise">
+                <select
+                    name="budget_currency"
+                    defaultValue="CHF"
+                    aria-label="Devise"
+                >
                     {CURRENCIES.map((currency) => (
                         <option key={currency.value} value={currency.value}>
                             {currency.label}
@@ -69,7 +79,11 @@ function BudgetField({ errors }: { errors: Record<string, string> }) {
                 </select>
 
                 {type === 'period' && (
-                    <select name="budget_period" defaultValue="hour" aria-label={t.fab.budgetPeriod}>
+                    <select
+                        name="budget_period"
+                        defaultValue="hour"
+                        aria-label={t.fab.budgetPeriod}
+                    >
                         {periods.map((period) => (
                             <option key={period.value} value={period.value}>
                                 / {period.label.toLowerCase()}
@@ -79,8 +93,14 @@ function BudgetField({ errors }: { errors: Record<string, string> }) {
                 )}
             </div>
 
-            {(errors.budget_amount || errors.budget_currency || errors.budget_period) && (
-                <small>{errors.budget_amount ?? errors.budget_currency ?? errors.budget_period}</small>
+            {(errors.budget_amount ||
+                errors.budget_currency ||
+                errors.budget_period) && (
+                <small>
+                    {errors.budget_amount ??
+                        errors.budget_currency ??
+                        errors.budget_period}
+                </small>
             )}
         </fieldset>
     );
@@ -109,16 +129,27 @@ function Identity({
 
             <label className="pub-drawer__field">
                 <span>{t.fab.yourEmail}</span>
-                <input type="email" name="email" autoComplete="email" required />
+                <input
+                    type="email"
+                    name="email"
+                    autoComplete="email"
+                    required
+                />
                 {errors.email && <small>{errors.email}</small>}
             </label>
 
-            <label className={`pub-drawer__field${companyOwnLine ? ' pub-drawer__field--wide' : ''}`}>
+            <label
+                className={`pub-drawer__field${companyOwnLine ? ' pub-drawer__field--wide' : ''}`}
+            >
                 <span>
                     {t.fab.company}
                     {companyRequired ? '' : ` (${t.fab.optional})`}
                 </span>
-                <input name="company" autoComplete="organization" required={companyRequired} />
+                <input
+                    name="company"
+                    autoComplete="organization"
+                    required={companyRequired}
+                />
                 {errors.company && <small>{errors.company}</small>}
             </label>
         </>
@@ -140,7 +171,9 @@ export default function EngageDialog({
 }) {
     const t = useTranslations();
     const locale = useLocale();
-    const { props } = usePage<{ cvProfiles: { id: number; label: string }[] }>();
+    const { props } = usePage<{
+        cvProfiles: { id: number; label: string }[];
+    }>();
     const [tab, setTab] = useState<Tab>('freelance');
     const [done, setDone] = useState<Tab | null>(null);
 
@@ -162,13 +195,21 @@ export default function EngageDialog({
             {done ? (
                 <DialogDone
                     title={t.fab.reviewDoneTitle}
-                    text={done === 'hiring' ? t.fab.hiringDone : t.fab.freelanceDone}
+                    text={
+                        done === 'hiring'
+                            ? t.fab.hiringDone
+                            : t.fab.freelanceDone
+                    }
                     onClose={() => change(false)}
                     closeLabel={t.skills.close}
                 />
             ) : (
                 <>
-                    <div className="pub-tabs" role="tablist" aria-label={t.fab.engageTitle}>
+                    <div
+                        className="pub-tabs"
+                        role="tablist"
+                        aria-label={t.fab.engageTitle}
+                    >
                         {(['freelance', 'hiring'] as const).map((name) => (
                             <button
                                 key={name}
@@ -179,7 +220,9 @@ export default function EngageDialog({
                                 aria-controls={`pub-panel-${name}`}
                                 onClick={() => setTab(name)}
                             >
-                                {name === 'freelance' ? t.fab.tabFreelance : t.fab.tabHiring}
+                                {name === 'freelance'
+                                    ? t.fab.tabFreelance
+                                    : t.fab.tabHiring}
                             </button>
                         ))}
                     </div>
@@ -198,54 +241,107 @@ export default function EngageDialog({
                         >
                             {({ processing, errors }) => (
                                 <>
-                                    <input type="hidden" name="type" value="freelance" />
-                                    <input type="text" name="website" tabIndex={-1} autoComplete="off" hidden aria-hidden="true" />
+                                    <input
+                                        type="hidden"
+                                        name="type"
+                                        value="freelance"
+                                    />
+                                    <input
+                                        type="text"
+                                        name="website"
+                                        tabIndex={-1}
+                                        autoComplete="off"
+                                        hidden
+                                        aria-hidden="true"
+                                    />
 
                                     <div className="pub-drawer__fields">
-                                        <Identity errors={errors} companyRequired={false} companyOwnLine />
+                                        <Identity
+                                            errors={errors}
+                                            companyRequired={false}
+                                            companyOwnLine
+                                        />
 
                                         <label className="pub-drawer__field">
                                             <span>{t.fab.projectType}</span>
-                                            <select name="subject" required defaultValue="">
+                                            <select
+                                                name="subject"
+                                                required
+                                                defaultValue=""
+                                            >
                                                 <option value="" disabled>
                                                     {t.fab.choose}
                                                 </option>
-                                                {[t.fab.projWeb, t.fab.projApp, t.fab.projMobile, t.fab.projInfra, t.fab.projOther].map(
-                                                    (option) => (
-                                                        <option key={option} value={option}>
-                                                            {option}
-                                                        </option>
-                                                    ),
-                                                )}
+                                                {[
+                                                    t.fab.projWeb,
+                                                    t.fab.projApp,
+                                                    t.fab.projMobile,
+                                                    t.fab.projInfra,
+                                                    t.fab.projOther,
+                                                ].map((option) => (
+                                                    <option
+                                                        key={option}
+                                                        value={option}
+                                                    >
+                                                        {option}
+                                                    </option>
+                                                ))}
                                             </select>
-                                            {errors.subject && <small>{errors.subject}</small>}
+                                            {errors.subject && (
+                                                <small>{errors.subject}</small>
+                                            )}
                                         </label>
 
                                         <label className="pub-drawer__field">
                                             <span>
-                                                {t.fab.timeline} ({t.fab.optional})
+                                                {t.fab.timeline} (
+                                                {t.fab.optional})
                                             </span>
-                                            <select name="timeline" defaultValue="">
-                                                <option value="">{t.fab.choose}</option>
-                                                <option value="urgent">{t.fab.timeUrgent}</option>
-                                                <option value="quarter">{t.fab.timeQuarter}</option>
-                                                <option value="semester">{t.fab.timeSemester}</option>
-                                                <option value="flexible">{t.fab.timeFlexible}</option>
+                                            <select
+                                                name="timeline"
+                                                defaultValue=""
+                                            >
+                                                <option value="">
+                                                    {t.fab.choose}
+                                                </option>
+                                                <option value="urgent">
+                                                    {t.fab.timeUrgent}
+                                                </option>
+                                                <option value="quarter">
+                                                    {t.fab.timeQuarter}
+                                                </option>
+                                                <option value="semester">
+                                                    {t.fab.timeSemester}
+                                                </option>
+                                                <option value="flexible">
+                                                    {t.fab.timeFlexible}
+                                                </option>
                                             </select>
                                         </label>
 
                                         <BudgetField errors={errors} />
 
-
                                         <label className="pub-drawer__field pub-drawer__field--wide">
                                             <span>{t.fab.projectMessage}</span>
-                                            <textarea name="message" rows={3} required />
-                                            {errors.message && <small>{errors.message}</small>}
+                                            <textarea
+                                                name="message"
+                                                rows={3}
+                                                required
+                                            />
+                                            {errors.message && (
+                                                <small>{errors.message}</small>
+                                            )}
                                         </label>
                                     </div>
 
-                                    <button type="submit" className="pub-drawer__send" disabled={processing}>
-                                        {processing ? t.contact.sending : t.fab.freelanceSend}
+                                    <button
+                                        type="submit"
+                                        className="pub-drawer__send"
+                                        disabled={processing}
+                                    >
+                                        {processing
+                                            ? t.contact.sending
+                                            : t.fab.freelanceSend}
                                         <span aria-hidden="true">→</span>
                                     </button>
                                 </>
@@ -269,55 +365,106 @@ export default function EngageDialog({
                         >
                             {({ processing, errors }) => (
                                 <>
-                                    <input type="hidden" name="type" value="hiring" />
-                                    <input type="text" name="website" tabIndex={-1} autoComplete="off" hidden aria-hidden="true" />
+                                    <input
+                                        type="hidden"
+                                        name="type"
+                                        value="hiring"
+                                    />
+                                    <input
+                                        type="text"
+                                        name="website"
+                                        tabIndex={-1}
+                                        autoComplete="off"
+                                        hidden
+                                        aria-hidden="true"
+                                    />
 
                                     <div className="pub-drawer__fields">
-                                        <Identity errors={errors} companyRequired />
+                                        <Identity
+                                            errors={errors}
+                                            companyRequired
+                                        />
 
                                         <label className="pub-drawer__field">
                                             <span>{t.fab.position}</span>
                                             <input name="subject" required />
-                                            {errors.subject && <small>{errors.subject}</small>}
+                                            {errors.subject && (
+                                                <small>{errors.subject}</small>
+                                            )}
                                         </label>
 
                                         <label className="pub-drawer__field">
                                             <span>{t.fab.cvProfile}</span>
-                                            <select name="job_profile_id" required defaultValue="">
+                                            <select
+                                                name="job_profile_id"
+                                                required
+                                                defaultValue=""
+                                            >
                                                 <option value="" disabled>
                                                     {t.fab.choose}
                                                 </option>
-                                                {props.cvProfiles.map((profile) => (
-                                                    <option key={profile.id} value={profile.id}>
-                                                        {profile.label}
-                                                    </option>
-                                                ))}
+                                                {props.cvProfiles.map(
+                                                    (profile) => (
+                                                        <option
+                                                            key={profile.id}
+                                                            value={profile.id}
+                                                        >
+                                                            {profile.label}
+                                                        </option>
+                                                    ),
+                                                )}
                                             </select>
-                                            {errors.job_profile_id && <small>{errors.job_profile_id}</small>}
+                                            {errors.job_profile_id && (
+                                                <small>
+                                                    {errors.job_profile_id}
+                                                </small>
+                                            )}
                                         </label>
 
                                         <label className="pub-drawer__field">
                                             <span>
-                                                {t.fab.contract} ({t.fab.optional})
+                                                {t.fab.contract} (
+                                                {t.fab.optional})
                                             </span>
-                                            <select name="contract" defaultValue="">
-                                                <option value="">{t.fab.choose}</option>
-                                                <option value="cdi">{t.fab.contractCdi}</option>
-                                                <option value="cdd">{t.fab.contractCdd}</option>
-                                                <option value="mission">{t.fab.contractMission}</option>
-                                                <option value="other">{t.fab.contractOther}</option>
+                                            <select
+                                                name="contract"
+                                                defaultValue=""
+                                            >
+                                                <option value="">
+                                                    {t.fab.choose}
+                                                </option>
+                                                <option value="cdi">
+                                                    {t.fab.contractCdi}
+                                                </option>
+                                                <option value="cdd">
+                                                    {t.fab.contractCdd}
+                                                </option>
+                                                <option value="mission">
+                                                    {t.fab.contractMission}
+                                                </option>
+                                                <option value="other">
+                                                    {t.fab.contractOther}
+                                                </option>
                                             </select>
                                         </label>
 
                                         <label className="pub-drawer__field pub-drawer__field--wide">
                                             <span>{t.fab.hiringMessage}</span>
                                             <textarea name="message" rows={2} />
-                                            {errors.message && <small>{errors.message}</small>}
+                                            {errors.message && (
+                                                <small>{errors.message}</small>
+                                            )}
                                         </label>
                                     </div>
 
-                                    <button type="submit" className="pub-drawer__send" disabled={processing}>
-                                        {processing ? t.contact.sending : t.fab.hiringSend}
+                                    <button
+                                        type="submit"
+                                        className="pub-drawer__send"
+                                        disabled={processing}
+                                    >
+                                        {processing
+                                            ? t.contact.sending
+                                            : t.fab.hiringSend}
                                         <span aria-hidden="true">→</span>
                                     </button>
                                 </>

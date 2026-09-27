@@ -86,7 +86,9 @@ export default function MobileMenu({
                         </ul>
                     </nav>
 
-                    {location && <p className="pub-menu__location">{location}</p>}
+                    {location && (
+                        <p className="pub-menu__location">{location}</p>
+                    )}
                 </motion.div>
             )}
         </AnimatePresence>

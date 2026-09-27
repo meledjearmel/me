@@ -16,7 +16,9 @@ export default function CustomCursor() {
     const labelRef = useRef<HTMLSpanElement>(null);
 
     useEffect(() => {
-        const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+        const finePointer = window.matchMedia(
+            '(hover: hover) and (pointer: fine)',
+        );
 
         if (!finePointer.matches) {
             return;
@@ -67,8 +69,11 @@ export default function CustomCursor() {
             target.x = event.clientX;
             target.y = event.clientY;
 
-            const element = event.target instanceof Element ? event.target : null;
-            const labelled = element?.closest<HTMLElement>('[data-cursor-label]');
+            const element =
+                event.target instanceof Element ? event.target : null;
+            const labelled = element?.closest<HTMLElement>(
+                '[data-cursor-label]',
+            );
             const hot = !labelled && !!element?.closest(HOT_SELECTOR);
 
             dot.classList.add('is-visible');

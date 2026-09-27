@@ -8,11 +8,7 @@ import ExperienceList from '@/components/public/experience-list';
 import PublicShell from '@/components/public/public-shell';
 import { useTranslations } from '@/lib/i18n';
 import EducationList from '@/components/public/education-list';
-import type {
-    PublicEducation,
-    PublicExperience,
-    PublicProfile,
-} from '@/types';
+import type { PublicEducation, PublicExperience, PublicProfile } from '@/types';
 
 export default function About({
     experiences,

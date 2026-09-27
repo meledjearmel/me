@@ -15,7 +15,9 @@ function ContactMeta({ profile }: { profile: PublicProfile }) {
     const socials = [
         { label: 'GitHub', href: profile.social_links?.github },
         { label: 'LinkedIn', href: profile.social_links?.linkedin },
-    ].filter((social): social is { label: string; href: string } => Boolean(social.href));
+    ].filter((social): social is { label: string; href: string } =>
+        Boolean(social.href),
+    );
 
     return (
         <motion.dl
@@ -57,7 +59,12 @@ function ContactMeta({ profile }: { profile: PublicProfile }) {
                     <dt>{t.contactDrawer.socials}</dt>
                     <dd className="pub-meta__links">
                         {socials.map((social) => (
-                            <a key={social.label} href={social.href} target="_blank" rel="noreferrer">
+                            <a
+                                key={social.label}
+                                href={social.href}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
                                 {social.label} ↗
                             </a>
                         ))}
@@ -108,12 +115,21 @@ export default function Contact() {
 
                 <section className="pub-contact" aria-label={t.contact.title}>
                     <div className="site-wrap pub-contact__grid">
-                        <div className="pub-contact__card" id="pub-contact-form">
-                            <h2 className="pub-contact__title">{t.contact.cardTitle}</h2>
+                        <div
+                            className="pub-contact__card"
+                            id="pub-contact-form"
+                        >
+                            <h2 className="pub-contact__title">
+                                {t.contact.cardTitle}
+                            </h2>
 
                             {sent ? (
                                 <div className="pub-drawer__done" role="status">
-                                    <svg className="pub-drawer__check" viewBox="0 0 64 64" aria-hidden="true">
+                                    <svg
+                                        className="pub-drawer__check"
+                                        viewBox="0 0 64 64"
+                                        aria-hidden="true"
+                                    >
                                         <circle cx="32" cy="32" r="28" />
                                         <path d="M19 33l9 9 17-19" />
                                     </svg>
@@ -153,36 +169,73 @@ export default function Contact() {
 
                                             <div className="pub-drawer__fields">
                                                 <label className="pub-drawer__field">
-                                                    <span>{t.contact.name}</span>
-                                                    <input name="name" autoComplete="name" required />
-                                                    {errors.name && <small>{errors.name}</small>}
+                                                    <span>
+                                                        {t.contact.name}
+                                                    </span>
+                                                    <input
+                                                        name="name"
+                                                        autoComplete="name"
+                                                        required
+                                                    />
+                                                    {errors.name && (
+                                                        <small>
+                                                            {errors.name}
+                                                        </small>
+                                                    )}
                                                 </label>
 
                                                 <label className="pub-drawer__field">
-                                                    <span>{t.contact.email}</span>
+                                                    <span>
+                                                        {t.contact.email}
+                                                    </span>
                                                     <input
                                                         type="email"
                                                         name="email"
                                                         autoComplete="email"
                                                         required
                                                     />
-                                                    {errors.email && <small>{errors.email}</small>}
+                                                    {errors.email && (
+                                                        <small>
+                                                            {errors.email}
+                                                        </small>
+                                                    )}
                                                 </label>
 
                                                 <label className="pub-drawer__field">
-                                                    <span>{t.contact.subject}</span>
+                                                    <span>
+                                                        {t.contact.subject}
+                                                    </span>
                                                     <input
                                                         name="subject"
                                                         value={subject}
-                                                        onChange={(event) => setSubject(event.target.value)}
+                                                        onChange={(event) =>
+                                                            setSubject(
+                                                                event.target
+                                                                    .value,
+                                                            )
+                                                        }
                                                     />
-                                                    {errors.subject && <small>{errors.subject}</small>}
+                                                    {errors.subject && (
+                                                        <small>
+                                                            {errors.subject}
+                                                        </small>
+                                                    )}
                                                 </label>
 
                                                 <label className="pub-drawer__field">
-                                                    <span>{t.contact.message}</span>
-                                                    <textarea name="message" rows={4} required />
-                                                    {errors.message && <small>{errors.message}</small>}
+                                                    <span>
+                                                        {t.contact.message}
+                                                    </span>
+                                                    <textarea
+                                                        name="message"
+                                                        rows={4}
+                                                        required
+                                                    />
+                                                    {errors.message && (
+                                                        <small>
+                                                            {errors.message}
+                                                        </small>
+                                                    )}
                                                 </label>
                                             </div>
 
@@ -191,8 +244,12 @@ export default function Contact() {
                                                 className="pub-drawer__send"
                                                 disabled={processing}
                                             >
-                                                {processing ? t.contact.sending : t.contact.submit}
-                                                <span aria-hidden="true">→</span>
+                                                {processing
+                                                    ? t.contact.sending
+                                                    : t.contact.submit}
+                                                <span aria-hidden="true">
+                                                    →
+                                                </span>
                                             </button>
                                         </>
                                     )}
@@ -201,7 +258,9 @@ export default function Contact() {
                         </div>
 
                         <aside className="pub-contact__side">
-                            <p className="pub-contact__label">{t.contact.topicsLabel}</p>
+                            <p className="pub-contact__label">
+                                {t.contact.topicsLabel}
+                            </p>
                             <ul className="pub-contact__topics">
                                 {topics.map((topic) => (
                                     <li key={topic}>
@@ -219,8 +278,13 @@ export default function Contact() {
                                 ))}
                             </ul>
 
-                            <p className="pub-contact__label">{t.contactDrawer.altLabel}</p>
-                            <a className="pub-contact__mail" href={`mailto:${props.profile.email}`}>
+                            <p className="pub-contact__label">
+                                {t.contactDrawer.altLabel}
+                            </p>
+                            <a
+                                className="pub-contact__mail"
+                                href={`mailto:${props.profile.email}`}
+                            >
                                 {props.profile.email}
                             </a>
                             {props.profile.phone && (

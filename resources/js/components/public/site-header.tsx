@@ -44,7 +44,11 @@ function useNavState(overHero: boolean) {
     return { compact, onDark };
 }
 
-export default function SiteHeader({ overHero = false }: { overHero?: boolean }) {
+export default function SiteHeader({
+    overHero = false,
+}: {
+    overHero?: boolean;
+}) {
     const t = useTranslations();
     const path = useLocalizedPath();
     const { props, url } = usePage<{ profile: PublicProfile }>();
@@ -75,7 +79,10 @@ export default function SiteHeader({ overHero = false }: { overHero?: boolean })
         { href: path('projects'), label: t.nav.projects },
     ];
 
-    const menuLinks = [...links, { href: path('contact'), label: t.nav.contact }];
+    const menuLinks = [
+        ...links,
+        { href: path('contact'), label: t.nav.contact },
+    ];
 
     const initials = profile.name
         .split(' ')
@@ -131,7 +138,9 @@ export default function SiteHeader({ overHero = false }: { overHero?: boolean })
                             key={link.href}
                             href={link.href}
                             className="pub-link"
-                            aria-current={isActive(link.href) ? 'page' : undefined}
+                            aria-current={
+                                isActive(link.href) ? 'page' : undefined
+                            }
                         >
                             {link.label}
                         </Link>

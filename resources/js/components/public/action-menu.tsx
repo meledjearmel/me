@@ -97,7 +97,8 @@ export default function ActionMenu() {
                       key: 'top',
                       label: t.fab.top,
                       icon: <ArrowUp size={22} aria-hidden="true" />,
-                      run: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
+                      run: () =>
+                          window.scrollTo({ top: 0, behavior: 'smooth' }),
                   },
               ]
             : []),
@@ -105,7 +106,12 @@ export default function ActionMenu() {
 
     // Les actions se répartissent sur un quart de cercle, de la gauche (180°) vers le haut (90°).
     const position = (index: number) => {
-        const angle = ((actions.length === 1 ? 135 : 180 - (90 / (actions.length - 1)) * index) * Math.PI) / 180;
+        const angle =
+            ((actions.length === 1
+                ? 135
+                : 180 - (90 / (actions.length - 1)) * index) *
+                Math.PI) /
+            180;
 
         return { x: Math.cos(angle) * RADIUS, y: -Math.sin(angle) * RADIUS };
     };
@@ -124,18 +130,37 @@ export default function ActionMenu() {
                                     type="button"
                                     className="pub-fab__item"
                                     aria-label={action.label}
-                                    initial={{ x: 0, y: 0, scale: 0.3, opacity: 0 }}
+                                    initial={{
+                                        x: 0,
+                                        y: 0,
+                                        scale: 0.3,
+                                        opacity: 0,
+                                    }}
                                     animate={{ x, y, scale: 1, opacity: 1 }}
-                                    exit={{ x: 0, y: 0, scale: 0.3, opacity: 0 }}
-                                    transition={{ type: 'spring', stiffness: 420, damping: 26, delay: index * 0.05 }}
+                                    exit={{
+                                        x: 0,
+                                        y: 0,
+                                        scale: 0.3,
+                                        opacity: 0,
+                                    }}
+                                    transition={{
+                                        type: 'spring',
+                                        stiffness: 420,
+                                        damping: 26,
+                                        delay: index * 0.05,
+                                    }}
                                     onClick={() => {
                                         setOpen(false);
                                         action.run();
                                     }}
                                 >
                                     <span className="pub-fab__pill">
-                                        <span className="pub-fab__glyph">{action.icon}</span>
-                                        <span className="pub-fab__label">{action.label}</span>
+                                        <span className="pub-fab__glyph">
+                                            {action.icon}
+                                        </span>
+                                        <span className="pub-fab__label">
+                                            {action.label}
+                                        </span>
                                     </span>
                                 </motion.button>
                             );
@@ -160,7 +185,11 @@ export default function ActionMenu() {
                                 key="icon"
                                 className="pub-fab__icon"
                                 aria-hidden="true"
-                                initial={{ opacity: 0, rotate: -90, scale: 0.4 }}
+                                initial={{
+                                    opacity: 0,
+                                    rotate: -90,
+                                    scale: 0.4,
+                                }}
                                 animate={{ opacity: 1, rotate: 0, scale: 1 }}
                                 exit={{ opacity: 0, rotate: 90, scale: 0.4 }}
                                 transition={{ duration: 0.25 }}

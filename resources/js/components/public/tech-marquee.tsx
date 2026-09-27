@@ -89,9 +89,7 @@ const Row = memo(function Row({
     // Deux copies identiques : la piste défile de -50 % puis boucle sans saut.
     return (
         <div className={`pub-marquee__row ${className}`}>
-            <ul
-                className={`pub-marquee__track${reverse ? ' is-reverse' : ''}`}
-            >
+            <ul className={`pub-marquee__track${reverse ? ' is-reverse' : ''}`}>
                 {[0, 1].flatMap((copy) =>
                     technologies.map((technology) => (
                         <li
@@ -136,22 +134,25 @@ export default function TechMarquee({
 
     const hideTip = useCallback(() => setTip(null), []);
 
-    const showTip: ShowTip = useCallback((element, technology) => {
-        const description = descriptions[technology.icon ?? ''];
+    const showTip: ShowTip = useCallback(
+        (element, technology) => {
+            const description = descriptions[technology.icon ?? ''];
 
-        if (!description) {
-            return;
-        }
+            if (!description) {
+                return;
+            }
 
-        const rect = element.getBoundingClientRect();
+            const rect = element.getBoundingClientRect();
 
-        setTip({
-            name: technology.name,
-            description,
-            x: rect.left + rect.width / 2,
-            y: rect.top,
-        });
-    }, [descriptions]);
+            setTip({
+                name: technology.name,
+                description,
+                x: rect.left + rect.width / 2,
+                y: rect.top,
+            });
+        },
+        [descriptions],
+    );
 
     // Logos seuls : une techno sans logo n'apparaît pas dans la bande.
     // Listes mémorisées : sans elles, chaque infobulle re-rendrait les pistes.
@@ -171,11 +172,7 @@ export default function TechMarquee({
 
     return (
         <div className="pub-marquee" role="group" aria-label={label}>
-            <Row
-                technologies={withLogo}
-                onShow={showTip}
-                onHide={hideTip}
-            />
+            <Row technologies={withLogo} onShow={showTip} onHide={hideTip} />
             <Row
                 technologies={reversed}
                 reverse

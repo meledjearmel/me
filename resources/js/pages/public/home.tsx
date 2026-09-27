@@ -71,7 +71,10 @@ export default function Home({
                     projects={featuredProjects}
                     technologies={technologies}
                 />
-                <Testimonials testimonials={testimonials} total={testimonialCount} />
+                <Testimonials
+                    testimonials={testimonials}
+                    total={testimonialCount}
+                />
             </PublicShell>
         </>
     );

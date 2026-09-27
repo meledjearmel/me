@@ -29,7 +29,8 @@ function useTorch() {
             return;
         }
 
-        const tilt = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const tilt = !window.matchMedia('(prefers-reduced-motion: reduce)')
+            .matches;
 
         list.current
             .querySelectorAll<HTMLElement>('.pub-skill__card')
@@ -37,18 +38,23 @@ function useTorch() {
                 const box = card.getBoundingClientRect();
                 const x = event.clientX - box.left;
                 const y = event.clientY - box.top;
-                const inside = x >= 0 && y >= 0 && x <= box.width && y <= box.height;
+                const inside =
+                    x >= 0 && y >= 0 && x <= box.width && y <= box.height;
 
                 card.style.setProperty('--mx', `${x}px`);
                 card.style.setProperty('--my', `${y}px`);
                 card.style.setProperty('--glow', '1');
                 card.style.setProperty(
                     '--rx',
-                    inside && tilt ? `${-(y / box.height - 0.5) * TILT_X}deg` : '0deg',
+                    inside && tilt
+                        ? `${-(y / box.height - 0.5) * TILT_X}deg`
+                        : '0deg',
                 );
                 card.style.setProperty(
                     '--ry',
-                    inside && tilt ? `${(x / box.width - 0.5) * TILT_Y}deg` : '0deg',
+                    inside && tilt
+                        ? `${(x / box.width - 0.5) * TILT_Y}deg`
+                        : '0deg',
                 );
             });
     };
@@ -106,20 +112,27 @@ function SkillList({
                     >
                         <span className="pub-skill__name">{skill.name}</span>
                         {skill.description && (
-                            <span className="pub-skill__text">{skill.description}</span>
+                            <span className="pub-skill__text">
+                                {skill.description}
+                            </span>
                         )}
 
                         <span className="pub-skill__foot">
                             <span className="pub-skill__logos">
-                                {skill.technologies.slice(0, 5).map((technology) => (
-                                    <TechIcon
-                                        key={technology.id}
-                                        technology={technology}
-                                        className="pub-logo"
-                                    />
-                                ))}
+                                {skill.technologies
+                                    .slice(0, 5)
+                                    .map((technology) => (
+                                        <TechIcon
+                                            key={technology.id}
+                                            technology={technology}
+                                            className="pub-logo"
+                                        />
+                                    ))}
                             </span>
-                            <span className="pub-skill__more" aria-hidden="true">
+                            <span
+                                className="pub-skill__more"
+                                aria-hidden="true"
+                            >
                                 +
                             </span>
                         </span>
@@ -164,7 +177,10 @@ export default function SkillDomains({
                 >
                     <div className="site-wrap pub-domain__grid">
                         <header className="pub-domain__head">
-                            <span className="pub-domain__num" aria-hidden="true">
+                            <span
+                                className="pub-domain__num"
+                                aria-hidden="true"
+                            >
                                 {String(groupIndex + 1).padStart(2, '0')}
                             </span>
                             <h2
