@@ -1,6 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
 import TestimonialController from '@/actions/App/Http/Controllers/Admin/TestimonialController';
 import Heading from '@/components/heading';
+import TranslatableField from '@/components/translatable-field';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
     Field,
@@ -9,6 +10,7 @@ import {
     FieldLabel,
 } from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import FormSelect from '@/components/admin/form-select';
 import { TESTIMONIAL_STATUSES } from '@/lib/admin-options';
 import { index as testimonialsIndex } from '@/routes/admin/testimonials';
@@ -31,16 +33,50 @@ export default function TestimonialEdit({
                     description={`${testimonial.author_name} — ${testimonial.author_email}`}
                 />
 
-                <div className="rounded-md border bg-muted/30 p-4 text-sm">
-                    <p>{testimonial.content.fr}</p>
-                </div>
-
                 <Form
                     {...TestimonialController.update.form(testimonial.id)}
                     className="space-y-6"
                 >
                     {({ processing, errors }) => (
                         <FieldGroup>
+                            <Field data-invalid={!!errors.author_name}>
+                                <FieldLabel htmlFor="author_name">
+                                    Nom de l'auteur *
+                                </FieldLabel>
+                                <Input
+                                    id="author_name"
+                                    name="author_name"
+                                    required
+                                    defaultValue={testimonial.author_name}
+                                />
+                                <FieldError>{errors.author_name}</FieldError>
+                            </Field>
+
+                            <Field data-invalid={!!errors.author_role}>
+                                <FieldLabel htmlFor="author_role">
+                                    Rôle de l'auteur
+                                </FieldLabel>
+                                <Input
+                                    id="author_role"
+                                    name="author_role"
+                                    defaultValue={testimonial.author_role ?? ''}
+                                />
+                                <FieldError>{errors.author_role}</FieldError>
+                            </Field>
+
+                            <TranslatableField
+                                name="content"
+                                label="Avis"
+                                defaultValue={testimonial.content}
+                                errors={{
+                                    fr: errors['content.fr'],
+                                    en: errors['content.en'],
+                                }}
+                                textarea
+                                required
+                                maxLength={2000}
+                            />
+
                             <Field data-invalid={!!errors.status}>
                                 <FieldLabel htmlFor="status">
                                     Statut *

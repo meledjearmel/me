@@ -101,3 +101,25 @@ test('trois témoignages au maximum peuvent être à la une', function () {
         'is_featured' => true,
     ])->assertUnprocessable()->assertJsonValidationErrors('is_featured');
 });
+
+test('le contenu d\'un témoignage se corrige', function () {
+    $testimonial = Testimonial::factory()->create(['content' => ['fr' => 'Avec des fôtes']]);
+
+    $this->patchJson(route('api.v1.testimonials.update', $testimonial), [
+        'status' => $testimonial->status->value,
+        'author_name' => 'Nom corrigé',
+        'content' => ['fr' => 'Sans fautes.', 'en' => 'Without typos.'],
+    ])->assertOk()
+        ->assertJsonPath('author_name', 'Nom corrigé')
+        ->assertJsonPath('content.fr', 'Sans fautes.')
+        ->assertJsonPath('content.en', 'Without typos.');
+});
+
+test('corriger le contenu exige les deux langues', function () {
+    $testimonial = Testimonial::factory()->create();
+
+    $this->patchJson(route('api.v1.testimonials.update', $testimonial), [
+        'status' => $testimonial->status->value,
+        'content' => ['fr' => 'Seulement le français'],
+    ])->assertUnprocessable()->assertJsonValidationErrors('content.en');
+});

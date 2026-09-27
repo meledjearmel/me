@@ -21,6 +21,13 @@ class TestimonialRequest extends FormRequest
             'status' => ['required', Rule::enum(TestimonialStatus::class)],
             'project_id' => ['nullable', 'exists:projects,id'],
             'is_featured' => ['boolean'],
+            'author_name' => ['sometimes', 'string', 'max:255'],
+            'author_role' => ['sometimes', 'nullable', 'string', 'max:255'],
+            // Champ traduisible : envoyer un tableau remplace toutes les langues, donc fr et en
+            // sont exigés ensemble dès qu'on touche au contenu, pour ne jamais en écraser une seule.
+            'content' => ['sometimes', 'array'],
+            'content.fr' => ['required_with:content', 'string', 'max:2000'],
+            'content.en' => ['required_with:content', 'string', 'max:2000'],
         ];
     }
 

@@ -63,3 +63,31 @@ test('an already featured review can be saved again when three are featured', fu
         'is_featured' => 1,
     ])->assertSessionHasNoErrors();
 });
+
+test('authenticated users can correct a testimonial\'s wording', function () {
+    $user = User::factory()->create();
+    $testimonial = Testimonial::factory()->create(['content' => ['fr' => 'Sa a été un plaisir']]);
+
+    $this->actingAs($user)->put(route('admin.testimonials.update', $testimonial), [
+        'status' => $testimonial->status->value,
+        'author_name' => 'Nouveau nom',
+        'author_role' => 'CTO',
+        'content' => ['fr' => 'Ça a été un plaisir.', 'en' => 'It was a pleasure.'],
+    ])->assertRedirect(route('admin.testimonials.index'));
+
+    $testimonial->refresh();
+    expect($testimonial->author_name)->toBe('Nouveau nom')
+        ->and($testimonial->author_role)->toBe('CTO')
+        ->and($testimonial->getTranslation('content', 'fr'))->toBe('Ça a été un plaisir.')
+        ->and($testimonial->getTranslation('content', 'en'))->toBe('It was a pleasure.');
+});
+
+test('correcting content requires both languages together', function () {
+    $user = User::factory()->create();
+    $testimonial = Testimonial::factory()->create();
+
+    $this->actingAs($user)->put(route('admin.testimonials.update', $testimonial), [
+        'status' => $testimonial->status->value,
+        'content' => ['fr' => 'Texte corrigé.'],
+    ])->assertSessionHasErrors(['content.en']);
+});
