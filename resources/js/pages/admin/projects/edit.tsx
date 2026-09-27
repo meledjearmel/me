@@ -265,47 +265,48 @@ export default function ProjectEdit({
                                 <FieldLabel htmlFor="gallery">
                                     Galerie (ajout)
                                 </FieldLabel>
-                                {project.gallery && project.gallery.length > 0 && (
-                                    <div className="flex flex-wrap gap-2">
-                                        {project.gallery.map((image) => (
-                                            <div
-                                                key={image.id}
-                                                className="relative"
-                                            >
-                                                <img
-                                                    src={image.url}
-                                                    alt=""
-                                                    className="h-20 w-auto rounded-md border object-cover"
-                                                />
-                                                <Button
-                                                    type="button"
-                                                    variant="destructive"
-                                                    size="icon"
-                                                    className="absolute -top-2 -right-2 size-6"
-                                                    aria-label="Retirer cette image"
-                                                    onClick={() => {
-                                                        if (
-                                                            confirm(
-                                                                'Retirer cette image de la galerie ?',
-                                                            )
-                                                        ) {
-                                                            router.delete(
-                                                                ProjectController.destroyGalleryImage.url(
-                                                                    [
-                                                                        project.id,
-                                                                        image.id,
-                                                                    ],
-                                                                ),
-                                                            );
-                                                        }
-                                                    }}
+                                {project.gallery &&
+                                    project.gallery.length > 0 && (
+                                        <div className="flex flex-wrap gap-2">
+                                            {project.gallery.map((image) => (
+                                                <div
+                                                    key={image.id}
+                                                    className="relative"
                                                 >
-                                                    ×
-                                                </Button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
+                                                    <img
+                                                        src={image.url}
+                                                        alt=""
+                                                        className="h-20 w-auto rounded-md border object-cover"
+                                                    />
+                                                    <Button
+                                                        type="button"
+                                                        variant="destructive"
+                                                        size="icon"
+                                                        className="absolute -top-2 -right-2 size-6"
+                                                        aria-label="Retirer cette image"
+                                                        onClick={() => {
+                                                            if (
+                                                                confirm(
+                                                                    'Retirer cette image de la galerie ?',
+                                                                )
+                                                            ) {
+                                                                router.delete(
+                                                                    ProjectController.destroyGalleryImage.url(
+                                                                        [
+                                                                            project.id,
+                                                                            image.id,
+                                                                        ],
+                                                                    ),
+                                                                );
+                                                            }
+                                                        }}
+                                                    >
+                                                        ×
+                                                    </Button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 <Input
                                     id="gallery"
                                     name="gallery"

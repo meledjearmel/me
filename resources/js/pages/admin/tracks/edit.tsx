@@ -64,7 +64,9 @@ export default function TrackEdit({
                             </Field>
 
                             <Field data-invalid={!!errors.artist}>
-                                <FieldLabel htmlFor="artist">Artiste</FieldLabel>
+                                <FieldLabel htmlFor="artist">
+                                    Artiste
+                                </FieldLabel>
                                 <Input
                                     id="artist"
                                     name="artist"
