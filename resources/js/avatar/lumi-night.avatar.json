@@ -807,6 +807,47 @@
         "description": "Limite de messages atteinte : il a besoin de souffler.",
         "group": "Réactions"
       }
+    },
+    "grooving": {
+      "playbackMode": "loop",
+      "steps": [
+        {
+          "expression": "joyful-down-right",
+          "holdMs": 850,
+          "transitionMs": 320,
+          "transition": "smooth"
+        },
+        {
+          "expression": "playful-right",
+          "holdMs": 850,
+          "transitionMs": 320,
+          "transition": "smooth"
+        },
+        {
+          "expression": "joyful-wide",
+          "holdMs": 850,
+          "transitionMs": 320,
+          "transition": "smooth"
+        },
+        {
+          "expression": "curious-left",
+          "holdMs": 850,
+          "transitionMs": 320,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": true,
+        "initialDelayMs": 1400,
+        "minIntervalMs": 2200,
+        "maxIntervalMs": 3800,
+        "durationMs": 220
+      },
+      "metadata": {
+        "label": "grooving",
+        "description": "Musique du site en lecture : il kiffe, enchaîne les expressions joyeuses en rythme.",
+        "group": "Réactions"
+      }
     }
   },
   "animationOrder": [
@@ -817,6 +858,7 @@
     "thinking",
     "happy",
     "confused",
-    "drowsy"
+    "drowsy",
+    "grooving"
   ]
 }

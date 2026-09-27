@@ -14,7 +14,8 @@ export type ChatAvatarState =
     | 'thinking'
     | 'happy'
     | 'confused'
-    | 'drowsy';
+    | 'drowsy'
+    | 'grooving';
 
 const DAY = armiDay as AvatarDefinition;
 const NIGHT = lumiNight as AvatarDefinition;
@@ -107,6 +108,16 @@ export default function ChatAvatar({
                     ),
                 )}
             </span>
+            {state === 'grooving' && (
+                <>
+                    <span className="pub-chatavatar__note pub-chatavatar__note--1">
+                        ♪
+                    </span>
+                    <span className="pub-chatavatar__note pub-chatavatar__note--2">
+                        ♫
+                    </span>
+                </>
+            )}
         </span>
     );
 }

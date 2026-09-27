@@ -8,6 +8,7 @@ import ChatRichText from '@/components/public/chat-rich-text';
 import { useAppearance } from '@/hooks/use-appearance';
 import { CHAT_MAX_LENGTH, useChat } from '@/hooks/use-chat';
 import { useMediaQuery } from '@/hooks/use-media-query';
+import { useAudioPlayer } from '@/lib/audio';
 import { useLocalizedPath, useTranslations } from '@/lib/i18n';
 
 /**
@@ -34,9 +35,9 @@ function useNight(): boolean {
 /**
  * Assistant de discussion du site : un avatar en bas à gauche qui ouvre un
  * panneau de conversation. L'avatar réagit à ce qui se passe : il dort tant que
- * le panneau est fermé, se réveille à l'ouverture, écoute pendant la saisie,
- * réfléchit pendant que le modèle répond, puis se réjouit ou s'étonne si le
- * service est indisponible.
+ * le panneau est fermé (ou kiffe si la musique du site joue), se réveille à
+ * l'ouverture, écoute pendant la saisie, réfléchit pendant que le modèle
+ * répond, puis se réjouit ou s'étonne si le service est indisponible.
  */
 export default function ChatAssistant() {
     const t = useTranslations();
@@ -46,6 +47,7 @@ export default function ChatAssistant() {
     const name = night ? 'Lumi' : 'Armi';
     const reduceMotion = useReducedMotion();
     const chat = useChat(path('chat'));
+    const { playing: musicPlaying } = useAudioPlayer();
 
     const [open, setOpen] = useState(false);
     const [draft, setDraft] = useState('');
@@ -101,7 +103,8 @@ export default function ChatAssistant() {
     let avatarState: ChatAvatarState = 'idle';
 
     if (!open) {
-        avatarState = 'sleeping';
+        // Panneau fermé : il dort, à moins que la musique du site ne joue.
+        avatarState = musicPlaying ? 'grooving' : 'sleeping';
     } else if (chat.status === 'error') {
         avatarState = chat.error === 'rate' ? 'drowsy' : 'confused';
     } else if (thinking) {
