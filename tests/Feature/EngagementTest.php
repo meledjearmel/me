@@ -3,6 +3,7 @@
 use App\Enums\EngagementStatus;
 use App\Enums\EngagementType;
 use App\Jobs\SendEngagementMails;
+use App\Jobs\SendPushNotification;
 use App\Mail\CvMail;
 use App\Mail\EngagementReceivedMail;
 use App\Models\Engagement;
@@ -13,6 +14,7 @@ use App\Models\Profile;
 use App\Models\User;
 use App\Services\CvGenerator;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Queue;
 
 beforeEach(function () {
     Profile::factory()->create(['email' => 'owner@example.test']);
@@ -43,6 +45,20 @@ test('a freelance request is stored and only the owner is notified', function ()
 
     Mail::assertSent(EngagementReceivedMail::class, fn ($mail) => $mail->hasTo('owner@example.test'));
     Mail::assertNotSent(CvMail::class);
+});
+
+test('a new request notifies the mobile admin app', function () {
+    Queue::fake();
+
+    $this->post('/fr/engagements', [
+        'type' => 'freelance',
+        'name' => 'Awa Client',
+        'email' => 'awa@example.test',
+        'subject' => 'Application web',
+        'message' => 'Nous cherchons un développeur.',
+    ])->assertRedirect();
+
+    Queue::assertPushed(SendPushNotification::class, fn (SendPushNotification $job) => $job->data['type'] === 'engagement');
 });
 
 test('a hiring request sends the tailored CV as a PDF to the recruiter', function () {

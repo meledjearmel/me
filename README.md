@@ -57,8 +57,9 @@ Variables utiles du `.env` :
 | Variable | Rôle |
 | --- | --- |
 | `APP_LOCALE`, `APP_FALLBACK_LOCALE` | Langue par défaut (`fr`) |
-| `QUEUE_CONNECTION` | `database` : les mails partent par la file d'attente |
+| `QUEUE_CONNECTION` | `database` : les mails et les notifications push partent par la file d'attente |
 | `MAIL_*` | Serveur SMTP ; en local, Mailpit (`127.0.0.1:1025`, interface sur le port 8025) |
+| `FIREBASE_CREDENTIALS` | Notifications push de l'app mobile d'administration (`kreait/laravel-firebase`, optionnel) : chemin absolu vers le JSON du compte de service Firebase, à déposer dans `storage/app/private/` (jamais suivi par Git). Sans lui, les notifications sont simplement journalisées et ignorées. |
 
 En production, il faut configurer `MAIL_*` et garder un worker actif :
 

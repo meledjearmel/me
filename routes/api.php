@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\MusicGenreController;
 use App\Http\Controllers\Api\V1\ProfessionalReferenceController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\ProjectController;
+use App\Http\Controllers\Api\V1\PushTokenController;
 use App\Http\Controllers\Api\V1\SkillController;
 use App\Http\Controllers\Api\V1\TechnologyController;
 use App\Http\Controllers\Api\V1\TestimonialController;
@@ -24,6 +25,9 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::post('auth/login', [AuthController::class, 'login'])
         ->middleware('throttle:5,1')
         ->name('auth.login');
+    Route::post('auth/two-factor-challenge', [AuthController::class, 'twoFactorChallenge'])
+        ->middleware('throttle:5,1')
+        ->name('auth.two-factor-challenge');
 
     Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('auth/me', [AuthController::class, 'me'])->name('auth.me');
@@ -51,6 +55,8 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('professional-references', ProfessionalReferenceController::class);
         Route::apiResource('experiences', ExperienceController::class);
         Route::apiResource('projects', ProjectController::class);
+        Route::delete('projects/{project}/cover', [ProjectController::class, 'destroyCover'])->name('projects.cover.destroy');
+        Route::delete('projects/{project}/gallery/{media}', [ProjectController::class, 'destroyGalleryImage'])->name('projects.gallery.destroy');
 
         Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
         Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -58,5 +64,8 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::delete('profile/cv/{locale}', [ProfileController::class, 'destroyCv'])
             ->whereIn('locale', Profile::CV_LOCALES)
             ->name('profile.cv.destroy');
+
+        Route::post('push-tokens', [PushTokenController::class, 'store'])->name('push-tokens.store');
+        Route::delete('push-tokens', [PushTokenController::class, 'destroy'])->name('push-tokens.destroy');
     });
 });

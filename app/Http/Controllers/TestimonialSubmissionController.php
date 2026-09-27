@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\TestimonialStatus;
 use App\Http\Requests\TestimonialSubmissionRequest;
+use App\Jobs\SendPushNotification;
 use App\Models\Testimonial;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -16,7 +17,7 @@ class TestimonialSubmissionController extends Controller
      */
     public function store(TestimonialSubmissionRequest $request): RedirectResponse
     {
-        Testimonial::query()->create([
+        $testimonial = Testimonial::query()->create([
             'author_name' => $request->validated('author_name'),
             'author_email' => $request->validated('author_email'),
             'author_role' => $request->validated('author_role'),
@@ -24,6 +25,8 @@ class TestimonialSubmissionController extends Controller
             'status' => TestimonialStatus::Pending,
             'submitted_at' => now(),
         ]);
+
+        SendPushNotification::dispatch('Nouvel avis', $testimonial->author_name, ['type' => 'testimonial', 'id' => (string) $testimonial->id]);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Merci pour votre avis !')]);
 

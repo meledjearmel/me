@@ -6,6 +6,7 @@ use App\Enums\EngagementStatus;
 use App\Enums\EngagementType;
 use App\Http\Requests\EngagementRequest;
 use App\Jobs\SendEngagementMails;
+use App\Jobs\SendPushNotification;
 use App\Models\Engagement;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -32,6 +33,7 @@ class EngagementController extends Controller
         ]);
 
         SendEngagementMails::dispatch($engagement->id);
+        SendPushNotification::dispatch('Nouvelle demande', $engagement->subject, ['type' => 'engagement', 'id' => (string) $engagement->id]);
 
         Inertia::flash('toast', [
             'type' => 'success',

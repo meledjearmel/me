@@ -1,14 +1,18 @@
 <?php
 
 use App\Enums\TestimonialStatus;
+use App\Jobs\SendPushNotification;
 use App\Models\Profile;
 use App\Models\Testimonial;
+use Illuminate\Support\Facades\Queue;
 
 beforeEach(function () {
     Profile::factory()->create();
 });
 
 test('a submitted review stays pending and is stored in the visitor language', function () {
+    Queue::fake();
+
     $this->post('/en/testimonials', [
         'author_name' => 'Sam Client',
         'author_email' => 'sam@example.test',
@@ -21,6 +25,7 @@ test('a submitted review stays pending and is stored in the visitor language', f
     expect($testimonial->status)->toBe(TestimonialStatus::Pending)
         ->and($testimonial->getTranslation('content', 'en'))->toContain('Very reliable')
         ->and($testimonial->submitted_at)->not->toBeNull();
+    Queue::assertPushed(SendPushNotification::class, fn (SendPushNotification $job) => $job->data['type'] === 'testimonial');
 });
 
 test('a pending review is not shown on the home page', function () {
