@@ -107,7 +107,6 @@ class ProjectSeeder extends Seeder
             [
                 'slug' => 'gesmar',
                 'title' => ['fr' => 'GESMAR', 'en' => 'GESMAR'],
-                'featured' => true,
                 'accent' => '#0f8f8a',
                 'domains' => ['dev', 'securite'],
                 'jobs' => ['full-stack', 'chef-projet'],
@@ -148,7 +147,6 @@ class ProjectSeeder extends Seeder
             [
                 'slug' => 'portalfy',
                 'title' => ['fr' => 'PortalFy', 'en' => 'PortalFy'],
-                'featured' => true,
                 'accent' => '#e0714f',
                 'domains' => ['dev', 'infra'],
                 'jobs' => ['full-stack', 'charge-it'],
@@ -249,6 +247,7 @@ class ProjectSeeder extends Seeder
             [
                 'slug' => 'laraprint',
                 'open_source' => true,
+                'featured' => true,
                 'title' => ['fr' => 'Laraprint', 'en' => 'Laraprint'],
                 'accent' => '#f0a020',
                 'domains' => ['dev'],
@@ -312,6 +311,7 @@ class ProjectSeeder extends Seeder
             [
                 'slug' => 'laravel-app-pairing',
                 'open_source' => true,
+                'featured' => true,
                 'title' => ['fr' => 'Laravel App Pairing', 'en' => 'Laravel App Pairing'],
                 'accent' => '#8b5cc7',
                 'domains' => ['dev', 'securite'],
@@ -374,7 +374,6 @@ class ProjectSeeder extends Seeder
             [
                 'slug' => 'portfolio',
                 'title' => ['fr' => 'Portfolio', 'en' => 'Portfolio'],
-                'featured' => true,
                 'accent' => '#ec4899',
                 'domains' => ['dev', 'design'],
                 'jobs' => ['full-stack', 'lead-tech'],
