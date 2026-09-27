@@ -6,6 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
+ * Fusionne des éléments issus de plusieurs modèles ; aucun modèle unique ne
+ * la sous-tend, d'où le mixin générique pour la doc OpenAPI.
+ *
+ * @mixin \stdClass
+ *
  * @property int $id
  * @property string $type
  * @property string $label
