@@ -36,8 +36,9 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Limites de l'assistant : par minute et par jour et par visiteur, plus un
-     * plafond global pour ne jamais vider le quota gratuit des fournisseurs.
+     * Limites des fonctionnalités IA : par minute et par jour, par visiteur ou
+     * utilisateur connecté, plus un plafond global pour le chat public afin de
+     * ne jamais vider le quota gratuit des fournisseurs.
      */
     protected function configureRateLimiting(): void
     {
@@ -45,6 +46,11 @@ class AppServiceProvider extends ServiceProvider
             Limit::perMinute(config('ai.chat.limits.per_minute'))->by($request->ip()),
             Limit::perDay(config('ai.chat.limits.per_day'))->by($request->ip()),
             Limit::perDay(config('ai.chat.limits.global_per_day'))->by('chat-global'),
+        ]);
+
+        RateLimiter::for('ai-assist', fn (Request $request): array => [
+            Limit::perMinute(config('ai.text_assist.limits.per_minute'))->by($request->user()?->id ?: $request->ip()),
+            Limit::perDay(config('ai.text_assist.limits.per_day'))->by($request->user()?->id ?: $request->ip()),
         ]);
     }
 

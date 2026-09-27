@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AiController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\DashboardController;
@@ -34,6 +35,11 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::post('auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
         Route::get('dashboard', DashboardController::class)->name('dashboard');
+
+        Route::prefix('ai')->name('ai.')->middleware('throttle:ai-assist')->group(function (): void {
+            Route::post('translate', [AiController::class, 'translate'])->name('translate');
+            Route::post('improve', [AiController::class, 'improve'])->name('improve');
+        });
 
         Route::prefix('trash')->name('trash.')->group(function (): void {
             Route::get('/', [TrashController::class, 'index'])->name('index');

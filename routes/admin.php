@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AiAssistController;
 use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\DomainController;
 use App\Http\Controllers\Admin\EducationController;
@@ -25,6 +26,11 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::delete('profile/cv/{locale}', [ProfileController::class, 'destroyCv'])
         ->whereIn('locale', Profile::CV_LOCALES)
         ->name('profile.cv.destroy');
+
+    Route::prefix('ai')->name('ai.')->middleware('throttle:ai-assist')->group(function () {
+        Route::post('translate', [AiAssistController::class, 'translate'])->name('translate');
+        Route::post('improve', [AiAssistController::class, 'improve'])->name('improve');
+    });
 
     Route::prefix('trash')->name('trash.')->group(function () {
         Route::get('/', [TrashController::class, 'index'])->name('index');

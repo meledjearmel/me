@@ -62,6 +62,29 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Assistance IA sur les champs bilingues (traduire / améliorer)
+    |--------------------------------------------------------------------------
+    |
+    | Même principe de chaîne de secours que « chat » ci-dessus, utilisé par
+    | les boutons « Traduire » et « Améliorer » de l'admin et de l'app mobile.
+    |
+    */
+
+    'text_assist' => [
+        'providers' => array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) env('AI_TEXT_ASSIST_PROVIDERS', env('AI_CHAT_PROVIDERS', 'groq,groq-fallback,openrouter,gemini'))),
+        ))),
+        'max_text_length' => 2000,
+        'timeout' => 20,
+        'limits' => [
+            'per_minute' => (int) env('AI_TEXT_ASSIST_PER_MINUTE', 20),
+            'per_day' => (int) env('AI_TEXT_ASSIST_PER_DAY', 300),
+        ],
+    ],
+
     'caching' => [
         'embeddings' => [
             'cache' => false,
