@@ -15,9 +15,6 @@ class Profile extends Model implements HasMedia
     /** @use HasFactory<ProfileFactory> */
     use HasFactory, HasTranslations, InteractsWithMedia, SoftDeletes;
 
-    /** Langues pour lesquelles un CV PDF peut être uploadé. */
-    public const CV_LOCALES = ['fr', 'en'];
-
     /** @var array<int, string> */
     protected $translatable = ['headline', 'bio_short', 'bio_full'];
 
@@ -48,17 +45,5 @@ class Profile extends Model implements HasMedia
         $this->addMediaCollection('cv_photo')->singleFile();
         // Bande audio du site : sans fichier, le lecteur utilise la piste par défaut.
         $this->addMediaCollection('music')->singleFile();
-        // CV fourni en PDF, par langue : s'il existe, il remplace le CV généré.
-        foreach (self::CV_LOCALES as $locale) {
-            $this->addMediaCollection(self::cvFileCollection($locale))
-                ->singleFile()
-                ->acceptsMimeTypes(['application/pdf']);
-        }
-    }
-
-    /** Nom de la collection de médias du CV uploadé pour une langue. */
-    public static function cvFileCollection(string $locale): string
-    {
-        return 'cv_file_'.$locale;
     }
 }

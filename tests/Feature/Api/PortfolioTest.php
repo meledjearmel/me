@@ -2,6 +2,7 @@
 
 use App\Models\Domain;
 use App\Models\Experience;
+use App\Models\JobProfile;
 use App\Models\Profile;
 use App\Models\Project;
 use App\Models\User;
@@ -189,28 +190,9 @@ test('les photos du profil s\'envoient en multipart', function () {
     expect($response->json('photo_url'))->not->toBeNull();
 });
 
-test('les CV PDF du profil s\'envoient en multipart, se listent et se retirent', function () {
+test('la bande audio du profil s\'envoie en multipart et se retire', function () {
     Storage::fake('public');
     $profile = Profile::factory()->create();
-
-    $response = $this->post(route('api.v1.profile.update'), [
-        '_method' => 'PATCH',
-        'name' => $profile->name,
-        'headline' => $profile->getTranslations('headline'),
-        'bio_short' => $profile->getTranslations('bio_short'),
-        'bio_full' => $profile->getTranslations('bio_full'),
-        'email' => $profile->email,
-        'cv_file_fr' => UploadedFile::fake()->createWithContent('cv-fr.pdf', '%PDF-1.4'),
-    ], ['Accept' => 'application/json'])->assertOk();
-
-    expect($response->json('cv_files.fr.file_name'))->toBe('cv-fr.pdf')
-        ->and($response->json('cv_files.en'))->toBeNull();
-
-    $this->deleteJson(route('api.v1.profile.cv.destroy', 'fr'))
-        ->assertOk()
-        ->assertJsonPath('cv_files.fr', null);
-
-    $this->deleteJson('/api/v1/profile/cv/de')->assertNotFound();
 
     $response = $this->post(route('api.v1.profile.update'), [
         '_method' => 'PATCH',
@@ -227,14 +209,36 @@ test('les CV PDF du profil s\'envoient en multipart, se listent et se retirent',
     $this->deleteJson(route('api.v1.profile.music.destroy'))
         ->assertOk()
         ->assertJsonPath('music', null);
+});
 
-    $this->post(route('api.v1.profile.update'), [
+test('les CV PDF d\'un profil métier s\'envoient en multipart, se listent et se retirent', function () {
+    Storage::fake('public');
+    $jobProfile = JobProfile::factory()->create();
+
+    $response = $this->post(route('api.v1.job-profiles.update', $jobProfile), [
         '_method' => 'PATCH',
-        'name' => $profile->name,
-        'headline' => $profile->getTranslations('headline'),
-        'bio_short' => $profile->getTranslations('bio_short'),
-        'bio_full' => $profile->getTranslations('bio_full'),
-        'email' => $profile->email,
+        'key' => $jobProfile->key,
+        'label' => $jobProfile->getTranslations('label'),
+        'description' => $jobProfile->getTranslations('description'),
+        'cv_description' => $jobProfile->getTranslations('cv_description'),
+        'cv_file_fr' => UploadedFile::fake()->createWithContent('cv-fr.pdf', '%PDF-1.4'),
+    ], ['Accept' => 'application/json'])->assertOk();
+
+    expect($response->json('cv_files.fr.file_name'))->toBe('cv-fr.pdf')
+        ->and($response->json('cv_files.en'))->toBeNull();
+
+    $this->deleteJson(route('api.v1.job-profiles.cv.destroy', [$jobProfile, 'fr']))
+        ->assertOk()
+        ->assertJsonPath('cv_files.fr', null);
+
+    $this->deleteJson("/api/v1/job-profiles/{$jobProfile->id}/cv/de")->assertNotFound();
+
+    $this->post(route('api.v1.job-profiles.update', $jobProfile), [
+        '_method' => 'PATCH',
+        'key' => $jobProfile->key,
+        'label' => $jobProfile->getTranslations('label'),
+        'description' => $jobProfile->getTranslations('description'),
+        'cv_description' => $jobProfile->getTranslations('cv_description'),
         'cv_file_en' => UploadedFile::fake()->create('cv.docx', 10, 'application/msword'),
     ], ['Accept' => 'application/json'])->assertUnprocessable()->assertJsonValidationErrors('cv_file_en');
 });

@@ -35,16 +35,6 @@ class ProfileResource extends JsonResource
                 'file_name' => $music->file_name,
                 'url' => $music->getUrl(),
             ],
-            /** CV PDF uploadé par langue (`null` si absent : le CV est alors généré, ou repris de l'autre langue). */
-            'cv_files' => collect(Profile::CV_LOCALES)
-                ->mapWithKeys(function (string $locale): array {
-                    $media = $this->getFirstMedia(Profile::cvFileCollection($locale));
-
-                    return [$locale => $media === null ? null : [
-                        'file_name' => $media->file_name,
-                        'url' => $media->getUrl(),
-                    ]];
-                }),
         ];
     }
 }

@@ -47,13 +47,30 @@ class JobProfileController extends Controller
     public function edit(JobProfile $jobProfile): Response
     {
         return Inertia::render('admin/job-profiles/edit', [
-            'jobProfile' => $jobProfile,
+            'jobProfile' => [
+                ...$jobProfile->toArray(),
+                'cv_files' => collect(JobProfile::CV_LOCALES)
+                    ->mapWithKeys(function (string $locale) use ($jobProfile): array {
+                        $media = $jobProfile->getFirstMedia(JobProfile::cvFileCollection($locale));
+
+                        return [$locale => $media === null ? null : [
+                            'file_name' => $media->file_name,
+                            'url' => $media->getUrl(),
+                        ]];
+                    }),
+            ],
         ]);
     }
 
     public function update(JobProfileRequest $request, JobProfile $jobProfile): RedirectResponse
     {
-        $jobProfile->update($request->validated());
+        $jobProfile->update($request->safe()->except(['cv_file_fr', 'cv_file_en']));
+
+        foreach (JobProfile::CV_LOCALES as $locale) {
+            if ($request->hasFile('cv_file_'.$locale)) {
+                $jobProfile->addMediaFromRequest('cv_file_'.$locale)->toMediaCollection(JobProfile::cvFileCollection($locale));
+            }
+        }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Profil métier mis à jour.')]);
 
@@ -67,5 +84,15 @@ class JobProfileController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Profil métier supprimé.')]);
 
         return to_route('admin.job-profiles.index');
+    }
+
+    /** Retire le CV uploadé d'une langue pour ce profil métier : le CV redevient généré. */
+    public function destroyCv(JobProfile $jobProfile, string $locale): RedirectResponse
+    {
+        $jobProfile->clearMediaCollection(JobProfile::cvFileCollection($locale));
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('CV retiré.')]);
+
+        return to_route('admin.job-profiles.edit', $jobProfile);
     }
 }

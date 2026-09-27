@@ -24,15 +24,6 @@ class ProfileController extends Controller
                     'file_name' => $music->file_name,
                     'url' => $music->getUrl(),
                 ],
-                'cv_files' => collect(Profile::CV_LOCALES)
-                    ->mapWithKeys(function (string $locale) use ($profile): array {
-                        $media = $profile->getFirstMedia(Profile::cvFileCollection($locale));
-
-                        return [$locale => $media === null ? null : [
-                            'file_name' => $media->file_name,
-                            'url' => $media->getUrl(),
-                        ]];
-                    }),
             ],
         ]);
     }
@@ -41,13 +32,7 @@ class ProfileController extends Controller
     {
         $profile = Profile::query()->firstOrFail();
 
-        $profile->update($request->safe()->except(['photo', 'cv_photo', 'cv_file_fr', 'cv_file_en', 'music']));
-
-        foreach (Profile::CV_LOCALES as $locale) {
-            if ($request->hasFile('cv_file_'.$locale)) {
-                $profile->addMediaFromRequest('cv_file_'.$locale)->toMediaCollection(Profile::cvFileCollection($locale));
-            }
-        }
+        $profile->update($request->safe()->except(['photo', 'cv_photo', 'music']));
 
         if ($request->hasFile('music')) {
             $profile->addMediaFromRequest('music')->toMediaCollection('music');
@@ -72,16 +57,6 @@ class ProfileController extends Controller
         Profile::query()->firstOrFail()->clearMediaCollection('music');
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Bande audio retirée.')]);
-
-        return to_route('admin.profile.edit');
-    }
-
-    /** Retire le CV uploadé d'une langue : le CV redevient généré. */
-    public function destroyCv(string $locale): RedirectResponse
-    {
-        Profile::query()->firstOrFail()->clearMediaCollection(Profile::cvFileCollection($locale));
-
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('CV retiré.')]);
 
         return to_route('admin.profile.edit');
     }

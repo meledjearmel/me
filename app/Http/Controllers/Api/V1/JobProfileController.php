@@ -51,12 +51,22 @@ class JobProfileController extends Controller
 
     /**
      * Modifier un profil métier
+     *
+     * Avec `cv_file_fr` / `cv_file_en` (CV en PDF, 10 Mo max), envoyer un `POST` en
+     * `multipart/form-data` avec le champ `_method=PATCH` : PHP ne lit pas les fichiers d'une
+     * requête `PATCH` directe. Un nouveau fichier remplace l'ancien.
      */
     public function update(JobProfileRequest $request, JobProfile $jobProfile): JobProfileResource
     {
-        $jobProfile->update($request->validated());
+        $jobProfile->update($request->safe()->except(['cv_file_fr', 'cv_file_en']));
 
-        return new JobProfileResource($jobProfile);
+        foreach (JobProfile::CV_LOCALES as $locale) {
+            if ($request->hasFile('cv_file_'.$locale)) {
+                $jobProfile->addMediaFromRequest('cv_file_'.$locale)->toMediaCollection(JobProfile::cvFileCollection($locale));
+            }
+        }
+
+        return new JobProfileResource($jobProfile->refresh());
     }
 
     /**
@@ -67,5 +77,17 @@ class JobProfileController extends Controller
         $jobProfile->delete();
 
         return response()->noContent();
+    }
+
+    /**
+     * Retirer le CV uploadé d'une langue pour ce profil métier
+     *
+     * Sans fichier pour une langue, le CV de l'autre langue sert de secours, sinon le CV est généré.
+     */
+    public function destroyCv(JobProfile $jobProfile, string $locale): JobProfileResource
+    {
+        $jobProfile->clearMediaCollection(JobProfile::cvFileCollection($locale));
+
+        return new JobProfileResource($jobProfile->refresh());
     }
 }

@@ -23,7 +23,7 @@ class ProfileController extends Controller
     /**
      * Modifier le profil
      *
-     * Avec `photo` ou `cv_photo` (images), `cv_file_fr` / `cv_file_en` (CV en PDF, 10 Mo max) ou `music`
+     * Avec `photo` ou `cv_photo` (images) ou `music`
      * (bande audio du site : MP3, OGG, WAV, M4A ou AAC, 20 Mo max),
      * envoyer un `POST` en `multipart/form-data` avec le champ `_method=PATCH` : PHP ne lit pas les
      * fichiers d'une requête `PATCH` directe. Un nouveau fichier remplace l'ancien.
@@ -32,13 +32,7 @@ class ProfileController extends Controller
     {
         $profile = Profile::query()->firstOrFail();
 
-        $profile->update($request->safe()->except(['photo', 'cv_photo', 'cv_file_fr', 'cv_file_en', 'music']));
-
-        foreach (Profile::CV_LOCALES as $locale) {
-            if ($request->hasFile('cv_file_'.$locale)) {
-                $profile->addMediaFromRequest('cv_file_'.$locale)->toMediaCollection(Profile::cvFileCollection($locale));
-            }
-        }
+        $profile->update($request->safe()->except(['photo', 'cv_photo', 'music']));
 
         if ($request->hasFile('music')) {
             $profile->addMediaFromRequest('music')->toMediaCollection('music');
@@ -65,20 +59,6 @@ class ProfileController extends Controller
         $profile = Profile::query()->firstOrFail();
 
         $profile->clearMediaCollection('music');
-
-        return new ProfileResource($profile->refresh());
-    }
-
-    /**
-     * Retirer le CV uploadé d'une langue
-     *
-     * Sans fichier pour une langue, le CV de l'autre langue sert de secours, sinon le CV est généré.
-     */
-    public function destroyCv(string $locale): ProfileResource
-    {
-        $profile = Profile::query()->firstOrFail();
-
-        $profile->clearMediaCollection(Profile::cvFileCollection($locale));
 
         return new ProfileResource($profile->refresh());
     }

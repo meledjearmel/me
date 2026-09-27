@@ -1,4 +1,4 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, router } from '@inertiajs/react';
 import JobProfileController from '@/actions/App/Http/Controllers/Admin/JobProfileController';
 import FormSelect from '@/components/admin/form-select';
 import Heading from '@/components/heading';
@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { index as jobProfilesIndex } from '@/routes/admin/job-profiles';
 import { PUBLICATION_STATUSES } from '@/lib/admin-options';
 import type { JobProfile } from '@/types';
@@ -106,6 +107,77 @@ export default function JobProfileEdit({
                                     en: errors['cv_description.en'],
                                 }}
                             />
+
+                            <div className="grid gap-6 sm:grid-cols-2">
+                                {(['fr', 'en'] as const).map((locale) => {
+                                    const file =
+                                        jobProfile.cv_files?.[locale];
+                                    const field = `cv_file_${locale}` as const;
+
+                                    return (
+                                        <div
+                                            key={locale}
+                                            className="grid content-start gap-2"
+                                        >
+                                            <Label htmlFor={field}>
+                                                CV en PDF (
+                                                {locale.toUpperCase()})
+                                            </Label>
+                                            {file && (
+                                                <div className="flex items-center justify-between gap-2 text-sm">
+                                                    <a
+                                                        href={file.url}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="truncate underline"
+                                                    >
+                                                        {file.file_name}
+                                                    </a>
+                                                    <Button
+                                                        type="button"
+                                                        variant="destructive"
+                                                        size="sm"
+                                                        onClick={() => {
+                                                            if (
+                                                                confirm(
+                                                                    'Retirer ce CV ? Le CV sera de nouveau généré automatiquement.',
+                                                                )
+                                                            ) {
+                                                                router.delete(
+                                                                    JobProfileController.destroyCv.url(
+                                                                        {
+                                                                            job_profile:
+                                                                                jobProfile.id,
+                                                                            locale,
+                                                                        },
+                                                                    ),
+                                                                );
+                                                            }
+                                                        }}
+                                                    >
+                                                        Retirer
+                                                    </Button>
+                                                </div>
+                                            )}
+                                            <Input
+                                                id={field}
+                                                name={field}
+                                                type="file"
+                                                accept="application/pdf"
+                                            />
+                                            <p className="text-xs text-muted-foreground">
+                                                {file
+                                                    ? 'Choisir un fichier pour remplacer le CV. '
+                                                    : 'Sans fichier, le CV est généré automatiquement. '}
+                                                PDF, 10 Mo max.
+                                            </p>
+                                            <FieldError>
+                                                {errors[field]}
+                                            </FieldError>
+                                        </div>
+                                    );
+                                })}
+                            </div>
 
                             <Field data-invalid={!!errors.status}>
                                 <FieldLabel htmlFor="status">

@@ -19,7 +19,7 @@ use App\Http\Controllers\Api\V1\TechnologyController;
 use App\Http\Controllers\Api\V1\TestimonialController;
 use App\Http\Controllers\Api\V1\TrackController;
 use App\Http\Controllers\Api\V1\TrashController;
-use App\Models\Profile;
+use App\Models\JobProfile;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->name('api.v1.')->group(function (): void {
@@ -56,6 +56,9 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('tracks', TrackController::class);
         Route::apiResource('technologies', TechnologyController::class);
         Route::apiResource('job-profiles', JobProfileController::class);
+        Route::delete('job-profiles/{job_profile}/cv/{locale}', [JobProfileController::class, 'destroyCv'])
+            ->whereIn('locale', JobProfile::CV_LOCALES)
+            ->name('job-profiles.cv.destroy');
         Route::apiResource('skills', SkillController::class);
         Route::apiResource('educations', EducationController::class);
         Route::apiResource('professional-references', ProfessionalReferenceController::class);
@@ -67,9 +70,6 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
         Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('profile/music', [ProfileController::class, 'destroyMusic'])->name('profile.music.destroy');
-        Route::delete('profile/cv/{locale}', [ProfileController::class, 'destroyCv'])
-            ->whereIn('locale', Profile::CV_LOCALES)
-            ->name('profile.cv.destroy');
 
         Route::post('push-tokens', [PushTokenController::class, 'store'])->name('push-tokens.store');
         Route::delete('push-tokens', [PushTokenController::class, 'destroy'])->name('push-tokens.destroy');

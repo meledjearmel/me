@@ -27,6 +27,8 @@ class JobProfileRequest extends FormRequest
             'hero_words.en' => ['nullable', 'string', 'max:255'],
             'cv_description.fr' => ['required', 'string'],
             'cv_description.en' => ['required', 'string'],
+            'cv_file_fr' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
+            'cv_file_en' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
             'sort_order' => ['integer'],
             'status' => ['sometimes', Rule::enum(PublicationStatus::class)],
         ];

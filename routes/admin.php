@@ -16,16 +16,13 @@ use App\Http\Controllers\Admin\TechnologyController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\TrackController;
 use App\Http\Controllers\Admin\TrashController;
-use App\Models\Profile;
+use App\Models\JobProfile;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('profile/music', [ProfileController::class, 'destroyMusic'])->name('profile.music.destroy');
-    Route::delete('profile/cv/{locale}', [ProfileController::class, 'destroyCv'])
-        ->whereIn('locale', Profile::CV_LOCALES)
-        ->name('profile.cv.destroy');
 
     Route::prefix('ai')->name('ai.')->middleware('throttle:ai-assist')->group(function () {
         Route::post('translate', [AiAssistController::class, 'translate'])->name('translate');
@@ -43,6 +40,9 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('tracks', TrackController::class)->except('show');
     Route::resource('technologies', TechnologyController::class);
     Route::resource('job-profiles', JobProfileController::class);
+    Route::delete('job-profiles/{job_profile}/cv/{locale}', [JobProfileController::class, 'destroyCv'])
+        ->whereIn('locale', JobProfile::CV_LOCALES)
+        ->name('job-profiles.cv.destroy');
     Route::resource('skills', SkillController::class);
     Route::resource('educations', EducationController::class);
     Route::resource('experiences', ExperienceController::class);

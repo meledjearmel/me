@@ -60,6 +60,7 @@ export type JobProfile = {
     hero_title: Translatable | null;
     hero_words: Translatable | null;
     cv_description: Translatable;
+    cv_files?: Record<'fr' | 'en', { file_name: string; url: string } | null>;
     sort_order: number;
     status: PublicationStatus;
     projects?: Project[];
@@ -185,7 +186,6 @@ export type Profile = {
     photo_url?: string | null;
     cv_photo_url?: string | null;
     music?: { file_name: string; url: string } | null;
-    cv_files?: Record<'fr' | 'en', { file_name: string; url: string } | null>;
 };
 
 export type Engagement = {
