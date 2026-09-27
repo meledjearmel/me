@@ -48,11 +48,30 @@ class PortfolioKnowledge
 
         return collect([
             $this->profileSection($profile, $locale),
+            $this->pagesSection($locale),
             $this->experienceSection($locale),
             $this->educationSection($locale),
             $this->skillSection($locale),
             $this->projectSection($locale),
         ])->filter()->implode("\n\n");
+    }
+
+    /** Liste les pages du site, avec leur URL absolue, pour que l'assistant puisse orienter le visiteur. */
+    private function pagesSection(string $locale): string
+    {
+        $pages = [
+            'Accueil' => 'home',
+            'À propos' => 'about',
+            'Compétences' => 'skills',
+            'Liste des projets' => 'projects.index',
+            'Témoignages' => 'testimonials.index',
+            'Contact' => 'contact.index',
+        ];
+
+        $lines = collect($pages)
+            ->map(fn (string $routeName, string $label): string => "- {$label} : ".route($routeName, ['locale' => $locale]));
+
+        return "## Pages du site\n".$lines->implode("\n");
     }
 
     private function profileSection(Profile $profile, string $locale): string
@@ -181,6 +200,8 @@ class PortfolioKnowledge
             if ($project->technologies->isNotEmpty()) {
                 $parts->push('Technologies : '.$project->technologies->pluck('name')->implode(', '));
             }
+
+            $parts->push('Page du projet : '.route('projects.show', ['locale' => $locale, 'project' => $project->slug]));
 
             foreach (['demo_url' => 'Démo', 'repo_url' => 'Code source'] as $field => $label) {
                 if (filled($project->{$field})) {

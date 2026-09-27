@@ -1,9 +1,11 @@
 <?php
 
 use App\Ai\Agents\PortfolioAssistant;
+use App\Enums\ProjectStatus;
 use App\Enums\PublicationStatus;
 use App\Models\Experience;
 use App\Models\Profile;
+use App\Models\Project;
 use App\Services\PortfolioKnowledge;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -66,6 +68,20 @@ test('the knowledge is built once then served from the cache', function () {
 
     expect($knowledge->forLocale('fr'))->toContain('Avant')
         ->and($knowledge->build('fr'))->toContain('Après');
+});
+
+test('the knowledge lists the site pages and project pages as clickable urls', function () {
+    $project = Project::factory()->create([
+        'status' => ProjectStatus::Published,
+        'slug' => 'mon-projet',
+    ]);
+
+    $knowledge = app(PortfolioKnowledge::class)->build('fr');
+
+    expect($knowledge)
+        ->toContain(route('about', ['locale' => 'fr']))
+        ->toContain(route('contact.index', ['locale' => 'fr']))
+        ->toContain(route('projects.show', ['locale' => 'fr', 'project' => $project->slug]));
 });
 
 test('the conversation history is validated', function (array $payload) {
