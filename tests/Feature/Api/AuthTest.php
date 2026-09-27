@@ -60,6 +60,7 @@ test('la déconnexion révoque le jeton', function () {
 
 test('les routes de gestion refusent les anonymes', function () {
     $this->getJson(route('api.v1.dashboard'))->assertUnauthorized();
+    $this->getJson(route('api.v1.trash.index'))->assertUnauthorized();
     $this->getJson(route('api.v1.contacts.index'))->assertUnauthorized();
     $this->getJson(route('api.v1.engagements.index'))->assertUnauthorized();
     $this->getJson(route('api.v1.testimonials.index'))->assertUnauthorized();

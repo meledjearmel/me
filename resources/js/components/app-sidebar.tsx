@@ -11,6 +11,7 @@ import {
     MessageSquareQuote,
     Music,
     Sparkles,
+    Trash2,
     User,
     UserCheck,
     Wrench,
@@ -42,6 +43,7 @@ import { index as technologiesIndex } from '@/routes/admin/technologies';
 import { index as musicGenresIndex } from '@/routes/admin/music-genres';
 import { index as testimonialsIndex } from '@/routes/admin/testimonials';
 import { index as tracksIndex } from '@/routes/admin/tracks';
+import { index as trashIndex } from '@/routes/admin/trash';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
@@ -49,6 +51,11 @@ const mainNavItems: NavItem[] = [
         title: 'Tableau de bord',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Corbeille',
+        href: trashIndex(),
+        icon: Trash2,
     },
 ];
 

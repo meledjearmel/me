@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\SkillController;
 use App\Http\Controllers\Admin\TechnologyController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\TrackController;
+use App\Http\Controllers\Admin\TrashController;
 use App\Models\Profile;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,12 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::delete('profile/cv/{locale}', [ProfileController::class, 'destroyCv'])
         ->whereIn('locale', Profile::CV_LOCALES)
         ->name('profile.cv.destroy');
+
+    Route::prefix('trash')->name('trash.')->group(function () {
+        Route::get('/', [TrashController::class, 'index'])->name('index');
+        Route::patch('{type}/{id}', [TrashController::class, 'restore'])->whereNumber('id')->name('restore');
+        Route::delete('{type}/{id}', [TrashController::class, 'forceDelete'])->whereNumber('id')->name('force-delete');
+    });
 
     Route::resource('domains', DomainController::class);
     Route::resource('music-genres', MusicGenreController::class)->except('show');

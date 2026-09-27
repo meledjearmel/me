@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\V1\SkillController;
 use App\Http\Controllers\Api\V1\TechnologyController;
 use App\Http\Controllers\Api\V1\TestimonialController;
 use App\Http\Controllers\Api\V1\TrackController;
+use App\Http\Controllers\Api\V1\TrashController;
 use App\Models\Profile;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,12 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::post('auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
         Route::get('dashboard', DashboardController::class)->name('dashboard');
+
+        Route::prefix('trash')->name('trash.')->group(function (): void {
+            Route::get('/', [TrashController::class, 'index'])->name('index');
+            Route::patch('{type}/{id}', [TrashController::class, 'restore'])->whereNumber('id')->name('restore');
+            Route::delete('{type}/{id}', [TrashController::class, 'destroy'])->whereNumber('id')->name('destroy');
+        });
 
         Route::apiResource('contacts', ContactController::class)->except('store');
         Route::apiResource('engagements', EngagementController::class)->except('store');

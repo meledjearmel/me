@@ -204,3 +204,11 @@ export type Engagement = {
     created_at: string;
     job_profile?: { id: number; label: Translatable } | null;
 };
+
+export type TrashItem = {
+    id: number;
+    type: string;
+    label: string;
+    title: string;
+    deleted_at: string;
+};
