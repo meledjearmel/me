@@ -20,7 +20,6 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             DomainSeeder::class,
-            MusicGenreSeeder::class,
             TechnologySeeder::class,
             JobProfileSeeder::class,
             ProfileSeeder::class,
@@ -34,7 +33,10 @@ class DatabaseSeeder extends Seeder
         // Données générées (avis fictifs) :
         // uniquement pour travailler en local, jamais en production.
         if (app()->environment('local')) {
-            $this->call(TestimonialSeeder::class);
+            $this->call([
+                TestimonialSeeder::class,
+                MusicGenreSeeder::class,
+            ]);
         }
     }
 
