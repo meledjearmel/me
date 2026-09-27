@@ -30,7 +30,7 @@ class Counter extends Model
         DB::table('counters')->upsert(
             [['key' => $key, 'total' => $by, 'created_at' => $now, 'updated_at' => $now]],
             ['key'],
-            ['total' => DB::raw('total + '.$by), 'updated_at' => $now],
+            ['total' => DB::raw('counters.total + '.$by), 'updated_at' => $now],
         );
 
         return static::total($key);
