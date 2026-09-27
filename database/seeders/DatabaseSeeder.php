@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             ExperienceSeeder::class,
             ProjectSeeder::class,
             ProfessionalReferenceSeeder::class,
+            MusicGenreSeeder::class,
         ]);
 
         // Données générées (avis fictifs) :
@@ -35,7 +36,6 @@ class DatabaseSeeder extends Seeder
         if (app()->environment('local')) {
             $this->call([
                 TestimonialSeeder::class,
-                MusicGenreSeeder::class,
             ]);
         }
     }

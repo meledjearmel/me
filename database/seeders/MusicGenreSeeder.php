@@ -12,12 +12,16 @@ class MusicGenreSeeder extends Seeder
      */
     public function run(): void
     {
-        $genres = [
-            ['key' => 'lofi', 'label' => ['fr' => 'Lo-fi', 'en' => 'Lo-fi']],
-            ['key' => 'jazz', 'label' => ['fr' => 'Jazz', 'en' => 'Jazz']],
-            ['key' => 'afrobeat', 'label' => ['fr' => 'Afrobeat', 'en' => 'Afrobeat']],
-            ['key' => 'ambient', 'label' => ['fr' => 'Ambiance', 'en' => 'Ambient']],
-        ];
+
+        $genres = (app()->environment('local')) ?
+            [
+                ['key' => 'lofi', 'label' => ['fr' => 'Lo-fi', 'en' => 'Lo-fi']],
+                ['key' => 'jazz', 'label' => ['fr' => 'Jazz', 'en' => 'Jazz']],
+                ['key' => 'afrobeat', 'label' => ['fr' => 'Afrobeat', 'en' => 'Afrobeat']],
+                ['key' => 'ambient', 'label' => ['fr' => 'Ambiance', 'en' => 'Ambient']],
+            ] : [
+                ['key' => 'default', 'label' => ['fr' => 'Défaut', 'en' => 'Default']],
+            ];
 
         foreach ($genres as $position => $genre) {
             MusicGenre::query()->updateOrCreate(
