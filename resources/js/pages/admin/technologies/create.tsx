@@ -1,26 +1,26 @@
-import { Form, Head } from '@inertiajs/react';
-import TechnologyController from '@/actions/App/Http/Controllers/Admin/TechnologyController';
-import FormPageHeader from '@/components/admin/form-page-header';
+import { Form, Head } from "@inertiajs/react";
+import TechnologyController from "@/actions/App/Http/Controllers/Admin/TechnologyController";
+import FormPageHeader from "@/components/admin/form-page-header";
 import {
     Field,
     FieldError,
     FieldGroup,
     FieldLabel,
-} from '@/components/ui/field';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import FormSelect from '@/components/admin/form-select';
-import TechnologyIconPicker from '@/components/admin/technology-icon-picker';
-import TranslatableField from '@/components/translatable-field';
-import { index as technologiesIndex } from '@/routes/admin/technologies';
-import type { TechnologyCategory, TechnologyIconOption } from '@/types';
+} from "@/components/ui/field";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import FormSelect from "@/components/admin/form-select";
+import TechnologyIconPicker from "@/components/admin/technology-icon-picker";
+import TranslatableField from "@/components/translatable-field";
+import { index as technologiesIndex } from "@/routes/admin/technologies";
+import type { TechnologyCategory, TechnologyIconOption } from "@/types";
 
 export default function TechnologyCreate({
     icons,
     categories,
 }: {
     icons: TechnologyIconOption[];
-    categories: Pick<TechnologyCategory, 'id' | 'label'>[];
+    categories: Pick<TechnologyCategory, "id" | "label">[];
 }) {
     return (
         <>
@@ -84,9 +84,27 @@ export default function TechnologyCreate({
                                 name="description"
                                 label="Description (infobulle du logo, 150 max)"
                                 maxLength={150}
+                                technologySource={() => {
+                                    const form = document
+                                        .getElementById("name")
+                                        ?.closest("form");
+                                    const data = new FormData(
+                                        form ?? undefined,
+                                    );
+                                    const category = categories.find(
+                                        (item) =>
+                                            String(item.id) ===
+                                            data.get("category_id"),
+                                    );
+
+                                    return {
+                                        name: String(data.get("name") ?? ""),
+                                        category: category?.label.fr ?? null,
+                                    };
+                                }}
                                 errors={{
-                                    fr: errors['description.fr'],
-                                    en: errors['description.en'],
+                                    fr: errors["description.fr"],
+                                    en: errors["description.en"],
                                 }}
                             />
 
@@ -101,7 +119,7 @@ export default function TechnologyCreate({
 
 TechnologyCreate.layout = {
     breadcrumbs: [
-        { title: 'Technologies', href: technologiesIndex() },
-        { title: 'Nouvelle', href: '' },
+        { title: "Technologies", href: technologiesIndex() },
+        { title: "Nouvelle", href: "" },
     ],
 };

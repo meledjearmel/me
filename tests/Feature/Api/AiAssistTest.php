@@ -1,5 +1,6 @@
 <?php
 
+use App\Ai\Agents\TechnologyDescriber;
 use App\Ai\Agents\TextImprover;
 use App\Ai\Agents\TextTranslator;
 use App\Models\User;
@@ -33,4 +34,17 @@ test('an authenticated device improves a text', function () {
         'locale' => 'fr',
         'tone' => 'concise',
     ])->assertOk()->assertExactJson(['text' => 'Texte amélioré.']);
+});
+
+test('an authenticated device generates a technology description', function () {
+    Sanctum::actingAs(User::factory()->create());
+    TechnologyDescriber::fake(['Système de versionnage pour suivre mes changements.']);
+    TextTranslator::fake(['Version control system to track my changes.']);
+
+    $this->postJson(route('api.v1.ai.describe-technology'), ['name' => 'Git'])
+        ->assertOk()
+        ->assertExactJson(['description' => [
+            'fr' => 'Système de versionnage pour suivre mes changements.',
+            'en' => 'Version control system to track my changes.',
+        ]]);
 });

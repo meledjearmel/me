@@ -2,6 +2,7 @@
 
 namespace App\Services\Ai;
 
+use App\Ai\Agents\TechnologyDescriber;
 use App\Ai\Agents\TextImprover;
 use App\Ai\Agents\TextTranslator;
 use App\Enums\TextTone;
@@ -32,6 +33,39 @@ class TextAssistService
             fn (string $provider, int $timeout, ?string $model): string => (new TextImprover($locale, $tone, $instructions))
                 ->prompt($text, provider: $provider, model: $model, timeout: $timeout)->text,
         );
+    }
+
+    /** Longueur maximale d'une description de technologie (champ admin). */
+    private const TECHNOLOGY_DESCRIPTION_MAX_LENGTH = 150;
+
+    /**
+     * Rédige la description d'une technologie en français, puis la traduit en
+     * anglais ; null si l'une des deux étapes échoue.
+     * Une réponse sur plusieurs lignes, trop longue (un modèle qui livre son
+     * raisonnement au lieu de la phrase) ou sans ponctuation finale (coupée
+     * par la limite de jetons) est traitée comme vide, pour passer au
+     * fournisseur suivant.
+     *
+     * @return array{fr: string, en: string}|null
+     */
+    public function describeTechnology(string $name, ?string $category): ?array
+    {
+        $prompt = filled($category) ? "{$name} (catégorie : {$category})" : $name;
+
+        $french = $this->attempt(function (string $provider, int $timeout, ?string $model) use ($prompt): string {
+            $text = $this->clean((new TechnologyDescriber)
+                ->prompt($prompt, provider: $provider, model: $model, timeout: $timeout)->text);
+
+            return $this->isCompleteShortSentence($text) ? $text : '';
+        });
+
+        if ($french === null) {
+            return null;
+        }
+
+        $english = $this->translate($french, 'fr', 'en');
+
+        return $english === null ? null : ['fr' => $french, 'en' => $english];
     }
 
     /**
@@ -90,6 +124,13 @@ class TextAssistService
         Log::error('Assistance IA : tous les fournisseurs ont échoué en '.$this->elapsed($start).' s (budget '.$budget.' s) : '.implode(', ', $tried));
 
         return null;
+    }
+
+    private function isCompleteShortSentence(string $text): bool
+    {
+        return ! str_contains($text, "\n")
+            && mb_strlen($text) <= self::TECHNOLOGY_DESCRIPTION_MAX_LENGTH
+            && preg_match('/[.!?…]$/u', $text) === 1;
     }
 
     private function elapsed(float $since): string

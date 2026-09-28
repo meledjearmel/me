@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\TextTone;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Ai\DescribeTechnologyRequest;
 use App\Http\Requests\Ai\ImproveTextRequest;
 use App\Http\Requests\Ai\TranslateTextRequest;
 use App\Services\Ai\TextAssistService;
@@ -36,6 +37,20 @@ class AiAssistController extends Controller
         );
 
         return $this->respond($text);
+    }
+
+    public function describeTechnology(DescribeTechnologyRequest $request): JsonResponse
+    {
+        $description = $this->assist->describeTechnology(
+            $request->validated('name'),
+            $request->validated('category'),
+        );
+
+        if ($description === null) {
+            return $this->respond(null);
+        }
+
+        return response()->json(['description' => $description]);
     }
 
     private function respond(?string $text): JsonResponse

@@ -1,23 +1,26 @@
-import { useCallback, useState } from 'react';
-import AiAssistController from '@/actions/App/Http/Controllers/Admin/AiAssistController';
+import { useCallback, useState } from "react";
+import AiAssistController from "@/actions/App/Http/Controllers/Admin/AiAssistController";
 
-export type Locale = 'fr' | 'en';
-export type TextTone = 'formal' | 'friendly' | 'concise' | 'enthusiastic';
+export type Locale = "fr" | "en";
+export type TextTone = "formal" | "friendly" | "concise" | "enthusiastic";
 
 function csrfToken(): string {
     const match = document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]*)/);
 
-    return match ? decodeURIComponent(match[1]) : '';
+    return match ? decodeURIComponent(match[1]) : "";
 }
 
-async function post(url: string, body: unknown): Promise<{ text: string }> {
+async function post<T = { text: string }>(
+    url: string,
+    body: unknown,
+): Promise<T> {
     const response = await fetch(url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            'X-XSRF-TOKEN': csrfToken(),
-            'X-Requested-With': 'XMLHttpRequest',
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "X-XSRF-TOKEN": csrfToken(),
+            "X-Requested-With": "XMLHttpRequest",
         },
         body: JSON.stringify(body),
     });
@@ -34,9 +37,9 @@ async function post(url: string, body: unknown): Promise<{ text: string }> {
  * AiAssistController et config/ai.php: text_assist).
  */
 export function useAiTextAssist() {
-    const [pending, setPending] = useState<'translate' | 'improve' | null>(
-        null,
-    );
+    const [pending, setPending] = useState<
+        "translate" | "improve" | "describe" | null
+    >(null);
 
     const translate = useCallback(
         async (
@@ -44,7 +47,7 @@ export function useAiTextAssist() {
             sourceLocale: Locale,
             targetLocale: Locale,
         ): Promise<string | null> => {
-            setPending('translate');
+            setPending("translate");
 
             try {
                 const { text: translated } = await post(
@@ -73,7 +76,7 @@ export function useAiTextAssist() {
             tone: TextTone | null,
             instructions: string,
         ): Promise<string | null> => {
-            setPending('improve');
+            setPending("improve");
 
             try {
                 const { text: improved } = await post(
@@ -96,5 +99,30 @@ export function useAiTextAssist() {
         [],
     );
 
-    return { translate, improve, pending };
+    const describeTechnology = useCallback(
+        async (
+            name: string,
+            category: string | null,
+        ): Promise<Record<Locale, string> | null> => {
+            setPending("describe");
+
+            try {
+                const { description } = await post<{
+                    description: Record<Locale, string>;
+                }>(AiAssistController.describeTechnology.url(), {
+                    name,
+                    category,
+                });
+
+                return description;
+            } catch {
+                return null;
+            } finally {
+                setPending(null);
+            }
+        },
+        [],
+    );
+
+    return { translate, improve, describeTechnology, pending };
 }

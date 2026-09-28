@@ -1,5 +1,6 @@
 <?php
 
+use App\Ai\Agents\TechnologyDescriber;
 use App\Ai\Agents\TextImprover;
 use App\Ai\Agents\TextTranslator;
 use App\Models\User;
@@ -191,4 +192,59 @@ test('a provider:model entry targets that model and the next model answers when 
     ])->assertOk()->assertExactJson(['text' => 'Hello']);
 
     expect($models)->toBe(['model-a', 'model-b']);
+});
+
+test('an authenticated user generates a technology description in both languages', function () {
+    $user = User::factory()->create();
+    TechnologyDescriber::fake(['Base de données orientée documents.']);
+    TextTranslator::fake(['Document-oriented database.']);
+
+    $this->actingAs($user)->postJson(route('admin.ai.describe-technology'), [
+        'name' => 'MongoDB',
+        'category' => 'Données',
+    ])->assertOk()->assertExactJson(['description' => [
+        'fr' => 'Base de données orientée documents.',
+        'en' => 'Document-oriented database.',
+    ]]);
+
+    TechnologyDescriber::assertPrompted('MongoDB (catégorie : Données)');
+    TextTranslator::assertPrompted('Base de données orientée documents.');
+});
+
+test('a technology description leaking the model reasoning falls back to the next provider', function () {
+    config(['ai.text_assist.providers' => ['groq', 'gemini']]);
+    $user = User::factory()->create();
+    TechnologyDescriber::fake([
+        "The user wants a description for \"Flutter\".\nDrafting ideas:\n1. Framework mobile.",
+        'Crée des applications natives multiplateformes depuis un seul code.',
+    ]);
+    TextTranslator::fake(['Builds cross-platform native apps from a single codebase.']);
+
+    $this->actingAs($user)->postJson(route('admin.ai.describe-technology'), ['name' => 'Flutter'])
+        ->assertOk()
+        ->assertJsonPath('description.fr', 'Crée des applications natives multiplateformes depuis un seul code.');
+});
+
+test('a truncated technology description falls back to the next provider', function () {
+    config(['ai.text_assist.providers' => ['groq', 'gemini']]);
+    $user = User::factory()->create();
+    TechnologyDescriber::fake([
+        'Langage orienté objet utilisé pour mes',
+        'Langage orienté objet pour mes applications Android.',
+    ]);
+    TextTranslator::fake(['Object-oriented language for my Android apps.']);
+
+    $this->actingAs($user)->postJson(route('admin.ai.describe-technology'), ['name' => 'Kotlin'])
+        ->assertOk()
+        ->assertJsonPath('description.fr', 'Langage orienté objet pour mes applications Android.');
+});
+
+test('generating a technology description requires a name', function () {
+    $user = User::factory()->create();
+    TechnologyDescriber::fake()->preventStrayPrompts();
+
+    $this->actingAs($user)->postJson(route('admin.ai.describe-technology'), [])
+        ->assertUnprocessable()->assertJsonValidationErrors('name');
+
+    TechnologyDescriber::assertNeverPrompted();
 });

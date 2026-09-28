@@ -1,6 +1,6 @@
-import { Languages, Loader2, Sparkles } from 'lucide-react';
-import { type RefObject, useRef, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Languages, Loader2, Sparkles, WandSparkles } from "lucide-react";
+import { type RefObject, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -8,32 +8,32 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/ui/dialog';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/dialog";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import {
     type Locale,
     type TextTone,
     useAiTextAssist,
-} from '@/hooks/use-ai-text-assist';
+} from "@/hooks/use-ai-text-assist";
 
 const TONES: { value: TextTone; label: string }[] = [
-    { value: 'formal', label: 'Plus formel' },
-    { value: 'friendly', label: 'Plus chaleureux' },
-    { value: 'concise', label: 'Plus concis' },
-    { value: 'enthusiastic', label: 'Plus enthousiaste' },
+    { value: "formal", label: "Plus formel" },
+    { value: "friendly", label: "Plus chaleureux" },
+    { value: "concise", label: "Plus concis" },
+    { value: "enthusiastic", label: "Plus enthousiaste" },
 ];
 
-const LOCALES = ['fr', 'en'] as const;
-const OTHER_LOCALE: Record<Locale, Locale> = { fr: 'en', en: 'fr' };
+const LOCALES = ["fr", "en"] as const;
+const OTHER_LOCALE: Record<Locale, Locale> = { fr: "en", en: "fr" };
 
 type TranslatableFieldProps = {
     name: string;
@@ -43,6 +43,11 @@ type TranslatableFieldProps = {
     textarea?: boolean;
     required?: boolean;
     maxLength?: number;
+    /**
+     * Remplace « Améliorer » par « Générer » : renvoie la technologie à décrire
+     * (lue dans le formulaire), et l'IA remplit les deux langues.
+     */
+    technologySource?: () => { name: string; category: string | null };
 };
 
 export default function TranslatableField({
@@ -53,23 +58,25 @@ export default function TranslatableField({
     textarea = false,
     required = false,
     maxLength,
+    technologySource,
 }: TranslatableFieldProps) {
     const refs = {
         fr: useRef<HTMLInputElement | HTMLTextAreaElement>(null),
         en: useRef<HTMLInputElement | HTMLTextAreaElement>(null),
     };
-    const { translate, improve, pending } = useAiTextAssist();
+    const { translate, improve, describeTechnology, pending } =
+        useAiTextAssist();
     const [assistError, setAssistError] = useState<string | null>(null);
     const [improveTarget, setImproveTarget] = useState<Locale | null>(null);
     const [tone, setTone] = useState<TextTone | null>(null);
-    const [instructions, setInstructions] = useState('');
+    const [instructions, setInstructions] = useState("");
 
     async function handleTranslate(locale: Locale) {
         setAssistError(null);
         const source = OTHER_LOCALE[locale];
-        const sourceText = refs[source].current?.value.trim() ?? '';
+        const sourceText = refs[source].current?.value.trim() ?? "";
 
-        if (sourceText === '') {
+        if (sourceText === "") {
             setAssistError(
                 `Remplissez d'abord le champ ${source.toUpperCase()} pour pouvoir le traduire.`,
             );
@@ -81,7 +88,7 @@ export default function TranslatableField({
 
         if (translated === null) {
             setAssistError(
-                'Traduction indisponible pour le moment, réessayez.',
+                "Traduction indisponible pour le moment, réessayez.",
             );
 
             return;
@@ -94,18 +101,53 @@ export default function TranslatableField({
         }
     }
 
+    async function handleGenerate() {
+        if (!technologySource) {
+            return;
+        }
+
+        setAssistError(null);
+        const { name, category } = technologySource();
+
+        if (name.trim() === "") {
+            setAssistError(
+                "Renseignez d'abord le nom de la technologie pour générer sa description.",
+            );
+
+            return;
+        }
+
+        const description = await describeTechnology(name.trim(), category);
+
+        if (description === null) {
+            setAssistError(
+                "Génération indisponible pour le moment, réessayez.",
+            );
+
+            return;
+        }
+
+        LOCALES.forEach((locale) => {
+            const field = refs[locale].current;
+
+            if (field) {
+                field.value = description[locale];
+            }
+        });
+    }
+
     function openImproveDialog(locale: Locale) {
         setAssistError(null);
-        const currentText = refs[locale].current?.value.trim() ?? '';
+        const currentText = refs[locale].current?.value.trim() ?? "";
 
-        if (currentText === '') {
-            setAssistError('Rien à améliorer : le champ est vide.');
+        if (currentText === "") {
+            setAssistError("Rien à améliorer : le champ est vide.");
 
             return;
         }
 
         setTone(null);
-        setInstructions('');
+        setInstructions("");
         setImproveTarget(locale);
     }
 
@@ -114,7 +156,7 @@ export default function TranslatableField({
             return;
         }
 
-        const currentText = refs[improveTarget].current?.value.trim() ?? '';
+        const currentText = refs[improveTarget].current?.value.trim() ?? "";
         const improved = await improve(
             currentText,
             improveTarget,
@@ -124,7 +166,7 @@ export default function TranslatableField({
 
         if (improved === null) {
             setAssistError(
-                'Amélioration indisponible pour le moment, réessayez.',
+                "Amélioration indisponible pour le moment, réessayez.",
             );
             setImproveTarget(null);
 
@@ -148,7 +190,7 @@ export default function TranslatableField({
                         <div className="flex items-center justify-between gap-2">
                             <FieldLabel htmlFor={`${name}-${locale}`}>
                                 {label} ({locale.toUpperCase()})
-                                {required && ' *'}
+                                {required && " *"}
                             </FieldLabel>
                             <div className="flex items-center gap-1">
                                 <Button
@@ -159,24 +201,44 @@ export default function TranslatableField({
                                     onClick={() => handleTranslate(locale)}
                                     title={`Traduire depuis le ${OTHER_LOCALE[locale].toUpperCase()}`}
                                 >
-                                    {pending === 'translate' ? (
+                                    {pending === "translate" ? (
                                         <Loader2 className="animate-spin" />
                                     ) : (
                                         <Languages />
                                     )}
                                     Traduire
                                 </Button>
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    disabled={pending !== null}
-                                    onClick={() => openImproveDialog(locale)}
-                                    title="Améliorer ce texte"
-                                >
-                                    <Sparkles />
-                                    Améliorer
-                                </Button>
+                                {technologySource ? (
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        disabled={pending !== null}
+                                        onClick={handleGenerate}
+                                        title="Rédiger la description (FR et EN) à partir du nom de la technologie"
+                                    >
+                                        {pending === "describe" ? (
+                                            <Loader2 className="animate-spin" />
+                                        ) : (
+                                            <WandSparkles />
+                                        )}
+                                        Générer
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        disabled={pending !== null}
+                                        onClick={() =>
+                                            openImproveDialog(locale)
+                                        }
+                                        title="Améliorer ce texte"
+                                    >
+                                        <Sparkles />
+                                        Améliorer
+                                    </Button>
+                                )}
                             </div>
                         </div>
                         {textarea ? (
@@ -226,9 +288,9 @@ export default function TranslatableField({
                         <DialogTitle>Améliorer le texte</DialogTitle>
                         <DialogDescription>
                             Choisissez un ton et, si besoin, précisez une
-                            consigne. Le texte{' '}
+                            consigne. Le texte{" "}
                             {improveTarget &&
-                                `(${improveTarget.toUpperCase()})`}{' '}
+                                `(${improveTarget.toUpperCase()})`}{" "}
                             sera réécrit dans la même langue.
                         </DialogDescription>
                     </DialogHeader>
@@ -287,7 +349,7 @@ export default function TranslatableField({
                             onClick={handleImprove}
                             disabled={pending !== null}
                         >
-                            {pending === 'improve' && (
+                            {pending === "improve" && (
                                 <Loader2 className="animate-spin" />
                             )}
                             Générer

@@ -29,6 +29,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::prefix('ai')->name('ai.')->middleware('throttle:ai-assist')->group(function () {
         Route::post('translate', [AiAssistController::class, 'translate'])->name('translate');
         Route::post('improve', [AiAssistController::class, 'improve'])->name('improve');
+        Route::post('describe-technology', [AiAssistController::class, 'describeTechnology'])->name('describe-technology');
     });
 
     Route::prefix('trash')->name('trash.')->group(function () {

@@ -41,6 +41,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::prefix('ai')->name('ai.')->middleware('throttle:ai-assist')->group(function (): void {
             Route::post('translate', [AiController::class, 'translate'])->name('translate');
             Route::post('improve', [AiController::class, 'improve'])->name('improve');
+            Route::post('describe-technology', [AiController::class, 'describeTechnology'])->name('describe-technology');
         });
 
         Route::prefix('trash')->name('trash.')->group(function (): void {

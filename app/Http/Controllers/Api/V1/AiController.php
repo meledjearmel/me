@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Enums\TextTone;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Ai\DescribeTechnologyRequest;
 use App\Http\Requests\Ai\ImproveTextRequest;
 use App\Http\Requests\Ai\TranslateTextRequest;
 use App\Services\Ai\TextAssistService;
@@ -54,6 +55,31 @@ class AiController extends Controller
         );
 
         return $this->respond($text);
+    }
+
+    /**
+     * Générer la description d'une technologie
+     *
+     * Rédige, à partir du nom de la technologie (et de sa catégorie si elle est
+     * fournie), une courte description dans l'esprit de la stack du portfolio,
+     * en français puis traduite en anglais. Elle alimente le champ bilingue
+     * `description` d'une technologie.
+     *
+     * @response array{description: array{fr: string, en: string}}
+     * @response 503 array{message: string}
+     */
+    public function describeTechnology(DescribeTechnologyRequest $request): JsonResponse
+    {
+        $description = $this->assist->describeTechnology(
+            $request->validated('name'),
+            $request->validated('category'),
+        );
+
+        if ($description === null) {
+            return $this->respond(null);
+        }
+
+        return response()->json(['description' => $description]);
     }
 
     /**
