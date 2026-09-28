@@ -10,10 +10,16 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import FormSelect from '@/components/admin/form-select';
+import TechnologyIconPicker from '@/components/admin/technology-icon-picker';
 import { TECHNOLOGY_CATEGORIES } from '@/lib/admin-options';
 import { index as technologiesIndex } from '@/routes/admin/technologies';
+import type { TechnologyIconOption } from '@/types';
 
-export default function TechnologyCreate() {
+export default function TechnologyCreate({
+    icons,
+}: {
+    icons: TechnologyIconOption[];
+}) {
     return (
         <>
             <Head title="Nouvelle technologie" />
@@ -62,8 +68,11 @@ export default function TechnologyCreate() {
                             </Field>
 
                             <Field data-invalid={!!errors.icon}>
-                                <FieldLabel htmlFor="icon">Icône</FieldLabel>
-                                <Input id="icon" name="icon" />
+                                <FieldLabel>Logo</FieldLabel>
+                                <TechnologyIconPicker
+                                    icons={icons}
+                                    invalid={!!errors.icon}
+                                />
                                 <FieldError>{errors.icon}</FieldError>
                             </Field>
 

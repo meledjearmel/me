@@ -52,6 +52,8 @@ class AppServiceProvider extends ServiceProvider
             Limit::perMinute(config('ai.text_assist.limits.per_minute'))->by($request->user()?->id ?: $request->ip()),
             Limit::perDay(config('ai.text_assist.limits.per_day'))->by($request->user()?->id ?: $request->ip()),
         ]);
+
+        RateLimiter::for('technology-icons', fn (Request $request): Limit => Limit::perMinute(30)->by($request->user()?->id ?: $request->ip()));
     }
 
     /**

@@ -10,14 +10,17 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import FormSelect from '@/components/admin/form-select';
+import TechnologyIconPicker from '@/components/admin/technology-icon-picker';
 import { TECHNOLOGY_CATEGORIES } from '@/lib/admin-options';
 import { index as technologiesIndex } from '@/routes/admin/technologies';
-import type { Technology } from '@/types';
+import type { Technology, TechnologyIconOption } from '@/types';
 
 export default function TechnologyEdit({
     technology,
+    icons,
 }: {
     technology: Technology;
+    icons: TechnologyIconOption[];
 }) {
     return (
         <>
@@ -69,11 +72,11 @@ export default function TechnologyEdit({
                             </Field>
 
                             <Field data-invalid={!!errors.icon}>
-                                <FieldLabel htmlFor="icon">Icône</FieldLabel>
-                                <Input
-                                    id="icon"
-                                    name="icon"
-                                    defaultValue={technology.icon ?? ''}
+                                <FieldLabel>Logo</FieldLabel>
+                                <TechnologyIconPicker
+                                    icons={icons}
+                                    defaultValue={technology.icon}
+                                    invalid={!!errors.icon}
                                 />
                                 <FieldError>{errors.icon}</FieldError>
                             </Field>

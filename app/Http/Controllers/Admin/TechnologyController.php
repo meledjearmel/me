@@ -6,6 +6,7 @@ use App\Concerns\PaginatesAdminLists;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\TechnologyRequest;
 use App\Models\Technology;
+use App\Services\TechnologyIconLibrary;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -23,9 +24,11 @@ class TechnologyController extends Controller
         ]);
     }
 
-    public function create(): Response
+    public function create(TechnologyIconLibrary $library): Response
     {
-        return Inertia::render('admin/technologies/create');
+        return Inertia::render('admin/technologies/create', [
+            'icons' => $library->all(),
+        ]);
     }
 
     public function store(TechnologyRequest $request): RedirectResponse
@@ -44,10 +47,11 @@ class TechnologyController extends Controller
         ]);
     }
 
-    public function edit(Technology $technology): Response
+    public function edit(Technology $technology, TechnologyIconLibrary $library): Response
     {
         return Inertia::render('admin/technologies/edit', [
             'technology' => $technology,
+            'icons' => $library->all(),
         ]);
     }
 

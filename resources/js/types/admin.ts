@@ -52,6 +52,13 @@ export type Technology = {
     projects?: Project[];
 };
 
+/** Logo de la bibliothèque `public/icons/tech` (variantes de thème regroupées). */
+export type TechnologyIconOption = {
+    slug: string;
+    light_url: string | null;
+    dark_url: string | null;
+};
+
 export type JobProfile = {
     id: number;
     key: string;

@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\V1\ProjectController;
 use App\Http\Controllers\Api\V1\PushTokenController;
 use App\Http\Controllers\Api\V1\SkillController;
 use App\Http\Controllers\Api\V1\TechnologyController;
+use App\Http\Controllers\Api\V1\TechnologyIconController;
 use App\Http\Controllers\Api\V1\TestimonialController;
 use App\Http\Controllers\Api\V1\TrackController;
 use App\Http\Controllers\Api\V1\TrashController;
@@ -54,6 +55,16 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('domains', DomainController::class);
         Route::apiResource('music-genres', MusicGenreController::class);
         Route::apiResource('tracks', TrackController::class);
+        Route::prefix('technology-icons')->name('technology-icons.')->group(function (): void {
+            Route::get('/', [TechnologyIconController::class, 'index'])->name('index');
+
+            // Recherche et import appellent le catalogue Iconify : on les borne.
+            Route::middleware('throttle:technology-icons')->group(function (): void {
+                Route::get('search', [TechnologyIconController::class, 'search'])->name('search');
+                Route::post('/', [TechnologyIconController::class, 'store'])->name('store');
+                Route::post('upload', [TechnologyIconController::class, 'upload'])->name('upload');
+            });
+        });
         Route::apiResource('technologies', TechnologyController::class);
         Route::apiResource('job-profiles', JobProfileController::class);
         Route::delete('job-profiles/{job_profile}/cv/{locale}', [JobProfileController::class, 'destroyCv'])

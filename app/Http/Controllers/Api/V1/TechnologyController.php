@@ -35,6 +35,9 @@ class TechnologyController extends Controller
 
     /**
      * Créer une technologie
+     *
+     * `icon` est le `slug` d'un logo de la bibliothèque (voir les endpoints des logos de
+     * technologies) ; un logo inconnu est refusé.
      */
     public function store(TechnologyRequest $request): TechnologyResource
     {
@@ -51,6 +54,9 @@ class TechnologyController extends Controller
 
     /**
      * Modifier une technologie
+     *
+     * `icon` est le `slug` d'un logo de la bibliothèque. Un logo déjà enregistré reste accepté
+     * tel quel, même sans fichier ; en changer exige un logo existant.
      */
     public function update(TechnologyRequest $request, Technology $technology): TechnologyResource
     {

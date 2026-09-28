@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\SkillController;
 use App\Http\Controllers\Admin\TechnologyController;
+use App\Http\Controllers\Admin\TechnologyIconController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\TrackController;
 use App\Http\Controllers\Admin\TrashController;
@@ -38,6 +39,11 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('domains', DomainController::class);
     Route::resource('music-genres', MusicGenreController::class)->except('show');
     Route::resource('tracks', TrackController::class)->except('show');
+    Route::prefix('technology-icons')->name('technology-icons.')->group(function () {
+        Route::get('search', [TechnologyIconController::class, 'search'])->name('search');
+        Route::post('/', [TechnologyIconController::class, 'store'])->name('store');
+        Route::post('upload', [TechnologyIconController::class, 'upload'])->name('upload');
+    });
     Route::resource('technologies', TechnologyController::class);
     Route::resource('job-profiles', JobProfileController::class);
     Route::delete('job-profiles/{job_profile}/cv/{locale}', [JobProfileController::class, 'destroyCv'])
