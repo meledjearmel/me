@@ -23,21 +23,22 @@ class TechnologyController extends Controller
      * Liste des technologies
      */
     #[QueryParameter('search', description: 'Recherche dans le nom.', type: 'string')]
-    #[QueryParameter('category', description: 'Catégorie de technologie.', type: 'string')]
+    #[QueryParameter('category_id', description: 'Identifiant de la catégorie de technologie.', type: 'integer')]
     #[QueryParameter('page', description: 'Numéro de page.', type: 'integer', default: 1)]
     #[QueryParameter('per_page', description: 'Éléments par page : `10`, `25` ou `50`.', type: 'integer', default: 10)]
     public function index(Request $request): AnonymousResourceCollection
     {
         return TechnologyResource::collection(
-            $this->paginateList(Technology::query()->orderBy('name'), $request, ['name'], ['category'])
+            $this->paginateList(Technology::query()->with('category')->orderBy('name'), $request, ['name'], ['category_id'])
         );
     }
 
     /**
      * Créer une technologie
      *
-     * `icon` est le `slug` d'un logo de la bibliothèque (voir les endpoints des logos de
-     * technologies) ; un logo inconnu est refusé.
+     * `category_id` est l'identifiant d'une catégorie (voir les endpoints des catégories de
+     * technologies). `icon` est le `slug` d'un logo de la bibliothèque (voir les endpoints des
+     * logos de technologies) ; un logo inconnu est refusé.
      */
     public function store(TechnologyRequest $request): TechnologyResource
     {

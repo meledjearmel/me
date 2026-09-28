@@ -50,7 +50,7 @@ class SkillController extends Controller
             return $skill;
         });
 
-        return new SkillResource($skill->load(['domain', 'technologies']));
+        return new SkillResource($skill->load(['domain', 'technologies.category']));
     }
 
     /**
@@ -58,7 +58,7 @@ class SkillController extends Controller
      */
     public function show(Skill $skill): SkillResource
     {
-        return new SkillResource($skill->load(['domain', 'technologies']));
+        return new SkillResource($skill->load(['domain', 'technologies.category']));
     }
 
     /**
@@ -72,7 +72,7 @@ class SkillController extends Controller
             $this->syncTechnologies($skill, $request->validated('technologies', []));
         });
 
-        return new SkillResource($skill->load(['domain', 'technologies']));
+        return new SkillResource($skill->load(['domain', 'technologies.category']));
     }
 
     /**

@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\ProjectController;
 use App\Http\Controllers\Api\V1\PushTokenController;
 use App\Http\Controllers\Api\V1\SkillController;
+use App\Http\Controllers\Api\V1\TechnologyCategoryController;
 use App\Http\Controllers\Api\V1\TechnologyController;
 use App\Http\Controllers\Api\V1\TechnologyIconController;
 use App\Http\Controllers\Api\V1\TestimonialController;
@@ -65,6 +66,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
                 Route::post('upload', [TechnologyIconController::class, 'upload'])->name('upload');
             });
         });
+        Route::apiResource('technology-categories', TechnologyCategoryController::class);
         Route::apiResource('technologies', TechnologyController::class);
         Route::apiResource('job-profiles', JobProfileController::class);
         Route::delete('job-profiles/{job_profile}/cv/{locale}', [JobProfileController::class, 'destroyCv'])

@@ -20,10 +20,15 @@ class TechnologyResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'category' => $this->category->value,
+            'category' => $this->category->getTranslation('label', app()->getLocale()),
             'icon' => $this->icon,
             'icon_light_url' => $library->url($this->icon, 'light'),
             'icon_dark_url' => $library->url($this->icon, 'dark'),
+            // Un champ traduisible non renseigné vaut '' pour la locale, jamais null : on
+            // normalise vers null pour que la page publique n'affiche pas d'infobulle vide.
+            'description' => $this->getTranslation('description', app()->getLocale()) !== ''
+                ? $this->getTranslation('description', app()->getLocale())
+                : null,
         ];
     }
 }

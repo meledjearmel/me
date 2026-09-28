@@ -127,8 +127,6 @@ function TechnologyRows({
 }: {
     technologies: PublicTechnology[];
 }) {
-    const t = useTranslations();
-    const categories = t.projects.techCategory as Record<string, string>;
     const groups = Object.entries(
         technologies.reduce<Record<string, PublicTechnology[]>>(
             (carry, technology) => {
@@ -144,9 +142,7 @@ function TechnologyRows({
         <div className="pub-ledger__rows">
             {groups.map(([category, items]) => (
                 <div key={category} className="pub-ledger__row">
-                    <p className="pub-ledger__key">
-                        {categories[category] ?? category}
-                    </p>
+                    <p className="pub-ledger__key">{category}</p>
                     <ul className="pub-ledger__tools">
                         {items.map((technology) => (
                             <li key={technology.id}>

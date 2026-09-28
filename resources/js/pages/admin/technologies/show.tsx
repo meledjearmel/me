@@ -1,8 +1,8 @@
 import { Link } from '@inertiajs/react';
+import TechnologyCategoryController from '@/actions/App/Http/Controllers/Admin/TechnologyCategoryController';
 import TechnologyController from '@/actions/App/Http/Controllers/Admin/TechnologyController';
 import ProjectController from '@/actions/App/Http/Controllers/Admin/ProjectController';
-import { TECHNOLOGY_CATEGORIES } from '@/lib/admin-options';
-import ShowPage, { Pills } from '@/components/admin/show-page';
+import ShowPage, { Bilingual, Pills } from '@/components/admin/show-page';
 import { index as technologiesIndex } from '@/routes/admin/technologies';
 import type { Technology } from '@/types';
 
@@ -25,11 +25,23 @@ export default function TechnologyShow({
                         { label: 'Nom', value: row.name },
                         {
                             label: 'Catégorie',
-                            value: TECHNOLOGY_CATEGORIES.find(
-                                (category) => category.value === row.category,
-                            )?.label,
+                            value: row.category && (
+                                <Link
+                                    href={TechnologyCategoryController.show(
+                                        row.category.id,
+                                    )}
+                                    className="hover:underline"
+                                >
+                                    {row.category.label.fr}
+                                </Link>
+                            ),
                         },
                         { label: 'Icône', value: row.icon },
+                        {
+                            label: 'Description (infobulle)',
+                            value: <Bilingual value={row.description} />,
+                            wide: true,
+                        },
                     ],
                 },
                 {

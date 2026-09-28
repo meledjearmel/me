@@ -1,7 +1,6 @@
 <?php
 
 use App\Enums\PublicationStatus;
-use App\Enums\TechnologyCategory;
 use App\Models\Domain;
 use App\Models\Education;
 use App\Models\Experience;
@@ -9,6 +8,7 @@ use App\Models\JobProfile;
 use App\Models\ProfessionalReference;
 use App\Models\Skill;
 use App\Models\Technology;
+use App\Models\TechnologyCategory;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 
@@ -61,18 +61,43 @@ test('la liste des domaines est paginée', function () {
 });
 
 test('une technologie se crée et se filtre par catégorie', function () {
-    $category = TechnologyCategory::cases()[0];
+    $category = TechnologyCategory::factory()->create();
 
-    $this->postJson(route('api.v1.technologies.store'), ['name' => 'Laravel', 'category' => $category->value])
+    $this->postJson(route('api.v1.technologies.store'), [
+        'name' => 'Laravel',
+        'category_id' => $category->id,
+        'description' => ['fr' => 'Framework PHP.', 'en' => 'PHP framework.'],
+    ])
         ->assertCreated()
-        ->assertJsonPath('category', $category->value);
+        ->assertJsonPath('category_id', $category->id)
+        ->assertJsonPath('category.key', $category->key)
+        ->assertJsonPath('description.fr', 'Framework PHP.')
+        ->assertJsonPath('description.en', 'PHP framework.');
 
-    $this->getJson(route('api.v1.technologies.index', ['category' => $category->value]))
+    $this->getJson(route('api.v1.technologies.index', ['category_id' => $category->id]))
         ->assertOk()
         ->assertJsonCount(1, 'data');
 
-    $this->postJson(route('api.v1.technologies.store'), ['name' => 'X', 'category' => 'inconnue'])
+    $this->postJson(route('api.v1.technologies.store'), ['name' => 'X', 'category_id' => 999999])
         ->assertUnprocessable();
+});
+
+test('une catégorie de technologies se crée, se lit, se modifie et se supprime', function () {
+    $payload = ['key' => 'mobile', 'label' => ['fr' => 'Mobile', 'en' => 'Mobile'], 'sort_order' => 1];
+
+    $id = $this->postJson(route('api.v1.technology-categories.store'), $payload)
+        ->assertCreated()
+        ->assertJsonPath('label.fr', 'Mobile')
+        ->json('id');
+
+    $this->getJson(route('api.v1.technology-categories.show', $id))->assertOk()->assertJsonPath('key', 'mobile');
+
+    $this->putJson(route('api.v1.technology-categories.update', $id), [...$payload, 'label' => ['fr' => 'Mobile & natif', 'en' => 'Mobile & native']])
+        ->assertOk()
+        ->assertJsonPath('label.fr', 'Mobile & natif');
+
+    $this->deleteJson(route('api.v1.technology-categories.destroy', $id))->assertNoContent();
+    expect(TechnologyCategory::query()->where('key', 'mobile')->exists())->toBeFalse();
 });
 
 test('un profil métier se crée avec ses textes bilingues', function () {

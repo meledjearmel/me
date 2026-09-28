@@ -51,10 +51,12 @@ export type PublicExperience = {
 export type PublicTechnology = {
     id: number;
     name: string;
+    /** Libellé traduit de la catégorie, dans la langue de la page. */
     category: string;
     icon: string | null;
     icon_light_url: string | null;
     icon_dark_url: string | null;
+    description: string | null;
 };
 
 export type PublicProject = {

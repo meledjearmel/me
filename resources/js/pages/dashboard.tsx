@@ -35,7 +35,6 @@ import {
     ChartTooltipContent,
 } from '@/components/ui/chart';
 import { Empty, EmptyDescription, EmptyHeader } from '@/components/ui/empty';
-import { TECHNOLOGY_CATEGORIES } from '@/lib/admin-options';
 import { dashboard } from '@/routes';
 import { index as contactsIndex } from '@/routes/admin/contacts';
 import { index as engagementsIndex } from '@/routes/admin/engagements';
@@ -85,7 +84,7 @@ type DashboardProps = {
     distribution: {
         projects_by_domain: Bar[];
         skills_by_domain: Bar[];
-        technologies_by_category: { category: string; count: number }[];
+        technologies_by_category: Bar[];
     };
     health: { key: string; ok: boolean; count: number }[];
     recent: {
@@ -441,12 +440,6 @@ export default function Dashboard({
 }: DashboardProps) {
     const { auth } = usePage().props;
     const firstName = auth.user.name.split(' ')[0];
-    const categories = Object.fromEntries(
-        TECHNOLOGY_CATEGORIES.map((category) => [
-            category.value,
-            category.label,
-        ]),
-    );
     const french =
         visits.french + visits.english > 0
             ? Math.round(
@@ -590,14 +583,7 @@ export default function Dashboard({
                         description={`${content.technologies} technologies`}
                     >
                         <Bars
-                            rows={distribution.technologies_by_category.map(
-                                (row) => ({
-                                    label:
-                                        categories[row.category] ??
-                                        row.category,
-                                    count: row.count,
-                                }),
-                            )}
+                            rows={distribution.technologies_by_category}
                             empty="Aucune technologie."
                         />
                     </Section>

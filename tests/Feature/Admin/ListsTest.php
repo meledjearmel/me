@@ -2,13 +2,13 @@
 
 use App\Enums\ContactStatus;
 use App\Enums\ProjectStatus;
-use App\Enums\TechnologyCategory;
 use App\Enums\TestimonialStatus;
 use App\Models\Contact;
 use App\Models\Domain;
 use App\Models\Project;
 use App\Models\Skill;
 use App\Models\Technology;
+use App\Models\TechnologyCategory;
 use App\Models\Testimonial;
 use App\Models\User;
 
@@ -103,10 +103,11 @@ test('testimonials can be filtered by status and highlight', function () {
 });
 
 test('technologies can be filtered by category and skills by domain', function () {
-    Technology::factory()->create(['category' => TechnologyCategory::Langages]);
-    Technology::factory()->create(['category' => TechnologyCategory::Infra]);
+    Technology::factory()->create();
+    $infra = TechnologyCategory::factory()->create();
+    Technology::factory()->create(['category_id' => $infra->id]);
 
-    $this->get(route('admin.technologies.index', ['category' => 'infra']))->assertInertia(fn ($page) => $page->has('technologies.data', 1));
+    $this->get(route('admin.technologies.index', ['category_id' => $infra->id]))->assertInertia(fn ($page) => $page->has('technologies.data', 1));
 
     $domain = Domain::factory()->create();
     Skill::factory()->create(['domain_id' => $domain->id]);

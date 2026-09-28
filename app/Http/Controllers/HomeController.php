@@ -29,7 +29,7 @@ class HomeController extends Controller
             ),
             'featuredProjects' => ProjectResource::collection($this->featuredProjects()),
             'technologies' => TechnologyResource::collection(
-                Technology::query()->orderBy('category')->orderBy('name')->get(),
+                Technology::query()->with('category')->orderBy('category_id')->orderBy('name')->get(),
             ),
             'testimonialCount' => Testimonial::query()->where('status', TestimonialStatus::Approved)->count(),
             'testimonials' => TestimonialResource::collection(Testimonial::forHomepage()),
@@ -46,7 +46,7 @@ class HomeController extends Controller
     {
         $published = Project::query()
             ->where('status', ProjectStatus::Published)
-            ->with(['domains', 'technologies'])
+            ->with(['domains', 'technologies.category'])
             ->orderBy('sort_order');
 
         $featured = (clone $published)->where('is_featured', true)->limit(self::FEATURED_LIMIT)->get();

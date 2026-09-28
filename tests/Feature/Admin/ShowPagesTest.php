@@ -10,12 +10,14 @@ use App\Models\ProfessionalReference;
 use App\Models\Project;
 use App\Models\Skill;
 use App\Models\Technology;
+use App\Models\TechnologyCategory;
 use App\Models\Testimonial;
 use App\Models\User;
 
 dataset('show pages', [
     'domains' => [fn () => Domain::factory()->create(), 'admin.domains.show', 'admin/domains/show'],
     'technologies' => [fn () => Technology::factory()->create(), 'admin.technologies.show', 'admin/technologies/show'],
+    'technology categories' => [fn () => TechnologyCategory::factory()->create(), 'admin.technology-categories.show', 'admin/technology-categories/show'],
     'job profiles' => [fn () => JobProfile::factory()->create(), 'admin.job-profiles.show', 'admin/job-profiles/show'],
     'skills' => [fn () => Skill::factory()->create(), 'admin.skills.show', 'admin/skills/show'],
     'educations' => [fn () => Education::factory()->create(), 'admin.educations.show', 'admin/educations/show'],

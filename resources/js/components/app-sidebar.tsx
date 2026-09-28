@@ -12,6 +12,7 @@ import {
     MessageSquareQuote,
     Music,
     Sparkles,
+    Tags,
     User,
     UserCheck,
     Wrench,
@@ -40,6 +41,7 @@ import { index as referencesIndex } from '@/routes/admin/professional-references
 import { index as projectsIndex } from '@/routes/admin/projects';
 import { index as skillsIndex } from '@/routes/admin/skills';
 import { index as technologiesIndex } from '@/routes/admin/technologies';
+import { index as technologyCategoriesIndex } from '@/routes/admin/technology-categories';
 import { index as musicGenresIndex } from '@/routes/admin/music-genres';
 import { index as testimonialsIndex } from '@/routes/admin/testimonials';
 import { index as tracksIndex } from '@/routes/admin/tracks';
@@ -69,6 +71,11 @@ const portfolioNavItems: NavItem[] = [
 const referenceNavItems: NavItem[] = [
     { title: 'Domaines', href: domainsIndex(), icon: Layers },
     { title: 'Technologies', href: technologiesIndex(), icon: Wrench },
+    {
+        title: 'Catégories tech.',
+        href: technologyCategoriesIndex(),
+        icon: Tags,
+    },
     { title: 'Profils métier', href: jobProfilesIndex(), icon: IdCard },
 ];
 

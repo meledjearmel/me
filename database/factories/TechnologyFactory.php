@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Enums\TechnologyCategory;
 use App\Models\Technology;
+use App\Models\TechnologyCategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,8 +20,12 @@ class TechnologyFactory extends Factory
     {
         return [
             'name' => fake()->unique()->word(),
-            'category' => fake()->randomElement(TechnologyCategory::cases()),
+            'category_id' => TechnologyCategory::factory(),
             'icon' => fake()->word(),
+            'description' => [
+                'fr' => fake()->sentence(),
+                'en' => fake()->sentence(),
+            ],
         ];
     }
 }

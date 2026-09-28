@@ -35,20 +35,22 @@ export type Track = {
     genre?: MusicGenre;
 };
 
+export type TechnologyCategory = {
+    id: number;
+    key: string;
+    label: Translatable;
+    sort_order: number;
+    technologies_count?: number;
+    technologies?: Technology[];
+};
+
 export type Technology = {
     id: number;
     name: string;
-    category:
-        | 'langages'
-        | 'frameworks'
-        | 'donnees'
-        | 'qualite'
-        | 'securite'
-        | 'infra'
-        | 'ia'
-        | 'design'
-        | 'cms';
+    category_id: number;
+    category?: TechnologyCategory;
     icon: string | null;
+    description: Translatable | null;
     projects?: Project[];
 };
 

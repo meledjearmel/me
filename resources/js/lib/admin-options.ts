@@ -1,15 +1,3 @@
-export const TECHNOLOGY_CATEGORIES = [
-    { value: 'langages', label: 'Langages' },
-    { value: 'frameworks', label: 'Frameworks' },
-    { value: 'donnees', label: 'Données' },
-    { value: 'qualite', label: 'Qualité' },
-    { value: 'securite', label: 'Sécurité' },
-    { value: 'infra', label: 'Infra' },
-    { value: 'ia', label: 'IA' },
-    { value: 'design', label: 'Design' },
-    { value: 'cms', label: 'CMS' },
-] as const;
-
 export const PROJECT_STATUSES = [
     { value: 'published', label: 'Publié' },
     { value: 'archived', label: 'Archivé' },

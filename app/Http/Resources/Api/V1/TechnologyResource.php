@@ -22,10 +22,12 @@ class TechnologyResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'category' => $this->category,
+            'category_id' => $this->category_id,
+            'category' => new TechnologyCategoryResource($this->category),
             'icon' => $this->icon,
             'icon_light_url' => $library->url($this->icon, 'light'),
             'icon_dark_url' => $library->url($this->icon, 'dark'),
+            'description' => $this->getTranslations('description'),
         ];
     }
 }

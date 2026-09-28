@@ -1,7 +1,7 @@
 <?php
 
-use App\Enums\TechnologyCategory;
 use App\Models\Technology;
+use App\Models\TechnologyCategory;
 use App\Models\User;
 use App\Services\TechnologyIconLibrary;
 use Illuminate\Http\UploadedFile;
@@ -168,7 +168,7 @@ test('une technologie expose les URL de son logo et n\'accepte qu\'un logo exist
     File::ensureDirectoryExists($this->iconDirectory);
     File::put("{$this->iconDirectory}/github-light.svg", iconSvg());
     File::put("{$this->iconDirectory}/github-dark.svg", iconSvg());
-    $payload = ['name' => 'GitHub', 'category' => TechnologyCategory::Qualite->value];
+    $payload = ['name' => 'GitHub', 'category_id' => TechnologyCategory::factory()->create()->id];
 
     $this->postJson(route('api.v1.technologies.store'), [...$payload, 'icon' => 'github'])
         ->assertCreated()
@@ -187,7 +187,7 @@ test('une technologie garde un logo déjà enregistré sans fichier', function (
 
     $this->putJson(route('api.v1.technologies.update', $technology), [
         'name' => 'Renommée',
-        'category' => $technology->category->value,
+        'category_id' => $technology->category_id,
         'icon' => 'shield',
     ])->assertOk()->assertJsonPath('icon', 'shield')->assertJsonPath('icon_light_url', null);
 });

@@ -90,6 +90,29 @@ test('technologies expose theme icons only when an icon file exists', function (
     );
 });
 
+test('a technology description follows the page locale, and is null when unset', function () {
+    Technology::factory()->create(['name' => 'Avec description', 'description' => ['fr' => 'Texte FR', 'en' => 'Text EN']]);
+    Technology::factory()->create(['name' => 'Description nulle', 'description' => null]);
+    // Formulaire admin laissé vide : les deux locales sont des chaînes vides, pas null.
+    Technology::factory()->create(['name' => 'Description vide', 'description' => ['fr' => '', 'en' => '']]);
+
+    $this->get('/fr')->assertInertia(fn ($page) => $page
+        ->where('technologies', function ($technologies) {
+            $byName = collect($technologies)->keyBy('name');
+
+            return $byName['Avec description']['description'] === 'Texte FR'
+                && $byName['Description nulle']['description'] === null
+                && $byName['Description vide']['description'] === null;
+        })
+    );
+
+    $this->get('/en')->assertInertia(fn ($page) => $page
+        ->where('technologies', fn ($technologies) => collect($technologies)
+            ->keyBy('name')['Avec description']['description'] === 'Text EN'
+        )
+    );
+});
+
 test('the home page shares at most three approved testimonials without their email', function () {
     Testimonial::factory()->count(4)->create(['status' => TestimonialStatus::Approved]);
     Testimonial::factory()->create(['status' => TestimonialStatus::Pending]);

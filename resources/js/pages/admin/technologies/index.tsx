@@ -7,26 +7,21 @@ import { FilterSelect, ResourceList } from '@/components/admin/data-list';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import type { ListFilters, Paginated, Technology } from '@/types';
-
-const CATEGORY_LABEL = {
-    langages: 'Langages',
-    frameworks: 'Frameworks',
-    donnees: 'Données',
-    qualite: 'Qualité',
-    securite: 'Sécurité',
-    infra: 'Infra',
-    ia: 'IA',
-    design: 'Design',
-    cms: 'CMS',
-} as const;
+import type {
+    ListFilters,
+    Paginated,
+    Technology,
+    TechnologyCategory,
+} from '@/types';
 
 export default function TechnologiesIndex({
     technologies,
     filters,
+    categories,
 }: {
     technologies: Paginated<Technology>;
     filters: ListFilters;
+    categories: Pick<TechnologyCategory, 'id' | 'label'>[];
 }) {
     return (
         <>
@@ -56,7 +51,7 @@ export default function TechnologiesIndex({
                             header: 'Catégorie',
                             cell: (row) => (
                                 <Badge variant="secondary">
-                                    {CATEGORY_LABEL[row.category]}
+                                    {row.category?.label.fr}
                                 </Badge>
                             ),
                         },
@@ -65,12 +60,13 @@ export default function TechnologiesIndex({
                         <>
                             <FilterSelect
                                 state={state}
-                                name="category"
-                                value={filters.category}
+                                name="category_id"
+                                value={filters.category_id}
                                 label="Catégorie"
-                                options={Object.entries(CATEGORY_LABEL).map(
-                                    ([value, label]) => ({ value, label }),
-                                )}
+                                options={categories.map((category) => ({
+                                    value: String(category.id),
+                                    label: category.label.fr,
+                                }))}
                             />
                         </>
                     )}

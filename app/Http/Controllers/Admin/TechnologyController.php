@@ -6,6 +6,7 @@ use App\Concerns\PaginatesAdminLists;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\TechnologyRequest;
 use App\Models\Technology;
+use App\Models\TechnologyCategory;
 use App\Services\TechnologyIconLibrary;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,8 +20,9 @@ class TechnologyController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('admin/technologies/index', [
-            'technologies' => $this->paginateList(Technology::query()->orderBy('name'), $request, ['name'], ['category']),
-            'filters' => $this->listFilters($request, ['category']),
+            'technologies' => $this->paginateList(Technology::query()->with('category')->orderBy('name'), $request, ['name'], ['category_id']),
+            'filters' => $this->listFilters($request, ['category_id']),
+            'categories' => TechnologyCategory::query()->orderBy('sort_order')->get(['id', 'label']),
         ]);
     }
 
@@ -28,6 +30,7 @@ class TechnologyController extends Controller
     {
         return Inertia::render('admin/technologies/create', [
             'icons' => $library->all(),
+            'categories' => TechnologyCategory::query()->orderBy('sort_order')->get(['id', 'label']),
         ]);
     }
 
@@ -43,7 +46,7 @@ class TechnologyController extends Controller
     public function show(Technology $technology): Response
     {
         return Inertia::render('admin/technologies/show', [
-            'technology' => $technology->load(['projects' => fn ($query) => $query->orderBy('sort_order')]),
+            'technology' => $technology->load(['category', 'projects' => fn ($query) => $query->orderBy('sort_order')]),
         ]);
     }
 
@@ -52,6 +55,7 @@ class TechnologyController extends Controller
         return Inertia::render('admin/technologies/edit', [
             'technology' => $technology,
             'icons' => $library->all(),
+            'categories' => TechnologyCategory::query()->orderBy('sort_order')->get(['id', 'label']),
         ]);
     }
 

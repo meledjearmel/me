@@ -11,16 +11,22 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import FormSelect from '@/components/admin/form-select';
 import TechnologyIconPicker from '@/components/admin/technology-icon-picker';
-import { TECHNOLOGY_CATEGORIES } from '@/lib/admin-options';
+import TranslatableField from '@/components/translatable-field';
 import { index as technologiesIndex } from '@/routes/admin/technologies';
-import type { Technology, TechnologyIconOption } from '@/types';
+import type {
+    Technology,
+    TechnologyCategory,
+    TechnologyIconOption,
+} from '@/types';
 
 export default function TechnologyEdit({
     technology,
     icons,
+    categories,
 }: {
     technology: Technology;
     icons: TechnologyIconOption[];
+    categories: Pick<TechnologyCategory, 'id' | 'label'>[];
 }) {
     return (
         <>
@@ -49,26 +55,26 @@ export default function TechnologyEdit({
                                 <FieldError>{errors.name}</FieldError>
                             </Field>
 
-                            <Field data-invalid={!!errors.category}>
-                                <FieldLabel htmlFor="category">
+                            <Field data-invalid={!!errors.category_id}>
+                                <FieldLabel htmlFor="category_id">
                                     Catégorie *
                                 </FieldLabel>
                                 <FormSelect
-                                    id="category"
-                                    name="category"
+                                    id="category_id"
+                                    name="category_id"
                                     required
-                                    defaultValue={technology.category}
+                                    defaultValue={technology.category_id}
                                 >
-                                    {TECHNOLOGY_CATEGORIES.map((category) => (
+                                    {categories.map((category) => (
                                         <option
-                                            key={category.value}
-                                            value={category.value}
+                                            key={category.id}
+                                            value={category.id}
                                         >
-                                            {category.label}
+                                            {category.label.fr}
                                         </option>
                                     ))}
                                 </FormSelect>
-                                <FieldError>{errors.category}</FieldError>
+                                <FieldError>{errors.category_id}</FieldError>
                             </Field>
 
                             <Field data-invalid={!!errors.icon}>
@@ -80,6 +86,20 @@ export default function TechnologyEdit({
                                 />
                                 <FieldError>{errors.icon}</FieldError>
                             </Field>
+
+                            <TranslatableField
+                                name="description"
+                                label="Description (infobulle du logo, 150 max)"
+                                maxLength={150}
+                                defaultValue={{
+                                    fr: technology.description?.fr,
+                                    en: technology.description?.en,
+                                }}
+                                errors={{
+                                    fr: errors['description.fr'],
+                                    en: errors['description.en'],
+                                }}
+                            />
 
                             <Button disabled={processing}>Enregistrer</Button>
                         </FieldGroup>

@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ProfessionalReferenceController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\SkillController;
+use App\Http\Controllers\Admin\TechnologyCategoryController;
 use App\Http\Controllers\Admin\TechnologyController;
 use App\Http\Controllers\Admin\TechnologyIconController;
 use App\Http\Controllers\Admin\TestimonialController;
@@ -44,6 +45,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::post('/', [TechnologyIconController::class, 'store'])->name('store');
         Route::post('upload', [TechnologyIconController::class, 'upload'])->name('upload');
     });
+    Route::resource('technology-categories', TechnologyCategoryController::class);
     Route::resource('technologies', TechnologyController::class);
     Route::resource('job-profiles', JobProfileController::class);
     Route::delete('job-profiles/{job_profile}/cv/{locale}', [JobProfileController::class, 'destroyCv'])

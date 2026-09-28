@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Enums\TechnologyCategory;
 use App\Models\Technology;
 use App\Services\TechnologyIconLibrary;
 use Closure;
@@ -23,7 +22,10 @@ class TechnologyRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:255'],
-            'category' => ['required', Rule::enum(TechnologyCategory::class)],
+            'category_id' => ['required', Rule::exists('technology_categories', 'id')->whereNull('deleted_at')],
+            // Texte de l'infobulle affichée au survol du logo, sur la page publique.
+            'description.fr' => ['nullable', 'string', 'max:150'],
+            'description.en' => ['nullable', 'string', 'max:150'],
             // Le logo doit exister dans la bibliothèque ; une valeur déjà
             // enregistrée reste acceptée pour ne pas bloquer les anciennes fiches.
             'icon' => [

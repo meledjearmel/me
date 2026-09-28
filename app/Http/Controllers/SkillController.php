@@ -20,10 +20,10 @@ class SkillController extends Controller
                 Domain::query()->published()->orderBy('sort_order')->get(),
             ),
             'skills' => SkillResource::collection(
-                Skill::query()->published()->whereHas('domain', fn ($query) => $query->published())->with(['domain', 'technologies'])->orderBy('sort_order')->get(),
+                Skill::query()->published()->whereHas('domain', fn ($query) => $query->published())->with(['domain', 'technologies.category'])->orderBy('sort_order')->get(),
             ),
             'technologies' => TechnologyResource::collection(
-                Technology::query()->orderBy('category')->orderBy('name')->get(),
+                Technology::query()->with('category')->orderBy('category_id')->orderBy('name')->get(),
             ),
         ]);
     }

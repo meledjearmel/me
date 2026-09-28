@@ -19,7 +19,7 @@ class ProjectController extends Controller
             'projects' => ProjectResource::collection(
                 Project::query()
                     ->where('status', ProjectStatus::Published)
-                    ->with(['domains', 'technologies'])
+                    ->with(['domains', 'technologies.category'])
                     ->orderBy('sort_order')
                     ->get(),
             ),
@@ -33,7 +33,7 @@ class ProjectController extends Controller
     {
         abort_unless($project->status === ProjectStatus::Published, HttpResponse::HTTP_NOT_FOUND);
 
-        $project->load(['domains', 'technologies', 'relatedProjects']);
+        $project->load(['domains', 'technologies.category', 'relatedProjects']);
 
         $next = $this->nextProject($project);
 

@@ -126,7 +126,7 @@ class ProjectController extends Controller
     private function respond(Project $project): ProjectResource
     {
         return (new ProjectResource(
-            $project->refresh()->load(['domains', 'jobProfiles', 'technologies', 'media']),
+            $project->refresh()->load(['domains', 'jobProfiles', 'technologies.category', 'media']),
         ))->withRelatedProjectIds($this->relatedProjectIds($project));
     }
 }

@@ -1,6 +1,5 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import type { CSSProperties } from 'react';
-import { useTranslations } from '@/lib/i18n';
 import type { PublicTechnology } from '@/types';
 
 /**
@@ -127,32 +126,24 @@ export default function TechMarquee({
     technologies: PublicTechnology[];
     label: string;
 }) {
-    const t = useTranslations();
     const [tip, setTip] = useState<TechTip | null>(null);
-
-    const descriptions: Record<string, string> = t.home.techDescriptions;
 
     const hideTip = useCallback(() => setTip(null), []);
 
-    const showTip: ShowTip = useCallback(
-        (element, technology) => {
-            const description = descriptions[technology.icon ?? ''];
+    const showTip: ShowTip = useCallback((element, technology) => {
+        if (!technology.description) {
+            return;
+        }
 
-            if (!description) {
-                return;
-            }
+        const rect = element.getBoundingClientRect();
 
-            const rect = element.getBoundingClientRect();
-
-            setTip({
-                name: technology.name,
-                description,
-                x: rect.left + rect.width / 2,
-                y: rect.top,
-            });
-        },
-        [descriptions],
-    );
+        setTip({
+            name: technology.name,
+            description: technology.description,
+            x: rect.left + rect.width / 2,
+            y: rect.top,
+        });
+    }, []);
 
     // Logos seuls : une techno sans logo n'apparaît pas dans la bande.
     // Listes mémorisées : sans elles, chaque infobulle re-rendrait les pistes.

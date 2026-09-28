@@ -19,6 +19,7 @@ use App\Models\Profile;
 use App\Models\Project;
 use App\Models\Skill;
 use App\Models\Technology;
+use App\Models\TechnologyCategory;
 use App\Models\Testimonial;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -170,15 +171,16 @@ class DashboardReport
             'skills_by_domain' => $domains->map(fn (Domain $domain): array => [
                 'label' => $label($domain), 'color' => $domain->color, 'count' => $domain->skills_count,
             ])->filter(fn (array $row): bool => $row['count'] > 0)->values()->all(),
-            'technologies_by_category' => Technology::query()
-                ->select('category', DB::raw('count(*) as total'))
-                ->groupBy('category')
-                ->orderByDesc('total')
+            'technologies_by_category' => TechnologyCategory::query()
+                ->withCount('technologies')
                 ->get()
-                ->map(fn (Technology $technology): array => [
-                    'category' => $technology->category->value,
-                    'count' => (int) $technology->total,
+                ->map(fn (TechnologyCategory $category): array => [
+                    'label' => $category->getTranslation('label', 'fr'),
+                    'count' => $category->technologies_count,
                 ])
+                ->filter(fn (array $row): bool => $row['count'] > 0)
+                ->sortByDesc('count')
+                ->values()
                 ->all(),
         ];
     }
