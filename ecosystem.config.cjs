@@ -1,6 +1,5 @@
 // Configuration PM2 — Portfolio Armel
 // Usage : pm2 start ecosystem.config.cjs
-// Adapter `cwd` au chemin réel de déploiement sur lxc-web-server.
 
 module.exports = {
     apps: [
@@ -8,7 +7,7 @@ module.exports = {
             name: 'portfolio-queue',
             script: 'php',
             args: 'artisan queue:work --sleep=3 --tries=3 --max-time=3600',
-            cwd: '/var/www/portfolio',
+            cwd: '/srv/projects/me',
             exec_mode: 'fork',
             instances: 1,
             autorestart: true,
@@ -24,7 +23,7 @@ module.exports = {
             // et déclenche les tâches planifiées (ex. spatie/laravel-backup) à l'heure due.
             script: 'php',
             args: 'artisan schedule:work',
-            cwd: '/var/www/portfolio',
+            cwd: '/srv/projects/me',
             exec_mode: 'fork',
             instances: 1,
             autorestart: true,
@@ -37,7 +36,7 @@ module.exports = {
             name: 'portfolio-reverb',
             script: 'php',
             args: 'artisan reverb:start',
-            cwd: '/var/www/portfolio',
+            cwd: '/srv/projects/me',
             exec_mode: 'fork',
             instances: 1,
             autorestart: true,
@@ -51,7 +50,7 @@ module.exports = {
             // Sert le bundle resources/js/ssr.tsx pour le rendu côté serveur Inertia.
             script: 'php',
             args: 'artisan inertia:start-ssr',
-            cwd: '/var/www/portfolio',
+            cwd: '/srv/projects/me',
             exec_mode: 'fork',
             instances: 1,
             autorestart: true,
