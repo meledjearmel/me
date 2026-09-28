@@ -1,7 +1,7 @@
 import { Form, Head, router } from '@inertiajs/react';
 import ProjectController from '@/actions/App/Http/Controllers/Admin/ProjectController';
 import CheckboxGroup from '@/components/admin/checkbox-group';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import TranslatableField from '@/components/translatable-field';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -38,10 +38,12 @@ export default function ProjectEdit({
         <>
             <Head title={`Modifier — ${project.title.fr}`} />
 
-            <div className="max-w-3xl space-y-6 p-4">
-                <Heading
+            <div className="space-y-6 p-4">
+                <FormPageHeader
                     title="Modifier le projet"
                     description={project.title.fr}
+                    backHref={projectsIndex()}
+                    backLabel="Projets"
                 />
 
                 <Form

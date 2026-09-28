@@ -2,7 +2,7 @@ import { Form, Head } from '@inertiajs/react';
 import ExperienceController from '@/actions/App/Http/Controllers/Admin/ExperienceController';
 import FormSelect from '@/components/admin/form-select';
 import HighlightsField from '@/components/admin/highlights-field';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import TranslatableField from '@/components/translatable-field';
 import {
     Field,
@@ -20,8 +20,12 @@ export default function ExperienceCreate() {
         <>
             <Head title="Nouvelle expérience" />
 
-            <div className="max-w-xl space-y-6 p-4">
-                <Heading title="Nouvelle expérience" />
+            <div className="space-y-6 p-4">
+                <FormPageHeader
+                    title="Nouvelle expérience"
+                    backHref={experiencesIndex()}
+                    backLabel="Expériences"
+                />
 
                 <Form
                     {...ExperienceController.store.form()}

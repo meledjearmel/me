@@ -1,6 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
 import MusicGenreController from '@/actions/App/Http/Controllers/Admin/MusicGenreController';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import TranslatableField from '@/components/translatable-field';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,10 +18,12 @@ export default function MusicGenreEdit({ genre }: { genre: MusicGenre }) {
         <>
             <Head title={`Modifier — ${genre.label.fr}`} />
 
-            <div className="max-w-xl space-y-6 p-4">
-                <Heading
+            <div className="space-y-6 p-4">
+                <FormPageHeader
                     title="Modifier le registre"
                     description={genre.label.fr}
+                    backHref={genresIndex()}
+                    backLabel="Registres de musique"
                 />
 
                 <Form

@@ -1,7 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
 import ProjectController from '@/actions/App/Http/Controllers/Admin/ProjectController';
 import CheckboxGroup from '@/components/admin/checkbox-group';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import TranslatableField from '@/components/translatable-field';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -34,8 +34,12 @@ export default function ProjectCreate({
         <>
             <Head title="Nouveau projet" />
 
-            <div className="max-w-3xl space-y-6 p-4">
-                <Heading title="Nouveau projet" />
+            <div className="space-y-6 p-4">
+                <FormPageHeader
+                    title="Nouveau projet"
+                    backHref={projectsIndex()}
+                    backLabel="Projets"
+                />
 
                 <Form {...ProjectController.store.form()} className="space-y-6">
                     {({ processing, errors }) => (

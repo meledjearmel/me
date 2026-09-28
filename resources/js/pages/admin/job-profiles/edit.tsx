@@ -1,7 +1,7 @@
 import { Form, Head, router } from '@inertiajs/react';
 import JobProfileController from '@/actions/App/Http/Controllers/Admin/JobProfileController';
 import FormSelect from '@/components/admin/form-select';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import TranslatableField from '@/components/translatable-field';
 import {
     Field,
@@ -25,10 +25,12 @@ export default function JobProfileEdit({
         <>
             <Head title={`Modifier — ${jobProfile.label.fr}`} />
 
-            <div className="max-w-2xl space-y-6 p-4">
-                <Heading
+            <div className="space-y-6 p-4">
+                <FormPageHeader
                     title="Modifier le profil métier"
                     description={jobProfile.label.fr}
+                    backHref={jobProfilesIndex()}
+                    backLabel="Profils métier"
                 />
 
                 <Form
@@ -110,8 +112,7 @@ export default function JobProfileEdit({
 
                             <div className="grid gap-6 sm:grid-cols-2">
                                 {(['fr', 'en'] as const).map((locale) => {
-                                    const file =
-                                        jobProfile.cv_files?.[locale];
+                                    const file = jobProfile.cv_files?.[locale];
                                     const field = `cv_file_${locale}` as const;
 
                                     return (

@@ -19,7 +19,7 @@ export default function ProfileEdit({ profile }: { profile: Profile }) {
         <>
             <Head title="Profil" />
 
-            <div className="max-w-2xl space-y-6 p-4">
+            <div className="space-y-6 p-4">
                 <Heading
                     title="Profil"
                     description="Informations affichées sur le portfolio et utilisées pour le CV"

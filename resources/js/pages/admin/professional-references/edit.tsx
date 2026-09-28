@@ -1,6 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
 import ProfessionalReferenceController from '@/actions/App/Http/Controllers/Admin/ProfessionalReferenceController';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
     Field,
@@ -27,10 +27,12 @@ export default function ProfessionalReferenceEdit({
         <>
             <Head title={`Modifier — ${professionalReference.name}`} />
 
-            <div className="max-w-xl space-y-6 p-4">
-                <Heading
+            <div className="space-y-6 p-4">
+                <FormPageHeader
                     title="Modifier la référence"
                     description={professionalReference.name}
+                    backHref={referencesIndex()}
+                    backLabel="Références professionnelles"
                 />
 
                 <Form

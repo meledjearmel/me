@@ -1,7 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
 import TrackController from '@/actions/App/Http/Controllers/Admin/TrackController';
 import FormSelect from '@/components/admin/form-select';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import { Button } from '@/components/ui/button';
 import {
     Field,
@@ -18,10 +18,12 @@ export default function TrackCreate({ genres }: { genres: MusicGenre[] }) {
         <>
             <Head title="Nouvelle piste" />
 
-            <div className="max-w-xl space-y-6 p-4">
-                <Heading
+            <div className="space-y-6 p-4">
+                <FormPageHeader
                     title="Nouvelle piste"
                     description="Ajouter un morceau au lecteur"
+                    backHref={tracksIndex()}
+                    backLabel="Pistes de musique"
                 />
 
                 <Form {...TrackController.store.form()} className="space-y-6">

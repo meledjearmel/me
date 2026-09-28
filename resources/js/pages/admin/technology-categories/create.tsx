@@ -1,6 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
 import TechnologyCategoryController from '@/actions/App/Http/Controllers/Admin/TechnologyCategoryController';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import TranslatableField from '@/components/translatable-field';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,10 +17,12 @@ export default function TechnologyCategoryCreate() {
         <>
             <Head title="Nouvelle catégorie" />
 
-            <div className="max-w-xl space-y-6 p-4">
-                <Heading
+            <div className="space-y-6 p-4">
+                <FormPageHeader
                     title="Nouvelle catégorie"
                     description="Ajouter une catégorie à la stack technique"
+                    backHref={categoriesIndex()}
+                    backLabel="Catégories de technologies"
                 />
 
                 <Form

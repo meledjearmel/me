@@ -1,7 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
 import TrackController from '@/actions/App/Http/Controllers/Admin/TrackController';
 import FormSelect from '@/components/admin/form-select';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import { Button } from '@/components/ui/button';
 import {
     Field,
@@ -24,8 +24,13 @@ export default function TrackEdit({
         <>
             <Head title={`Modifier — ${track.title}`} />
 
-            <div className="max-w-xl space-y-6 p-4">
-                <Heading title="Modifier la piste" description={track.title} />
+            <div className="space-y-6 p-4">
+                <FormPageHeader
+                    title="Modifier la piste"
+                    description={track.title}
+                    backHref={tracksIndex()}
+                    backLabel="Pistes de musique"
+                />
 
                 <Form
                     {...TrackController.update.form(track.id)}

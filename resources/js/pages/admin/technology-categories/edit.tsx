@@ -1,6 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
 import TechnologyCategoryController from '@/actions/App/Http/Controllers/Admin/TechnologyCategoryController';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import TranslatableField from '@/components/translatable-field';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,10 +22,12 @@ export default function TechnologyCategoryEdit({
         <>
             <Head title={`Modifier — ${category.label.fr}`} />
 
-            <div className="max-w-xl space-y-6 p-4">
-                <Heading
+            <div className="space-y-6 p-4">
+                <FormPageHeader
                     title="Modifier la catégorie"
                     description={category.label.fr}
+                    backHref={categoriesIndex()}
+                    backLabel="Catégories de technologies"
                 />
 
                 <Form

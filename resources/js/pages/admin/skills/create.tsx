@@ -1,7 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
 import SkillController from '@/actions/App/Http/Controllers/Admin/SkillController';
 import CheckboxGroup from '@/components/admin/checkbox-group';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import TranslatableField from '@/components/translatable-field';
 import {
     Field,
@@ -27,10 +27,12 @@ export default function SkillCreate({
         <>
             <Head title="Nouvelle compétence" />
 
-            <div className="max-w-xl space-y-6 p-4">
-                <Heading
+            <div className="space-y-6 p-4">
+                <FormPageHeader
                     title="Nouvelle compétence"
                     description="Rattachée à un domaine"
+                    backHref={skillsIndex()}
+                    backLabel="Compétences"
                 />
 
                 <Form {...SkillController.store.form()} className="space-y-6">

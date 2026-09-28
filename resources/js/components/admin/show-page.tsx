@@ -56,7 +56,7 @@ export default function ShowPage({
         <>
             <Head title={title} />
 
-            <div className="flex max-w-4xl flex-col gap-6 p-4">
+            <div className="flex flex-col gap-6 p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="flex flex-wrap items-center gap-3">
                         <Heading title={title} description={description} />

@@ -1,6 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
 import TechnologyController from '@/actions/App/Http/Controllers/Admin/TechnologyController';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import {
     Field,
     FieldError,
@@ -32,10 +32,12 @@ export default function TechnologyEdit({
         <>
             <Head title={`Modifier — ${technology.name}`} />
 
-            <div className="max-w-xl space-y-6 p-4">
-                <Heading
+            <div className="space-y-6 p-4">
+                <FormPageHeader
                     title="Modifier la technologie"
                     description={technology.name}
+                    backHref={technologiesIndex()}
+                    backLabel="Technologies"
                 />
 
                 <Form

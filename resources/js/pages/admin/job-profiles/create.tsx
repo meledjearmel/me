@@ -1,7 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
 import JobProfileController from '@/actions/App/Http/Controllers/Admin/JobProfileController';
 import FormSelect from '@/components/admin/form-select';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import TranslatableField from '@/components/translatable-field';
 import {
     Field,
@@ -19,10 +19,12 @@ export default function JobProfileCreate() {
         <>
             <Head title="Nouveau profil métier" />
 
-            <div className="max-w-2xl space-y-6 p-4">
-                <Heading
+            <div className="space-y-6 p-4">
+                <FormPageHeader
                     title="Nouveau profil métier"
                     description="Ex. Ingénieur full-stack, Chargé IT, Lead Tech..."
+                    backHref={jobProfilesIndex()}
+                    backLabel="Profils métier"
                 />
 
                 <Form

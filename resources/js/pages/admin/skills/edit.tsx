@@ -1,7 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
 import SkillController from '@/actions/App/Http/Controllers/Admin/SkillController';
 import CheckboxGroup from '@/components/admin/checkbox-group';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import TranslatableField from '@/components/translatable-field';
 import {
     Field,
@@ -29,10 +29,12 @@ export default function SkillEdit({
         <>
             <Head title={`Modifier — ${skill.name.fr}`} />
 
-            <div className="max-w-xl space-y-6 p-4">
-                <Heading
+            <div className="space-y-6 p-4">
+                <FormPageHeader
                     title="Modifier la compétence"
                     description={skill.name.fr}
+                    backHref={skillsIndex()}
+                    backLabel="Compétences"
                 />
 
                 <Form

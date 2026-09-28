@@ -1,6 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
 import MusicGenreController from '@/actions/App/Http/Controllers/Admin/MusicGenreController';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import TranslatableField from '@/components/translatable-field';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,10 +17,12 @@ export default function MusicGenreCreate() {
         <>
             <Head title="Nouveau registre" />
 
-            <div className="max-w-xl space-y-6 p-4">
-                <Heading
+            <div className="space-y-6 p-4">
+                <FormPageHeader
                     title="Nouveau registre"
                     description="Ajouter un onglet au lecteur de musique"
+                    backHref={genresIndex()}
+                    backLabel="Registres de musique"
                 />
 
                 <Form

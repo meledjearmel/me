@@ -1,6 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
 import TestimonialController from '@/actions/App/Http/Controllers/Admin/TestimonialController';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import TranslatableField from '@/components/translatable-field';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -27,10 +27,12 @@ export default function TestimonialEdit({
         <>
             <Head title={`Avis de ${testimonial.author_name}`} />
 
-            <div className="max-w-xl space-y-6 p-4">
-                <Heading
+            <div className="space-y-6 p-4">
+                <FormPageHeader
                     title="Modérer l'avis"
                     description={`${testimonial.author_name} — ${testimonial.author_email}`}
+                    backHref={testimonialsIndex()}
+                    backLabel="Avis"
                 />
 
                 <Form

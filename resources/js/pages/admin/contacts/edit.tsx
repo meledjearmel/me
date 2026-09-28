@@ -1,6 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
 import ContactController from '@/actions/App/Http/Controllers/Admin/ContactController';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import {
     Field,
     FieldError,
@@ -18,10 +18,12 @@ export default function ContactEdit({ contact }: { contact: Contact }) {
         <>
             <Head title={`Contact de ${contact.name}`} />
 
-            <div className="max-w-xl space-y-6 p-4">
-                <Heading
+            <div className="space-y-6 p-4">
+                <FormPageHeader
                     title="Message de contact"
                     description={`${contact.name} — ${contact.email}`}
+                    backHref={contactsIndex()}
+                    backLabel="Contacts"
                 />
 
                 <div className="space-y-2 rounded-md border bg-muted/30 p-4 text-sm">

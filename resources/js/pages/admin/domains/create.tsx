@@ -1,7 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
 import DomainController from '@/actions/App/Http/Controllers/Admin/DomainController';
 import FormSelect from '@/components/admin/form-select';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import TranslatableField from '@/components/translatable-field';
 import {
     Field,
@@ -19,10 +19,12 @@ export default function DomainCreate() {
         <>
             <Head title="Nouveau domaine" />
 
-            <div className="max-w-xl space-y-6 p-4">
-                <Heading
+            <div className="space-y-6 p-4">
+                <FormPageHeader
                     title="Nouveau domaine"
                     description="Ajouter un domaine de compétence"
+                    backHref={domainsIndex()}
+                    backLabel="Domaines"
                 />
 
                 <Form {...DomainController.store.form()} className="space-y-6">

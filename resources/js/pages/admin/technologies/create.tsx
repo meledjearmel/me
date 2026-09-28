@@ -1,6 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
 import TechnologyController from '@/actions/App/Http/Controllers/Admin/TechnologyController';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import {
     Field,
     FieldError,
@@ -26,10 +26,12 @@ export default function TechnologyCreate({
         <>
             <Head title="Nouvelle technologie" />
 
-            <div className="max-w-xl space-y-6 p-4">
-                <Heading
+            <div className="space-y-6 p-4">
+                <FormPageHeader
                     title="Nouvelle technologie"
                     description="Ajouter une technologie à la stack"
+                    backHref={technologiesIndex()}
+                    backLabel="Technologies"
                 />
 
                 <Form

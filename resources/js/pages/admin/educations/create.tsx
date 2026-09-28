@@ -1,7 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
 import EducationController from '@/actions/App/Http/Controllers/Admin/EducationController';
 import FormSelect from '@/components/admin/form-select';
-import Heading from '@/components/heading';
+import FormPageHeader from '@/components/admin/form-page-header';
 import TranslatableField from '@/components/translatable-field';
 import {
     Field,
@@ -19,8 +19,12 @@ export default function EducationCreate() {
         <>
             <Head title="Nouvelle formation" />
 
-            <div className="max-w-xl space-y-6 p-4">
-                <Heading title="Nouvelle formation" />
+            <div className="space-y-6 p-4">
+                <FormPageHeader
+                    title="Nouvelle formation"
+                    backHref={educationsIndex()}
+                    backLabel="Formation"
+                />
 
                 <Form
                     {...EducationController.store.form()}
