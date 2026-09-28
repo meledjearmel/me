@@ -15,7 +15,7 @@ test('guests are rejected', function () {
 
 test('an authenticated device translates a text', function () {
     Sanctum::actingAs(User::factory()->create());
-    TextTranslator::fake([['translation' => 'Hello world']]);
+    TextTranslator::fake(['Hello world']);
 
     $this->postJson(route('api.v1.ai.translate'), [
         'text' => 'Bonjour le monde',
@@ -26,7 +26,7 @@ test('an authenticated device translates a text', function () {
 
 test('an authenticated device improves a text', function () {
     Sanctum::actingAs(User::factory()->create());
-    TextImprover::fake([['text' => 'Texte amélioré.']]);
+    TextImprover::fake(['Texte amélioré.']);
 
     $this->postJson(route('api.v1.ai.improve'), [
         'text' => 'Texte a ameliorer',

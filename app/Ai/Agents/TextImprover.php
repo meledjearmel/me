@@ -3,11 +3,9 @@
 namespace App\Ai\Agents;
 
 use App\Enums\TextTone;
-use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Ai\Attributes\MaxTokens;
 use Laravel\Ai\Attributes\Temperature;
 use Laravel\Ai\Contracts\Agent;
-use Laravel\Ai\Contracts\HasStructuredOutput;
 use Laravel\Ai\Promptable;
 use Stringable;
 
@@ -16,7 +14,7 @@ use Stringable;
  */
 #[MaxTokens(800)]
 #[Temperature(0.5)]
-class TextImprover implements Agent, HasStructuredOutput
+class TextImprover implements Agent
 {
     use Promptable;
 
@@ -47,15 +45,5 @@ class TextImprover implements Agent, HasStructuredOutput
         {$custom}
         - Réponds uniquement avec le texte amélioré, sans commentaire ni guillemets.
         PROMPT;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function schema(JsonSchema $schema): array
-    {
-        return [
-            'text' => $schema->string()->required(),
-        ];
     }
 }

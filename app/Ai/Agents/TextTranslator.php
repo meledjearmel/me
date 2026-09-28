@@ -2,11 +2,9 @@
 
 namespace App\Ai\Agents;
 
-use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Ai\Attributes\MaxTokens;
 use Laravel\Ai\Attributes\Temperature;
 use Laravel\Ai\Contracts\Agent;
-use Laravel\Ai\Contracts\HasStructuredOutput;
 use Laravel\Ai\Promptable;
 use Stringable;
 
@@ -16,7 +14,7 @@ use Stringable;
  */
 #[MaxTokens(800)]
 #[Temperature(0.3)]
-class TextTranslator implements Agent, HasStructuredOutput
+class TextTranslator implements Agent
 {
     use Promptable;
 
@@ -46,15 +44,5 @@ class TextTranslator implements Agent, HasStructuredOutput
         - Conserve la mise en forme (sauts de ligne, ponctuation, listes).
         - Réponds uniquement avec la traduction, sans commentaire ni guillemets.
         PROMPT;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function schema(JsonSchema $schema): array
-    {
-        return [
-            'translation' => $schema->string()->required(),
-        ];
     }
 }

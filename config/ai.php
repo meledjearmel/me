@@ -39,7 +39,7 @@ return [
     'chat' => [
         'providers' => array_values(array_filter(array_map(
             'trim',
-            explode(',', (string) env('AI_CHAT_PROVIDERS', 'groq,groq-fallback,openrouter,gemini')),
+            explode(',', (string) env('AI_CHAT_PROVIDERS', 'groq,groq-fallback,groq:llama-3.3-70b-versatile,groq:llama-3.1-8b-instant,openrouter,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,openrouter:inclusionai/ling-3.0-flash-fin:free,openrouter:poolside/laguna-s-2.1:free,gemini,gemini:gemini-3.8-flash,gemini:gemini-3.5-flash-lite,gemini:gemini-2.5-flash,gemini:gemini-2.5-flash-lite')),
         ))),
         'max_message_length' => 500,
         'max_history' => 10,
@@ -69,16 +69,22 @@ return [
     |
     | Même principe de chaîne de secours que « chat » ci-dessus, utilisé par
     | les boutons « Traduire » et « Améliorer » de l'admin et de l'app mobile.
+    | Une entrée peut être « fournisseur:modèle » (ex. groq:llama-3.1-8b-instant)
+    | pour essayer plusieurs modèles d'un même fournisseur.
     |
     */
 
     'text_assist' => [
         'providers' => array_values(array_filter(array_map(
             'trim',
-            explode(',', (string) env('AI_TEXT_ASSIST_PROVIDERS', env('AI_CHAT_PROVIDERS', 'groq,groq-fallback,openrouter,gemini'))),
+            explode(',', (string) env('AI_TEXT_ASSIST_PROVIDERS', 'groq,groq-fallback,groq:llama-3.3-70b-versatile,groq:llama-3.1-8b-instant,openrouter,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,openrouter:inclusionai/ling-3.0-flash-fin:free,openrouter:poolside/laguna-s-2.1:free,gemini,gemini:gemini-3.8-flash,gemini:gemini-3.5-flash-lite,gemini:gemini-2.5-flash,gemini:gemini-2.5-flash-lite')),
         ))),
         'max_text_length' => 2000,
+        // Plafond par fournisseur, puis budget global de la requête (en secondes) :
+        // il doit rester sous max_execution_time et le timeout du proxy.
         'timeout' => 20,
+        'total_budget' => (int) env('AI_TEXT_ASSIST_TOTAL_BUDGET', 25),
+        'min_provider_timeout' => 3,
         'limits' => [
             'per_minute' => (int) env('AI_TEXT_ASSIST_PER_MINUTE', 20),
             'per_day' => (int) env('AI_TEXT_ASSIST_PER_DAY', 300),

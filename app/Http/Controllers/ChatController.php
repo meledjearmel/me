@@ -17,11 +17,13 @@ class ChatController extends Controller
         // La chaîne est parcourue ici plutôt que par le failover du package, qui ne
         // rebondit que sur quota, surcharge ou panne réseau : un modèle retiré (404),
         // un réglage de compte ou une réponse vide doivent aussi passer au suivant.
-        foreach (config('ai.chat.providers') as $provider) {
+        foreach (config('ai.chat.providers') as $entry) {
+            [$provider, $model] = array_pad(explode(':', $entry, 2), 2, null);
+
             try {
-                $reply = $assistant->prompt($request->validated('message'), provider: $provider)->text;
+                $reply = $assistant->prompt($request->validated('message'), provider: $provider, model: $model)->text;
             } catch (Throwable $exception) {
-                Log::warning("Assistant : échec de [{$provider}] : ".$exception->getMessage());
+                Log::warning("Assistant : échec de [{$entry}] : ".$exception->getMessage());
 
                 continue;
             }
@@ -30,7 +32,7 @@ class ChatController extends Controller
                 return response()->json(['reply' => $reply]);
             }
 
-            Log::warning("Assistant : réponse vide de [{$provider}].");
+            Log::warning("Assistant : réponse vide de [{$entry}].");
         }
 
         return response()->json([

@@ -15,7 +15,7 @@ test('guests are rejected', function () {
 
 test('an authenticated user translates a text', function () {
     $user = User::factory()->create();
-    TextTranslator::fake([['translation' => 'Hello world']]);
+    TextTranslator::fake(['Hello world']);
 
     $this->actingAs($user)->postJson(route('admin.ai.translate'), [
         'text' => 'Bonjour le monde',
@@ -41,7 +41,7 @@ test('the source and target locales must differ', function () {
 
 test('an authenticated user improves a text with a chosen tone', function () {
     $user = User::factory()->create();
-    TextImprover::fake([['text' => 'Texte nettement amélioré.']]);
+    TextImprover::fake(['Texte nettement amélioré.']);
 
     $this->actingAs($user)->postJson(route('admin.ai.improve'), [
         'text' => 'Texte a ameliorer',
@@ -54,7 +54,7 @@ test('an authenticated user improves a text with a chosen tone', function () {
 
 test('improving a text without a tone is allowed', function () {
     $user = User::factory()->create();
-    TextImprover::fake([['text' => 'Texte amélioré.']]);
+    TextImprover::fake(['Texte amélioré.']);
 
     $this->actingAs($user)->postJson(route('admin.ai.improve'), [
         'text' => 'Texte a ameliorer',
@@ -77,12 +77,12 @@ test('the assist falls back to the next provider when one fails', function () {
     config(['ai.text_assist.providers' => ['groq', 'groq-fallback', 'gemini']]);
     $calls = 0;
 
-    TextTranslator::fake(function () use (&$calls): array {
+    TextTranslator::fake(function () use (&$calls): string {
         if (++$calls === 1) {
             throw new RuntimeException('404 modèle retiré');
         }
 
-        return $calls === 2 ? ['translation' => ''] : ['translation' => 'Réponse de secours'];
+        return $calls === 2 ? '' : 'Réponse de secours';
     });
 
     $this->actingAs(User::factory()->create())->postJson(route('admin.ai.translate'), [
@@ -93,6 +93,7 @@ test('the assist falls back to the next provider when one fails', function () {
 
     expect($calls)->toBe(3);
     Log::shouldHaveReceived('warning')->twice();
+    Log::shouldNotHaveReceived('error');
 });
 
 test('a friendly error is returned when every provider fails', function () {
@@ -108,7 +109,7 @@ test('a friendly error is returned when every provider fails', function () {
 
 test('the assist is rate limited per user', function () {
     config(['ai.text_assist.limits.per_minute' => 2]);
-    TextTranslator::fake([['translation' => 'Ok']]);
+    TextTranslator::fake(['Ok']);
     $user = User::factory()->create();
 
     $payload = ['text' => 'Un', 'source_locale' => 'fr', 'target_locale' => 'en'];
@@ -116,4 +117,78 @@ test('the assist is rate limited per user', function () {
     $this->actingAs($user)->postJson(route('admin.ai.translate'), $payload)->assertOk();
     $this->actingAs($user)->postJson(route('admin.ai.translate'), $payload)->assertOk();
     $this->actingAs($user)->postJson(route('admin.ai.translate'), $payload)->assertTooManyRequests();
+});
+
+test('a friendly JSON error is returned and the failure is logged when every provider fails', function () {
+    Log::spy();
+    config(['ai.text_assist.providers' => ['groq', 'groq-fallback']]);
+    TextTranslator::fake(fn () => throw new RuntimeException('quota épuisé'));
+
+    $this->actingAs(User::factory()->create())->postJson(route('admin.ai.translate'), [
+        'text' => 'Bonjour',
+        'source_locale' => 'fr',
+        'target_locale' => 'en',
+    ])->assertStatus(503)->assertJsonStructure(['message']);
+
+    Log::shouldHaveReceived('warning')->twice();
+    Log::shouldHaveReceived('error')->once()->withArgs(
+        fn (string $message): bool => str_contains($message, 'groq (') && str_contains($message, 'groq-fallback ('),
+    );
+});
+
+test('the plain text answer is trimmed and stripped of wrapping quotes', function () {
+    TextImprover::fake(['  « Texte amélioré. »
+']);
+
+    $this->actingAs(User::factory()->create())->postJson(route('admin.ai.improve'), [
+        'text' => 'Texte a ameliorer',
+        'locale' => 'fr',
+    ])->assertOk()->assertExactJson(['text' => 'Texte amélioré.']);
+});
+
+test('a slow provider caps the timeout of the next one and the budget stops the chain', function () {
+    Log::spy();
+    config([
+        'ai.text_assist.providers' => ['groq', 'groq-fallback', 'gemini'],
+        'ai.text_assist.total_budget' => 5,
+        'ai.text_assist.min_provider_timeout' => 3,
+    ]);
+    $calls = 0;
+
+    TextTranslator::fake(function () use (&$calls): string {
+        $calls++;
+        sleep(3);
+
+        throw new RuntimeException('timeout');
+    });
+
+    $this->actingAs(User::factory()->create())->postJson(route('admin.ai.translate'), [
+        'text' => 'Bonjour',
+        'source_locale' => 'fr',
+        'target_locale' => 'en',
+    ])->assertStatus(503)->assertJsonStructure(['message']);
+
+    expect($calls)->toBe(1);
+    Log::shouldHaveReceived('error')->once()->withArgs(
+        fn (string $message): bool => str_contains($message, 'gemini (ignoré : budget épuisé)'),
+    );
+});
+
+test('a provider:model entry targets that model and the next model answers when one fails', function () {
+    config(['ai.text_assist.providers' => ['groq:model-a', 'groq:model-b']]);
+    $models = [];
+
+    TextTranslator::fake(function ($prompt, $attachments, $provider, $model) use (&$models): string {
+        $models[] = $model;
+
+        return count($models) === 1 ? throw new RuntimeException('429 quota') : 'Hello';
+    });
+
+    $this->actingAs(User::factory()->create())->postJson(route('admin.ai.translate'), [
+        'text' => 'Bonjour',
+        'source_locale' => 'fr',
+        'target_locale' => 'en',
+    ])->assertOk()->assertExactJson(['text' => 'Hello']);
+
+    expect($models)->toBe(['model-a', 'model-b']);
 });
