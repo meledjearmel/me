@@ -49,3 +49,4 @@ yarn-error.log
 /bun.lock
 /pnpm-lock.yaml
 /api.json
+/public/icons/tech
