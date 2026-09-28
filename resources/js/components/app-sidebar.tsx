@@ -1,17 +1,17 @@
 import { Link } from '@inertiajs/react';
 import {
-    Briefcase,
+    BriefcaseBusiness,
     Disc3,
     FolderGit2,
     GraduationCap,
     Handshake,
+    IdCard,
     LayoutGrid,
     Layers,
     Mail,
     MessageSquareQuote,
     Music,
     Sparkles,
-    Trash2,
     User,
     UserCheck,
     Wrench,
@@ -43,7 +43,6 @@ import { index as technologiesIndex } from '@/routes/admin/technologies';
 import { index as musicGenresIndex } from '@/routes/admin/music-genres';
 import { index as testimonialsIndex } from '@/routes/admin/testimonials';
 import { index as tracksIndex } from '@/routes/admin/tracks';
-import { index as trashIndex } from '@/routes/admin/trash';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
@@ -52,28 +51,35 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
-    {
-        title: 'Corbeille',
-        href: trashIndex(),
-        icon: Trash2,
-    },
 ];
 
-const contentNavItems: NavItem[] = [
+const careerNavItems: NavItem[] = [
     { title: 'Profil', href: profileEdit(), icon: User },
-    { title: 'Domaines', href: domainsIndex(), icon: Layers },
-    { title: 'Registres musique', href: musicGenresIndex(), icon: Disc3 },
-    { title: 'Pistes musique', href: tracksIndex(), icon: Music },
-    { title: 'Technologies', href: technologiesIndex(), icon: Wrench },
-    { title: 'Profils métier', href: jobProfilesIndex(), icon: Briefcase },
-    { title: 'Compétences', href: skillsIndex(), icon: Sparkles },
+    { title: 'Expériences', href: experiencesIndex(), icon: BriefcaseBusiness },
     { title: 'Formation', href: educationsIndex(), icon: GraduationCap },
-    { title: 'Expériences', href: experiencesIndex(), icon: Briefcase },
+    { title: 'Compétences', href: skillsIndex(), icon: Sparkles },
+];
+
+const portfolioNavItems: NavItem[] = [
     { title: 'Projets', href: projectsIndex(), icon: FolderGit2 },
     { title: 'Avis', href: testimonialsIndex(), icon: MessageSquareQuote },
+    { title: 'Références', href: referencesIndex(), icon: UserCheck },
+];
+
+const referenceNavItems: NavItem[] = [
+    { title: 'Domaines', href: domainsIndex(), icon: Layers },
+    { title: 'Technologies', href: technologiesIndex(), icon: Wrench },
+    { title: 'Profils métier', href: jobProfilesIndex(), icon: IdCard },
+];
+
+const musicNavItems: NavItem[] = [
+    { title: 'Pistes', href: tracksIndex(), icon: Music },
+    { title: 'Registres', href: musicGenresIndex(), icon: Disc3 },
+];
+
+const inboxNavItems: NavItem[] = [
     { title: 'Contacts', href: contactsIndex(), icon: Mail },
     { title: 'Collaborations', href: engagementsIndex(), icon: Handshake },
-    { title: 'Références', href: referencesIndex(), icon: UserCheck },
 ];
 
 export function AppSidebar() {
@@ -91,10 +97,13 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            {/* Les deux groupes de menus sont centrés verticalement dans la barre. */}
-            <SidebarContent className="justify-center gap-4">
+            <SidebarContent className="gap-3">
                 <NavMain items={mainNavItems} />
-                <NavMain items={contentNavItems} label="Contenu" />
+                <NavMain items={careerNavItems} label="Parcours" />
+                <NavMain items={portfolioNavItems} label="Réalisations" />
+                <NavMain items={referenceNavItems} label="Référentiels" />
+                <NavMain items={musicNavItems} label="Musique" />
+                <NavMain items={inboxNavItems} label="Échanges" />
             </SidebarContent>
 
             <SidebarFooter>
