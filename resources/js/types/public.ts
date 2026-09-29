@@ -106,3 +106,16 @@ export type PlaylistGenre = {
     label: string;
     tracks: PlaylistTrack[];
 };
+
+/** Surprise tirée au sort par le serveur (voir ShareSitePublicData). */
+export type SharedCelebration = {
+    id: number;
+    message: string;
+    buttonLabel: string;
+    total: number;
+    /** Probabilité (0 à 1) qu'une session voie la surprise. */
+    chance: number;
+    delaySeconds: number;
+    /** Sans interaction, la bulle repart au bout de ce délai. */
+    displaySeconds: number;
+};

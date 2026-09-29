@@ -5,12 +5,14 @@ import {
     FolderGit2,
     GraduationCap,
     Handshake,
+    Heart,
     IdCard,
     LayoutGrid,
     Layers,
     Mail,
     MessageSquareQuote,
     Music,
+    PartyPopper,
     Sparkles,
     Tags,
     User,
@@ -30,6 +32,8 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import { index as celebrationsIndex } from '@/routes/admin/celebrations';
+import { index as congratulationsIndex } from '@/routes/admin/congratulations';
 import { index as contactsIndex } from '@/routes/admin/contacts';
 import { index as engagementsIndex } from '@/routes/admin/engagements';
 import { index as domainsIndex } from '@/routes/admin/domains';
@@ -66,6 +70,7 @@ const portfolioNavItems: NavItem[] = [
     { title: 'Projets', href: projectsIndex(), icon: FolderGit2 },
     { title: 'Avis', href: testimonialsIndex(), icon: MessageSquareQuote },
     { title: 'Références', href: referencesIndex(), icon: UserCheck },
+    { title: 'Surprises', href: celebrationsIndex(), icon: PartyPopper },
 ];
 
 const referenceNavItems: NavItem[] = [
@@ -87,6 +92,7 @@ const musicNavItems: NavItem[] = [
 const inboxNavItems: NavItem[] = [
     { title: 'Contacts', href: contactsIndex(), icon: Mail },
     { title: 'Collaborations', href: engagementsIndex(), icon: Handshake },
+    { title: 'Félicitations', href: congratulationsIndex(), icon: Heart },
 ];
 
 export function AppSidebar() {

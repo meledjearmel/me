@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\V1\AiController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\CelebrationController;
+use App\Http\Controllers\Api\V1\CongratulationController;
 use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\DomainController;
@@ -53,6 +55,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('contacts', ContactController::class)->except('store');
         Route::apiResource('engagements', EngagementController::class)->except('store');
         Route::apiResource('testimonials', TestimonialController::class)->except('store');
+        Route::apiResource('congratulations', CongratulationController::class)->only(['index', 'show']);
 
         Route::apiResource('domains', DomainController::class);
         Route::apiResource('music-genres', MusicGenreController::class);
@@ -76,6 +79,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('skills', SkillController::class);
         Route::apiResource('educations', EducationController::class);
         Route::apiResource('professional-references', ProfessionalReferenceController::class);
+        Route::apiResource('celebrations', CelebrationController::class);
         Route::apiResource('experiences', ExperienceController::class);
         Route::apiResource('projects', ProjectController::class);
         Route::delete('projects/{project}/cover', [ProjectController::class, 'destroyCover'])->name('projects.cover.destroy');

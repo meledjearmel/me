@@ -9,6 +9,7 @@ import { useAppearance } from '@/hooks/use-appearance';
 import { CHAT_MAX_LENGTH, useChat } from '@/hooks/use-chat';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useAudioPlayer } from '@/lib/audio';
+import { useCelebration } from '@/lib/celebration';
 import { useLocalizedPath, useTranslations } from '@/lib/i18n';
 
 /**
@@ -48,6 +49,8 @@ export default function ChatAssistant() {
     const reduceMotion = useReducedMotion();
     const chat = useChat(path('chat'));
     const { playing: musicPlaying } = useAudioPlayer();
+    const surprise = useCelebration();
+    const dismissSurprise = surprise.dismiss;
 
     const [open, setOpen] = useState(false);
     const [draft, setDraft] = useState('');
@@ -70,11 +73,13 @@ export default function ChatAssistant() {
 
         setWaking(true);
         input.current?.focus();
+        // Ouvrir le chat range la surprise, sans la bouder pour autant.
+        dismissSurprise();
 
         const timer = window.setTimeout(() => setWaking(false), WAKING_MS);
 
         return () => window.clearTimeout(timer);
-    }, [open]);
+    }, [open, dismissSurprise]);
 
     // Une nouvelle réponse fait sourire l'avatar un instant.
     useEffect(() => {
@@ -102,7 +107,10 @@ export default function ChatAssistant() {
 
     let avatarState: ChatAvatarState = 'idle';
 
-    if (!open) {
+    if (!open && surprise.visible) {
+        // Il annonce une bonne nouvelle : il sautille de joie.
+        avatarState = 'happy';
+    } else if (!open) {
         // Panneau fermé : il dort, à moins que la musique du site ne joue.
         avatarState = musicPlaying ? 'grooving' : 'sleeping';
     } else if (chat.status === 'error') {
@@ -146,7 +154,9 @@ export default function ChatAssistant() {
     };
 
     return (
-        <div className={`pub-chat${open ? ' is-open' : ''}`}>
+        <div
+            className={`pub-chat${open ? ' is-open' : ''}${surprise.visible ? ' has-surprise' : ''}`}
+        >
             <AnimatePresence>
                 {open && (
                     <motion.section

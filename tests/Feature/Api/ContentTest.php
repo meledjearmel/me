@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\PublicationStatus;
+use App\Models\Celebration;
 use App\Models\Domain;
 use App\Models\Education;
 use App\Models\Experience;
@@ -216,4 +217,41 @@ test('les formations, expériences, compétences et profils métier exposent leu
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.status', 'published');
     }
+});
+
+test('une surprise se crée, se lit, se modifie et se supprime', function () {
+    $payload = [
+        'message' => ['fr' => 'Nouveau diplôme !', 'en' => 'New degree!'],
+        'button_label' => ['fr' => 'Féliciter', 'en' => 'Congratulate'],
+        'congratulated_for' => 'votre nouveau diplôme',
+        'is_active' => true,
+        'starts_at' => '2026-10-01',
+        'ends_at' => null,
+        'weight' => 1,
+        'chance_percent' => 50,
+        'delay_seconds' => 5,
+        'display_seconds' => 15,
+    ];
+
+    $id = $this->postJson(route('api.v1.celebrations.store'), $payload)
+        ->assertCreated()
+        ->assertJsonPath('message.fr', 'Nouveau diplôme !')
+        ->assertJsonPath('starts_at', '2026-10-01')
+        ->assertJsonPath('display_seconds', 15)
+        ->assertJsonPath('congratulations_count', 0)
+        ->json('id');
+
+    $this->getJson(route('api.v1.celebrations.index', ['search' => 'diplôme']))->assertOk()->assertJsonCount(1, 'data');
+
+    $this->putJson(route('api.v1.celebrations.update', $id), [...$payload, 'chance_percent' => 100, 'display_seconds' => 30])
+        ->assertOk()
+        ->assertJsonPath('chance_percent', 100)
+        ->assertJsonPath('display_seconds', 30);
+
+    $this->putJson(route('api.v1.celebrations.update', $id), [...$payload, 'display_seconds' => 2])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('display_seconds');
+
+    $this->deleteJson(route('api.v1.celebrations.destroy', $id))->assertNoContent();
+    expect(Celebration::query()->find($id))->toBeNull();
 });

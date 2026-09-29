@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Http\Resources\Public\ProfileResource;
+use App\Models\Celebration;
 use App\Models\JobProfile;
 use App\Models\PageVisit;
 use App\Models\Profile;
@@ -18,6 +19,20 @@ class ShareSitePublicData
         Inertia::share([
             'profile' => fn () => new ProfileResource(Profile::query()->firstOrFail()),
             'siteUrl' => rtrim((string) config('app.url'), '/'),
+            // Surprise tirée au sort ; le navigateur décide s'il l'affiche (une fois par session au plus).
+            'celebration' => function (): ?array {
+                $celebration = Celebration::pickRandom();
+
+                return $celebration === null ? null : [
+                    'id' => $celebration->id,
+                    'message' => $celebration->getTranslation('message', app()->getLocale()),
+                    'buttonLabel' => $celebration->getTranslation('button_label', app()->getLocale()),
+                    'total' => $celebration->congratulations_count,
+                    'chance' => $celebration->chance_percent / 100,
+                    'delaySeconds' => $celebration->delay_seconds,
+                    'displaySeconds' => $celebration->display_seconds,
+                ];
+            },
             'visitCount' => fn () => PageVisit::query()->count(),
             // Profils proposés dans la fenêtre « Embauche » : chacun a son CV.
             'cvProfiles' => fn () => JobProfile::query()

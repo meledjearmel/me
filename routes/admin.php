@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\AiAssistController;
+use App\Http\Controllers\Admin\CelebrationController;
+use App\Http\Controllers\Admin\CongratulationController;
 use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\DomainController;
 use App\Http\Controllers\Admin\EducationController;
@@ -47,6 +49,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::post('upload', [TechnologyIconController::class, 'upload'])->name('upload');
     });
     Route::resource('technology-categories', TechnologyCategoryController::class);
+    Route::resource('celebrations', CelebrationController::class);
+    Route::get('congratulations', [CongratulationController::class, 'index'])->name('congratulations.index');
     Route::resource('technologies', TechnologyController::class);
     Route::resource('job-profiles', JobProfileController::class);
     Route::delete('job-profiles/{job_profile}/cv/{locale}', [JobProfileController::class, 'destroyCv'])

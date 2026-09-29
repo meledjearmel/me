@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\CelebrationCongratulationController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CongratulationController;
 use App\Http\Controllers\ContactController;
@@ -45,6 +46,9 @@ Route::prefix('{locale}')->middleware(['locale', LogPageVisit::class, ShareSiteP
     Route::post('congratulations', [CongratulationController::class, 'store'])
         ->middleware('throttle:60,1')
         ->name('congratulations.store');
+    Route::post('celebrations/{celebration}/congratulations', CelebrationCongratulationController::class)
+        ->middleware('throttle:60,1')
+        ->name('celebrations.congratulate');
     Route::post('chat', [ChatController::class, 'store'])
         ->middleware('throttle:chat')
         ->name('chat.store');

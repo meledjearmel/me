@@ -35,6 +35,34 @@ export type Track = {
     genre?: MusicGenre;
 };
 
+/** Surprise du site public : un personnage annonce une bonne nouvelle à féliciter. */
+export type Celebration = {
+    id: number;
+    message: Translatable;
+    button_label: Translatable;
+    congratulated_for: string;
+    is_active: boolean;
+    starts_at: string | null;
+    ends_at: string | null;
+    weight: number;
+    chance_percent: number;
+    delay_seconds: number;
+    display_seconds: number;
+    congratulations_count: number;
+    created_at: string;
+};
+
+/** Un envoi de félicitations d'un visiteur, avec son motif. */
+export type Congratulation = {
+    id: number;
+    source: 'about' | 'surprise';
+    celebration_id: number | null;
+    reason: string;
+    count: number;
+    locale: string | null;
+    created_at: string;
+};
+
 export type TechnologyCategory = {
     id: number;
     key: string;

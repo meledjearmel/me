@@ -1,7 +1,9 @@
 import { useEffect, type ReactNode } from 'react';
+import CelebrationBubble from '@/components/public/celebration-bubble';
 import ContactDrawer from '@/components/public/contact-drawer';
 import CustomCursor from '@/components/public/custom-cursor';
 import { AudioProvider } from '@/lib/audio';
+import { CelebrationProvider } from '@/lib/celebration';
 import { ContactDrawerProvider } from '@/lib/contact-drawer';
 
 /**
@@ -19,9 +21,12 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
     return (
         <AudioProvider>
             <ContactDrawerProvider>
-                {children}
-                <ContactDrawer />
-                <CustomCursor />
+                <CelebrationProvider>
+                    {children}
+                    <CelebrationBubble />
+                    <ContactDrawer />
+                    <CustomCursor />
+                </CelebrationProvider>
             </ContactDrawerProvider>
         </AudioProvider>
     );

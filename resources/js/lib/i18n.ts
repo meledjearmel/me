@@ -188,6 +188,11 @@ const dictionaries = {
             errorNetwork:
                 'Connexion impossible. Vérifiez votre réseau et réessayez.',
         },
+        celebration: {
+            close: 'Fermer',
+            countLabel: 'félicitations',
+            thanks: 'Merci, ça fait plaisir !',
+        },
         fab: {
             label: "Passer à l'action",
             review: 'Laisser un avis',
@@ -443,6 +448,11 @@ const dictionaries = {
                 'Too many messages for now. Try again in a moment, or write to me through the contact page.',
             errorNetwork:
                 'Unable to connect. Check your network and try again.',
+        },
+        celebration: {
+            close: 'Close',
+            countLabel: 'congratulations',
+            thanks: 'Thank you, that means a lot!',
         },
         fab: {
             label: 'Take action',

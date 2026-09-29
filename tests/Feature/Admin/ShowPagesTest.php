@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Celebration;
 use App\Models\Contact;
 use App\Models\Domain;
 use App\Models\Education;
@@ -17,6 +18,7 @@ use App\Models\User;
 dataset('show pages', [
     'domains' => [fn () => Domain::factory()->create(), 'admin.domains.show', 'admin/domains/show'],
     'technologies' => [fn () => Technology::factory()->create(), 'admin.technologies.show', 'admin/technologies/show'],
+    'celebrations' => [fn () => Celebration::factory()->create(), 'admin.celebrations.show', 'admin/celebrations/show'],
     'technology categories' => [fn () => TechnologyCategory::factory()->create(), 'admin.technology-categories.show', 'admin/technology-categories/show'],
     'job profiles' => [fn () => JobProfile::factory()->create(), 'admin.job-profiles.show', 'admin/job-profiles/show'],
     'skills' => [fn () => Skill::factory()->create(), 'admin.skills.show', 'admin/skills/show'],

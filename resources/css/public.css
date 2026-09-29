@@ -5440,8 +5440,154 @@ html.pub-scroll {
     box-shadow: 4px 4px 0 var(--pub-gold);
 }
 
-.pub-chat.is-open .pub-chat__hint {
+.pub-chat.is-open .pub-chat__hint,
+.pub-chat.has-surprise .pub-chat__hint {
     display: none;
+}
+
+/* Surprise : Armi sautille tant que sa bulle est affichée. */
+.pub-chat.has-surprise .pub-chatavatar {
+    animation: pub-chatavatar-bounce 0.9s ease-in-out infinite;
+}
+
+/* Bulle de la surprise, au-dessus d'Armi (voir celebration-bubble.tsx). */
+.pub-surprise {
+    --surprise-left: clamp(14px, 2.4vw, 28px);
+
+    position: fixed;
+    left: var(--surprise-left);
+    bottom: calc(clamp(22px, calc(4.5vw + 5px), 70px) + 64px + 18px);
+    z-index: 91;
+    width: min(330px, calc(100vw - 2 * var(--surprise-left)));
+    padding: 1.1rem 1.15rem 1rem;
+    border: 1px solid color-mix(in oklab, var(--pub-text) 28%, transparent);
+    background: var(--pub-bg);
+    color: var(--pub-text);
+    font-family: var(--pub-font-body);
+    box-shadow:
+        6px 6px 0 var(--pub-gold),
+        0 24px 50px -24px rgb(0 0 0 / 0.45);
+}
+
+/* Pointe de la bulle, tournée vers Armi. */
+.pub-surprise::after {
+    content: '';
+    position: absolute;
+    left: 22px;
+    bottom: -9px;
+    width: 16px;
+    height: 16px;
+    border-right: 1px solid
+        color-mix(in oklab, var(--pub-text) 28%, transparent);
+    border-bottom: 1px solid
+        color-mix(in oklab, var(--pub-text) 28%, transparent);
+    background: var(--pub-bg);
+    rotate: 45deg;
+}
+
+.pub-surprise__close {
+    position: absolute;
+    top: 0.45rem;
+    right: 0.45rem;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: inherit;
+    opacity: 0.6;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.pub-surprise__close:hover {
+    opacity: 1;
+}
+
+.pub-surprise__message {
+    margin: 0;
+    padding-right: 1.4rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.45;
+}
+
+.pub-surprise__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.85rem;
+    margin-top: 0.9rem;
+}
+
+.pub-surprise__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 1rem;
+    border: 0;
+    border-radius: 999px;
+    background: #d9603f;
+    color: #fff9e9;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.3s var(--pub-ease-spring);
+}
+
+.pub-surprise__cta:hover {
+    transform: translateY(-2px) scale(1.04);
+}
+
+.pub-surprise__cta:active {
+    transform: scale(0.96);
+}
+
+.pub-surprise__close:focus-visible,
+.pub-surprise__cta:focus-visible {
+    outline: 3px solid var(--pub-gold);
+    outline-offset: 3px;
+}
+
+.pub-surprise__count {
+    font-size: 0.8rem;
+    opacity: 0.75;
+}
+
+.pub-surprise__count strong {
+    font-variant-numeric: tabular-nums;
+}
+
+.pub-surprise__thanks {
+    margin: 0.6rem 0 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #d9603f;
+}
+
+.dark .pub-surprise__thanks {
+    color: var(--pub-coral);
+}
+
+@media (max-width: 707px) {
+    /* l'avatar passe à 48px sur mobile */
+    .pub-surprise {
+        bottom: calc(clamp(22px, calc(4.5vw + 5px), 70px) + 48px + 16px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pub-chat.has-surprise .pub-chatavatar {
+        animation: none;
+    }
+
+    .pub-surprise__cta {
+        transition: none;
+    }
 }
 
 .pub-chat__panel {
