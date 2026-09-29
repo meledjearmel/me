@@ -28,6 +28,8 @@ class ProfileRequest extends FormRequest
             'location' => ['nullable', 'string', 'max:255'],
             'social_links.github' => ['nullable', 'url', 'max:255'],
             'social_links.linkedin' => ['nullable', 'url', 'max:255'],
+            // Facultatif : un client qui ne l'envoie pas garde la valeur actuelle.
+            'congratulation_notify_minutes' => ['sometimes', 'integer', 'min:0', 'max:1440'],
             'photo' => ['nullable', 'image', 'max:5120'],
             'cv_photo' => ['nullable', 'image', 'max:5120'],
             'music' => ['nullable', 'file', 'mimes:mp3,ogg,wav,m4a,aac', 'max:20480'],

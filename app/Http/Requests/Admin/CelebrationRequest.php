@@ -26,6 +26,7 @@ class CelebrationRequest extends FormRequest
             'chance_percent' => ['required', 'integer', 'min:1', 'max:100'],
             'delay_seconds' => ['required', 'integer', 'min:0', 'max:600'],
             'display_seconds' => ['required', 'integer', 'min:5', 'max:120'],
+            'snooze_days' => ['required', 'integer', 'min:0', 'max:365'],
         ];
     }
 }

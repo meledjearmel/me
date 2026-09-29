@@ -15,6 +15,7 @@ test('public pages share a showable celebration', function () {
         'chance_percent' => 25,
         'delay_seconds' => 4,
         'display_seconds' => 20,
+        'snooze_days' => 3,
     ]);
 
     $this->get('/en')->assertInertia(fn ($page) => $page
@@ -24,6 +25,7 @@ test('public pages share a showable celebration', function () {
         ->where('celebration.chance', 0.25)
         ->where('celebration.delaySeconds', 4)
         ->where('celebration.displaySeconds', 20)
+        ->where('celebration.snoozeDays', 3)
     );
 });
 

@@ -20,8 +20,11 @@ class Congratulation extends Model
     /** @use HasFactory<CongratulationFactory> */
     use HasFactory;
 
-    /** Au plus une notification push par motif sur cette durée : un visiteur enthousiaste ne doit pas faire vibrer le téléphone en boucle. */
-    public const NOTIFY_EVERY_MINUTES = 10;
+    /**
+     * Délai par défaut entre deux notifications push d'un même motif, quand le profil n'en
+     * fixe pas : un visiteur enthousiaste ne doit pas faire vibrer le téléphone en boucle.
+     */
+    public const DEFAULT_NOTIFY_EVERY_MINUTES = 10;
 
     /** Motif enregistré pour la carte « Distinction » de la page À propos. */
     public const ABOUT_REASON = 'Carte « Distinction » de la page À propos';
@@ -61,9 +64,7 @@ class Congratulation extends Model
             'locale' => app()->getLocale(),
         ]);
 
-        $throttleKey = 'congratulations:notified:'.($celebration?->id ?? $source->value);
-
-        if (Cache::add($throttleKey, true, now()->addMinutes(self::NOTIFY_EVERY_MINUTES))) {
+        if (static::shouldNotify($celebration?->id ?? $source->value)) {
             SendPushNotification::dispatch(
                 'Nouvelles félicitations 🎉',
                 static::notificationBody($count, $celebration),
@@ -72,6 +73,21 @@ class Congratulation extends Model
         }
 
         return $congratulation;
+    }
+
+    /**
+     * Au plus une notification par motif sur le délai réglé dans le profil
+     * (`congratulation_notify_minutes`, 0 = une notification à chaque envoi).
+     */
+    private static function shouldNotify(int|string $reasonKey): bool
+    {
+        $minutes = Profile::query()->value('congratulation_notify_minutes') ?? self::DEFAULT_NOTIFY_EVERY_MINUTES;
+
+        if ($minutes <= 0) {
+            return true;
+        }
+
+        return Cache::add('congratulations:notified:'.$reasonKey, true, now()->addMinutes($minutes));
     }
 
     /** « Vous avez reçu 3 félicitations pour votre prix de meilleur agent » (toujours en français : c'est Armel qui la lit). */

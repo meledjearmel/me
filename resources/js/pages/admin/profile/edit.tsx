@@ -4,6 +4,7 @@ import Heading from '@/components/heading';
 import TranslatableField from '@/components/translatable-field';
 import {
     Field,
+    FieldDescription,
     FieldError,
     FieldGroup,
     FieldLabel,
@@ -279,6 +280,37 @@ export default function ProfileEdit({ profile }: { profile: Profile }) {
                                     </FieldError>
                                 </Field>
                             </div>
+
+                            <Field
+                                data-invalid={
+                                    !!errors.congratulation_notify_minutes
+                                }
+                            >
+                                <FieldLabel htmlFor="congratulation_notify_minutes">
+                                    Notification de félicitations au plus
+                                    toutes les (minutes)
+                                </FieldLabel>
+                                <Input
+                                    id="congratulation_notify_minutes"
+                                    name="congratulation_notify_minutes"
+                                    type="number"
+                                    min={0}
+                                    max={1440}
+                                    defaultValue={
+                                        profile.congratulation_notify_minutes
+                                    }
+                                    required
+                                />
+                                <FieldDescription>
+                                    Par motif (chaque surprise, la page À
+                                    propos). 0 : une notification à chaque
+                                    envoi. L'historique garde toutes les
+                                    félicitations.
+                                </FieldDescription>
+                                <FieldError>
+                                    {errors.congratulation_notify_minutes}
+                                </FieldError>
+                            </Field>
 
                             <Button disabled={processing}>Enregistrer</Button>
                         </FieldGroup>

@@ -32,6 +32,8 @@ class CelebrationResource extends JsonResource
             'delay_seconds' => $this->delay_seconds,
             /** Secondes d'affichage sans interaction avant que la bulle ne reparte. */
             'display_seconds' => $this->display_seconds,
+            /** Jours pendant lesquels la surprise n'est plus proposée à un visiteur qui l'a fermée (0 = dès la session suivante). */
+            'snooze_days' => $this->snooze_days,
             /** Félicitations reçues des visiteurs (lecture seule). */
             'congratulations_count' => $this->congratulations_count,
             'created_at' => $this->created_at,

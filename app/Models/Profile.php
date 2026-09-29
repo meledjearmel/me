@@ -30,11 +30,13 @@ class Profile extends Model implements HasMedia
         'phone',
         'location',
         'social_links',
+        'congratulation_notify_minutes',
     ];
 
     /** @var array<string, string> */
     protected $casts = [
         'social_links' => 'array',
+        'congratulation_notify_minutes' => 'integer',
     ];
 
     public function registerMediaCollections(): void

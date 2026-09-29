@@ -10,8 +10,7 @@ import {
 } from 'react';
 import type { SharedCelebration } from '@/types';
 
-/** Fermée à la main, la même surprise ne revient pas avant une semaine. */
-const SNOOZE_MS = 7 * 24 * 60 * 60 * 1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
 const SESSION_KEY = 'pub-celebration-rolled';
 const SNOOZE_KEY = 'pub-celebration-snoozed';
 
@@ -20,7 +19,7 @@ type CelebrationState = {
     visible: boolean;
     /** Le visiteur interagit : on annule le départ automatique. */
     engage: () => void;
-    /** `snooze` : fermée volontairement, on ne la reproposera pas avant une semaine. */
+    /** `snooze` : fermée volontairement, on ne la reproposera pas pendant `snoozeDays` jours. */
     dismiss: (snooze?: boolean) => void;
 };
 
@@ -98,7 +97,8 @@ export function CelebrationProvider({ children }: { children: ReactNode }) {
 
             if (
                 !claimSessionRoll() ||
-                (snoozedAt && Date.now() - snoozedAt < SNOOZE_MS) ||
+                (snoozedAt &&
+                    Date.now() - snoozedAt < candidate.snoozeDays * DAY_MS) ||
                 Math.random() >= candidate.chance
             ) {
                 return;

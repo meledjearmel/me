@@ -19,6 +19,7 @@ test('authenticated users can create and update a celebration', function () {
         'chance_percent' => 50,
         'delay_seconds' => 5,
         'display_seconds' => 15,
+        'snooze_days' => 7,
     ])->assertRedirect(route('admin.celebrations.index'));
 
     $celebration = Celebration::query()->latest('id')->firstOrFail();
@@ -34,6 +35,7 @@ test('authenticated users can create and update a celebration', function () {
         'chance_percent' => 100,
         'delay_seconds' => 0,
         'display_seconds' => 30,
+        'snooze_days' => 0,
     ])->assertRedirect(route('admin.celebrations.index'));
 
     $celebration->refresh();
@@ -44,7 +46,8 @@ test('authenticated users can create and update a celebration', function () {
         ->and($celebration->ends_at->toDateString())->toBe('2026-12-31')
         ->and($celebration->chance_percent)->toBe(100)
         ->and($celebration->delay_seconds)->toBe(0)
-        ->and($celebration->display_seconds)->toBe(30);
+        ->and($celebration->display_seconds)->toBe(30)
+        ->and($celebration->snooze_days)->toBe(0);
 });
 
 test('a celebration requires its texts and a coherent period', function () {
@@ -54,7 +57,7 @@ test('a celebration requires its texts and a coherent period', function () {
             'ends_at' => '2026-10-01',
             'chance_percent' => 0,
         ])
-        ->assertSessionHasErrors(['message.fr', 'message.en', 'button_label.fr', 'button_label.en', 'congratulated_for', 'ends_at', 'chance_percent', 'delay_seconds', 'display_seconds']);
+        ->assertSessionHasErrors(['message.fr', 'message.en', 'button_label.fr', 'button_label.en', 'congratulated_for', 'ends_at', 'chance_percent', 'delay_seconds', 'display_seconds', 'snooze_days']);
 });
 
 test('authenticated users can delete a celebration', function () {

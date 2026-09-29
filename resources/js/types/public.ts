@@ -118,4 +118,6 @@ export type SharedCelebration = {
     delaySeconds: number;
     /** Sans interaction, la bulle repart au bout de ce délai. */
     displaySeconds: number;
+    /** Fermée par le visiteur, elle ne lui est plus proposée pendant ce nombre de jours. */
+    snoozeDays: number;
 };

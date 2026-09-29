@@ -33,6 +33,7 @@ class Celebration extends Model
         'chance_percent',
         'delay_seconds',
         'display_seconds',
+        'snooze_days',
     ];
 
     /** @var array<string, string> */
@@ -44,6 +45,7 @@ class Celebration extends Model
         'chance_percent' => 'integer',
         'delay_seconds' => 'integer',
         'display_seconds' => 'integer',
+        'snooze_days' => 'integer',
         'congratulations_count' => 'integer',
     ];
 

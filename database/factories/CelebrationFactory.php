@@ -28,6 +28,7 @@ class CelebrationFactory extends Factory
             'chance_percent' => 33,
             'delay_seconds' => 9,
             'display_seconds' => 15,
+            'snooze_days' => 7,
         ];
     }
 

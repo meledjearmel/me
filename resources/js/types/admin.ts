@@ -48,6 +48,7 @@ export type Celebration = {
     chance_percent: number;
     delay_seconds: number;
     display_seconds: number;
+    snooze_days: number;
     congratulations_count: number;
     created_at: string;
 };
@@ -218,6 +219,7 @@ export type Profile = {
     phone: string | null;
     location: string | null;
     social_links: { github?: string; linkedin?: string } | null;
+    congratulation_notify_minutes: number;
     cv_last_name?: string | null;
     cv_first_name?: string | null;
     photo_url?: string | null;

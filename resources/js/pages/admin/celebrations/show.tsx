@@ -91,6 +91,13 @@ export default function CelebrationShow({
                             value: `${row.display_seconds} s sans interaction`,
                         },
                         {
+                            label: 'Après fermeture',
+                            value:
+                                row.snooze_days > 0
+                                    ? `Plus proposée pendant ${row.snooze_days} jour${row.snooze_days > 1 ? 's' : ''}`
+                                    : 'Peut revenir dès la visite suivante',
+                        },
+                        {
                             label: 'Poids au tirage',
                             value: row.weight,
                         },

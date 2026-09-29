@@ -31,6 +31,7 @@ class ShareSitePublicData
                     'chance' => $celebration->chance_percent / 100,
                     'delaySeconds' => $celebration->delay_seconds,
                     'displaySeconds' => $celebration->display_seconds,
+                    'snoozeDays' => $celebration->snooze_days,
                 ];
             },
             'visitCount' => fn () => PageVisit::query()->count(),

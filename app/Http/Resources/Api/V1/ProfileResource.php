@@ -28,6 +28,8 @@ class ProfileResource extends JsonResource
             'phone' => $this->phone,
             'location' => $this->location,
             'social_links' => $this->social_links,
+            /** Au plus une notification push de félicitations par motif sur ce nombre de minutes (0 = à chaque envoi). */
+            'congratulation_notify_minutes' => $this->congratulation_notify_minutes,
             'photo_url' => $this->getFirstMediaUrl('photo') ?: null,
             'cv_photo_url' => $this->getFirstMediaUrl('cv_photo') ?: null,
             /** Bande audio du site uploadée (`null` si absente : le lecteur utilise la piste par défaut). */

@@ -164,6 +164,26 @@ export default function CelebrationFields({
                 </Field>
             </div>
 
+            <Field data-invalid={!!errors.snooze_days}>
+                <FieldLabel htmlFor="snooze_days">
+                    Après fermeture, ne plus la proposer pendant (jours)
+                </FieldLabel>
+                <Input
+                    id="snooze_days"
+                    name="snooze_days"
+                    type="number"
+                    min={0}
+                    max={365}
+                    defaultValue={celebration?.snooze_days ?? 7}
+                    required
+                />
+                <FieldDescription>
+                    Quand le visiteur la ferme avec la croix. 0 : elle peut
+                    revenir dès sa prochaine visite.
+                </FieldDescription>
+                <FieldError>{errors.snooze_days}</FieldError>
+            </Field>
+
             <Field orientation="horizontal">
                 <input type="hidden" name="is_active" value="0" />
                 <Checkbox

@@ -231,6 +231,7 @@ test('une surprise se crée, se lit, se modifie et se supprime', function () {
         'chance_percent' => 50,
         'delay_seconds' => 5,
         'display_seconds' => 15,
+        'snooze_days' => 7,
     ];
 
     $id = $this->postJson(route('api.v1.celebrations.store'), $payload)
@@ -238,6 +239,7 @@ test('une surprise se crée, se lit, se modifie et se supprime', function () {
         ->assertJsonPath('message.fr', 'Nouveau diplôme !')
         ->assertJsonPath('starts_at', '2026-10-01')
         ->assertJsonPath('display_seconds', 15)
+        ->assertJsonPath('snooze_days', 7)
         ->assertJsonPath('congratulations_count', 0)
         ->json('id');
 
