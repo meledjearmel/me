@@ -80,8 +80,14 @@ class AppServiceProvider extends ServiceProvider
             $request = $response->request;
 
             if (! in_array($status, [403, 404, 429, 500, 503], true)
-                || $request->is('admin', 'admin/*', 'settings', 'settings/*', 'api/*', 'dashboard')
-                || ($status >= 500 && config('app.debug'))) {
+                || $request->is(
+                    'admin', 'admin/*', 'settings', 'settings/*', 'api/*', 'dashboard',
+                    'login', 'logout', 'register', 'forgot-password', 'reset-password*',
+                    'two-factor*', 'user/*', 'email/*',
+                )
+                || ($status >= 500 && config('app.debug'))
+                // La coque publique a besoin du profil : sans lui, la page de Laravel prend le relais.
+                || ! Profile::query()->exists()) {
                 return null;
             }
 

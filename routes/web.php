@@ -73,4 +73,7 @@ require __DIR__.'/settings.php';
 require __DIR__.'/admin.php';
 
 // Lien sans langue (/about) : redirigé vers la page dans la langue du visiteur, sinon 404.
-Route::fallback(LocaleRedirectController::class);
+// Toutes les méthodes : une requête POST ou DELETE vers une adresse inconnue reste une 404, pas une 405.
+Route::any('{fallbackPlaceholder}', LocaleRedirectController::class)
+    ->where('fallbackPlaceholder', '.*')
+    ->fallback();

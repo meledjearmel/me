@@ -39,3 +39,8 @@ test('an unknown page under a language shows the error page in that language', f
             ->where('locale', 'fr')
         );
 });
+
+test('an unknown address answers 404 whatever the method', function () {
+    $this->post('/does-not-exist')->assertNotFound();
+    $this->deleteJson('/api/v1/nope')->assertNotFound();
+});
