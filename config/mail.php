@@ -115,4 +115,22 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Markdown Mail Settings
+    |--------------------------------------------------------------------------
+    |
+    | Les emails utilisent les gabarits publiés dans resources/views/vendor/mail
+    | et le thème « portfolio », aux couleurs du site.
+    |
+    */
+
+    'markdown' => [
+        'theme' => 'portfolio',
+
+        'paths' => [
+            resource_path('views/vendor/mail'),
+        ],
+    ],
+
 ];

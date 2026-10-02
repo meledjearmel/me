@@ -223,3 +223,17 @@ test('a fixed budget ignores any period sent along', function () {
     expect($engagement->budget_period)->toBeNull()
         ->and($engagement->budget_label)->toBe('3 000 FCFA (forfait)');
 });
+
+test('the CV email sends replies to the owner and links to the projects in the recruiter language', function () {
+    $engagement = Engagement::factory()->create([
+        'type' => EngagementType::Hiring,
+        'locale' => 'en',
+        'job_profile_id' => JobProfile::factory()->create()->id,
+    ]);
+
+    $mail = new CvMail($engagement, 'pdf', 'cv.pdf', 'Armel Meledje');
+
+    $mail->assertHasReplyTo('owner@example.test');
+    $mail->assertSeeInHtml(rtrim((string) config('app.url'), '/').'/en/projects');
+    $mail->assertSeeInHtml('All rights reserved.');
+});

@@ -3,8 +3,10 @@
 namespace App\Mail;
 
 use App\Models\Engagement;
+use App\Models\Profile;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -27,10 +29,14 @@ class CvMail extends Mailable
 
     public function envelope(): Envelope
     {
+        $email = Profile::query()->value('email');
+
         return new Envelope(
             subject: $this->engagement->locale === 'en'
                 ? "My CV — {$this->ownerName}"
                 : "Mon CV — {$this->ownerName}",
+            // Une réponse du recruteur arrive directement dans la boîte du propriétaire.
+            replyTo: $email ? [new Address($email, $this->ownerName)] : [],
         );
     }
 
@@ -43,6 +49,9 @@ class CvMail extends Mailable
                 'recruiter' => $this->engagement->name,
                 'position' => $this->engagement->subject,
                 'ownerName' => $this->ownerName,
+                'filename' => $this->filename,
+                'phone' => Profile::query()->value('phone'),
+                'projectsUrl' => rtrim((string) config('app.url'), '/')."/{$this->engagement->locale}/projects",
             ],
         );
     }

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\ShareSitePublicData;
+use App\Models\Profile;
 use Carbon\CarbonImmutable;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
@@ -14,6 +15,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Inertia\ExceptionResponse;
@@ -38,6 +40,32 @@ class AppServiceProvider extends ServiceProvider
         $this->configureApiDocs();
         $this->configureRateLimiting();
         $this->configureErrorPages();
+        $this->configureMails();
+    }
+
+    /**
+     * Signature des emails (en-tête et pied de page) : le nom du propriétaire,
+     * le portfolio dans la langue de l'email et ses liens publics.
+     */
+    protected function configureMails(): void
+    {
+        View::composer('mail::message', function ($view): void {
+            $profile = Profile::query()->first();
+            $siteUrl = rtrim((string) config('app.url'), '/');
+
+            $view->with('owner', [
+                'name' => $profile?->name ?? config('app.name'),
+                'location' => $profile?->location,
+                'portfolio' => $siteUrl.'/'.app()->getLocale(),
+                'portfolioLabel' => preg_replace('#^https?://#', '', $siteUrl),
+                'links' => collect($profile?->social_links ?? [])
+                    ->filter()
+                    ->mapWithKeys(fn (string $url, string $network): array => [
+                        ['github' => 'GitHub', 'linkedin' => 'LinkedIn'][$network] ?? ucfirst($network) => $url,
+                    ])
+                    ->all(),
+            ]);
+        });
     }
 
     /**
