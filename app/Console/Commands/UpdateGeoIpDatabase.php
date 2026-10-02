@@ -52,7 +52,7 @@ class UpdateGeoIpDatabase extends Command
                 ->throw();
 
             (new PharData($archive))->decompress();
-            (new PharData(substr($archive, 0, -3)))->extractAll($workDir);
+            (new PharData(substr($archive, 0, -3)))->extractTo($workDir);
 
             $database = collect(File::allFiles($workDir))
                 ->first(fn ($file): bool => $file->getFilename() === 'GeoLite2-City.mmdb');
