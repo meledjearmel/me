@@ -84,16 +84,7 @@ export default function SiteFooter({
 
             <div className="pub-footer__bar">
                 <p>
-                    © {new Date().getFullYear()} {name}. {t.footer.rights}{' '}
-                    {t.footer.inspiredBy}{' '}
-                    <a
-                        href="https://zainabkabira.com/"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        Zainab Kabira
-                    </a>
-                    .
+                    © {new Date().getFullYear()} {name}. {t.footer.rights}
                 </p>
 
                 <nav aria-label={t.footer.linksLabel}>

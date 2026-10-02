@@ -156,7 +156,6 @@ const dictionaries = {
         },
         footer: {
             rights: 'Tous droits réservés.',
-            inspiredBy: 'Design inspiré de',
             sub: 'Des premières idées aux produits en ligne, je conçois des solutions fiables, sécurisées et faciles à faire évoluer.',
             headline: 'Construisons votre prochain projet',
             cursorContact: 'Écrivez-moi',
@@ -418,7 +417,6 @@ const dictionaries = {
         },
         footer: {
             rights: 'All rights reserved.',
-            inspiredBy: 'Design inspired by',
             sub: 'From first ideas to products in production, I build solutions that are reliable, secure and easy to evolve.',
             headline: "Let's build your next project",
             cursorContact: 'Say hello',
