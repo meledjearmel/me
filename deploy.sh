@@ -15,6 +15,9 @@ composer install --no-dev --optimize-autoloader --no-interaction
 echo "→ Dépendances Node"
 bun install
 
+echo "→ Vidage des caches (Wayfinder doit lire les routes à jour pendant le build)"
+php artisan optimize:clear
+
 echo "→ Build (client + SSR)"
 bun run build:ssr
 
