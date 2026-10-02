@@ -13,7 +13,8 @@ export const WIDE_PLAYER_QUERY = '(min-width: 1024px)';
 
 export default function Recorder() {
     const t = useTranslations();
-    const { playing, time, duration, toggle, seek, genres } = useAudioPlayer();
+    const { available, playing, time, duration, toggle, seek, genres } =
+        useAudioPlayer();
     const isWideScreen = useMediaQuery(WIDE_PLAYER_QUERY);
     const [expanded, setExpanded] = useState(false);
     const canExpand = isWideScreen && genres.length > 0;
@@ -25,6 +26,10 @@ export default function Recorder() {
             setExpanded(false);
         }
     }, [canExpand]);
+
+    if (!available) {
+        return null;
+    }
 
     return (
         <div className="pub-recorder-slot">

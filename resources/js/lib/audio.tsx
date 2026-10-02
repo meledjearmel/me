@@ -18,6 +18,8 @@ type AudioState = {
     volume: number;
     /** Registres jouables ; vide quand le site n'a que sa bande audio unique. */
     genres: PlaylistGenre[];
+    /** Faux tant qu'aucune piste ni bande audio n'a été envoyée : le lecteur se masque. */
+    available: boolean;
     currentTrack: PlaylistTrack;
     /** Le registre de la piste en cours (null en mode piste unique). */
     currentGenre: PlaylistGenre | null;
@@ -33,8 +35,6 @@ type AudioState = {
 
 const AudioContext = createContext<AudioState | null>(null);
 
-export const FALLBACK_TRACK = '/audio/journey.mp3';
-
 /** Sous cette durée écoulée, « précédent » revient à la piste d'avant ; au-delà, il rembobine. */
 const RESTART_THRESHOLD = 3;
 
@@ -44,7 +44,7 @@ const RESTART_THRESHOLD = 3;
  *
  * Avec des registres en base, la file d'attente est celle du registre de la
  * piste en cours (elle reboucle sur elle-même) ; sans registre, le lecteur
- * joue la bande audio du profil ou la piste par défaut, comme avant.
+ * joue la bande audio du profil ; sans rien de tout ça, il n'y a pas de musique.
  */
 export function AudioProvider({ children }: { children: ReactNode }) {
     const { musicUrl, playlist } = usePage<{
@@ -64,7 +64,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
             id: 0,
             title: '',
             artist: null,
-            url: musicUrl || FALLBACK_TRACK,
+            url: musicUrl || '',
         }),
         [musicUrl],
     );
@@ -246,6 +246,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
                 duration,
                 volume,
                 genres,
+                available: currentTrack.url !== '',
                 currentTrack,
                 currentGenre,
                 hasQueue: queue.length > 1,
@@ -260,7 +261,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
             {children}
             <audio
                 ref={audioRef}
-                src={currentTrack.url}
+                src={currentTrack.url || undefined}
                 preload="metadata"
                 loop={genres.length === 0}
             />

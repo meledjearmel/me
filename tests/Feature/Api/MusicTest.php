@@ -7,12 +7,12 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 
-/** Une copie jetable du MP3 du dépôt, acceptée par la validation et par la collection média. */
+/** Une copie jetable du MP3 silencieux des tests, acceptée par la validation et par la collection média. */
 $sampleAudio = function (): UploadedFile {
     $path = tempnam(sys_get_temp_dir(), 'track').'.mp3';
-    copy(public_path('audio/journey.mp3'), $path);
+    copy(base_path('tests/fixtures/silence.mp3'), $path);
 
-    return new UploadedFile($path, 'journey.mp3', 'audio/mpeg', null, true);
+    return new UploadedFile($path, 'silence.mp3', 'audio/mpeg', null, true);
 };
 
 beforeEach(function () {

@@ -7,18 +7,18 @@ use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-/** Une copie jetable du MP3 du dépôt : l'envoi déplace le fichier source. */
+/** Une copie jetable du MP3 silencieux des tests : l'envoi déplace le fichier source. */
 function sampleAudioPath(): string
 {
     $path = tempnam(sys_get_temp_dir(), 'track').'.mp3';
-    copy(public_path('audio/journey.mp3'), $path);
+    copy(base_path('tests/fixtures/silence.mp3'), $path);
 
     return $path;
 }
 
 function sampleAudio(): UploadedFile
 {
-    return new UploadedFile(sampleAudioPath(), 'journey.mp3', 'audio/mpeg', null, true);
+    return new UploadedFile(sampleAudioPath(), 'silence.mp3', 'audio/mpeg', null, true);
 }
 
 beforeEach(function () {

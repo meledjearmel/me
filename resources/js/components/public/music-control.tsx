@@ -16,7 +16,8 @@ const CLOSE_DELAY = 180;
  */
 export default function MusicControl() {
     const t = useTranslations();
-    const { playing, currentTrack, toggle, next, previous } = useAudioPlayer();
+    const { available, playing, currentTrack, toggle, next, previous } =
+        useAudioPlayer();
     const enabled = useMediaQuery(MINI_PLAYER_QUERY);
     const [open, setOpen] = useState(false);
     const closeTimer = useRef<number | undefined>(undefined);
@@ -35,6 +36,10 @@ export default function MusicControl() {
             CLOSE_DELAY,
         );
     };
+
+    if (!available) {
+        return null;
+    }
 
     const title = currentTrack.title || t.hero.playerTitle;
 
