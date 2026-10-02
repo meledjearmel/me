@@ -5,6 +5,7 @@ use App\Http\Controllers\CelebrationCongratulationController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CongratulationController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CvDownloadController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EngagementController;
 use App\Http\Controllers\HomeController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SkillController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\TestimonialSubmissionController;
+use App\Http\Middleware\CaptureTrafficSource;
 use App\Http\Middleware\LogPageVisit;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\ShareSitePublicData;
@@ -25,9 +27,14 @@ Route::pattern('locale', implode('|', SetLocale::LOCALES));
 Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('llms.txt', LlmsTxtController::class)->name('llms');
 
-Route::get('/', fn () => redirect('/'.SetLocale::fromBrowser(request())))->name('home.redirect');
+// La query string est conservée : un lien de campagne (?ref=linkedin) garde sa provenance.
+Route::get('/', function () {
+    $query = request()->getQueryString();
 
-Route::prefix('{locale}')->middleware(['locale', LogPageVisit::class, ShareSitePublicData::class])->group(function (): void {
+    return redirect('/'.SetLocale::fromBrowser(request()).($query ? '?'.$query : ''));
+})->name('home.redirect');
+
+Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, LogPageVisit::class, ShareSitePublicData::class])->group(function (): void {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('about', [AboutController::class, 'index'])->name('about');
     Route::get('skills', [SkillController::class, 'index'])->name('skills');
@@ -37,6 +44,9 @@ Route::prefix('{locale}')->middleware(['locale', LogPageVisit::class, ShareSiteP
     Route::post('contact', [ContactController::class, 'store'])
         ->middleware('throttle:5,1')
         ->name('contact.store');
+    Route::post('cv', CvDownloadController::class)
+        ->middleware('throttle:10,1')
+        ->name('cv.download');
     Route::get('testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
     Route::post('testimonials', [TestimonialSubmissionController::class, 'store'])
         ->middleware('throttle:5,1')

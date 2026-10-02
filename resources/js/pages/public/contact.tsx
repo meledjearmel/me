@@ -1,6 +1,7 @@
 import { Form, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import ContactController from '@/actions/App/Http/Controllers/ContactController';
+import CvDownloadCard from '@/components/public/cv-download-card';
 import Seo from '@/components/public/seo';
 import PageHero from '@/components/public/page-hero';
 import PhoneLink from '@/components/public/phone-link';
@@ -72,7 +73,10 @@ function ContactMeta({ profile }: { profile: PublicProfile }) {
 export default function Contact() {
     const t = useTranslations();
     const locale = useLocale();
-    const { props } = usePage<{ profile: PublicProfile }>();
+    const { props } = usePage<{
+        profile: PublicProfile;
+        cvAvailable: boolean;
+    }>();
     const [subject, setSubject] = useState('');
     // Changer la clé remonte le formulaire : il repart vide après « envoyer un autre message ».
     const [formKey, setFormKey] = useState(0);
@@ -287,6 +291,8 @@ export default function Contact() {
                                     phone={props.profile.phone}
                                 />
                             )}
+
+                            {props.cvAvailable && <CvDownloadCard />}
                         </aside>
                     </div>
                 </section>

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\CvSource;
 use App\Enums\ProjectStatus;
 use App\Models\Domain;
 use App\Models\Education;
@@ -174,11 +175,36 @@ class CvGenerator
     }
 
     /**
-     * Le PDF du CV, sous forme de contenu binaire : le CV uploadé pour ce profil
-     * métier et cette langue s'il existe, sinon celui de l'autre langue (chacun
-     * sert de secours à l'autre), sinon le CV généré.
+     * Le PDF du CV, sous forme de contenu binaire, selon la source prioritaire
+     * réglée dans l'admin (voir resolve()).
      */
     public function pdf(JobProfile $jobProfile, string $locale): string
+    {
+        return $this->resolve($jobProfile, $locale)['content'];
+    }
+
+    /**
+     * Le PDF du CV et la source qui l'a fourni, selon la priorité réglée sur
+     * le profil. En « importé », le CV importé est servi s'il existe (dans la
+     * langue demandée, sinon l'autre), le CV généré sert de repli ; en
+     * « généré », le CV généré est toujours servi (il existe toujours).
+     *
+     * @return array{content: string, source: CvSource}
+     */
+    public function resolve(JobProfile $jobProfile, string $locale): array
+    {
+        $setting = Profile::query()->value('cv_source');
+        $priority = $setting instanceof CvSource ? $setting : (CvSource::tryFrom((string) $setting) ?? CvSource::Uploaded);
+
+        if ($priority === CvSource::Uploaded && ($uploaded = $this->uploadedPdf($jobProfile, $locale)) !== null) {
+            return ['content' => $uploaded, 'source' => CvSource::Uploaded];
+        }
+
+        return ['content' => $this->generatedPdf($jobProfile, $locale), 'source' => CvSource::Generated];
+    }
+
+    /** Le CV importé pour cette langue, ou à défaut pour l'autre ; null s'il n'y en a aucun. */
+    public function uploadedPdf(JobProfile $jobProfile, string $locale): ?string
     {
         $locales = [$locale, ...array_diff(JobProfile::CV_LOCALES, [$locale])];
 
@@ -190,6 +216,11 @@ class CvGenerator
             }
         }
 
+        return null;
+    }
+
+    public function generatedPdf(JobProfile $jobProfile, string $locale): string
+    {
         return Pdf::loadView('cv.document', ['cv' => $this->data($jobProfile, $locale)])
             ->setPaper('a4')
             ->output();

@@ -5042,6 +5042,82 @@ html.pub-scroll {
     font-weight: 500;
 }
 
+/* Carte « Mon CV » de la colonne de droite */
+.pub-cv {
+    display: grid;
+    gap: 0.7rem;
+    margin-top: 0.75rem;
+    padding: 1.4rem;
+    border: 1px solid color-mix(in oklab, var(--pub-text) 16%, transparent);
+    border-radius: 24px;
+    background: color-mix(in oklab, var(--pub-surface) 55%, transparent);
+}
+
+.pub-cv__text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.5;
+}
+
+.pub-cv__field input {
+    width: 100%;
+    padding: 0.7rem 0;
+    border: 0;
+    border-bottom: 1px solid color-mix(in oklab, var(--pub-text) 35%, transparent);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 1rem;
+}
+
+.pub-cv__field input:focus {
+    border-bottom-color: var(--pub-text);
+    box-shadow: 0 1px 0 var(--pub-gold);
+    outline: none;
+}
+
+.pub-cv__field input[aria-invalid='true'] {
+    border-bottom-color: var(--pub-coral);
+}
+
+.pub-cv__hint {
+    margin: 0;
+    font-size: 0.82rem;
+    opacity: 0.7;
+}
+
+.pub-cv__button {
+    display: inline-flex;
+    justify-self: start;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 0.3rem;
+    padding: 0.8rem 1.4rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--pub-gold);
+    color: #14172e;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.pub-cv__button:hover {
+    transform: translateY(-2px);
+}
+
+.pub-cv__button:disabled {
+    cursor: progress;
+    opacity: 0.7;
+}
+
+.pub-cv__status {
+    min-height: 1.2em;
+    margin: 0;
+    font-size: 0.88rem;
+}
+
 .pub-contact__mail {
     color: inherit;
     font-family: var(--pub-font-display);

@@ -21,6 +21,9 @@ bun run build:ssr
 echo "→ Base de données"
 php artisan migrate --force
 
+echo "→ Base GeoLite2 (si absente)"
+php artisan geoip:update --if-missing
+
 echo "→ Caches Laravel"
 php artisan optimize:clear
 php artisan optimize

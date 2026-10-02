@@ -18,7 +18,10 @@ class ContactController extends Controller
 {
     public function index(): Response
     {
-        return Inertia::render('public/contact');
+        return Inertia::render('public/contact', [
+            // Le bouton « Télécharger mon CV » n'apparaît que s'il y a un CV à servir.
+            'cvAvailable' => CvDownloadController::primaryJobProfile() !== null,
+        ]);
     }
 
     public function store(ContactRequest $request): RedirectResponse

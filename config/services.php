@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    /*
+     * Base GeoLite2 (MaxMind) qui situe un téléchargement du CV (pays, ville).
+     * La commande `geoip:update` la télécharge avec ces identifiants.
+     */
+    'maxmind' => [
+        'account_id' => env('MAXMIND_ACCOUNT_ID'),
+        'license_key' => env('MAXMIND_LICENSE_KEY'),
+        'database' => env('MAXMIND_DATABASE', storage_path('app/geoip/GeoLite2-City.mmdb')),
+    ],
+
 ];
