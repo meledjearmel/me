@@ -2,6 +2,7 @@
 
 use App\Jobs\SendPushNotification;
 use App\Mail\ContactReceivedMail;
+use App\Mail\VisitorAcknowledgementMail;
 use App\Models\Contact;
 use App\Models\Profile;
 use Illuminate\Support\Facades\Mail;
@@ -59,4 +60,47 @@ test('a contact message notifies the owner by email, replying to the visitor', f
     Mail::assertQueued(ContactReceivedMail::class, fn (ContactReceivedMail $mail) => $mail->hasTo('owner@example.test')
         && $mail->hasReplyTo('jane@example.com')
         && $mail->contact->subject === 'Bonjour');
+});
+
+test('the visitor receives an acknowledgement in the page language, without their own text', function () {
+    Queue::fake();
+    Mail::fake();
+    Profile::factory()->create(['email' => 'owner@example.test']);
+
+    $this->post('/en/contact', [
+        'name' => 'Jane Doe',
+        'email' => 'jane@example.com',
+        'subject' => 'Visit cheap-pills.example',
+        'message' => 'Spam text that must not be echoed back.',
+    ])->assertRedirect();
+
+    Mail::assertQueued(VisitorAcknowledgementMail::class, function (VisitorAcknowledgementMail $mail) {
+        return $mail->hasTo('jane@example.com')
+            && $mail->kind === 'contact'
+            && $mail->locale === 'en'
+            && ! str_contains($mail->render(), 'cheap-pills')
+            && ! str_contains($mail->render(), 'Spam text');
+    });
+});
+
+test('the contact form is rate limited', function () {
+    Queue::fake();
+    Mail::fake();
+    Profile::factory()->create();
+
+    foreach (range(1, 5) as $attempt) {
+        $this->post('/fr/contact', [
+            'name' => 'Jane Doe',
+            'email' => 'jane@example.com',
+            'subject' => 'Bonjour',
+            'message' => 'Un message.',
+        ])->assertRedirect();
+    }
+
+    $this->post('/fr/contact', [
+        'name' => 'Jane Doe',
+        'email' => 'jane@example.com',
+        'subject' => 'Bonjour',
+        'message' => 'Un message.',
+    ])->assertTooManyRequests();
 });

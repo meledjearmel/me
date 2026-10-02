@@ -6,6 +6,7 @@ use App\Jobs\SendEngagementMails;
 use App\Jobs\SendPushNotification;
 use App\Mail\CvMail;
 use App\Mail\EngagementReceivedMail;
+use App\Mail\VisitorAcknowledgementMail;
 use App\Models\Engagement;
 use App\Models\Experience;
 use App\Models\JobProfile;
@@ -21,7 +22,7 @@ beforeEach(function () {
     Mail::fake();
 });
 
-test('a freelance request is stored and only the owner is notified', function () {
+test('a freelance request is stored, notifies the owner and acknowledges the client', function () {
     $this->post('/fr/engagements', [
         'type' => 'freelance',
         'name' => 'Awa Client',
@@ -45,6 +46,10 @@ test('a freelance request is stored and only the owner is notified', function ()
 
     Mail::assertSent(EngagementReceivedMail::class, fn ($mail) => $mail->hasTo('owner@example.test'));
     Mail::assertNotSent(CvMail::class);
+    Mail::assertQueued(VisitorAcknowledgementMail::class, fn (VisitorAcknowledgementMail $mail) => $mail->hasTo('awa@example.test')
+        && $mail->kind === 'freelance'
+        && $mail->locale === 'fr'
+        && $mail->hasReplyTo('owner@example.test'));
 });
 
 test('a new request notifies the mobile admin app', function () {
@@ -84,6 +89,8 @@ test('a hiring request sends the tailored CV as a PDF to the recruiter', functio
             && str_ends_with($mail->filename, '.pdf');
     });
     Mail::assertSent(EngagementReceivedMail::class, fn ($mail) => $mail->hasTo('owner@example.test'));
+    // Le CV fait office d'accusé de réception : pas de second email au recruteur.
+    Mail::assertNotQueued(VisitorAcknowledgementMail::class);
     expect($engagement->fresh()->cv_sent_at)->not->toBeNull();
 });
 

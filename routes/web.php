@@ -34,7 +34,9 @@ Route::prefix('{locale}')->middleware(['locale', LogPageVisit::class, ShareSiteP
     Route::get('projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::get('projects/{project:slug}', [ProjectController::class, 'show'])->name('projects.show');
     Route::get('contact', [ContactController::class, 'index'])->name('contact.index');
-    Route::post('contact', [ContactController::class, 'store'])->name('contact.store');
+    Route::post('contact', [ContactController::class, 'store'])
+        ->middleware('throttle:5,1')
+        ->name('contact.store');
     Route::get('testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
     Route::post('testimonials', [TestimonialSubmissionController::class, 'store'])
         ->middleware('throttle:5,1')

@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Enums\EngagementType;
 use App\Mail\CvMail;
 use App\Mail\EngagementReceivedMail;
+use App\Mail\VisitorAcknowledgementMail;
 use App\Models\Engagement;
 use App\Models\Profile;
 use App\Services\CvGenerator;
@@ -19,6 +20,7 @@ use Throwable;
  * Envoie les emails d'une demande de collaboration, en tâche de fond (le
  * visiteur n'attend ni la génération du PDF ni le serveur mail) :
  * - recrutement : le CV adapté au poste, envoyé au recruteur ;
+ * - sinon (freelance, ou recrutement sans CV) : un accusé de réception au visiteur ;
  * - toujours : une notification au propriétaire du site.
  * Un échec d'envoi est journalisé et ne casse jamais la demande, déjà enregistrée.
  */
@@ -53,6 +55,21 @@ class SendEngagementMails implements ShouldQueue
                 $engagement->forceFill(['cv_sent_at' => now()])->save();
             } catch (Throwable $exception) {
                 Log::error('Envoi du CV impossible', [
+                    'engagement' => $engagement->id,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        }
+
+        if ($engagement->cv_sent_at === null) {
+            try {
+                Mail::to($engagement->email, $engagement->name)->send(new VisitorAcknowledgementMail(
+                    $engagement->name,
+                    $engagement->type === EngagementType::Hiring ? 'hiring' : 'freelance',
+                    $engagement->locale,
+                ));
+            } catch (Throwable $exception) {
+                Log::error('Accusé de réception impossible', [
                     'engagement' => $engagement->id,
                     'error' => $exception->getMessage(),
                 ]);

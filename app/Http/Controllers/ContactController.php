@@ -6,6 +6,7 @@ use App\Enums\ContactStatus;
 use App\Http\Requests\ContactRequest;
 use App\Jobs\SendPushNotification;
 use App\Mail\ContactReceivedMail;
+use App\Mail\VisitorAcknowledgementMail;
 use App\Models\Contact;
 use App\Models\Profile;
 use Illuminate\Http\RedirectResponse;
@@ -36,6 +37,10 @@ class ContactController extends Controller
         if ($ownerEmail) {
             Mail::to($ownerEmail)->queue(new ContactReceivedMail($contact));
         }
+
+        Mail::to($contact->email, $contact->name)->queue(
+            new VisitorAcknowledgementMail($contact->name, 'contact', app()->getLocale()),
+        );
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Message envoyé, merci !')]);
 
