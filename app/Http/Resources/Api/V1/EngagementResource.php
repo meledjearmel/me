@@ -26,6 +26,7 @@ class EngagementResource extends JsonResource
             'subject' => $this->subject,
             'job_profile' => $this->whenLoaded('jobProfile', fn (): ?array => $this->jobProfile === null ? null : [
                 'id' => $this->jobProfile->id,
+                /** @var array{fr: string, en: string} */
                 'label' => $this->jobProfile->getTranslations('label'),
             ]),
             'contract' => $this->contract,

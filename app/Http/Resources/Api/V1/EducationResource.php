@@ -19,11 +19,18 @@ class EducationResource extends JsonResource
         return [
             'id' => $this->id,
             'institution' => $this->institution,
+            /** @var array{fr: string, en: string} */
             'degree' => $this->getTranslations('degree'),
+            /** @var array{fr: string, en: string} */
             'field' => $this->getTranslations('field'),
             'start_date' => $this->start_date?->toDateString(),
             'end_date' => $this->end_date?->toDateString(),
-            'description' => $this->getTranslations('description'),
+            /**
+             * Facultatif : objet vide `{}` tant qu'il n'est pas renseigné.
+             *
+             * @var array{fr?: string, en?: string}
+             */
+            'description' => $this->getTranslations('description') ?: (object) [],
             'sort_order' => $this->sort_order,
             'status' => $this->status,
         ];

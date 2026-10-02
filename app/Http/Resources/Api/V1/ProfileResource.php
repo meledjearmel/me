@@ -21,12 +21,20 @@ class ProfileResource extends JsonResource
             'name' => $this->name,
             'cv_last_name' => $this->cv_last_name,
             'cv_first_name' => $this->cv_first_name,
+            /** @var array{fr: string, en: string} */
             'headline' => $this->getTranslations('headline'),
+            /** @var array{fr: string, en: string} */
             'bio_short' => $this->getTranslations('bio_short'),
+            /** @var array{fr: string, en: string} */
             'bio_full' => $this->getTranslations('bio_full'),
             'email' => $this->email,
             'phone' => $this->phone,
             'location' => $this->location,
+            /**
+             * Liens publics (`null` si aucun n'est renseigné).
+             *
+             * @var array{github?: string|null, linkedin?: string|null}|null
+             */
             'social_links' => $this->social_links,
             /** Au plus une notification push de félicitations par motif sur ce nombre de minutes (0 = à chaque envoi). */
             'congratulation_notify_minutes' => $this->congratulation_notify_minutes,

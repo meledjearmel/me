@@ -18,7 +18,9 @@ class CelebrationResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            /** @var array{fr: string, en: string} */
             'message' => $this->getTranslations('message'),
+            /** @var array{fr: string, en: string} */
             'button_label' => $this->getTranslations('button_label'),
             /** Ce qui est célébré, en français et adressé à Armel : sert à rédiger la notification push. */
             'congratulated_for' => $this->congratulated_for,

@@ -5,6 +5,7 @@ use App\Models\Experience;
 use App\Models\JobProfile;
 use App\Models\Profile;
 use App\Models\Project;
+use App\Models\Skill;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -260,4 +261,13 @@ test('the project case study fields are objects when filled and null when empty'
         ->assertJsonPath('tagline', null)
         ->assertJsonPath('role', null)
         ->assertJsonPath('key_figures', []);
+});
+
+test('an optional translated field left empty is an empty object, not a list', function () {
+    $skill = Skill::factory()->create(['description' => null, 'details' => null]);
+
+    $response = $this->getJson("/api/v1/skills/{$skill->id}")->assertOk();
+
+    expect($response->getContent())->toContain('"description":{}')
+        ->toContain('"details":{}');
 });

@@ -19,6 +19,7 @@ class MusicGenreResource extends JsonResource
         return [
             'id' => $this->id,
             'key' => $this->key,
+            /** @var array{fr: string, en: string} */
             'label' => $this->getTranslations('label'),
             'sort_order' => $this->sort_order,
         ];

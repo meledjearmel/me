@@ -27,10 +27,16 @@ class ProfessionalReferenceResource extends JsonResource
             'project' => $this->whenLoaded('project', fn (): ?array => $this->project === null ? null : [
                 'id' => $this->project->id,
                 'slug' => $this->project->slug,
+                /** @var array{fr: string, en: string} */
                 'title' => $this->project->getTranslations('title'),
             ]),
             'project_id' => $this->project_id,
             'is_public' => $this->is_public,
+            /**
+             * Champs de la référence affichés sur le CV.
+             *
+             * @var list<'name'|'role'|'company'|'email'|'phone'|'relationship'>
+             */
             'visible_fields' => $this->visible_fields,
             'notes' => $this->notes,
         ];

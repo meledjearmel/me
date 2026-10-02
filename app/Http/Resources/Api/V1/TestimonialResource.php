@@ -21,12 +21,14 @@ class TestimonialResource extends JsonResource
             'author_name' => $this->author_name,
             'author_email' => $this->author_email,
             'author_role' => $this->author_role,
+            /** @var array{fr: string, en: string} */
             'content' => $this->getTranslations('content'),
             'status' => $this->status,
             'is_featured' => $this->is_featured,
             'project' => $this->whenLoaded('project', fn (): ?array => $this->project === null ? null : [
                 'id' => $this->project->id,
                 'slug' => $this->project->slug,
+                /** @var array{fr: string, en: string} */
                 'title' => $this->project->getTranslations('title'),
             ]),
             'submitted_at' => $this->submitted_at,

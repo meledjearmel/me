@@ -20,9 +20,20 @@ class SkillResource extends JsonResource
             'id' => $this->id,
             'domain_id' => $this->domain_id,
             'domain' => new DomainResource($this->whenLoaded('domain')),
+            /** @var array{fr: string, en: string} */
             'name' => $this->getTranslations('name'),
-            'description' => $this->getTranslations('description'),
-            'details' => $this->getTranslations('details'),
+            /**
+             * Facultatif : objet vide `{}` tant qu'il n'est pas renseigné.
+             *
+             * @var array{fr?: string, en?: string}
+             */
+            'description' => $this->getTranslations('description') ?: (object) [],
+            /**
+             * Facultatif : objet vide `{}` tant qu'il n'est pas renseigné.
+             *
+             * @var array{fr?: string, en?: string}
+             */
+            'details' => $this->getTranslations('details') ?: (object) [],
             'technologies' => TechnologyResource::collection($this->whenLoaded('technologies')),
             'sort_order' => $this->sort_order,
             'status' => $this->status,

@@ -19,10 +19,23 @@ class JobProfileResource extends JsonResource
         return [
             'id' => $this->id,
             'key' => $this->key,
+            /** @var array{fr: string, en: string} */
             'label' => $this->getTranslations('label'),
+            /** @var array{fr: string, en: string} */
             'description' => $this->getTranslations('description'),
-            'hero_title' => $this->getTranslations('hero_title'),
-            'hero_words' => $this->getTranslations('hero_words'),
+            /**
+             * Facultatif : objet vide `{}` tant qu'il n'est pas renseigné.
+             *
+             * @var array{fr?: string, en?: string}
+             */
+            'hero_title' => $this->getTranslations('hero_title') ?: (object) [],
+            /**
+             * Facultatif : objet vide `{}` tant qu'il n'est pas renseigné.
+             *
+             * @var array{fr?: string, en?: string}
+             */
+            'hero_words' => $this->getTranslations('hero_words') ?: (object) [],
+            /** @var array{fr: string, en: string} */
             'cv_description' => $this->getTranslations('cv_description'),
             'sort_order' => $this->sort_order,
             'status' => $this->status,

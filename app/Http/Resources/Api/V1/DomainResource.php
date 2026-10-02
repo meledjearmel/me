@@ -19,6 +19,7 @@ class DomainResource extends JsonResource
         return [
             'id' => $this->id,
             'key' => $this->key,
+            /** @var array{fr: string, en: string} */
             'label' => $this->getTranslations('label'),
             'color' => $this->color,
             'icon' => $this->icon,

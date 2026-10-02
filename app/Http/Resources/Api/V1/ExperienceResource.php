@@ -19,15 +19,22 @@ class ExperienceResource extends JsonResource
         return [
             'id' => $this->id,
             'company' => $this->company,
+            /** @var array{fr: string, en: string} */
             'role' => $this->getTranslations('role'),
             'location' => $this->location,
             'start_date' => $this->start_date?->toDateString(),
             'end_date' => $this->end_date?->toDateString(),
-            'description' => $this->getTranslations('description'),
+            /**
+             * Facultatif : objet vide `{}` tant qu'il n'est pas renseigné.
+             *
+             * @var array{fr?: string, en?: string}
+             */
+            'description' => $this->getTranslations('description') ?: (object) [],
             'sort_order' => $this->sort_order,
             'status' => $this->status,
             'highlights' => $this->whenLoaded('highlights', fn () => $this->highlights->map(fn ($highlight): array => [
                 'id' => $highlight->id,
+                /** @var array{fr: string, en: string} */
                 'text' => $highlight->getTranslations('text'),
                 'sort_order' => $highlight->sort_order,
             ])),

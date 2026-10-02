@@ -27,7 +27,12 @@ class TechnologyResource extends JsonResource
             'icon' => $this->icon,
             'icon_light_url' => $library->url($this->icon, 'light'),
             'icon_dark_url' => $library->url($this->icon, 'dark'),
-            'description' => $this->getTranslations('description'),
+            /**
+             * Facultatif : objet vide `{}` tant qu'il n'est pas renseigné.
+             *
+             * @var array{fr?: string, en?: string}
+             */
+            'description' => $this->getTranslations('description') ?: (object) [],
         ];
     }
 }
