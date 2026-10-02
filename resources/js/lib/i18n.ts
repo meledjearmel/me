@@ -139,6 +139,10 @@ const dictionaries = {
             typeLabel: 'Type',
             linksLabel: 'Liens',
             readNext: 'À lire ensuite',
+            ctaTitle: "Envie d'en voir plus ?",
+            ctaText:
+                "Tout ne se montre pas sur une page publique. Écrivez-moi : je vous fais la démo et je vous raconte les choix techniques derrière ce projet.",
+            ctaButton: 'Parlons-en',
             readNextCursor: 'Lire',
         },
         contact: {
@@ -413,6 +417,10 @@ const dictionaries = {
             typeLabel: 'Type',
             linksLabel: 'Links',
             readNext: 'Read next',
+            ctaTitle: 'Want to see more?',
+            ctaText:
+                "Not everything fits on a public page. Get in touch: I'll give you a demo and walk you through the technical choices behind this project.",
+            ctaButton: "Let's talk",
             readNextCursor: 'Read',
         },
         contact: {

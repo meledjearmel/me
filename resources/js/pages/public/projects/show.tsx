@@ -2,6 +2,7 @@ import { Link, usePage } from '@inertiajs/react';
 import PageHero from '@/components/public/page-hero';
 import {
     accentStyle,
+    ProjectCta,
     ProjectGallery,
     ProjectMeta,
     ProjectStory,
@@ -137,6 +138,8 @@ export default function ProjectShow({
                             </div>
                         </section>
                     )}
+
+                    <ProjectCta />
 
                     {nextProject && <ReadNext project={nextProject} />}
                 </div>

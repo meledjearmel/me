@@ -4522,6 +4522,65 @@ html.pub-scroll {
 }
 
 /* À lire ensuite */
+.pub-project-cta {
+    padding: clamp(4rem, 9vw, 7rem) 0;
+    border-top: 1px solid rgb(255 255 255 / 0.12);
+}
+
+.pub-project-cta__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    align-items: end;
+    gap: clamp(1.5rem, 5vw, 4rem);
+}
+
+.pub-project-cta__title {
+    margin: 0;
+    font-family: var(--pub-font-display);
+    font-size: clamp(2.4rem, 6vw, 4.8rem);
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+}
+
+.pub-project-cta__body {
+    display: grid;
+    justify-items: start;
+    gap: 1.5rem;
+}
+
+.pub-project-cta__body p {
+    margin: 0;
+    font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+    line-height: 1.55;
+    opacity: 0.85;
+}
+
+.pub-project-cta__button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.95rem 1.6rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--on-accent);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.pub-project-cta__button:hover {
+    transform: translateY(-2px);
+}
+
+@media (max-width: 760px) {
+    .pub-project-cta__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .pub-readnext {
     position: relative;
     z-index: 10;

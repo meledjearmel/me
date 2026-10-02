@@ -1,7 +1,8 @@
 import { Link } from '@inertiajs/react';
 import { motion, useReducedMotion, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
+import EngageDialog from '@/components/public/engage-dialog';
 import ScrollText from '@/components/public/scroll-text';
 import { TechIcon } from '@/components/public/tech-marquee';
 import { useViewportProgress } from '@/hooks/use-viewport-progress';
@@ -254,6 +255,38 @@ export function ProjectGallery({ urls }: { urls: string[] }) {
                     <img key={url} src={url} alt="" loading="lazy" />
                 ))}
             </div>
+        </section>
+    );
+}
+
+/**
+ * Invitation à demander une démo : ouvre la même fenêtre « Collaborer »
+ * que le bouton d'action flottant.
+ */
+export function ProjectCta() {
+    const t = useTranslations();
+    const [engageOpen, setEngageOpen] = useState(false);
+
+    return (
+        <section className="pub-project-cta" aria-labelledby="pub-project-cta">
+            <div className="site-wrap pub-project-cta__grid">
+                <h2 id="pub-project-cta" className="pub-project-cta__title">
+                    {t.projects.ctaTitle}
+                </h2>
+                <div className="pub-project-cta__body">
+                    <p>{t.projects.ctaText}</p>
+                    <button
+                        type="button"
+                        className="pub-project-cta__button"
+                        onClick={() => setEngageOpen(true)}
+                    >
+                        {t.projects.ctaButton}
+                        <span aria-hidden="true">→</span>
+                    </button>
+                </div>
+            </div>
+
+            <EngageDialog open={engageOpen} onOpenChange={setEngageOpen} />
         </section>
     );
 }
