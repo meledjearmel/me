@@ -57,6 +57,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('cv-downloads', CvDownloadController::class)->only(['index', 'show', 'destroy']);
         Route::apiResource('engagements', EngagementController::class)->except('store');
         Route::apiResource('testimonials', TestimonialController::class)->except('store');
+        Route::delete('testimonials/{testimonial}/video', [TestimonialController::class, 'destroyVideo'])->name('testimonials.video.destroy');
         Route::apiResource('congratulations', CongratulationController::class)->only(['index', 'show']);
 
         Route::apiResource('domains', DomainController::class);

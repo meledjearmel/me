@@ -1,8 +1,12 @@
 <?php
 
 use App\Enums\TestimonialStatus;
+use App\Jobs\ProcessTestimonialVideo;
 use App\Models\Testimonial;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
 
 test('guests are redirected to the login page', function () {
     $this->get(route('admin.testimonials.index'))->assertRedirect(route('login'));
@@ -90,4 +94,62 @@ test('correcting content requires both languages together', function () {
         'status' => $testimonial->status->value,
         'content' => ['fr' => 'Texte corrigé.'],
     ])->assertSessionHasErrors(['content.en']);
+});
+
+test('a video and a highlight can be added to a testimonial', function () {
+    Storage::fake('public');
+    Queue::fake();
+    $user = User::factory()->create();
+    $testimonial = Testimonial::factory()->create();
+
+    $this->actingAs($user)->put(route('admin.testimonials.update', $testimonial), [
+        'status' => 'approved',
+        'highlight' => ['fr' => 'Un travail remarquable.', 'en' => 'Remarkable work.'],
+        'video' => UploadedFile::fake()->create('avis.mp4', 2048, 'video/mp4'),
+    ])->assertRedirect(route('admin.testimonials.index'));
+
+    $testimonial->refresh();
+    expect($testimonial->getTranslation('highlight', 'fr'))->toBe('Un travail remarquable.')
+        ->and($testimonial->getFirstMedia(Testimonial::VIDEO_COLLECTION))->not->toBeNull();
+
+    Queue::assertPushed(ProcessTestimonialVideo::class);
+});
+
+test('a testimonial video must be a video file', function () {
+    Storage::fake('public');
+    $user = User::factory()->create();
+    $testimonial = Testimonial::factory()->create();
+
+    $this->actingAs($user)->put(route('admin.testimonials.update', $testimonial), [
+        'status' => 'approved',
+        'video' => UploadedFile::fake()->create('avis.pdf', 100, 'application/pdf'),
+    ])->assertSessionHasErrors('video');
+});
+
+test('the video of a testimonial can be removed', function () {
+    Storage::fake('public');
+    Queue::fake();
+    $user = User::factory()->create();
+    $testimonial = Testimonial::factory()->create();
+    $testimonial->attachVideo(UploadedFile::fake()->create('avis.mp4', 100, 'video/mp4'));
+
+    $this->actingAs($user)->delete(route('admin.testimonials.video.destroy', $testimonial))
+        ->assertRedirect(route('admin.testimonials.edit', $testimonial));
+
+    expect($testimonial->fresh()->videoData())->toBeNull();
+});
+
+test('processing a video without ffmpeg keeps the original file', function () {
+    Storage::fake('public');
+    Queue::fake();
+    config(['media-library.ffmpeg_path' => 'ffmpeg-introuvable']);
+    $testimonial = Testimonial::factory()->create();
+    $testimonial->attachVideo(UploadedFile::fake()->create('avis.mp4', 100, 'video/mp4'));
+
+    (new ProcessTestimonialVideo($testimonial->getFirstMedia(Testimonial::VIDEO_COLLECTION)))->handle();
+
+    expect($testimonial->fresh()->videoData())
+        ->not->toBeNull()
+        ->poster_url->toBeNull()
+        ->duration->toBeNull();
 });

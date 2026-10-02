@@ -121,7 +121,7 @@ test('the home page shares at most three approved testimonials without their ema
     $this->get('/fr')->assertInertia(fn ($page) => $page
         ->has('testimonials', 3)
         ->has('testimonials.0', fn ($testimonial) => $testimonial
-            ->hasAll(['id', 'author_name', 'author_role', 'content'])
+            ->hasAll(['id', 'author_name', 'author_role', 'content', 'highlight', 'video_transcript', 'video'])
             ->missing('author_email')
         )
     );

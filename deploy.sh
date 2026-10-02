@@ -27,6 +27,10 @@ bun run build:ssr
 echo "→ Base de données"
 php artisan migrate --force
 
+echo "→ ffmpeg (compression des avis vidéo)"
+command -v ffmpeg >/dev/null && command -v ffprobe >/dev/null \
+    || echo "  ⚠ ffmpeg absent : les avis vidéo seront servis bruts, sans aperçu (sudo apt install ffmpeg)"
+
 echo "→ Base GeoLite2 (si absente)"
 php artisan geoip:update --if-missing
 

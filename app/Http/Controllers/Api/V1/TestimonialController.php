@@ -30,7 +30,7 @@ class TestimonialController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         return TestimonialResource::collection(
-            $this->paginateList(Testimonial::query()->with('project')->latest('submitted_at'), $request, ['author_name', 'author_email', 'author_role', 'content->fr', 'content->en'], ['status', 'is_featured'])
+            $this->paginateList(Testimonial::query()->with(['project', 'media'])->latest('submitted_at'), $request, ['author_name', 'author_email', 'author_role', 'content->fr', 'content->en'], ['status', 'is_featured'])
         );
     }
 
@@ -45,13 +45,31 @@ class TestimonialController extends Controller
     /**
      * Modérer un témoignage
      *
-     * Statut, projet associé et mise à la une (trois témoignages au maximum).
+     * Statut, projet associé, mise à la une (trois témoignages au maximum), accroche
+     * et vidéo. La vidéo s'envoie en `multipart/form-data` (250 Mo au plus) : elle est
+     * ensuite compressée en tâche de fond, l'aperçu et la durée arrivent après.
      */
     public function update(TestimonialRequest $request, Testimonial $testimonial): TestimonialResource
     {
-        $testimonial->update($request->validated());
+        $testimonial->update($request->safe()->except('video'));
 
-        return new TestimonialResource($testimonial->load('project'));
+        if ($request->hasFile('video')) {
+            $testimonial->attachVideo($request->file('video'));
+        }
+
+        return new TestimonialResource($testimonial->refresh()->load('project'));
+    }
+
+    /**
+     * Retirer la vidéo d'un témoignage
+     *
+     * La vidéo et son aperçu sont supprimés : le témoignage redevient un avis texte.
+     */
+    public function destroyVideo(Testimonial $testimonial): TestimonialResource
+    {
+        $testimonial->removeVideo();
+
+        return new TestimonialResource($testimonial->refresh()->load('project'));
     }
 
     /**

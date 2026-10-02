@@ -23,6 +23,9 @@ class TestimonialResource extends JsonResource
             'author_name' => $this->author_name,
             'author_role' => $this->author_role,
             'content' => $this->getTranslation('content', app()->getLocale()),
+            'highlight' => $this->getTranslation('highlight', app()->getLocale()) ?: null,
+            'video_transcript' => $this->getTranslation('video_transcript', app()->getLocale()) ?: null,
+            'video' => $this->videoData(),
         ];
     }
 }

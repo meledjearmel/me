@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import ProjectController from '@/actions/App/Http/Controllers/Admin/ProjectController';
 import ShowPage, { Bilingual, formatDate } from '@/components/admin/show-page';
 import { edit, index as testimonialsIndex } from '@/routes/admin/testimonials';
-import type { Testimonial } from '@/types';
+import type { Testimonial, TestimonialVideo } from '@/types';
 
 const STATUS_VARIANT = {
     pending: 'secondary',
@@ -19,8 +19,10 @@ const STATUS_LABEL = {
 
 export default function TestimonialShow({
     testimonial: row,
+    video,
 }: {
     testimonial: Testimonial;
+    video: TestimonialVideo | null;
 }) {
     return (
         <ShowPage
@@ -72,6 +74,34 @@ export default function TestimonialShow({
                         {
                             label: 'Contenu',
                             value: <Bilingual value={row.content} />,
+                            wide: true,
+                        },
+                        {
+                            label: 'Accroche',
+                            value: (row.highlight?.fr || row.highlight?.en) && (
+                                <Bilingual value={row.highlight} />
+                            ),
+                            wide: true,
+                        },
+                        {
+                            label: 'Vidéo',
+                            value: video ? (
+                                <video
+                                    src={video.url}
+                                    poster={video.poster_url ?? undefined}
+                                    controls
+                                    preload="metadata"
+                                    className="max-h-72 rounded-md bg-black"
+                                />
+                            ) : null,
+                            wide: true,
+                        },
+                        {
+                            label: 'Transcription',
+                            value: (row.video_transcript?.fr ||
+                                row.video_transcript?.en) && (
+                                <Bilingual value={row.video_transcript} />
+                            ),
                             wide: true,
                         },
                     ],

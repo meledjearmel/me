@@ -187,6 +187,8 @@ export type Testimonial = {
     author_email: string;
     author_role: string | null;
     content: Translatable;
+    highlight: Partial<Translatable> | null;
+    video_transcript: Partial<Translatable> | null;
     project_id: number | null;
     project?: Project;
     status: 'pending' | 'approved' | 'rejected';

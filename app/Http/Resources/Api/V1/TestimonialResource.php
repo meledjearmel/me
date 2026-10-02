@@ -23,6 +23,21 @@ class TestimonialResource extends JsonResource
             'author_role' => $this->author_role,
             /** @var array{fr: string, en: string} */
             'content' => $this->getTranslations('content'),
+            /**
+             * Phrase d'accroche affichée en grand sur les cartes du site.
+             *
+             * @var array{fr?: string, en?: string}
+             */
+            'highlight' => $this->getTranslations('highlight'),
+            /** @var array{fr?: string, en?: string} */
+            'video_transcript' => $this->getTranslations('video_transcript'),
+            /**
+             * Vidéo de l'avis. `duration` (secondes), `width` et `height` restent nuls
+             * tant que la vidéo n'a pas été traitée.
+             *
+             * @var array{url: string, poster_url: string|null, duration: int|null, width: int|null, height: int|null}|null
+             */
+            'video' => $this->videoData(),
             'status' => $this->status,
             'is_featured' => $this->is_featured,
             'project' => $this->whenLoaded('project', fn (): ?array => $this->project === null ? null : [

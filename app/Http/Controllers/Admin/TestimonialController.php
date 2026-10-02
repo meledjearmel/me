@@ -28,6 +28,7 @@ class TestimonialController extends Controller
     {
         return Inertia::render('admin/testimonials/show', [
             'testimonial' => $testimonial->load('project'),
+            'video' => $testimonial->videoData(),
         ]);
     }
 
@@ -35,17 +36,32 @@ class TestimonialController extends Controller
     {
         return Inertia::render('admin/testimonials/edit', [
             'testimonial' => $testimonial,
+            'video' => $testimonial->videoData(),
             'projects' => Project::query()->orderBy('sort_order')->get(['id', 'title', 'slug']),
         ]);
     }
 
     public function update(TestimonialRequest $request, Testimonial $testimonial): RedirectResponse
     {
-        $testimonial->update($request->validated());
+        $testimonial->update($request->safe()->except('video'));
+
+        if ($request->hasFile('video')) {
+            $testimonial->attachVideo($request->file('video'));
+        }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Avis mis à jour.')]);
 
         return to_route('admin.testimonials.index');
+    }
+
+    /** Retire la vidéo et son aperçu : l'avis redevient un avis texte. */
+    public function destroyVideo(Testimonial $testimonial): RedirectResponse
+    {
+        $testimonial->removeVideo();
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Vidéo retirée.')]);
+
+        return to_route('admin.testimonials.edit', $testimonial);
     }
 
     public function destroy(Testimonial $testimonial): RedirectResponse

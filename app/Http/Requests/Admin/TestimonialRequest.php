@@ -28,6 +28,14 @@ class TestimonialRequest extends FormRequest
             'content' => ['sometimes', 'array'],
             'content.fr' => ['required_with:content', 'string', 'max:2000'],
             'content.en' => ['required_with:content', 'string', 'max:2000'],
+            // Accroche et transcription sont facultatives : une langue vide reste vide.
+            'highlight' => ['sometimes', 'nullable', 'array'],
+            'highlight.fr' => ['nullable', 'string', 'max:280'],
+            'highlight.en' => ['nullable', 'string', 'max:280'],
+            'video_transcript' => ['sometimes', 'nullable', 'array'],
+            'video_transcript.fr' => ['nullable', 'string', 'max:10000'],
+            'video_transcript.en' => ['nullable', 'string', 'max:10000'],
+            'video' => ['nullable', 'file', 'mimetypes:video/mp4,video/quicktime,video/webm,video/x-matroska,video/3gpp', 'max:256000'],
         ];
     }
 

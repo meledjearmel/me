@@ -91,11 +91,24 @@ export type PublicJobProfile = {
     hero_words: string[];
 };
 
+/** Durée (secondes) et dimensions : connues seulement une fois la vidéo traitée. */
+export type TestimonialVideo = {
+    url: string;
+    poster_url: string | null;
+    duration: number | null;
+    width: number | null;
+    height: number | null;
+};
+
 export type PublicTestimonial = {
     id: number;
     author_name: string;
     author_role: string | null;
     content: string;
+    /** Phrase d'accroche choisie dans l'admin, affichée en grand sur les cartes. */
+    highlight: string | null;
+    video_transcript: string | null;
+    video: TestimonialVideo | null;
 };
 
 export type PlaylistTrack = {

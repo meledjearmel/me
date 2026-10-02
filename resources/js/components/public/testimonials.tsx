@@ -8,6 +8,11 @@ import { Link } from '@inertiajs/react';
 import { useRef } from 'react';
 import { useViewportProgress } from '@/hooks/use-viewport-progress';
 import CloudBank from '@/components/public/cloud-bank';
+import {
+    initials,
+    TestimonialExcerpt,
+    useTestimonialReader,
+} from '@/components/public/testimonial-parts';
 import { useLocalizedPath, useTranslations } from '@/lib/i18n';
 import type { PublicTestimonial } from '@/types';
 import { usePrefersReducedMotion } from '@/hooks/use-media-query';
@@ -35,23 +40,16 @@ function QuoteIcon() {
     );
 }
 
-function initials(name: string): string {
-    return name
-        .split(' ')
-        .map((part) => part[0])
-        .slice(0, 2)
-        .join('')
-        .toUpperCase();
-}
-
 function TestimonialCard({
     testimonial,
     position,
     spread,
+    onOpen,
 }: {
     testimonial: PublicTestimonial;
     position: number;
     spread: MotionValue<number>;
+    onOpen: () => void;
 }) {
     // Les cartes partent empilées au centre puis glissent de côté (x = pos × écart).
     const x = useTransform(spread, (value) => value * position * FAN_STRIDE);
@@ -61,11 +59,15 @@ function TestimonialCard({
             className="pub-testi__card"
             style={{ x, zIndex: 3 - Math.abs(position) }}
         >
-            <QuoteIcon />
+            {/* La vidéo prend la place des guillemets : la carte garde sa hauteur. */}
+            {!testimonial.video && <QuoteIcon />}
 
-            <blockquote className="pub-testi__quote">
-                {testimonial.content}
-            </blockquote>
+            <TestimonialExcerpt
+                testimonial={testimonial}
+                lines={testimonial.video ? 2 : 6}
+                quoteClassName="pub-testi__quote"
+                onOpen={onOpen}
+            />
 
             <hr className="pub-testi__divider" />
 
@@ -105,6 +107,7 @@ export default function Testimonials({
     const path = useLocalizedPath();
     const reduceMotion = usePrefersReducedMotion();
     const scrubRef = useRef<HTMLDivElement>(null);
+    const reader = useTestimonialReader();
 
     // Le paquet s'ouvre pendant que la zone d'espacement (juste après la section
     // épinglée) traverse l'écran : progression 0 → 1 sur sa hauteur.
@@ -158,6 +161,7 @@ export default function Testimonials({
                                 testimonial={testimonial}
                                 position={POSITIONS[index] ?? 0}
                                 spread={spread}
+                                onOpen={() => reader.open(testimonial)}
                             />
                         ))}
                     </div>
@@ -169,6 +173,8 @@ export default function Testimonials({
                 className="pub-testi__scrub"
                 aria-hidden="true"
             />
+
+            {reader.reader}
         </>
     );
 }

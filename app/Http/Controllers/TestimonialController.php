@@ -16,6 +16,7 @@ class TestimonialController extends Controller
         return Inertia::render('public/testimonials', [
             'testimonials' => TestimonialResource::collection(
                 Testimonial::query()
+                    ->with('media')
                     ->where('status', TestimonialStatus::Approved)
                     ->latest('submitted_at')
                     ->get(),

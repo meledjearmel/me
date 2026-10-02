@@ -1,4 +1,4 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, router } from '@inertiajs/react';
 import TestimonialController from '@/actions/App/Http/Controllers/Admin/TestimonialController';
 import FormPageHeader from '@/components/admin/form-page-header';
 import TranslatableField from '@/components/translatable-field';
@@ -11,16 +11,19 @@ import {
 } from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import FormSelect from '@/components/admin/form-select';
 import { TESTIMONIAL_STATUSES } from '@/lib/admin-options';
 import { index as testimonialsIndex } from '@/routes/admin/testimonials';
-import type { Project, Testimonial } from '@/types';
+import type { Project, Testimonial, TestimonialVideo } from '@/types';
 
 export default function TestimonialEdit({
     testimonial,
+    video,
     projects,
 }: {
     testimonial: Testimonial;
+    video: TestimonialVideo | null;
     projects: Project[];
 }) {
     return (
@@ -78,6 +81,97 @@ export default function TestimonialEdit({
                                 required
                                 maxLength={2000}
                             />
+
+                            <div className="grid gap-2">
+                                <TranslatableField
+                                    name="highlight"
+                                    label="Phrase d'accroche"
+                                    defaultValue={
+                                        testimonial.highlight ?? undefined
+                                    }
+                                    errors={{
+                                        fr: errors['highlight.fr'],
+                                        en: errors['highlight.en'],
+                                    }}
+                                    maxLength={280}
+                                />
+                                <p className="text-sm text-muted-foreground">
+                                    Facultative : la meilleure phrase de l'avis,
+                                    affichée en grand sur les cartes. L'avis
+                                    complet reste lisible au clic.
+                                </p>
+                            </div>
+
+                            <div className="grid content-start gap-2">
+                                <Label htmlFor="video">Vidéo de l'avis</Label>
+                                {video && (
+                                    <div className="flex flex-wrap items-start gap-3">
+                                        <video
+                                            src={video.url}
+                                            poster={
+                                                video.poster_url ?? undefined
+                                            }
+                                            controls
+                                            preload="metadata"
+                                            className="max-h-64 rounded-md bg-black"
+                                        />
+                                        <div className="grid gap-2 text-sm text-muted-foreground">
+                                            {video.duration === null
+                                                ? 'Compression en cours (ou ffmpeg absent du serveur).'
+                                                : `Prête · ${Math.floor(video.duration / 60)}:${String(video.duration % 60).padStart(2, '0')}`}
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                size="sm"
+                                                onClick={() => {
+                                                    if (
+                                                        confirm(
+                                                            "Retirer cette vidéo ? L'avis redeviendra un avis texte.",
+                                                        )
+                                                    ) {
+                                                        router.delete(
+                                                            TestimonialController.destroyVideo.url(
+                                                                testimonial.id,
+                                                            ),
+                                                        );
+                                                    }
+                                                }}
+                                            >
+                                                Retirer la vidéo
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+                                <Input
+                                    id="video"
+                                    name="video"
+                                    type="file"
+                                    accept="video/*"
+                                />
+                                <p className="text-sm text-muted-foreground">
+                                    MP4, MOV ou WebM, 250 Mo max. Elle est
+                                    compressée automatiquement après l'envoi
+                                    (720p) et une image d'aperçu est extraite.
+                                </p>
+                                <FieldError>{errors.video}</FieldError>
+                            </div>
+
+                            {video && (
+                                <TranslatableField
+                                    name="video_transcript"
+                                    label="Transcription de la vidéo"
+                                    defaultValue={
+                                        testimonial.video_transcript ??
+                                        undefined
+                                    }
+                                    errors={{
+                                        fr: errors['video_transcript.fr'],
+                                        en: errors['video_transcript.en'],
+                                    }}
+                                    textarea
+                                    maxLength={10000}
+                                />
+                            )}
 
                             <Field data-invalid={!!errors.status}>
                                 <FieldLabel htmlFor="status">

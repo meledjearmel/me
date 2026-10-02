@@ -128,7 +128,7 @@ export default function ShowPage({
 export function Bilingual({
     value,
 }: {
-    value: Translatable | null | undefined;
+    value: Partial<Translatable> | null | undefined;
 }) {
     if (!value || (!value.fr && !value.en)) {
         return null;

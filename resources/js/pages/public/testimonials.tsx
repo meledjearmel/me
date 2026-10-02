@@ -3,17 +3,13 @@ import Seo from '@/components/public/seo';
 import PageHero from '@/components/public/page-hero';
 import PublicShell from '@/components/public/public-shell';
 import { OPEN_REVIEW_EVENT } from '@/components/public/action-menu';
+import {
+    initials,
+    TestimonialExcerpt,
+    useTestimonialReader,
+} from '@/components/public/testimonial-parts';
 import { useTranslations } from '@/lib/i18n';
 import type { PublicTestimonial } from '@/types';
-
-function initials(name: string): string {
-    return name
-        .split(' ')
-        .map((part) => part[0])
-        .slice(0, 2)
-        .join('')
-        .toUpperCase();
-}
 
 /** Tous les avis approuvés, en colonnes qui s'ajustent à la longueur de chacun. */
 export default function Testimonials({
@@ -22,6 +18,7 @@ export default function Testimonials({
     testimonials: PublicTestimonial[];
 }) {
     const t = useTranslations();
+    const reader = useTestimonialReader();
 
     return (
         <>
@@ -82,9 +79,17 @@ export default function Testimonials({
                                         }}
                                     >
                                         <figure>
-                                            <blockquote>
-                                                {testimonial.content}
-                                            </blockquote>
+                                            <TestimonialExcerpt
+                                                testimonial={testimonial}
+                                                lines={10}
+                                                quoteClassName="pub-review__quote"
+                                                expandInline={
+                                                    !testimonial.video
+                                                }
+                                                onOpen={() =>
+                                                    reader.open(testimonial)
+                                                }
+                                            />
                                             <figcaption>
                                                 <span
                                                     className="pub-review__avatar"
@@ -117,6 +122,8 @@ export default function Testimonials({
                     </div>
                 </section>
             </PublicShell>
+
+            {reader.reader}
         </>
     );
 }

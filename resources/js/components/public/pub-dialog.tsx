@@ -14,12 +14,15 @@ export default function PubDialog({
     onOpenChange,
     title,
     description,
+    className = 'pub-modal--form',
     children,
 }: {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     title: string;
     description?: string;
+    /** Variante d'habillage : le formulaire par défaut. */
+    className?: string;
     children: ReactNode;
 }) {
     const t = useTranslations();
@@ -35,7 +38,7 @@ export default function PubDialog({
                 <Dialog.Overlay className="pub-modal__scrim" />
 
                 <Dialog.Content
-                    className="pub-modal pub-modal--form"
+                    className={`pub-modal ${className}`}
                     aria-describedby={
                         description ? 'pub-dialog-description' : undefined
                     }

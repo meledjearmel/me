@@ -10,6 +10,9 @@ use App\Models\Project;
 use App\Models\Skill;
 use App\Models\Technology;
 use App\Models\Testimonial;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     Profile::factory()->create();
@@ -239,4 +242,20 @@ test('a featured review that is not approved is never shown', function () {
     Testimonial::factory()->count(2)->create(['status' => TestimonialStatus::Approved]);
 
     $this->get('/fr')->assertInertia(fn ($page) => $page->has('testimonials', 2));
+});
+
+test('the reviews page shows the highlight and the video of a review in the visitor language', function () {
+    Storage::fake('public');
+    Queue::fake();
+    $testimonial = Testimonial::factory()->create([
+        'status' => TestimonialStatus::Approved,
+        'highlight' => ['fr' => 'Un travail remarquable.', 'en' => 'Remarkable work.'],
+    ]);
+    $testimonial->attachVideo(UploadedFile::fake()->create('avis.mp4', 100, 'video/mp4'));
+
+    $this->get('/en/testimonials')->assertInertia(fn ($page) => $page
+        ->where('testimonials.0.highlight', 'Remarkable work.')
+        ->where('testimonials.0.video.url', $testimonial->getFirstMediaUrl(Testimonial::VIDEO_COLLECTION))
+        ->missing('testimonials.0.author_email')
+    );
 });
