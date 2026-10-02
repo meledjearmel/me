@@ -34,14 +34,43 @@ class ProjectResource extends JsonResource
         return [
             'id' => $this->id,
             'slug' => $this->slug,
+            /** @var array{fr: string, en: string} */
             'title' => $this->getTranslations('title'),
-            'tagline' => $this->getTranslations('tagline'),
-            'role' => $this->getTranslations('role'),
-            'client' => $this->getTranslations('client'),
-            'platform' => $this->getTranslations('platform'),
+            /**
+             * Accroche du bandeau de la page projet (`null` si absente : le site reprend la première phrase du contexte).
+             *
+             * @var array{fr?: string, en?: string}|null
+             */
+            'tagline' => $this->getTranslations('tagline') ?: null,
+            /**
+             * Rôle tenu sur le projet (fiche d'identité de la page projet).
+             *
+             * @var array{fr?: string, en?: string}|null
+             */
+            'role' => $this->getTranslations('role') ?: null,
+            /**
+             * Client ou cadre du projet, anonymisé (« Organisme public », « Projet personnel »…).
+             *
+             * @var array{fr?: string, en?: string}|null
+             */
+            'client' => $this->getTranslations('client') ?: null,
+            /**
+             * Plateforme (« Web · API REST », « Mobile (iOS · Android) »…).
+             *
+             * @var array{fr?: string, en?: string}|null
+             */
+            'platform' => $this->getTranslations('platform') ?: null,
+            /** @var array{fr: string, en: string} */
             'context' => $this->getTranslations('context'),
+            /** @var array{fr: string, en: string} */
             'realization' => $this->getTranslations('realization'),
+            /** @var array{fr: string, en: string} */
             'result' => $this->getTranslations('result'),
+            /**
+             * Chiffres clés affichés sous le résultat (4 au plus), dans l'ordre.
+             *
+             * @var list<array{value: string, label: array{fr: string, en: string}}>
+             */
             'key_figures' => $this->key_figures ?? [],
             'accent_color' => $this->accent_color,
             'repo_url' => $this->repo_url,

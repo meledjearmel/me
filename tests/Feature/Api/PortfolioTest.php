@@ -242,3 +242,22 @@ test('les CV PDF d\'un profil métier s\'envoient en multipart, se listent et se
         'cv_file_en' => UploadedFile::fake()->create('cv.docx', 10, 'application/msword'),
     ], ['Accept' => 'application/json'])->assertUnprocessable()->assertJsonValidationErrors('cv_file_en');
 });
+
+test('the project case study fields are objects when filled and null when empty', function () {
+    $filled = Project::factory()->create([
+        'tagline' => ['fr' => 'Accroche', 'en' => 'Tagline'],
+        'key_figures' => [['value' => '630+', 'label' => ['fr' => 'tests', 'en' => 'tests']]],
+    ]);
+    $empty = Project::factory()->create();
+
+    $this->getJson("/api/v1/projects/{$filled->id}")
+        ->assertOk()
+        ->assertJsonPath('tagline', ['fr' => 'Accroche', 'en' => 'Tagline'])
+        ->assertJsonPath('key_figures.0.value', '630+');
+
+    $this->getJson("/api/v1/projects/{$empty->id}")
+        ->assertOk()
+        ->assertJsonPath('tagline', null)
+        ->assertJsonPath('role', null)
+        ->assertJsonPath('key_figures', []);
+});
