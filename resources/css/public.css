@@ -3455,13 +3455,17 @@ html.pub-scroll {
 
 /* ---------- Compétences : sommaire dans le bandeau ---------- */
 /* ---------- Barre flottante des domaines (page compétences) ---------- */
+/* Sur ordinateur, sur la même ligne qu'Armi et « Passer à l'action » (60px de haut). */
 .pub-dock {
     position: fixed;
     left: 50%;
-    bottom: clamp(18px, 3vw, 32px);
+    bottom: clamp(22px, calc(4.5vw + 5px), 70px);
     z-index: 80;
-    max-width: calc(100vw - 2 * 96px);
-    padding: 6px;
+    display: flex;
+    align-items: center;
+    height: 60px;
+    max-width: calc(100vw - 2 * 260px);
+    padding: 0 8px;
     border: 1px solid rgb(255 255 255 / 0.55);
     border-radius: 999px;
     background: color-mix(in oklab, var(--pub-surface) 60%, transparent);
@@ -3545,10 +3549,18 @@ html.pub-scroll {
     transform-origin: left center;
 }
 
+/* Tablette : la ligne du bas est trop étroite, la barre passe au-dessus d'Armi. */
+@media (max-width: 1023px) {
+    .pub-dock {
+        bottom: calc(clamp(22px, calc(4.5vw + 5px), 70px) + 64px + 18px);
+        max-width: calc(100vw - 32px);
+    }
+}
+
+/* Mobile : pas de barre, le sommaire du bandeau suffit. */
 @media (max-width: 707px) {
     .pub-dock {
-        bottom: calc(clamp(22px, calc(4.5vw + 5px), 70px) + 56px);
-        max-width: calc(100vw - 32px);
+        display: none;
     }
 }
 
