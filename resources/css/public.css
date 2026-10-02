@@ -3486,6 +3486,69 @@ html.pub-scroll {
 }
 
 /* ---------- Compétences : sommaire dans le bandeau ---------- */
+/* ---------- Pages d'erreur ---------- */
+.pub-error__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+}
+
+.pub-error__links a {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.3rem;
+    font-size: 1rem;
+    white-space: nowrap;
+    border: 1px solid rgb(255 255 255 / 0.55);
+    border-radius: 999px;
+    color: inherit;
+    font-weight: 500;
+    text-decoration: none;
+    transition:
+        background-color 0.25s ease,
+        transform 0.25s ease;
+}
+
+.pub-error__links a:hover {
+    background: rgb(255 255 255 / 0.14);
+    transform: translateY(-2px);
+}
+
+.pub-error__links .pub-error__primary {
+    border-color: var(--pub-gold);
+    background: var(--pub-gold);
+    color: #14172e;
+}
+
+.pub-error__links .pub-error__primary:hover {
+    background: var(--pub-gold);
+}
+
+.pub-error__spacer {
+    position: relative;
+    height: clamp(140px, 20vw, 280px);
+    background: var(--pub-bg);
+}
+
+/* Le code d'erreur, en grand, à la place de l'encart des autres pages. */
+.pub-error__code {
+    justify-self: end;
+    margin: 0;
+    font-family: var(--pub-font-display);
+    font-size: clamp(6rem, 18vw, 15rem);
+    letter-spacing: -0.06em;
+    line-height: 0.85;
+    opacity: 0.9;
+}
+
+@media (max-width: 707px) {
+    .pub-error__code {
+        justify-self: start;
+        font-size: 5.5rem;
+    }
+}
+
 /* ---------- Barre flottante des domaines (page compétences) ---------- */
 /* Au-dessus d'Armi, à la hauteur du bouton « Passer à l'action » (60px). */
 .pub-dock {

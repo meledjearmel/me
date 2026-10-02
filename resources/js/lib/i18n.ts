@@ -205,6 +205,26 @@ const dictionaries = {
             errorNetwork:
                 'Connexion impossible. Vérifiez votre réseau et réessayez.',
         },
+        error: {
+            eyebrow: (status: number) => `Erreur ${status}`,
+            titles: {
+                403: 'Cette porte reste fermée.',
+                404: "Cette page s'est perdue dans les nuages.",
+                429: 'Doucement, on reprend son souffle.',
+                500: 'Un orage est passé sur le serveur.',
+                503: 'Le site fait une petite pause.',
+            } as Record<number, string>,
+            texts: {
+                403: "Vous n'avez pas accès à cette page.",
+                404: "L'adresse est peut-être mal saisie, ou la page a changé de place. Voici de quoi retrouver votre chemin.",
+                429: 'Trop de requêtes en peu de temps. Réessayez dans un instant.',
+                500: "Quelque chose s'est mal passé de mon côté. Réessayez dans quelques instants.",
+                503: 'Une maintenance est en cours. Le site revient très vite.',
+            } as Record<number, string>,
+            home: "Retour à l'accueil",
+            projects: 'Voir les projets',
+            contact: 'Me contacter',
+        },
         celebration: {
             close: 'Fermer',
             countLabel: (count: number) =>
@@ -483,6 +503,26 @@ const dictionaries = {
                 'Too many messages for now. Try again in a moment, or write to me through the contact page.',
             errorNetwork:
                 'Unable to connect. Check your network and try again.',
+        },
+        error: {
+            eyebrow: (status: number) => `Error ${status}`,
+            titles: {
+                403: 'This door stays closed.',
+                404: 'This page got lost in the clouds.',
+                429: "Easy now, let's catch our breath.",
+                500: 'A storm went through the server.',
+                503: 'The site is taking a short break.',
+            } as Record<number, string>,
+            texts: {
+                403: "You don't have access to this page.",
+                404: 'The address may be mistyped, or the page has moved. Here is how to find your way back.',
+                429: 'Too many requests in a short time. Please try again in a moment.',
+                500: 'Something went wrong on my side. Please try again in a few moments.',
+                503: 'Maintenance is under way. The site will be back very soon.',
+            } as Record<number, string>,
+            home: 'Back to home',
+            projects: 'See the projects',
+            contact: 'Contact me',
         },
         celebration: {
             close: 'Close',

@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EngagementController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LlmsTxtController;
+use App\Http\Controllers\LocaleRedirectController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SkillController;
@@ -24,11 +25,7 @@ Route::pattern('locale', implode('|', SetLocale::LOCALES));
 Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('llms.txt', LlmsTxtController::class)->name('llms');
 
-Route::get('/', function () {
-    $locale = request()->getPreferredLanguage(SetLocale::LOCALES) ?? SetLocale::LOCALES[0];
-
-    return redirect("/{$locale}");
-})->name('home.redirect');
+Route::get('/', fn () => redirect('/'.SetLocale::fromBrowser(request())))->name('home.redirect');
 
 Route::prefix('{locale}')->middleware(['locale', LogPageVisit::class, ShareSitePublicData::class])->group(function (): void {
     Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -62,3 +59,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 require __DIR__.'/settings.php';
 require __DIR__.'/admin.php';
+
+// Lien sans langue (/about) : redirigé vers la page dans la langue du visiteur, sinon 404.
+Route::fallback(LocaleRedirectController::class);

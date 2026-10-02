@@ -16,6 +16,17 @@ class ShareSitePublicData
 {
     public function handle(Request $request, Closure $next): Response
     {
+        self::share();
+
+        return $next($request);
+    }
+
+    /**
+     * Données dont la coque publique a besoin (profil, surprise, CV…). Aussi
+     * appelée par les pages d'erreur, rendues hors des routes publiques.
+     */
+    public static function share(): void
+    {
         Inertia::share([
             'profile' => fn () => new ProfileResource(Profile::query()->firstOrFail()),
             'siteUrl' => rtrim((string) config('app.url'), '/'),
@@ -46,7 +57,5 @@ class ShareSitePublicData
                 ])
                 ->all(),
         ]);
-
-        return $next($request);
     }
 }

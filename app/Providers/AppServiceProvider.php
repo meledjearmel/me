@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\SetLocale;
+use App\Http\Middleware\ShareSitePublicData;
 use Carbon\CarbonImmutable;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
@@ -14,6 +16,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Inertia\ExceptionResponse;
+use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,6 +37,31 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
         $this->configureApiDocs();
         $this->configureRateLimiting();
+        $this->configureErrorPages();
+    }
+
+    /**
+     * Pages d'erreur du site public, aux couleurs du site et dans la langue
+     * du visiteur. L'admin et l'API gardent les réponses de Laravel ; en
+     * débogage, les erreurs serveur gardent leur page de diagnostic.
+     */
+    protected function configureErrorPages(): void
+    {
+        Inertia::handleExceptionsUsing(function (ExceptionResponse $response) {
+            $status = $response->statusCode();
+            $request = $response->request;
+
+            if (! in_array($status, [403, 404, 429, 500, 503], true)
+                || $request->is('admin', 'admin/*', 'settings', 'settings/*', 'api/*', 'dashboard')
+                || ($status >= 500 && config('app.debug'))) {
+                return null;
+            }
+
+            app()->setLocale(SetLocale::fromRequest($request));
+            ShareSitePublicData::share();
+
+            return $response->render('public/error', ['status' => $status])->withSharedData();
+        });
     }
 
     /**
