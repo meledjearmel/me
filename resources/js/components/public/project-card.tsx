@@ -1,10 +1,11 @@
 import { Link } from '@inertiajs/react';
-import { motion, useReducedMotion, useTransform } from 'framer-motion';
+import { motion, useTransform } from 'framer-motion';
 import { useRef, type CSSProperties } from 'react';
 import { useViewportProgress } from '@/hooks/use-viewport-progress';
 import { accentFor, readableTextOn } from '@/lib/accent';
 import { useLocalizedPath, useTranslations } from '@/lib/i18n';
 import type { PublicProject } from '@/types';
+import { usePrefersReducedMotion } from '@/hooks/use-media-query';
 
 /** Haut de la carte : bas de la fenêtre à 0 %, 55 % de la hauteur à 100 %. */
 const CARD_RANGE = (_height: number, viewport: number): [number, number] => [
@@ -37,7 +38,7 @@ export default function ProjectCard({
     const t = useTranslations();
     const path = useLocalizedPath();
     const ref = useRef<HTMLElement>(null);
-    const reduceMotion = useReducedMotion();
+    const reduceMotion = usePrefersReducedMotion();
 
     // Comme la référence : la carte grandit (0,6 → 1) et se révèle (0,35 → 1)
     // à mesure qu'elle entre dans la fenêtre, au lieu d'un simple fondu.

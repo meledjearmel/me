@@ -1,4 +1,5 @@
 import { usePage } from '@inertiajs/react';
+import { MotionConfig } from 'framer-motion';
 import type { ReactNode } from 'react';
 import ActionMenu from '@/components/public/action-menu';
 import ChatAssistant from '@/components/public/chat-assistant';
@@ -18,18 +19,21 @@ export default function PublicShell({
 
     useSmoothAnchors();
 
+    // Avec « réduire les animations », framer-motion ne garde que les fondus.
     return (
-        <div className={`pub${overHero ? '' : ' pub--plain'}`}>
-            <SiteHeader overHero={overHero} />
-            {/* role explicite : main est en display: contents (voir public.css) */}
-            <main role="main">{children}</main>
-            <SiteFooter
-                name={props.profile.name}
-                email={props.profile.email}
-                socialLinks={props.profile.social_links}
-            />
-            <ActionMenu />
-            <ChatAssistant />
-        </div>
+        <MotionConfig reducedMotion="user">
+            <div className={`pub${overHero ? '' : ' pub--plain'}`}>
+                <SiteHeader overHero={overHero} />
+                {/* role explicite : main est en display: contents (voir public.css) */}
+                <main role="main">{children}</main>
+                <SiteFooter
+                    name={props.profile.name}
+                    email={props.profile.email}
+                    socialLinks={props.profile.social_links}
+                />
+                <ActionMenu />
+                <ChatAssistant />
+            </div>
+        </MotionConfig>
     );
 }

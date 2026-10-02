@@ -1154,6 +1154,13 @@ html.pub-theming .pub *::after {
     padding-top: 6rem;
 }
 
+/* ---------- Focus clavier ---------- */
+/* :where() garde une spécificité nulle : les focus dédiés des composants gagnent. */
+:where(.pub) :where(a, button, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--pub-gold);
+    outline-offset: 3px;
+}
+
 /* ---------- Curseur personnalisé ---------- */
 @media (hover: hover) and (pointer: fine) {
     html.pub-cursor-on .pub,

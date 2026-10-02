@@ -1,4 +1,4 @@
-import { motion, useReducedMotion, useTransform } from 'framer-motion';
+import { motion, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import Skyline from '@/components/public/skyline';
 import Letters from '@/components/public/letters';
@@ -6,6 +6,7 @@ import { useViewportProgress } from '@/hooks/use-viewport-progress';
 import { useContactDrawer } from '@/lib/contact-drawer';
 import { useTranslations } from '@/lib/i18n';
 import type { PublicProfile } from '@/types';
+import { usePrefersReducedMotion } from '@/hooks/use-media-query';
 
 /** Titre : son centre passe du bas de la fenêtre (0 %) au milieu (100 %). */
 const HEADLINE_RANGE = (height: number, viewport: number): [number, number] => [
@@ -24,7 +25,7 @@ export default function SiteFooter({
 }) {
     const t = useTranslations();
     const { open } = useContactDrawer();
-    const reduceMotion = useReducedMotion();
+    const reduceMotion = usePrefersReducedMotion();
     const headlineRef = useRef<HTMLDivElement>(null);
     const progress = useViewportProgress(headlineRef, HEADLINE_RANGE);
 

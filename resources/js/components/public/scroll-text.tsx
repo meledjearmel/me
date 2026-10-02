@@ -1,11 +1,11 @@
 import {
     motion,
-    useReducedMotion,
     useTransform,
     type MotionValue,
 } from 'framer-motion';
 import { Fragment, useRef } from 'react';
 import { useViewportProgress } from '@/hooks/use-viewport-progress';
+import { usePrefersReducedMotion } from '@/hooks/use-media-query';
 
 /** Opacité de départ : le texte reste lisible même avant d'avoir défilé. */
 const MIN_OPACITY = 0.3;
@@ -47,7 +47,7 @@ export default function ScrollText({
     className?: string;
 }) {
     const ref = useRef<HTMLParagraphElement>(null);
-    const reduceMotion = useReducedMotion();
+    const reduceMotion = usePrefersReducedMotion();
     const scrollYProgress = useViewportProgress(ref, RANGE);
     const words = text.split(' ');
 

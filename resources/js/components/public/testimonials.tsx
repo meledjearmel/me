@@ -1,7 +1,6 @@
 import {
     easeInOut,
     motion,
-    useReducedMotion,
     useTransform,
     type MotionValue,
 } from 'framer-motion';
@@ -11,6 +10,7 @@ import { useViewportProgress } from '@/hooks/use-viewport-progress';
 import CloudBank from '@/components/public/cloud-bank';
 import { useLocalizedPath, useTranslations } from '@/lib/i18n';
 import type { PublicTestimonial } from '@/types';
+import { usePrefersReducedMotion } from '@/hooks/use-media-query';
 
 /** Écart entre le centre de deux cartes : carte de 430px + 32px d'espace. */
 const FAN_STRIDE = 462;
@@ -103,7 +103,7 @@ export default function Testimonials({
 }) {
     const t = useTranslations();
     const path = useLocalizedPath();
-    const reduceMotion = useReducedMotion();
+    const reduceMotion = usePrefersReducedMotion();
     const scrubRef = useRef<HTMLDivElement>(null);
 
     // Le paquet s'ouvre pendant que la zone d'espacement (juste après la section

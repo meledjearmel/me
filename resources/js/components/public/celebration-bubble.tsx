@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { PartyPopper, X } from 'lucide-react';
 import { useState } from 'react';
 import { useCongratulations } from '@/hooks/use-congratulations';
@@ -6,6 +6,7 @@ import { useCelebration } from '@/lib/celebration';
 import { burstConfetti } from '@/lib/confetti';
 import { useLocale, useLocalizedPath, useTranslations } from '@/lib/i18n';
 import type { SharedCelebration } from '@/types';
+import { usePrefersReducedMotion } from '@/hooks/use-media-query';
 
 /**
  * Bulle de la surprise, au-dessus d'Armi (en bas à gauche) : l'annonce, un
@@ -31,7 +32,7 @@ function Bubble({
     const t = useTranslations();
     const locale = useLocale();
     const path = useLocalizedPath();
-    const reduceMotion = useReducedMotion();
+    const reduceMotion = usePrefersReducedMotion();
     const { engage, dismiss } = useCelebration();
     const congrats = useCongratulations(
         celebration.total,

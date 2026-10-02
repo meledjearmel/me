@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { motion, useReducedMotion, useTransform } from 'framer-motion';
+import { motion, useTransform } from 'framer-motion';
 import { useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import EngageDialog from '@/components/public/engage-dialog';
@@ -9,6 +9,7 @@ import { useViewportProgress } from '@/hooks/use-viewport-progress';
 import { accentFor, readableTextOn } from '@/lib/accent';
 import { useLocalizedPath, useTranslations } from '@/lib/i18n';
 import type { PublicProject, PublicTechnology } from '@/types';
+import { usePrefersReducedMotion } from '@/hooks/use-media-query';
 
 /** Variables CSS d'un projet : sa couleur d'accent et la couleur de texte lisible dessus. */
 export function accentStyle(
@@ -299,7 +300,7 @@ export function ReadNext({ project }: { project: PublicProject }) {
     const t = useTranslations();
     const path = useLocalizedPath();
     const ref = useRef<HTMLElement>(null);
-    const reduceMotion = useReducedMotion();
+    const reduceMotion = usePrefersReducedMotion();
     const progress = useViewportProgress(ref, (_height, viewport) => [
         viewport,
         0.35 * viewport,

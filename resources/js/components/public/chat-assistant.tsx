@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { RotateCcw, SendHorizontal, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent, KeyboardEvent } from 'react';
@@ -7,7 +7,7 @@ import type { ChatAvatarState } from '@/components/public/chat-avatar';
 import ChatRichText from '@/components/public/chat-rich-text';
 import { useAppearance } from '@/hooks/use-appearance';
 import { CHAT_MAX_LENGTH, useChat } from '@/hooks/use-chat';
-import { useMediaQuery } from '@/hooks/use-media-query';
+import { useMediaQuery, usePrefersReducedMotion } from '@/hooks/use-media-query';
 import { useAudioPlayer } from '@/lib/audio';
 import { useCelebration } from '@/lib/celebration';
 import { useLocalizedPath, useTranslations } from '@/lib/i18n';
@@ -46,7 +46,7 @@ export default function ChatAssistant() {
     const night = useNight();
     const compact = useMediaQuery('(max-width: 707px)');
     const name = night ? 'Lumi' : 'Armi';
-    const reduceMotion = useReducedMotion();
+    const reduceMotion = usePrefersReducedMotion();
     const chat = useChat(path('chat'));
     const { playing: musicPlaying } = useAudioPlayer();
     const surprise = useCelebration();

@@ -1,6 +1,7 @@
-import { animate, useInView, useReducedMotion } from 'framer-motion';
+import { animate, useInView } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import { useTranslations } from '@/lib/i18n';
+import { usePrefersReducedMotion } from '@/hooks/use-media-query';
 
 /**
  * Années d'expérience, en grand : le chiffre monte jusqu'à sa valeur quand la
@@ -12,7 +13,7 @@ export default function AboutYears({ years }: { years: number }) {
     const numberRef = useRef<HTMLSpanElement>(null);
     const sectionRef = useRef<HTMLElement>(null);
     const inView = useInView(sectionRef, { once: true, amount: 0.4 });
-    const reduceMotion = useReducedMotion();
+    const reduceMotion = usePrefersReducedMotion();
 
     // Le serveur affiche la vraie valeur (utile sans JavaScript) ; on repart de 0 pour le décompte.
     useEffect(() => {

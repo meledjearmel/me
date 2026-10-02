@@ -1,6 +1,6 @@
-import { useReducedMotion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import type { AvatarDefinition } from '@/lib/avatar';
+import { usePrefersReducedMotion } from '@/hooks/use-media-query';
 
 type Playback = {
     expression: string;
@@ -26,7 +26,7 @@ export function useAvatarPlayback(
     animation: string,
     onEnd?: () => void,
 ): Playback {
-    const reduceMotion = useReducedMotion() ?? false;
+    const reduceMotion = usePrefersReducedMotion();
     const [current, setCurrent] = useState({
         expression: 'neutral',
         transitionMs: 0,
