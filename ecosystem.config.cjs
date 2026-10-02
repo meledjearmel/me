@@ -33,19 +33,6 @@ module.exports = {
             },
         },
         {
-            name: 'portfolio-reverb',
-            script: 'php',
-            args: 'artisan reverb:start',
-            cwd: '/srv/projects/me',
-            exec_mode: 'fork',
-            instances: 1,
-            autorestart: true,
-            max_restarts: 10,
-            env: {
-                APP_ENV: 'production',
-            },
-        },
-        {
             name: 'portfolio-ssr',
             // Sert le bundle resources/js/ssr.tsx pour le rendu côté serveur Inertia.
             script: 'php',

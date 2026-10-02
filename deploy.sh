@@ -38,7 +38,7 @@ echo "→ Caches Laravel"
 php artisan optimize:clear
 php artisan optimize
 
-echo "→ Redémarrage des processus (queue, scheduler, reverb, SSR)"
+echo "→ Redémarrage des processus (queue, scheduler, SSR)"
 php artisan queue:restart
 pm2 startOrReload ecosystem.config.cjs
 pm2 save
