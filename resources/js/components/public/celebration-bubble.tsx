@@ -200,7 +200,7 @@ function Bubble({
                                                 locale,
                                             )}
                                         </strong>{' '}
-                                        {t.celebration.countLabel}
+                                        {t.celebration.countLabel(congrats.total)}
                                     </span>
                                 )}
                             </div>

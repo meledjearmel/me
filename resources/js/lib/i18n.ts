@@ -81,7 +81,8 @@ const dictionaries = {
             distinction: 'Meilleur agent du premier semestre 2025 au CIAPOL',
             languagesLabel: 'Langues parlées',
             congrats: 'Féliciter',
-            congratsReceived: 'félicitations reçues',
+            congratsReceived: (count: number) =>
+                count > 1 ? 'félicitations reçues' : 'félicitation reçue',
             congratsFirst: 'Soyez le premier à féliciter →',
             statusOnline: 'En ligne, réponse rapide',
             statusOffline: 'Hors horaires, je réponds demain',
@@ -141,7 +142,7 @@ const dictionaries = {
             readNext: 'À lire ensuite',
             ctaTitle: "Envie d'en voir plus ?",
             ctaText:
-                "Tout ne se montre pas sur une page publique. Écrivez-moi : je vous fais la démo et je vous raconte les choix techniques derrière ce projet.",
+                'Tout ne se montre pas sur une page publique. Écrivez-moi : je vous fais la démo et je vous raconte les choix techniques derrière ce projet.',
             ctaButton: 'Parlons-en',
             readNextCursor: 'Lire',
         },
@@ -206,7 +207,8 @@ const dictionaries = {
         },
         celebration: {
             close: 'Fermer',
-            countLabel: 'félicitations',
+            countLabel: (count: number) =>
+                count > 1 ? 'félicitations' : 'félicitation',
             thanks: 'Merci, ça fait plaisir !',
         },
         fab: {
@@ -359,7 +361,8 @@ const dictionaries = {
             distinction: 'Best agent of the first half of 2025 at CIAPOL',
             languagesLabel: 'Languages spoken',
             congrats: 'Congrats',
-            congratsReceived: 'congrats received',
+            congratsReceived: (count: number) =>
+                count === 1 ? 'congratulation received' : 'congrats received',
             congratsFirst: 'Be the first to congratulate →',
             statusOnline: 'Online, quick reply',
             statusOffline: "Off hours, I'll reply tomorrow",
@@ -483,7 +486,8 @@ const dictionaries = {
         },
         celebration: {
             close: 'Close',
-            countLabel: 'congratulations',
+            countLabel: (count: number) =>
+                count === 1 ? 'congratulation' : 'congratulations',
             thanks: 'Thank you, that means a lot!',
         },
         fab: {

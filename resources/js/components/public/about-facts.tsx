@@ -192,7 +192,7 @@ export default function AboutFacts({
                                     <strong>
                                         {congrats.total.toLocaleString(locale)}
                                     </strong>{' '}
-                                    {t.about.congratsReceived}
+                                    {t.about.congratsReceived(congrats.total)}
                                 </>
                             )}
                         </span>
