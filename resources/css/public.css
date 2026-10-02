@@ -1974,7 +1974,7 @@ html.pub-scroll {
 
 .pub-card__cta span {
     display: inline-block;
-    transition: transform 0.3s var(--pub-ease-spring);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .pub-card__link:hover .pub-card__cta span {
@@ -5599,45 +5599,208 @@ html.pub-scroll {
     animation: pub-chatavatar-bounce 0.9s ease-in-out infinite;
 }
 
-/* Bulle de la surprise, au-dessus d'Armi (voir celebration-bubble.tsx). */
+/*
+ * Bulle de parole d'Armi (voir celebration-bubble.tsx), dans le langage des
+ * cartes de compétences : grands arrondis, barre de couleur et titre serif,
+ * verre dépoli, reflet intérieur, halo et contour qui s'allument sous le
+ * pointeur. Le verre (60 %) est flouté, et le contour toujours un
+ * peu allumé : la bulle reste lisible quelle que soit la section en dessous.
+ *
+ * La bulle est montée dans le layout, hors de .pub : les variables --pub-*
+ * n'y existent pas, elle définit donc ses propres valeurs.
+ */
 .pub-surprise {
     --surprise-left: clamp(14px, 2.4vw, 28px);
+    --surprise-accent: #d9603f;
+    --surprise-surface: rgb(255 253 246 / 0.6);
+    --surprise-ink: #14172e;
+    --surprise-gold: #ffda3f;
+    --surprise-display: 'DM Serif Display', Georgia, serif;
+    --surprise-body: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --glow: 0;
 
     position: fixed;
-    left: var(--surprise-left);
-    bottom: calc(clamp(22px, calc(4.5vw + 5px), 70px) + 64px + 18px);
+    left: calc(var(--surprise-left) + 20px);
+    bottom: calc(clamp(22px, calc(4.5vw + 5px), 70px) + 64px + 20px);
     z-index: 91;
-    width: min(330px, calc(100vw - 2 * var(--surprise-left)));
-    padding: 1.1rem 1.15rem 1rem;
-    border: 1px solid color-mix(in oklab, var(--pub-text) 28%, transparent);
-    background: var(--pub-bg);
-    color: var(--pub-text);
-    font-family: var(--pub-font-body);
+    display: grid;
+    gap: 0.55rem;
+    width: min(340px, calc(100vw - 2 * var(--surprise-left) - 20px));
+    padding: 1.25rem 1.3rem 1.15rem;
+    border: 1px solid color-mix(in oklab, var(--surprise-accent) 55%, transparent);
+    border-radius: 26px;
+    background: var(--surprise-surface);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    backdrop-filter: blur(18px) saturate(160%);
+    color: var(--surprise-ink);
+    font-family: var(--surprise-body);
     box-shadow:
-        6px 6px 0 var(--pub-gold),
-        0 24px 50px -24px rgb(0 0 0 / 0.45);
+        0 0 0 4px color-mix(in oklab, var(--surprise-accent) 18%, transparent),
+        0 28px 60px -24px rgb(0 0 0 / 0.55),
+        inset 0 1px 0 rgb(255 255 255 / 0.8),
+        inset 0 0 40px rgb(255 255 255 / 0.35);
 }
 
-/* Pointe de la bulle, tournée vers Armi. */
-.pub-surprise::after {
+.dark .pub-surprise {
+    --surprise-accent: #ef7b57;
+    --surprise-surface: linear-gradient(
+        160deg,
+        rgb(34 40 82 / 0.6),
+        rgb(22 26 58 / 0.64)
+    );
+    --surprise-ink: #fff9e9;
+
+    box-shadow:
+        0 0 0 4px color-mix(in oklab, var(--surprise-accent) 22%, transparent),
+        0 28px 60px -20px rgb(0 0 0 / 0.85),
+        inset 0 1px 0 rgb(255 255 255 / 0.14),
+        inset 0 0 60px rgb(255 255 255 / 0.04);
+}
+
+/* Halo sous le pointeur et contour qui s'allume, comme .pub-skill__card. */
+.pub-surprise__glow {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.pub-surprise__glow::before,
+.pub-surprise__glow::after {
     content: '';
     position: absolute;
-    left: 22px;
-    bottom: -9px;
-    width: 16px;
-    height: 16px;
-    border-right: 1px solid
-        color-mix(in oklab, var(--pub-text) 28%, transparent);
-    border-bottom: 1px solid
-        color-mix(in oklab, var(--pub-text) 28%, transparent);
-    background: var(--pub-bg);
-    rotate: 45deg;
+    inset: 0;
+    border-radius: inherit;
+    opacity: var(--glow);
+    transition: opacity 0.35s ease;
+}
+
+.pub-surprise__glow::before {
+    background: radial-gradient(
+        300px circle at var(--mx, 50%) var(--my, 50%),
+        color-mix(in oklab, var(--surprise-accent) 30%, transparent),
+        transparent 65%
+    );
+}
+
+.pub-surprise__glow::after {
+    padding: 1.5px;
+    background: radial-gradient(
+        220px circle at var(--mx, 50%) var(--my, 50%),
+        var(--surprise-accent),
+        transparent 70%
+    );
+    -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+    mask-composite: exclude;
+}
+
+.pub-surprise > :not(.pub-surprise__glow, .pub-surprise__tail, .pub-surprise__close) {
+    position: relative;
+    z-index: 1;
+}
+
+/* Pointe de la bulle, qui part vers la bouche d'Armi. */
+.pub-surprise__tail {
+    position: absolute;
+    left: 24px;
+    bottom: -11px;
+    width: 18px;
+    height: 12px;
+    background: var(--surprise-surface);
+    clip-path: polygon(0 0, 100% 0, 10% 100%);
+    filter: drop-shadow(0 1px 0 color-mix(in oklab, var(--surprise-accent) 55%, transparent));
+}
+
+.dark .pub-surprise__tail {
+    background: rgb(22 26 58 / 0.64);
+}
+
+/* Titre serif avec sa barre de couleur, comme .pub-skill__name. */
+.pub-surprise__body {
+    display: grid;
+    gap: 0.55rem;
+}
+
+.pub-surprise__title {
+    margin: 0;
+    padding-right: 2.25rem;
+    font-family: var(--surprise-display);
+    font-size: 1.35rem;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+
+.pub-surprise__title::before {
+    content: '';
+    display: block;
+    width: 28px;
+    height: 4px;
+    margin-bottom: 0.75rem;
+    border-radius: 4px;
+    background: var(--surprise-accent);
+}
+
+/* Armi écrit… : la bulle ne contient que les trois points. */
+.pub-surprise.is-typing {
+    width: auto;
+    padding: 0.9rem 1.15rem;
+}
+
+.pub-surprise.is-typing .pub-surprise__close {
+    display: none;
+}
+
+.pub-surprise__typing {
+    display: flex;
+    gap: 5px;
+    margin: 0;
+    padding: 0.35rem 0;
+}
+
+.pub-surprise__typing span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--surprise-accent);
+    animation: pub-surprise-typing 0.9s ease-in-out infinite;
+}
+
+.pub-surprise__typing span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.pub-surprise__typing span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes pub-surprise-typing {
+    0%,
+    60%,
+    100% {
+        opacity: 0.3;
+        transform: translateY(0);
+    }
+
+    30% {
+        opacity: 1;
+        transform: translateY(-4px);
+    }
 }
 
 .pub-surprise__close {
     position: absolute;
-    top: 0.45rem;
-    right: 0.45rem;
+    z-index: 2;
+    top: 0.75rem;
+    right: 0.75rem;
     display: grid;
     place-items: center;
     width: 28px;
@@ -5658,10 +5821,14 @@ html.pub-scroll {
 
 .pub-surprise__message {
     margin: 0;
-    padding-right: 1.4rem;
+    padding-right: 2.25rem;
     font-size: 0.95rem;
-    font-weight: 500;
-    line-height: 1.45;
+    line-height: 1.5;
+    opacity: 0.88;
+}
+
+.pub-surprise__title + .pub-surprise__message {
+    padding-right: 0;
 }
 
 .pub-surprise__actions {
@@ -5698,7 +5865,7 @@ html.pub-scroll {
 
 .pub-surprise__close:focus-visible,
 .pub-surprise__cta:focus-visible {
-    outline: 3px solid var(--pub-gold);
+    outline: 3px solid var(--surprise-gold);
     outline-offset: 3px;
 }
 
@@ -5715,11 +5882,7 @@ html.pub-scroll {
     margin: 0.6rem 0 0;
     font-size: 0.8rem;
     font-weight: 600;
-    color: #d9603f;
-}
-
-.dark .pub-surprise__thanks {
-    color: var(--pub-coral);
+    color: var(--surprise-accent);
 }
 
 @media (max-width: 707px) {
@@ -5736,6 +5899,11 @@ html.pub-scroll {
 
     .pub-surprise__cta {
         transition: none;
+    }
+
+    .pub-surprise__typing span {
+        animation: none;
+        opacity: 0.6;
     }
 }
 
