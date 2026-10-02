@@ -1,5 +1,4 @@
 import { Form, usePage } from '@inertiajs/react';
-import { motion } from 'framer-motion';
 import { useState } from 'react';
 import ContactController from '@/actions/App/Http/Controllers/ContactController';
 import Seo from '@/components/public/seo';
@@ -20,12 +19,7 @@ function ContactMeta({ profile }: { profile: PublicProfile }) {
     );
 
     return (
-        <motion.dl
-            className="pub-meta"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        >
+        <dl className="pub-meta pub-reveal pub-reveal--late">
             <div>
                 <dt>{t.contact.emailLabel}</dt>
                 <dd className="pub-meta__links">
@@ -71,7 +65,7 @@ function ContactMeta({ profile }: { profile: PublicProfile }) {
                     </dd>
                 </div>
             )}
-        </motion.dl>
+        </dl>
     );
 }
 

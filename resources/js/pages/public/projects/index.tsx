@@ -80,16 +80,7 @@ export default function ProjectsIndex({
                     eyebrow={t.projects.title}
                     title={t.projects.heading}
                     aside={
-                        <motion.dl
-                            className="pub-stats"
-                            initial={{ opacity: 0, y: 24 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{
-                                duration: 0.8,
-                                delay: 0.3,
-                                ease: [0.22, 1, 0.36, 1],
-                            }}
-                        >
+                        <dl className="pub-stats pub-reveal pub-reveal--late">
                             <div>
                                 <dt>{t.projects.countLabel}</dt>
                                 <dd>{projects.length}</dd>
@@ -102,7 +93,7 @@ export default function ProjectsIndex({
                                 <dt>{t.projects.domainsLabel}</dt>
                                 <dd>{usedDomains.length}</dd>
                             </div>
-                        </motion.dl>
+                        </dl>
                     }
                 >
                     <p>{t.projects.hook}</p>

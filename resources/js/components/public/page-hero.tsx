@@ -1,12 +1,14 @@
-import { motion } from 'framer-motion';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import HeroScene from '@/components/public/hero-scene';
 import Letters from '@/components/public/letters';
 
+/**
+ * Entrée du contenu en CSS (voir .pub-reveal) : elle démarre dès l'affichage
+ * de la page rendue par le serveur, sans attendre que le JavaScript soit
+ * chargé ; le titre n'est donc jamais invisible en attendant l'hydratation.
+ */
 const reveal = (delay: number) => ({
-    initial: { opacity: 0, y: 24 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] as const },
+    style: { '--reveal-delay': `${delay}s` } as CSSProperties,
 });
 
 /**
@@ -35,26 +37,26 @@ export default function PageHero({
 
             <div className="pub-page-hero__grid">
                 <div className="pub-page-hero__copy">
-                    <motion.p className="pub-hero__eyebrow" {...reveal(0)}>
+                    <p className="pub-hero__eyebrow pub-reveal" {...reveal(0)}>
                         <span className="pub-hero__dot" />
                         {eyebrow}
-                    </motion.p>
+                    </p>
 
-                    <motion.h1
+                    <h1
                         id={id}
-                        className="pub-page-hero__title"
+                        className="pub-page-hero__title pub-reveal"
                         {...reveal(0.1)}
                     >
                         <Letters text={title} />
-                    </motion.h1>
+                    </h1>
 
                     {(lead ?? children) && (
-                        <motion.div
-                            className="pub-page-hero__lead"
+                        <div
+                            className="pub-page-hero__lead pub-reveal"
                             {...reveal(0.25)}
                         >
                             {lead ?? children}
-                        </motion.div>
+                        </div>
                     )}
                 </div>
 

@@ -1154,6 +1154,24 @@ html.pub-theming .pub *::after {
     padding-top: 6rem;
 }
 
+/* ---------- Entrée des bandeaux, en CSS ---------- */
+/* Démarre dès l'affichage, sans attendre le JavaScript (voir page-hero.tsx). */
+.pub-reveal {
+    animation: pub-reveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--reveal-delay, 0s);
+}
+
+.pub-reveal--late {
+    --reveal-delay: 0.3s;
+}
+
+@keyframes pub-reveal {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+}
+
 /* ---------- Focus clavier ---------- */
 /* :where() garde une spécificité nulle : les focus dédiés des composants gagnent. */
 :where(.pub) :where(a, button, summary, [tabindex]):focus-visible {
@@ -3121,15 +3139,29 @@ html.pub-scroll {
     background: var(--pub-gold);
 }
 
+/* Mobile : la date passe sous le poste, le « + » reste seul en haut à droite. */
 @media (max-width: 640px) {
     .pub-exp__head {
-        align-items: flex-start;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: start;
+        gap: 0.65rem 1rem;
     }
 
     .pub-exp__meta {
-        flex-direction: column-reverse;
-        align-items: flex-end;
-        gap: 0.5rem;
+        display: contents;
+    }
+
+    .pub-exp__date {
+        grid-column: 1;
+        grid-row: 2;
+        text-align: left;
+    }
+
+    .pub-exp__toggle {
+        grid-column: 2;
+        grid-row: 1;
+        margin-top: 0.5rem;
     }
 }
 

@@ -1,5 +1,4 @@
 import { Link } from '@inertiajs/react';
-import { motion } from 'framer-motion';
 import type { CSSProperties } from 'react';
 import DomainDock from '@/components/public/domain-dock';
 import Seo from '@/components/public/seo';
@@ -35,16 +34,9 @@ export default function Skills({
                     eyebrow={t.skills.title}
                     title={t.skills.heading}
                     aside={
-                        <motion.nav
-                            className="pub-jump"
+                        <nav
+                            className="pub-jump pub-reveal pub-reveal--late"
                             aria-label={t.skills.jump}
-                            initial={{ opacity: 0, y: 24 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{
-                                duration: 0.8,
-                                delay: 0.3,
-                                ease: [0.22, 1, 0.36, 1],
-                            }}
                         >
                             <p className="pub-jump__label">{t.skills.jump}</p>
                             <ol>
@@ -72,7 +64,7 @@ export default function Skills({
                                     </li>
                                 ))}
                             </ol>
-                        </motion.nav>
+                        </nav>
                     }
                 >
                     <p>{t.skills.hook}</p>

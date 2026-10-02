@@ -34,12 +34,7 @@ export function ProjectMeta({ project }: { project: PublicProject }) {
     ].filter((entry): entry is [string, string] => Boolean(entry[1]));
 
     return (
-        <motion.dl
-            className="pub-meta"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        >
+        <dl className="pub-meta pub-reveal pub-reveal--late">
             {identity.map(([label, value]) => (
                 <div key={label}>
                     <dt>{label}</dt>
@@ -101,7 +96,7 @@ export function ProjectMeta({ project }: { project: PublicProject }) {
                     </dd>
                 </div>
             )}
-        </motion.dl>
+        </dl>
     );
 }
 
