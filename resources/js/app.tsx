@@ -1,15 +1,43 @@
-import { createInertiaApp } from '@inertiajs/react';
+import { createInertiaApp, type ResolvedComponent } from '@inertiajs/react';
 import type { VisitOptions } from '@inertiajs/core';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeTheme } from '@/hooks/use-appearance';
 import { waveKeyframes } from '@/lib/page-wave';
-import AppLayout from '@/layouts/app-layout';
-import AuthLayout from '@/layouts/auth-layout';
 import PublicLayout from '@/layouts/public-layout';
-import SettingsLayout from '@/layouts/settings/layout';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+
+/**
+ * Layouts de l'admin, de l'authentification et des réglages : chargés à la
+ * demande avec la page qui en a besoin, pour qu'un visiteur du site public ne
+ * télécharge pas toute l'interface d'administration.
+ */
+const loadedLayouts: {
+    app?: typeof import('@/layouts/app-layout').default;
+    auth?: typeof import('@/layouts/auth-layout').default;
+    settings?: typeof import('@/layouts/settings/layout').default;
+} = {};
+
+async function loadLayoutFor(name: string): Promise<void> {
+    if (name.startsWith('public/')) {
+        return;
+    }
+
+    if (name.startsWith('auth/')) {
+        loadedLayouts.auth ??= (await import('@/layouts/auth-layout')).default;
+
+        return;
+    }
+
+    loadedLayouts.app ??= (await import('@/layouts/app-layout')).default;
+
+    if (name.startsWith('settings/')) {
+        loadedLayouts.settings ??= (
+            await import('@/layouts/settings/layout')
+        ).default;
+    }
+}
 
 /** Pages publiques : /fr/... et /en/... */
 const PUBLIC_PATH = /^\/(fr|en)(\/|$)/;
@@ -70,16 +98,33 @@ function publicPageTransition(
 
 void createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
+    // Même résolution que celle générée par @inertiajs/vite, plus le layout.
+    resolve: async (name) => {
+        const pages = import.meta.glob<{
+            default: ResolvedComponent;
+        }>('./pages/**/*.tsx');
+        const [module] = await Promise.all([
+            pages[`./pages/${name}.tsx`]?.(),
+            loadLayoutFor(name),
+        ]);
+
+        if (!module) {
+            throw new Error(`Page not found: ${name}`);
+        }
+
+        return module.default;
+    },
+    // Le layout a déjà été chargé par `resolve` : ce choix reste synchrone.
     layout: (name) => {
         switch (true) {
             case name.startsWith('public/'):
                 return PublicLayout;
             case name.startsWith('auth/'):
-                return AuthLayout;
+                return loadedLayouts.auth;
             case name.startsWith('settings/'):
-                return [AppLayout, SettingsLayout];
+                return [loadedLayouts.app, loadedLayouts.settings];
             default:
-                return AppLayout;
+                return loadedLayouts.app;
         }
     },
     strictMode: true,

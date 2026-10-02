@@ -9,7 +9,7 @@ import StarField from '@/components/public/star-field';
  */
 const CLOUDS = [
     {
-        src: '/images/hero/cloud-1.png',
+        src: '/images/hero/cloud-1.webp',
         top: '4%',
         width: 'clamp(320px, 46vw, 760px)',
         opacity: 0.95,
@@ -17,7 +17,7 @@ const CLOUDS = [
         delay: 0,
     },
     {
-        src: '/images/hero/cloud-3.png',
+        src: '/images/hero/cloud-3.webp',
         top: '30%',
         width: 'clamp(240px, 32vw, 520px)',
         opacity: 0.85,
@@ -25,7 +25,7 @@ const CLOUDS = [
         delay: -55,
     },
     {
-        src: '/images/hero/cloud-2.png',
+        src: '/images/hero/cloud-2.webp',
         top: '12%',
         width: 'clamp(200px, 26vw, 420px)',
         opacity: 0.8,
@@ -33,7 +33,7 @@ const CLOUDS = [
         delay: -25,
     },
     {
-        src: '/images/hero/cloud-1.png',
+        src: '/images/hero/cloud-1.webp',
         top: '52%',
         width: 'clamp(260px, 36vw, 600px)',
         opacity: 0.6,
@@ -41,7 +41,7 @@ const CLOUDS = [
         delay: -110,
     },
     {
-        src: '/images/hero/cloud-3.png',
+        src: '/images/hero/cloud-3.webp',
         top: '66%',
         width: 'clamp(200px, 28vw, 460px)',
         opacity: 0.55,
