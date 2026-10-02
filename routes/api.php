@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CelebrationController;
 use App\Http\Controllers\Api\V1\CongratulationController;
 use App\Http\Controllers\Api\V1\ContactController;
+use App\Http\Controllers\Api\V1\CvDownloadController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\DomainController;
 use App\Http\Controllers\Api\V1\EducationController;
@@ -53,6 +54,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         });
 
         Route::apiResource('contacts', ContactController::class)->except('store');
+        Route::apiResource('cv-downloads', CvDownloadController::class)->only(['index', 'show', 'destroy']);
         Route::apiResource('engagements', EngagementController::class)->except('store');
         Route::apiResource('testimonials', TestimonialController::class)->except('store');
         Route::apiResource('congratulations', CongratulationController::class)->only(['index', 'show']);

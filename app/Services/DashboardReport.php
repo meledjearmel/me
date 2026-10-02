@@ -9,6 +9,7 @@ use App\Enums\ProjectStatus;
 use App\Enums\TestimonialStatus;
 use App\Models\Contact;
 use App\Models\Counter;
+use App\Models\CvDownload;
 use App\Models\Domain;
 use App\Models\Education;
 use App\Models\Engagement;
@@ -45,6 +46,36 @@ class DashboardReport
             'distribution' => $this->distribution(),
             'health' => $this->health(),
             'recent' => $this->recent(),
+            'cv_downloads' => $this->cvDownloads(),
+        ];
+    }
+
+    /**
+     * Téléchargements du CV : volumes, et d'où viennent ceux des 30 derniers
+     * jours (pays, provenance : campagne, sinon site d'origine, sinon direct).
+     *
+     * @return array<string, mixed>
+     */
+    private function cvDownloads(): array
+    {
+        $since = Carbon::now()->subDays(self::VISIT_DAYS);
+        $top = fn (string $expression): array => CvDownload::query()
+            ->where('created_at', '>=', $since)
+            ->selectRaw("{$expression} as label, count(*) as count")
+            ->groupBy('label')
+            ->orderByDesc('count')
+            ->limit(5)
+            ->get()
+            ->map(fn (CvDownload $row): array => ['label' => (string) $row->getAttribute('label'), 'count' => (int) $row->getAttribute('count')])
+            ->all();
+
+        return [
+            'total' => CvDownload::query()->count(),
+            'period_days' => self::VISIT_DAYS,
+            'period' => CvDownload::query()->where('created_at', '>=', $since)->count(),
+            'with_email' => CvDownload::query()->whereNotNull('email')->count(),
+            'by_country' => $top("coalesce(country, 'Lieu inconnu')"),
+            'by_origin' => $top("coalesce(utm_source, referrer_host, 'direct')"),
         ];
     }
 

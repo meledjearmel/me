@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ProfileRequest;
+use App\Models\JobProfile;
 use App\Models\Profile;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -25,6 +26,7 @@ class ProfileController extends Controller
                     'url' => $music->getUrl(),
                 ],
             ],
+            'jobProfiles' => JobProfile::query()->orderBy('sort_order')->get(['id', 'label']),
         ]);
     }
 

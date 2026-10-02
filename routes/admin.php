@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AiAssistController;
 use App\Http\Controllers\Admin\CelebrationController;
 use App\Http\Controllers\Admin\CongratulationController;
 use App\Http\Controllers\Admin\ContactController;
+use App\Http\Controllers\Admin\CvDownloadController;
 use App\Http\Controllers\Admin\DomainController;
 use App\Http\Controllers\Admin\EducationController;
 use App\Http\Controllers\Admin\EngagementController;
@@ -67,4 +68,5 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('testimonials', TestimonialController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
     Route::resource('contacts', ContactController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
     Route::resource('engagements', EngagementController::class)->only(['index', 'show', 'update', 'destroy']);
+    Route::resource('cv-downloads', CvDownloadController::class)->only(['index', 'show', 'destroy']);
 });

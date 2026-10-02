@@ -9,13 +9,20 @@ import {
     FieldGroup,
     FieldLabel,
 } from '@/components/ui/field';
+import FormSelect from '@/components/admin/form-select';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { edit as profileEdit } from '@/routes/admin/profile';
-import type { Profile } from '@/types';
+import type { JobProfile, Profile } from '@/types';
 
-export default function ProfileEdit({ profile }: { profile: Profile }) {
+export default function ProfileEdit({
+    profile,
+    jobProfiles,
+}: {
+    profile: Profile;
+    jobProfiles: Pick<JobProfile, 'id' | 'label'>[];
+}) {
     return (
         <>
             <Head title="Profil" />
@@ -287,8 +294,8 @@ export default function ProfileEdit({ profile }: { profile: Profile }) {
                                 }
                             >
                                 <FieldLabel htmlFor="congratulation_notify_minutes">
-                                    Notification de félicitations au plus
-                                    toutes les (minutes)
+                                    Notification de félicitations au plus toutes
+                                    les (minutes)
                                 </FieldLabel>
                                 <Input
                                     id="congratulation_notify_minutes"
@@ -311,6 +318,70 @@ export default function ProfileEdit({ profile }: { profile: Profile }) {
                                     {errors.congratulation_notify_minutes}
                                 </FieldError>
                             </Field>
+
+                            <div className="grid gap-4 rounded-lg border p-4 sm:grid-cols-2">
+                                <p className="text-sm font-medium sm:col-span-2">
+                                    CV téléchargeable (page contact)
+                                </p>
+
+                                <Field
+                                    data-invalid={!!errors.cv_job_profile_id}
+                                >
+                                    <FieldLabel htmlFor="cv_job_profile_id">
+                                        Profil métier principal
+                                    </FieldLabel>
+                                    <FormSelect
+                                        id="cv_job_profile_id"
+                                        name="cv_job_profile_id"
+                                        defaultValue={
+                                            profile.cv_job_profile_id ?? ''
+                                        }
+                                    >
+                                        <option value="">
+                                            Le premier profil publié
+                                        </option>
+                                        {jobProfiles.map((jobProfile) => (
+                                            <option
+                                                key={jobProfile.id}
+                                                value={jobProfile.id}
+                                            >
+                                                {jobProfile.label.fr}
+                                            </option>
+                                        ))}
+                                    </FormSelect>
+                                    <FieldDescription>
+                                        Son CV est proposé au téléchargement,
+                                        dans la langue de la page.
+                                    </FieldDescription>
+                                    <FieldError>
+                                        {errors.cv_job_profile_id}
+                                    </FieldError>
+                                </Field>
+
+                                <Field data-invalid={!!errors.cv_source}>
+                                    <FieldLabel htmlFor="cv_source">
+                                        Source prioritaire
+                                    </FieldLabel>
+                                    <FormSelect
+                                        id="cv_source"
+                                        name="cv_source"
+                                        defaultValue={profile.cv_source}
+                                    >
+                                        <option value="uploaded">
+                                            CV importé (PDF du profil métier)
+                                        </option>
+                                        <option value="generated">
+                                            CV généré depuis le site
+                                        </option>
+                                    </FormSelect>
+                                    <FieldDescription>
+                                        Sans CV importé, le CV généré prend le
+                                        relais. S'applique aussi au CV envoyé
+                                        aux recruteurs.
+                                    </FieldDescription>
+                                    <FieldError>{errors.cv_source}</FieldError>
+                                </Field>
+                            </div>
 
                             <Button disabled={processing}>Enregistrer</Button>
                         </FieldGroup>

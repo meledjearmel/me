@@ -194,6 +194,25 @@ export type Testimonial = {
     submitted_at: string;
 };
 
+export type CvDownload = {
+    id: number;
+    job_profile_id: number | null;
+    job_profile?: { id: number; label: Translatable } | null;
+    locale: 'fr' | 'en';
+    source: 'uploaded' | 'generated';
+    email: string | null;
+    country_code: string | null;
+    country: string | null;
+    city: string | null;
+    referrer_host: string | null;
+    utm_source: string | null;
+    utm_medium: string | null;
+    utm_campaign: string | null;
+    device: 'desktop' | 'mobile' | 'tablet' | null;
+    origin?: string;
+    created_at: string;
+};
+
 export type Contact = {
     id: number;
     name: string;
@@ -230,6 +249,8 @@ export type Profile = {
     location: string | null;
     social_links: { github?: string; linkedin?: string } | null;
     congratulation_notify_minutes: number;
+    cv_job_profile_id: number | null;
+    cv_source: 'uploaded' | 'generated';
     cv_last_name?: string | null;
     cv_first_name?: string | null;
     photo_url?: string | null;

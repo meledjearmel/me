@@ -4,6 +4,7 @@ import {
     Disc3,
     FolderGit2,
     GraduationCap,
+    FileDown,
     Handshake,
     Heart,
     IdCard,
@@ -35,6 +36,7 @@ import { dashboard } from '@/routes';
 import { index as celebrationsIndex } from '@/routes/admin/celebrations';
 import { index as congratulationsIndex } from '@/routes/admin/congratulations';
 import { index as contactsIndex } from '@/routes/admin/contacts';
+import { index as cvDownloadsIndex } from '@/routes/admin/cv-downloads';
 import { index as engagementsIndex } from '@/routes/admin/engagements';
 import { index as domainsIndex } from '@/routes/admin/domains';
 import { index as educationsIndex } from '@/routes/admin/educations';
@@ -92,6 +94,7 @@ const musicNavItems: NavItem[] = [
 const inboxNavItems: NavItem[] = [
     { title: 'Contacts', href: contactsIndex(), icon: Mail },
     { title: 'Collaborations', href: engagementsIndex(), icon: Handshake },
+    { title: 'Téléchargements CV', href: cvDownloadsIndex(), icon: FileDown },
     { title: 'Félicitations', href: congratulationsIndex(), icon: Heart },
 ];
 

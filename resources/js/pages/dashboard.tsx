@@ -3,6 +3,7 @@ import {
     AlertTriangle,
     CheckCircle2,
     Eye,
+    FileDown,
     Handshake,
     Mail,
     MessageSquareQuote,
@@ -37,6 +38,7 @@ import {
 import { Empty, EmptyDescription, EmptyHeader } from '@/components/ui/empty';
 import { dashboard } from '@/routes';
 import { index as contactsIndex } from '@/routes/admin/contacts';
+import { index as cvDownloadsIndex } from '@/routes/admin/cv-downloads';
 import { index as engagementsIndex } from '@/routes/admin/engagements';
 import { index as referencesIndex } from '@/routes/admin/professional-references';
 import { edit as profileEdit } from '@/routes/admin/profile';
@@ -87,6 +89,14 @@ type DashboardProps = {
         technologies_by_category: Bar[];
     };
     health: { key: string; ok: boolean; count: number }[];
+    cv_downloads: {
+        total: number;
+        period_days: number;
+        period: number;
+        with_email: number;
+        by_country: Bar[];
+        by_origin: Bar[];
+    };
     recent: {
         contacts: {
             id: number;
@@ -437,6 +447,7 @@ export default function Dashboard({
     distribution,
     health,
     recent,
+    cv_downloads: cvDownloads,
 }: DashboardProps) {
     const { auth } = usePage().props;
     const firstName = auth.user.name.split(' ')[0];
@@ -555,6 +566,36 @@ export default function Dashboard({
                                 ))}
                             </ul>
                         )}
+                    </Section>
+                </div>
+
+                {/* Téléchargements du CV */}
+                <div className="grid gap-4 lg:grid-cols-3">
+                    <Link href={cvDownloadsIndex()} className="block">
+                        <StatCard
+                            title={`CV téléchargé sur ${cvDownloads.period_days} jours`}
+                            value={number.format(cvDownloads.period)}
+                            hint={`${number.format(cvDownloads.total)} au total · ${number.format(cvDownloads.with_email)} avec un email`}
+                            icon={FileDown}
+                        />
+                    </Link>
+                    <Section
+                        title="Téléchargements par pays"
+                        description={`Sur ${cvDownloads.period_days} jours`}
+                    >
+                        <Bars
+                            rows={cvDownloads.by_country}
+                            empty="Aucun téléchargement."
+                        />
+                    </Section>
+                    <Section
+                        title="Téléchargements par provenance"
+                        description="Campagne, sinon site d'origine"
+                    >
+                        <Bars
+                            rows={cvDownloads.by_origin}
+                            empty="Aucun téléchargement."
+                        />
                     </Section>
                 </div>
 
