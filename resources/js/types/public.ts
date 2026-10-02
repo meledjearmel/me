@@ -66,6 +66,11 @@ export type PublicProject = {
     context: string;
     realization: string;
     result: string;
+    tagline: string | null;
+    role: string | null;
+    client: string | null;
+    platform: string | null;
+    key_figures: { value: string; label: string }[];
     accent_color: string | null;
     repo_url: string | null;
     demo_url: string | null;

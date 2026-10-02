@@ -1,6 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
 import ProjectController from '@/actions/App/Http/Controllers/Admin/ProjectController';
 import CheckboxGroup from '@/components/admin/checkbox-group';
+import ProjectCaseStudyFields from '@/components/admin/project-case-study-fields';
 import FormPageHeader from '@/components/admin/form-page-header';
 import TranslatableField from '@/components/translatable-field';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -59,6 +60,10 @@ export default function ProjectCreate({
                                 <Input id="slug" name="slug" required />
                                 <FieldError>{errors.slug}</FieldError>
                             </Field>
+
+                            <ProjectCaseStudyFields
+                                errors={errors}
+                            />
 
                             <TranslatableField
                                 name="context"

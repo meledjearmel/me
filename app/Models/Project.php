@@ -19,15 +19,20 @@ class Project extends Model implements HasMedia
     use HasFactory, HasTranslations, InteractsWithMedia, SoftDeletes;
 
     /** @var array<int, string> */
-    protected $translatable = ['title', 'context', 'realization', 'result'];
+    protected $translatable = ['title', 'tagline', 'role', 'client', 'platform', 'context', 'realization', 'result'];
 
     /** @var list<string> */
     protected $fillable = [
         'title',
         'slug',
+        'tagline',
+        'role',
+        'client',
+        'platform',
         'context',
         'realization',
         'result',
+        'key_figures',
         'accent_color',
         'repo_url',
         'demo_url',
@@ -41,6 +46,7 @@ class Project extends Model implements HasMedia
     protected $casts = [
         'is_featured' => 'boolean',
         'is_open_source' => 'boolean',
+        'key_figures' => 'array',
         'status' => ProjectStatus::class,
     ];
 

@@ -18,9 +18,13 @@ trait SavesProjects
      */
     private function projectAttributes(ProjectRequest $request): array
     {
-        return $request->safe()->except([
-            'cover', 'gallery', 'domains', 'job_profiles', 'technologies', 'related_projects',
-        ]);
+        return [
+            ...$request->safe()->except([
+                'cover', 'gallery', 'domains', 'job_profiles', 'technologies', 'related_projects',
+            ]),
+            // Un formulaire sans chiffre clé n'envoie pas le champ : on vide la liste.
+            'key_figures' => array_values($request->validated('key_figures', [])),
+        ];
     }
 
     private function syncRelations(Project $project, ProjectRequest $request): void

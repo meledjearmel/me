@@ -148,6 +148,11 @@ export type Experience = {
     highlights?: ExperienceHighlight[];
 };
 
+export type ProjectKeyFigure = {
+    value: string;
+    label: Translatable;
+};
+
 export type Project = {
     id: number;
     title: Translatable;
@@ -155,6 +160,11 @@ export type Project = {
     context: Translatable;
     realization: Translatable;
     result: Translatable;
+    tagline: Translatable | null;
+    role: Translatable | null;
+    client: Translatable | null;
+    platform: Translatable | null;
+    key_figures: ProjectKeyFigure[] | null;
     accent_color: string | null;
     repo_url: string | null;
     demo_url: string | null;

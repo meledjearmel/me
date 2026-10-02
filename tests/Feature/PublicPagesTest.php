@@ -175,6 +175,22 @@ test('the project page exposes technology logos', function () {
     );
 });
 
+test('the project page exposes the case study details in the page language', function () {
+    Project::factory()->create([
+        'slug' => 'case-study',
+        'tagline' => ['fr' => 'Vendre ses logiciels', 'en' => 'Sell your software'],
+        'role' => ['fr' => 'Développeur principal', 'en' => 'Lead developer'],
+        'key_figures' => [['value' => '630+', 'label' => ['fr' => 'tests automatisés', 'en' => 'automated tests']]],
+    ]);
+
+    $this->get('/en/projects/case-study')->assertInertia(fn ($page) => $page
+        ->where('project.tagline', 'Sell your software')
+        ->where('project.role', 'Lead developer')
+        ->where('project.client', null)
+        ->where('project.key_figures.0', ['value' => '630+', 'label' => 'automated tests'])
+    );
+});
+
 test('the reviews page lists every approved review, not only the three shown on the home page', function () {
     Testimonial::factory()->count(5)->create(['status' => TestimonialStatus::Approved]);
     Testimonial::factory()->count(2)->create(['status' => TestimonialStatus::Pending]);

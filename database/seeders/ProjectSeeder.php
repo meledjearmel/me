@@ -38,11 +38,44 @@ class ProjectSeeder extends Seeder
             $project->technologies()->attach(Technology::query()->whereIn('name', $data['tech'])->pluck('id'));
         }
 
+        $this->fillCaseStudies();
+
         $this->relate('app-station', 'registra');
         $this->relate('gesmar', 'gesmar-verif');
         $this->relate('aps-connect', 'app-station');
         $this->relate('aps-connect', 'laravel-app-pairing');
         $this->relate('portfolio', 'me-admin');
+    }
+
+    /**
+     * Remplit l'étude de cas (accroche, rôle, cadre, plateforme, chiffres clés)
+     * des projets existants, sans écraser un champ déjà saisi dans l'admin.
+     * Appelée aussi par une migration de données pour la production.
+     */
+    public function fillCaseStudies(): void
+    {
+        foreach ($this->projects() as $data) {
+            $project = Project::query()->where('slug', $data['slug'])->first();
+
+            if ($project === null) {
+                continue;
+            }
+
+            foreach (['tagline', 'role', 'client', 'platform'] as $field) {
+                if ($data[$field] !== null && $project->getTranslations($field) === []) {
+                    $project->setTranslations($field, $data[$field]);
+                }
+            }
+
+            if (empty($project->key_figures) && ! empty($data['figures'])) {
+                $project->key_figures = array_map(fn (array $figure): array => [
+                    'value' => $figure[0],
+                    'label' => ['fr' => $figure[1], 'en' => $figure[2]],
+                ], $data['figures']);
+            }
+
+            $project->save();
+        }
     }
 
     /** Liaison symétrique : les deux sens sont attachés. */
@@ -65,6 +98,16 @@ class ProjectSeeder extends Seeder
         return [
             [
                 'slug' => 'app-station',
+                'tagline' => ['fr' => 'Distribuer ses logiciels et gérer leurs licences, au même endroit.', 'en' => 'Ship your software and manage its licences, in one place.'],
+                'role' => ['fr' => 'Conception et développement', 'en' => 'Design and development'],
+                'client' => ['fr' => 'Éditeur de logiciels', 'en' => 'Software publisher'],
+                'platform' => ['fr' => 'Web · API REST', 'en' => 'Web · REST API'],
+                'figures' => [
+                    ['630+', 'tests automatisés', 'automated tests'],
+                    ['75', 'composants Livewire', 'Livewire components'],
+                    ['24', 'modèles de données', 'data models'],
+                    ['11', 'permissions déléguées', 'delegated permissions'],
+                ],
                 'title' => ['fr' => 'App Station', 'en' => 'App Station'],
                 'featured' => true,
                 'accent' => '#3456c8',
@@ -86,6 +129,14 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'slug' => 'registra',
+                'tagline' => ['fr' => 'Savoir en temps réel si une licence est valide.', 'en' => 'Know in real time whether a licence is valid.'],
+                'role' => ['fr' => 'Conception et développement', 'en' => 'Design and development'],
+                'client' => ['fr' => 'Éditeur de logiciels', 'en' => 'Software publisher'],
+                'platform' => ['fr' => 'Web · API REST', 'en' => 'Web · REST API'],
+                'figures' => [
+                    ['126', 'fichiers de tests', 'test files'],
+                    ['76', 'migrations', 'migrations'],
+                ],
                 'title' => ['fr' => 'Registra', 'en' => 'Registra'],
                 'accent' => '#7c4dcc',
                 'domains' => ['dev', 'securite'],
@@ -106,6 +157,14 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'slug' => 'gesmar',
+                'tagline' => ['fr' => 'Du paiement du marin au certificat vérifié par QR code.', 'en' => "From the seafarer's payment to a QR-verified certificate."],
+                'role' => ['fr' => 'Conception et développement', 'en' => 'Design and development'],
+                'client' => ['fr' => 'Administration maritime nationale', 'en' => 'National maritime authority'],
+                'platform' => ['fr' => 'Web', 'en' => 'Web'],
+                'figures' => [
+                    ['9', 'profils métier', 'business roles'],
+                    ['29', 'cas de recette', 'acceptance cases'],
+                ],
                 'title' => ['fr' => 'GESMAR', 'en' => 'GESMAR'],
                 'accent' => '#0f8f8a',
                 'domains' => ['dev', 'securite'],
@@ -126,6 +185,10 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'slug' => 'gesmar-verif',
+                'tagline' => ['fr' => "Vérifier un certificat maritime d'un simple scan.", 'en' => 'Check a maritime certificate with a single scan.'],
+                'role' => ['fr' => 'Conception et développement', 'en' => 'Design and development'],
+                'client' => ['fr' => 'Administration maritime nationale', 'en' => 'National maritime authority'],
+                'platform' => ['fr' => 'Mobile (iOS · Android)', 'en' => 'Mobile (iOS · Android)'],
                 'title' => ['fr' => 'GesmarVerif', 'en' => 'GesmarVerif'],
                 'accent' => '#0b6bb5',
                 'domains' => ['dev', 'securite'],
@@ -146,6 +209,13 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'slug' => 'portalfy',
+                'tagline' => ['fr' => 'Payer son WiFi par mobile money, sans créer de compte.', 'en' => 'Pay for WiFi by mobile money, without an account.'],
+                'role' => ['fr' => 'Conception et développement', 'en' => 'Design and development'],
+                'client' => ['fr' => 'Exploitants de WiFi payant', 'en' => 'Paid WiFi operators'],
+                'platform' => ['fr' => 'Web · MikroTik', 'en' => 'Web · MikroTik'],
+                'figures' => [
+                    ['4', 'moyens de paiement', 'payment methods'],
+                ],
                 'title' => ['fr' => 'PortalFy', 'en' => 'PortalFy'],
                 'accent' => '#e0714f',
                 'domains' => ['dev', 'infra'],
@@ -166,6 +236,13 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'slug' => 'myicpe',
+                'tagline' => ['fr' => 'Les inspections environnementales, même hors connexion.', 'en' => 'Environmental inspections, even offline.'],
+                'role' => ['fr' => 'Conception et développement', 'en' => 'Design and development'],
+                'client' => ['fr' => 'Organisme public antipollution', 'en' => 'Public anti-pollution body'],
+                'platform' => ['fr' => 'Mobile (iOS · Android)', 'en' => 'Mobile (iOS · Android)'],
+                'figures' => [
+                    ['45', 'écrans environ', 'screens or so'],
+                ],
                 'title' => ['fr' => 'MyICPE', 'en' => 'MyICPE'],
                 'accent' => '#2f8f6b',
                 'domains' => ['dev'],
@@ -186,6 +263,13 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'slug' => 'pollumar',
+                'tagline' => ['fr' => "Suivre une formation, de l'exercice à l'évaluation.", 'en' => 'Follow training, from exercise to assessment.'],
+                'role' => ['fr' => 'Conception et développement', 'en' => 'Design and development'],
+                'client' => null,
+                'platform' => ['fr' => 'Web', 'en' => 'Web'],
+                'figures' => [
+                    ['31', 'fichiers de tests', 'test files'],
+                ],
                 'title' => ['fr' => 'Pollumar', 'en' => 'Pollumar'],
                 'accent' => '#c79a1f',
                 'domains' => ['dev'],
@@ -206,6 +290,14 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'slug' => 'corptrix',
+                'tagline' => ['fr' => 'Un ERP modulaire, activé module par module.', 'en' => 'A modular ERP, switched on module by module.'],
+                'role' => ['fr' => 'Conception et développement', 'en' => 'Design and development'],
+                'client' => ['fr' => 'Produit propre', 'en' => 'In-house product'],
+                'platform' => ['fr' => 'Web', 'en' => 'Web'],
+                'figures' => [
+                    ['21', 'fichiers de tests', 'test files'],
+                    ['2', 'versions de PHP testées', 'PHP versions tested'],
+                ],
                 'title' => ['fr' => 'Corptrix ERP', 'en' => 'Corptrix ERP'],
                 'accent' => '#5b6ee1',
                 'domains' => ['dev', 'securite'],
@@ -226,6 +318,10 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'slug' => 'regest',
+                'tagline' => ['fr' => 'Le parc, les licences et les interventions dans un seul outil.', 'en' => 'Fleet, licences and interventions in one tool.'],
+                'role' => ['fr' => 'Conception et développement', 'en' => 'Design and development'],
+                'client' => ['fr' => 'Projet personnel', 'en' => 'Personal project'],
+                'platform' => ['fr' => 'Web', 'en' => 'Web'],
                 'title' => ['fr' => 'Regest', 'en' => 'Regest'],
                 'accent' => '#d9603f',
                 'domains' => ['infra', 'dev'],
@@ -246,6 +342,13 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'slug' => 'laraprint',
+                'tagline' => ['fr' => "Imprimer depuis Laravel, sur n'importe quelle imprimante.", 'en' => 'Print from Laravel, on any printer.'],
+                'role' => ['fr' => 'Conception et développement', 'en' => 'Design and development'],
+                'client' => ['fr' => 'Open source', 'en' => 'Open source'],
+                'platform' => ['fr' => 'Paquet Laravel', 'en' => 'Laravel package'],
+                'figures' => [
+                    ['6', 'modes de connexion', 'connection types'],
+                ],
                 'open_source' => true,
                 'featured' => true,
                 'title' => ['fr' => 'Laraprint', 'en' => 'Laraprint'],
@@ -268,6 +371,10 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'slug' => 'aps-connect',
+                'tagline' => ['fr' => 'Licences et mises à jour en quelques lignes.', 'en' => 'Licences and updates in a few lines.'],
+                'role' => ['fr' => 'Conception et développement', 'en' => 'Design and development'],
+                'client' => ['fr' => 'Open source', 'en' => 'Open source'],
+                'platform' => ['fr' => 'Paquet Laravel', 'en' => 'Laravel package'],
                 'open_source' => true,
                 'title' => ['fr' => 'APS Connect', 'en' => 'APS Connect'],
                 'accent' => '#3aa0d8',
@@ -289,6 +396,10 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'slug' => 'aps-cli',
+                'tagline' => ['fr' => 'Publier ses versions sans quitter le terminal.', 'en' => 'Publish releases without leaving the terminal.'],
+                'role' => ['fr' => 'Conception et développement', 'en' => 'Design and development'],
+                'client' => ['fr' => 'Open source', 'en' => 'Open source'],
+                'platform' => ['fr' => 'CLI · npm', 'en' => 'CLI · npm'],
                 'open_source' => true,
                 'title' => ['fr' => 'APS CLI', 'en' => 'APS CLI'],
                 'accent' => '#2b7f5f',
@@ -310,6 +421,13 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'slug' => 'laravel-app-pairing',
+                'tagline' => ['fr' => 'Deux applications qui se font confiance, sans secret partagé.', 'en' => 'Two applications that trust each other, with no shared secret.'],
+                'role' => ['fr' => 'Conception et développement', 'en' => 'Design and development'],
+                'client' => ['fr' => 'Open source', 'en' => 'Open source'],
+                'platform' => ['fr' => 'Paquet Laravel', 'en' => 'Laravel package'],
+                'figures' => [
+                    ['0', 'secret partagé', 'shared secrets'],
+                ],
                 'open_source' => true,
                 'featured' => true,
                 'title' => ['fr' => 'Laravel App Pairing', 'en' => 'Laravel App Pairing'],
@@ -332,6 +450,13 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'slug' => 'infrastructure-reseau',
+                'tagline' => ['fr' => 'Le laboratoire où je teste avant de déployer.', 'en' => 'The lab where I test before deploying.'],
+                'role' => ['fr' => 'Conception et administration', 'en' => 'Design and administration'],
+                'client' => ['fr' => 'Projet personnel', 'en' => 'Personal project'],
+                'platform' => ['fr' => 'Serveurs · réseau', 'en' => 'Servers · network'],
+                'figures' => [
+                    ['10+', 'services exposés', 'exposed services'],
+                ],
                 'title' => ['fr' => 'Infrastructure et réseau', 'en' => 'Infrastructure and networking'],
                 'accent' => '#14b8a6',
                 'domains' => ['infra', 'securite'],
@@ -352,6 +477,13 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'slug' => 'fne-client',
+                'tagline' => ['fr' => 'Certifier ses factures électroniques auprès de la DGI.', 'en' => 'Certify electronic invoices with the tax authority.'],
+                'role' => ['fr' => 'Conception et développement', 'en' => 'Design and development'],
+                'client' => ['fr' => 'Open source', 'en' => 'Open source'],
+                'platform' => ['fr' => 'Paquet Laravel', 'en' => 'Laravel package'],
+                'figures' => [
+                    ['3', 'langues pour les erreurs', 'error-message languages'],
+                ],
                 'open_source' => true,
                 'title' => ['fr' => 'fne-client', 'en' => 'fne-client'],
                 'accent' => '#e0714f',
@@ -373,6 +505,13 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'slug' => 'portfolio',
+                'tagline' => ['fr' => 'Le site que vous lisez, et tout ce qui le fait tourner.', 'en' => 'The site you are reading, and everything behind it.'],
+                'role' => ['fr' => 'Conception et développement', 'en' => 'Design and development'],
+                'client' => ['fr' => 'Projet personnel', 'en' => 'Personal project'],
+                'platform' => ['fr' => 'Web · API', 'en' => 'Web · API'],
+                'figures' => [
+                    ['2', 'langues', 'languages'],
+                ],
                 'title' => ['fr' => 'Portfolio', 'en' => 'Portfolio'],
                 'accent' => '#ec4899',
                 'domains' => ['dev', 'design'],
@@ -393,6 +532,10 @@ class ProjectSeeder extends Seeder
             ],
             [
                 'slug' => 'me-admin',
+                'tagline' => ['fr' => 'Administrer ce portfolio depuis un téléphone.', 'en' => 'Run this portfolio from a phone.'],
+                'role' => ['fr' => 'Conception et développement', 'en' => 'Design and development'],
+                'client' => ['fr' => 'Projet personnel', 'en' => 'Personal project'],
+                'platform' => ['fr' => 'Mobile (Flutter)', 'en' => 'Mobile (Flutter)'],
                 'title' => ['fr' => 'Me Admin', 'en' => 'Me Admin'],
                 'accent' => '#6d28d9',
                 'domains' => ['dev'],

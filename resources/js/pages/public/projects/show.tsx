@@ -86,7 +86,10 @@ export default function ProjectShow({
                         aside={<ProjectMeta project={project} />}
                         lead={
                             <>
-                                <p>{firstSentence(project.context)}</p>
+                                <p>
+                                    {project.tagline ??
+                                        firstSentence(project.context)}
+                                </p>
                                 <Link
                                     href={path('projects')}
                                     className="pub-page-hero__back"

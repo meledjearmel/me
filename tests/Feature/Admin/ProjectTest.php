@@ -3,6 +3,7 @@
 use App\Models\Domain;
 use App\Models\Project;
 use App\Models\User;
+use Database\Seeders\ProjectSeeder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -109,4 +110,63 @@ test('a gallery image cannot be removed through another project', function () {
         ->assertNotFound();
 
     expect($otherProject->fresh()->getMedia('gallery'))->toHaveCount(1);
+});
+
+test('authenticated users can save the case study details of a project', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create();
+
+    $payload = fn (array $extra): array => [
+        'title' => $project->getTranslations('title'),
+        'slug' => $project->slug,
+        'context' => $project->getTranslations('context'),
+        'realization' => $project->getTranslations('realization'),
+        'result' => $project->getTranslations('result'),
+        'status' => $project->status->value,
+        'sort_order' => $project->sort_order,
+        ...$extra,
+    ];
+
+    $this->actingAs($user)->put(route('admin.projects.update', $project), $payload([
+        'tagline' => ['fr' => 'Vendre ses logiciels', 'en' => 'Sell your software'],
+        'role' => ['fr' => 'Développeur principal', 'en' => 'Lead developer'],
+        'client' => ['fr' => 'Projet personnel', 'en' => 'Personal project'],
+        'platform' => ['fr' => 'Web · API', 'en' => 'Web · API'],
+        'key_figures' => [
+            ['value' => '630+', 'label' => ['fr' => 'tests automatisés', 'en' => 'automated tests']],
+        ],
+    ]))->assertRedirect(route('admin.projects.index'));
+
+    $project->refresh();
+    expect($project->getTranslation('tagline', 'en'))->toBe('Sell your software');
+    expect($project->key_figures)->toBe([
+        ['value' => '630+', 'label' => ['fr' => 'tests automatisés', 'en' => 'automated tests']],
+    ]);
+
+    $this->actingAs($user)->put(route('admin.projects.update', $project), $payload([]));
+
+    expect($project->refresh()->key_figures)->toBe([]);
+});
+
+test('a key figure needs a value and both labels', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->post(route('admin.projects.store'), [
+        'key_figures' => [['value' => '', 'label' => ['fr' => 'tests']]],
+    ])->assertSessionHasErrors(['key_figures.0.value', 'key_figures.0.label.en']);
+});
+
+test('filling the case studies completes empty fields without overwriting edited ones', function () {
+    $edited = Project::factory()->create([
+        'slug' => 'app-station',
+        'tagline' => ['fr' => 'Mon accroche', 'en' => 'My tagline'],
+    ]);
+    $empty = Project::factory()->create(['slug' => 'registra']);
+
+    (new ProjectSeeder)->fillCaseStudies();
+
+    expect($edited->refresh()->getTranslation('tagline', 'fr'))->toBe('Mon accroche');
+    expect($edited->key_figures)->toHaveCount(4);
+    expect($empty->refresh()->getTranslation('tagline', 'fr'))->not->toBe('');
+    expect($empty->key_figures[0]['value'])->toBe('126');
 });

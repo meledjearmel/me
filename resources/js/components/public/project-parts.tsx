@@ -25,6 +25,11 @@ export function accentStyle(
 /** Panneau de faits dans le bandeau : domaines, technologies, code, démo. */
 export function ProjectMeta({ project }: { project: PublicProject }) {
     const t = useTranslations();
+    const identity = [
+        [t.projects.roleLabel, project.role],
+        [t.projects.clientLabel, project.client],
+        [t.projects.platformLabel, project.platform],
+    ].filter((entry): entry is [string, string] => Boolean(entry[1]));
 
     return (
         <motion.dl
@@ -33,6 +38,13 @@ export function ProjectMeta({ project }: { project: PublicProject }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
         >
+            {identity.map(([label, value]) => (
+                <div key={label}>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
+                </div>
+            ))}
+
             <div>
                 <dt>{t.projects.domainsLabel}</dt>
                 <dd>
@@ -195,6 +207,29 @@ export function ProjectStory({ project }: { project: PublicProject }) {
                     text={project.result}
                     className="pub-ledger__text pub-ledger__text--big"
                 />
+                {project.key_figures.length > 0 && (
+                    <dl
+                        className="pub-figures"
+                        aria-label={t.projects.keyFigures}
+                    >
+                        {project.key_figures.map((figure, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 24 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, amount: 0.6 }}
+                                transition={{
+                                    duration: 0.6,
+                                    delay: index * 0.08,
+                                    ease: [0.22, 1, 0.36, 1],
+                                }}
+                            >
+                                <dt>{figure.label}</dt>
+                                <dd>{figure.value}</dd>
+                            </motion.div>
+                        ))}
+                    </dl>
+                )}
             </LedgerSection>
 
             {project.technologies.length > 0 && (
