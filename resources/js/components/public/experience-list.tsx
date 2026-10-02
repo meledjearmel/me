@@ -107,21 +107,11 @@ export default function ExperienceList({
                                                     </p>
                                                 )}
 
-                                                {experience.highlights.length >
-                                                    0 && (
-                                                    <ul>
-                                                        {experience.highlights.map(
-                                                            (
-                                                                highlight,
-                                                                index,
-                                                            ) => (
-                                                                <li key={index}>
-                                                                    {highlight}
-                                                                </li>
-                                                            ),
-                                                        )}
-                                                    </ul>
-                                                )}
+                                                <Highlights
+                                                    highlights={
+                                                        experience.highlights
+                                                    }
+                                                />
                                             </div>
                                         </motion.div>
                                     )}
@@ -132,5 +122,69 @@ export default function ExperienceList({
                 </ul>
             </div>
         </section>
+    );
+}
+
+/** Réalisations visibles d'office ; le reste se déplie à la demande. */
+const VISIBLE_HIGHLIGHTS = 5;
+
+/**
+ * Les réalisations d'un poste : les premières d'abord (l'ordre de l'admin),
+ * les suivantes derrière un bouton pour ne pas noyer la lecture.
+ */
+function Highlights({ highlights }: { highlights: string[] }) {
+    const t = useTranslations();
+    const [showAll, setShowAll] = useState(false);
+
+    if (highlights.length === 0) {
+        return null;
+    }
+
+    const hiddenCount = highlights.length - VISIBLE_HIGHLIGHTS;
+
+    return (
+        <>
+            <ul>
+                {highlights
+                    .slice(0, VISIBLE_HIGHLIGHTS)
+                    .map((highlight, index) => (
+                        <li key={index}>{highlight}</li>
+                    ))}
+            </ul>
+
+            <AnimatePresence initial={false}>
+                {hiddenCount > 0 && showAll && (
+                    <motion.ul
+                        className="pub-exp__more"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{
+                            duration: 0.45,
+                            ease: [0.22, 1, 0.36, 1],
+                        }}
+                    >
+                        {highlights
+                            .slice(VISIBLE_HIGHLIGHTS)
+                            .map((highlight, index) => (
+                                <li key={index}>{highlight}</li>
+                            ))}
+                    </motion.ul>
+                )}
+            </AnimatePresence>
+
+            {hiddenCount > 0 && (
+                <button
+                    type="button"
+                    className="pub-exp__more-toggle"
+                    aria-expanded={showAll}
+                    onClick={() => setShowAll((current) => !current)}
+                >
+                    {showAll
+                        ? t.about.showFewerHighlights
+                        : t.about.showMoreHighlights(hiddenCount)}
+                </button>
+            )}
+        </>
     );
 }

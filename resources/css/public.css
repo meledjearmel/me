@@ -3064,6 +3064,24 @@ html.pub-scroll {
     margin: 0;
 }
 
+.pub-exp__panel-inner .pub-exp__more {
+    margin-top: -0.3rem;
+    overflow: hidden;
+}
+
+.pub-exp__more-toggle {
+    justify-self: start;
+    padding: 0 0 2px;
+    border: 0;
+    border-bottom: 1px solid currentColor;
+    background: none;
+    color: inherit;
+    font-family: var(--pub-font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+}
+
 .pub-exp__place {
     font-family: var(--pub-font-mono);
     font-size: 12px;
@@ -3215,6 +3233,40 @@ html.pub-scroll {
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02em;
     line-height: 1;
+}
+
+.pub-fact__status {
+    display: grid;
+    gap: 0.3rem;
+    font-family: var(--pub-font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+}
+
+.pub-fact__presence {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pub-fact__presence::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    flex: none;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.4;
+}
+
+.pub-fact__presence.is-online::before {
+    background: #3ecf8e;
+    opacity: 1;
+    box-shadow: 0 0 0 3px rgb(62 207 142 / 0.25);
+}
+
+.pub-fact__offset {
+    opacity: 0.65;
 }
 
 .pub-fact__cta {

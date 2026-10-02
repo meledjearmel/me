@@ -7,10 +7,23 @@ import { useLocale, useLocalizedPath, useTranslations } from '@/lib/i18n';
 
 const CITY_TIME_ZONE = 'Africa/Abidjan';
 
+/** Décalage d'Abidjan par rapport à UTC, en minutes (pas d'heure d'été). */
+const CITY_UTC_OFFSET = 0;
+
+/** Horaires où l'on peut compter sur une réponse rapide, en heure d'Abidjan. */
+const WORK_HOURS = { start: 8, end: 18 };
+
+type LocalTime = {
+    time: string;
+    isWorkingHours: boolean;
+    /** Écart avec le visiteur en minutes : positif quand Abidjan est en avance. */
+    visitorOffset: number;
+};
+
 /** Heure locale d'Abidjan, mise à jour chaque seconde (après l'hydratation). */
-function useLocalTime(): string | null {
+function useLocalTime(): LocalTime | null {
     const locale = useLocale();
-    const [time, setTime] = useState<string | null>(null);
+    const [time, setTime] = useState<LocalTime | null>(null);
 
     useEffect(() => {
         const formatter = new Intl.DateTimeFormat(locale, {
@@ -20,7 +33,32 @@ function useLocalTime(): string | null {
             hour12: false,
             timeZone: CITY_TIME_ZONE,
         });
-        const tick = () => setTime(formatter.format(new Date()));
+        const parts = new Intl.DateTimeFormat('en-US', {
+            weekday: 'short',
+            hour: 'numeric',
+            hour12: false,
+            timeZone: CITY_TIME_ZONE,
+        });
+        const tick = () => {
+            const now = new Date();
+            const cityParts = parts.formatToParts(now);
+            const hour = Number(
+                cityParts.find((part) => part.type === 'hour')?.value,
+            );
+            const weekday = cityParts.find(
+                (part) => part.type === 'weekday',
+            )?.value;
+
+            setTime({
+                time: formatter.format(now),
+                isWorkingHours:
+                    weekday !== 'Sat' &&
+                    weekday !== 'Sun' &&
+                    hour >= WORK_HOURS.start &&
+                    hour < WORK_HOURS.end,
+                visitorOffset: CITY_UTC_OFFSET + now.getTimezoneOffset(),
+            });
+        };
 
         tick();
 
@@ -30,6 +68,25 @@ function useLocalTime(): string | null {
     }, [locale]);
 
     return time;
+}
+
+/** « 2 h de moins que vous », avec les demi-heures quand le fuseau en a. */
+function formatOffset(
+    minutes: number,
+    t: ReturnType<typeof useTranslations>,
+    locale: string,
+): string {
+    if (minutes === 0) {
+        return t.about.offsetSame;
+    }
+
+    const hours = (Math.abs(minutes) / 60).toLocaleString(locale, {
+        maximumFractionDigits: 1,
+    });
+
+    return minutes > 0
+        ? t.about.offsetAhead(hours)
+        : t.about.offsetBehind(hours);
 }
 
 const card = (delay: number) => ({
@@ -87,8 +144,22 @@ export default function AboutFacts({
                             {t.about.timeLabel} · {t.about.timeCity}
                         </p>
                         <p className="pub-fact__clock" aria-live="off">
-                            {time ?? '--:--:--'}
+                            {time?.time ?? '--:--:--'}
                         </p>
+                        {time && (
+                            <div className="pub-fact__status">
+                                <p
+                                    className={`pub-fact__presence${time.isWorkingHours ? ' is-online' : ''}`}
+                                >
+                                    {time.isWorkingHours
+                                        ? t.about.statusOnline
+                                        : t.about.statusOffline}
+                                </p>
+                                <p className="pub-fact__offset">
+                                    {formatOffset(time.visitorOffset, t, locale)}
+                                </p>
+                            </div>
+                        )}
                     </motion.article>
 
                     <motion.button
@@ -114,10 +185,16 @@ export default function AboutFacts({
                             {t.about.distinction}
                         </span>
                         <span className="pub-fact__count" aria-live="polite">
-                            <strong>
-                                {congrats.total.toLocaleString(locale)}
-                            </strong>{' '}
-                            {t.about.congratsReceived}
+                            {congrats.total === 0 ? (
+                                t.about.congratsFirst
+                            ) : (
+                                <>
+                                    <strong>
+                                        {congrats.total.toLocaleString(locale)}
+                                    </strong>{' '}
+                                    {t.about.congratsReceived}
+                                </>
+                            )}
                         </span>
                     </motion.button>
 
