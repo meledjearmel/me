@@ -6,6 +6,9 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
+echo "Nettoyage des caches (Wayfinder doit lire les routes à jour pendant le build)"
+php artisan optimize:clear
+
 echo "→ Récupération du code"
 git pull --ff-only
 
