@@ -45,7 +45,9 @@ export default function Home({
                 jsonLd={[
                     {
                         '@type': 'Person',
+                        '@id': `${props.siteUrl}/#person`,
                         name: props.profile.name,
+                        email: `mailto:${props.profile.email}`,
                         jobTitle: props.profile.headline,
                         description: props.profile.bio_short,
                         url: `${props.siteUrl}/${locale}`,
@@ -60,6 +62,7 @@ export default function Home({
                         name: props.profile.name,
                         url: props.siteUrl,
                         inLanguage: locale,
+                        publisher: { '@id': `${props.siteUrl}/#person` },
                     },
                 ]}
             />

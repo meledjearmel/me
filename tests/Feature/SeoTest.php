@@ -31,3 +31,16 @@ test('private areas are marked noindex while public pages are not', function () 
     $this->get('/fr')->assertHeaderMissing('X-Robots-Tag');
     $this->get('/sitemap.xml')->assertHeaderMissing('X-Robots-Tag');
 });
+
+test('llms.txt summarises the profile and published projects for ai engines', function () {
+    Project::factory()->create(['status' => ProjectStatus::Published, 'slug' => 'visible']);
+    Project::factory()->create(['status' => ProjectStatus::Archived, 'slug' => 'hidden']);
+
+    $response = $this->get('/llms.txt');
+
+    $response->assertOk()->assertHeaderMissing('X-Robots-Tag');
+    expect($response->headers->get('Content-Type'))->toContain('text/plain');
+    $response->assertSee('# '.Profile::query()->first()->name, false);
+    $response->assertSee(config('app.url').'/fr/projects/visible', false);
+    $response->assertDontSee('hidden');
+});

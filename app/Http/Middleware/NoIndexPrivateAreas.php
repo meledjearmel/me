@@ -16,7 +16,7 @@ class NoIndexPrivateAreas
     {
         $response = $next($request);
 
-        if ($request->route('locale') === null && ! $request->is('sitemap.xml')) {
+        if ($request->route('locale') === null && ! $request->is('sitemap.xml', 'llms.txt')) {
             $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
         }
 

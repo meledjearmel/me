@@ -21,12 +21,27 @@ export default function About({
     congratulations: number;
     yearsOfExperience: number;
 }) {
-    const { props } = usePage<{ profile: PublicProfile }>();
+    const { props } = usePage<{ profile: PublicProfile; siteUrl: string }>();
     const t = useTranslations();
 
     return (
         <>
-            <Seo title={t.about.title} description={props.profile.bio_short} />
+            <Seo
+                title={t.about.title}
+                description={props.profile.bio_short}
+                type="profile"
+                jsonLd={{
+                    '@type': 'ProfilePage',
+                    mainEntity: {
+                        '@type': 'Person',
+                        '@id': `${props.siteUrl}/#person`,
+                        name: props.profile.name,
+                        jobTitle: props.profile.headline,
+                        description: props.profile.bio_full,
+                        image: props.profile.photo_url ?? undefined,
+                    },
+                }}
+            />
 
             <PublicShell overHero>
                 <AboutIntro years={yearsOfExperience} />
