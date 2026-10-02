@@ -20,8 +20,17 @@ class CvDownloadResource extends JsonResource
             'id' => $this->id,
             /** Profil métier dont le CV a été servi. */
             'job_profile_id' => $this->job_profile_id,
+            /**
+             * Libellé du profil métier dans les deux langues (`null` si le profil a été supprimé).
+             *
+             * @var array{fr: string, en: string}|null
+             */
             'job_profile_label' => $this->jobProfile?->getTranslations('label'),
-            /** Langue du CV servi : `fr` ou `en`. */
+            /**
+             * Langue du CV servi.
+             *
+             * @var 'fr'|'en'
+             */
             'locale' => $this->locale,
             /** Source du CV servi : `uploaded` (PDF importé) ou `generated`. */
             'source' => $this->source,
@@ -39,7 +48,11 @@ class CvDownloadResource extends JsonResource
             'utm_campaign' => $this->utm_campaign,
             /** Provenance résumée : la campagne, sinon le site d'origine, sinon `direct`. */
             'origin' => $this->origin(),
-            /** `desktop`, `mobile` ou `tablet`. */
+            /**
+             * Type d'appareil du visiteur.
+             *
+             * @var 'desktop'|'mobile'|'tablet'|null
+             */
             'device' => $this->device,
             'created_at' => $this->created_at,
         ];

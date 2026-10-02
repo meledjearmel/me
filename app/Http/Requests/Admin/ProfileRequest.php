@@ -32,8 +32,9 @@ class ProfileRequest extends FormRequest
             'social_links.linkedin' => ['nullable', 'url', 'max:255'],
             // Facultatif : un client qui ne l'envoie pas garde la valeur actuelle.
             'congratulation_notify_minutes' => ['sometimes', 'integer', 'min:0', 'max:1440'],
-            // CV proposé au téléchargement : profil métier principal (vide = le premier publié) et source prioritaire.
+            // Profil métier dont le CV est téléchargeable sur le site ; `null` : le premier profil publié.
             'cv_job_profile_id' => ['sometimes', 'nullable', 'integer', 'exists:job_profiles,id'],
+            // Source prioritaire du CV (téléchargement et envoi aux recruteurs) ; l'autre sert de repli.
             'cv_source' => ['sometimes', Rule::enum(CvSource::class)],
             'photo' => ['nullable', 'image', 'max:5120'],
             'cv_photo' => ['nullable', 'image', 'max:5120'],

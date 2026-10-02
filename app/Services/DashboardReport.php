@@ -54,12 +54,40 @@ class DashboardReport
      * Téléchargements du CV : volumes, et d'où viennent ceux des 30 derniers
      * jours (pays, provenance : campagne, sinon site d'origine, sinon direct).
      *
-     * @return array<string, mixed>
+     * @return array{
+     *     total: int,
+     *     period_days: int,
+     *     period: int,
+     *     with_email: int,
+     *     by_country: list<array{label: string, count: int}>,
+     *     by_origin: list<array{label: string, count: int}>,
+     * }
      */
     private function cvDownloads(): array
     {
         $since = Carbon::now()->subDays(self::VISIT_DAYS);
-        $top = fn (string $expression): array => CvDownload::query()
+
+        return [
+            'total' => CvDownload::query()->count(),
+            'period_days' => self::VISIT_DAYS,
+            'period' => CvDownload::query()->where('created_at', '>=', $since)->count(),
+            'with_email' => CvDownload::query()->whereNotNull('email')->count(),
+            /** @var list<array{label: string, count: int}> Les 5 premiers pays sur la période (« Lieu inconnu » sans localisation). */
+            'by_country' => $this->topCvDownloadsBy("coalesce(country, 'Lieu inconnu')", $since),
+            /** @var list<array{label: string, count: int}> Les 5 premières provenances sur la période : campagne, sinon site d'origine, sinon `direct`. */
+            'by_origin' => $this->topCvDownloadsBy("coalesce(utm_source, referrer_host, 'direct')", $since),
+        ];
+    }
+
+    /**
+     * Les 5 valeurs les plus fréquentes d'une expression SQL parmi les
+     * téléchargements du CV depuis une date.
+     *
+     * @return list<array{label: string, count: int}>
+     */
+    private function topCvDownloadsBy(string $expression, Carbon $since): array
+    {
+        return CvDownload::query()
             ->where('created_at', '>=', $since)
             ->selectRaw("{$expression} as label, count(*) as count")
             ->groupBy('label')
@@ -67,16 +95,8 @@ class DashboardReport
             ->limit(5)
             ->get()
             ->map(fn (CvDownload $row): array => ['label' => (string) $row->getAttribute('label'), 'count' => (int) $row->getAttribute('count')])
+            ->values()
             ->all();
-
-        return [
-            'total' => CvDownload::query()->count(),
-            'period_days' => self::VISIT_DAYS,
-            'period' => CvDownload::query()->where('created_at', '>=', $since)->count(),
-            'with_email' => CvDownload::query()->whereNotNull('email')->count(),
-            'by_country' => $top("coalesce(country, 'Lieu inconnu')"),
-            'by_origin' => $top("coalesce(utm_source, referrer_host, 'direct')"),
-        ];
     }
 
     /**
@@ -136,6 +156,7 @@ class DashboardReport
             'french' => (clone $inPeriod)->where('path', 'like', 'fr%')->count(),
             'english' => (clone $inPeriod)->where('path', 'like', 'en%')->count(),
             'daily' => $daily,
+            /** @var list<array{path: string, count: int}> */
             'top_pages' => $topPages,
         ];
     }
@@ -196,12 +217,15 @@ class DashboardReport
         $label = fn (Domain $domain): string => $domain->getTranslation('label', 'fr');
 
         return [
+            /** @var list<array{label: string, color: string|null, count: int}> */
             'projects_by_domain' => $domains->map(fn (Domain $domain): array => [
                 'label' => $label($domain), 'color' => $domain->color, 'count' => $domain->projects_count,
             ])->filter(fn (array $row): bool => $row['count'] > 0)->values()->all(),
+            /** @var list<array{label: string, color: string|null, count: int}> */
             'skills_by_domain' => $domains->map(fn (Domain $domain): array => [
                 'label' => $label($domain), 'color' => $domain->color, 'count' => $domain->skills_count,
             ])->filter(fn (array $row): bool => $row['count'] > 0)->values()->all(),
+            /** @var list<array{label: string, count: int}> */
             'technologies_by_category' => TechnologyCategory::query()
                 ->withCount('technologies')
                 ->get()
@@ -248,6 +272,7 @@ class DashboardReport
     private function recent(): array
     {
         return [
+            /** @var list<array{id: int, name: string, subject: string|null, is_new: bool, at: string}> */
             'contacts' => Contact::query()->latest()->limit(5)->get()
                 ->map(fn (Contact $contact): array => [
                     'id' => $contact->id,
@@ -256,6 +281,7 @@ class DashboardReport
                     'is_new' => $contact->status === ContactStatus::New,
                     'at' => $contact->created_at->toIso8601String(),
                 ])->all(),
+            /** @var list<array{id: int, name: string, company: string|null, type: 'freelance'|'hiring', subject: string|null, is_new: bool, at: string}> */
             'engagements' => Engagement::query()->latest()->limit(5)->get()
                 ->map(fn (Engagement $engagement): array => [
                     'id' => $engagement->id,
@@ -266,6 +292,7 @@ class DashboardReport
                     'is_new' => $engagement->status === EngagementStatus::New,
                     'at' => $engagement->created_at->toIso8601String(),
                 ])->all(),
+            /** @var list<array{id: int, name: string, excerpt: string, at: string}> */
             'testimonials' => Testimonial::query()->where('status', TestimonialStatus::Pending)->latest('submitted_at')->limit(5)->get()
                 ->map(fn (Testimonial $testimonial): array => [
                     'id' => $testimonial->id,

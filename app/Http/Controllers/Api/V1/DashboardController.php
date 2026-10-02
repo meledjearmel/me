@@ -15,7 +15,9 @@ class DashboardController extends Controller
      * Tableau de bord
      *
      * Ce qui attend une action, l'audience sur 30 jours, le contenu, sa répartition,
-     * sa santé et les derniers éléments reçus.
+     * sa santé, les derniers éléments reçus et les téléchargements du CV
+     * (`cv_downloads` : volumes, et sur 30 jours les 5 premiers pays et les
+     * 5 premières provenances, sous la forme `{label, count}`).
      */
     public function __invoke(DashboardReport $report): JsonResponse
     {

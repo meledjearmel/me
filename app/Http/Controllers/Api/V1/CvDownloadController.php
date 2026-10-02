@@ -20,6 +20,10 @@ class CvDownloadController extends Controller
 
     /**
      * Liste des téléchargements du CV
+     *
+     * Du plus récent au plus ancien. Un téléchargement est enregistré quand un
+     * visiteur (hors robots) télécharge le CV depuis la page contact du site ;
+     * un second téléchargement le même jour par le même visiteur n'est pas compté.
      */
     #[QueryParameter('search', description: 'Recherche dans l’email, la ville, le pays, le site d’origine et la campagne.', type: 'string')]
     #[QueryParameter('country_code', description: 'Code ISO du pays (`CI`, `FR`…).', type: 'string')]
