@@ -153,3 +153,15 @@ test('processing a video without ffmpeg keeps the original file', function () {
         ->poster_url->toBeNull()
         ->duration->toBeNull();
 });
+
+test('a video heavier than post_max_size returns to the form with an error', function () {
+    $user = User::factory()->create();
+    $testimonial = Testimonial::factory()->create();
+    $edit = route('admin.testimonials.edit', $testimonial);
+
+    $this->actingAs($user)
+        ->from($edit)
+        ->call('PUT', route('admin.testimonials.update', $testimonial), server: ['CONTENT_LENGTH' => PHP_INT_MAX])
+        ->assertRedirect($edit)
+        ->assertSessionHasErrors('video');
+});

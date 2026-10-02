@@ -42,7 +42,7 @@ export default function TestimonialEdit({
                     {...TestimonialController.update.form(testimonial.id)}
                     className="space-y-6"
                 >
-                    {({ processing, errors }) => (
+                    {({ processing, progress, errors }) => (
                         <FieldGroup>
                             <Field data-invalid={!!errors.author_name}>
                                 <FieldLabel htmlFor="author_name">
@@ -149,7 +149,7 @@ export default function TestimonialEdit({
                                     accept="video/*"
                                 />
                                 <p className="text-sm text-muted-foreground">
-                                    MP4, MOV ou WebM, 250 Mo max. Elle est
+                                    MP4, MOV ou WebM, 95 Mo max. Elle est
                                     compressée automatiquement après l'envoi
                                     (720p) et une image d'aperçu est extraite.
                                 </p>
@@ -243,7 +243,16 @@ export default function TestimonialEdit({
                                 <FieldError>{errors.project_id}</FieldError>
                             </Field>
 
-                            <Button disabled={processing}>Enregistrer</Button>
+                            <div className="flex items-center gap-3">
+                                <Button disabled={processing}>
+                                    Enregistrer
+                                </Button>
+                                {processing && progress?.percentage != null && (
+                                    <span className="text-sm text-muted-foreground">
+                                        Envoi… {progress.percentage} %
+                                    </span>
+                                )}
+                            </div>
                         </FieldGroup>
                     )}
                 </Form>

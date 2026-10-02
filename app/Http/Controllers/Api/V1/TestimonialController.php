@@ -46,7 +46,7 @@ class TestimonialController extends Controller
      * Modérer un témoignage
      *
      * Statut, projet associé, mise à la une (trois témoignages au maximum), accroche
-     * et vidéo. La vidéo s'envoie en `multipart/form-data` (250 Mo au plus) : elle est
+     * et vidéo. La vidéo s'envoie en `multipart/form-data` (95 Mo au plus, limite Cloudflare) : elle est
      * ensuite compressée en tâche de fond, l'aperçu et la durée arrivent après.
      */
     public function update(TestimonialRequest $request, Testimonial $testimonial): TestimonialResource
