@@ -3454,6 +3454,104 @@ html.pub-scroll {
 }
 
 /* ---------- Compétences : sommaire dans le bandeau ---------- */
+/* ---------- Barre flottante des domaines (page compétences) ---------- */
+.pub-dock {
+    position: fixed;
+    left: 50%;
+    bottom: clamp(18px, 3vw, 32px);
+    z-index: 80;
+    max-width: calc(100vw - 2 * 96px);
+    padding: 6px;
+    border: 1px solid rgb(255 255 255 / 0.55);
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--pub-surface) 60%, transparent);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    backdrop-filter: blur(18px) saturate(160%);
+    box-shadow:
+        0 18px 40px -20px rgb(0 0 0 / 0.45),
+        inset 0 1px 0 rgb(255 255 255 / 0.6);
+}
+
+.dark .pub-dock {
+    border-color: rgb(255 255 255 / 0.14);
+    background: rgb(22 26 58 / 0.6);
+    box-shadow:
+        0 18px 40px -16px rgb(0 0 0 / 0.8),
+        inset 0 1px 0 rgb(255 255 255 / 0.1);
+}
+
+.pub-dock ol {
+    display: flex;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    list-style: none;
+    scrollbar-width: none;
+}
+
+.pub-dock ol::-webkit-scrollbar {
+    display: none;
+}
+
+.pub-dock__item {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.95rem;
+    overflow: hidden;
+    border-radius: 999px;
+    color: inherit;
+    font-size: 0.88rem;
+    font-weight: 500;
+    white-space: nowrap;
+    text-decoration: none;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
+}
+
+.pub-dock__item:hover {
+    background: color-mix(in oklab, var(--domain) 16%, transparent);
+}
+
+.pub-dock__dot {
+    width: 8px;
+    height: 8px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--domain);
+}
+
+.pub-dock__item.is-active {
+    background: var(--domain);
+    color: #fff;
+}
+
+.pub-dock__item.is-active .pub-dock__dot {
+    background: #fff;
+}
+
+/* Avancée dans le domaine en cours. */
+.pub-dock__progress {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 3px;
+    background: rgb(255 255 255 / 0.85);
+    transform: scaleX(var(--dock-progress, 0));
+    transform-origin: left center;
+}
+
+@media (max-width: 707px) {
+    .pub-dock {
+        bottom: calc(clamp(22px, calc(4.5vw + 5px), 70px) + 56px);
+        max-width: calc(100vw - 32px);
+    }
+}
+
 .pub-jump,
 .pub-stats,
 .pub-meta {

@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import type { CSSProperties } from 'react';
+import DomainDock from '@/components/public/domain-dock';
 import Seo from '@/components/public/seo';
 import PageHero from '@/components/public/page-hero';
 import PublicShell from '@/components/public/public-shell';
@@ -82,6 +83,7 @@ export default function Skills({
                     skills={skills}
                     countLabel={t.skills.countLabel}
                 />
+                <DomainDock domains={filledDomains} />
 
                 <section className="pub-toolbox" aria-label={t.home.stackTitle}>
                     <h2 className="pub-featured__lead">{t.home.stackTitle}</h2>
