@@ -5350,6 +5350,98 @@ html.pub-scroll {
     border-color: var(--pub-gold);
 }
 
+/* ---------- Enregistrement d'un avis vidéo ---------- */
+.pub-recorder__open {
+    align-self: flex-start;
+    padding: 0 0 2px;
+    border: 0;
+    border-bottom: 1px solid currentColor;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.pub-recorder__open span {
+    color: #d1543b;
+}
+
+.pub-recorder {
+    display: grid;
+    gap: 12px;
+}
+
+.pub-recorder__screen {
+    width: 100%;
+    max-height: 46svh;
+    border-radius: 18px;
+    background: #000;
+    object-fit: contain;
+}
+
+/* l'aperçu en direct se lit comme un miroir, comme toutes les caméras frontales */
+.pub-recorder__screen--live {
+    transform: scaleX(-1);
+}
+
+.pub-recorder__clock {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-family: var(--pub-font-mono);
+    font-size: 13px;
+}
+
+.pub-recorder__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #d1543b;
+    animation: pub-recorder-blink 1s steps(2, start) infinite;
+}
+
+@keyframes pub-recorder-blink {
+    to {
+        visibility: hidden;
+    }
+}
+
+.pub-recorder__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+}
+
+.pub-recorder__actions .pub-contact__again {
+    margin-top: 0;
+}
+
+.pub-recorder__main {
+    padding: 10px 20px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--pub-gold);
+    color: #060606;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.pub-recorder__message {
+    margin: 0;
+    font-size: 15px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pub-recorder__dot {
+        animation: none;
+    }
+}
+
 .pub-drawer__field select {
     padding: 4px 0 14px;
     border: 0;

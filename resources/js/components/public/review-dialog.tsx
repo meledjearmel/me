@@ -1,8 +1,11 @@
 import { Form } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent } from 'react';
 import TestimonialSubmissionController from '@/actions/App/Http/Controllers/TestimonialSubmissionController';
 import PubDialog, { DialogDone } from '@/components/public/pub-dialog';
+import VideoRecorder, {
+    canRecordVideo,
+} from '@/components/public/video-recorder';
 import { useLocale, useTranslations } from '@/lib/i18n';
 
 /** Mêmes limites que le serveur : 95 Mo (plafond Cloudflare) et 3 minutes. */
@@ -42,6 +45,28 @@ export default function ReviewDialog({
     const locale = useLocale();
     const [sent, setSent] = useState(false);
     const [videoError, setVideoError] = useState<string | null>(null);
+    const videoInputRef = useRef<HTMLInputElement>(null);
+    const [canRecord, setCanRecord] = useState(false);
+    const [recorderOpen, setRecorderOpen] = useState(false);
+    const [recordedName, setRecordedName] = useState<string | null>(null);
+
+    // Lu après le montage : le rendu serveur ne connaît pas la caméra.
+    useEffect(() => setCanRecord(canRecordVideo()), []);
+
+    // La vidéo filmée rejoint le champ fichier : l'envoi reste le même.
+    const attachRecording = (file: File) => {
+        const input = videoInputRef.current;
+
+        if (input) {
+            const transfer = new DataTransfer();
+            transfer.items.add(file);
+            input.files = transfer.files;
+        }
+
+        setVideoError(null);
+        setRecordedName(file.name);
+        setRecorderOpen(false);
+    };
 
     // Refusée dans le navigateur avant tout envoi : inutile de téléverser 200 Mo
     // pour se voir répondre « trop lourd ».
@@ -49,6 +74,7 @@ export default function ReviewDialog({
         const input = event.currentTarget;
         const file = input.files?.[0];
         setVideoError(null);
+        setRecordedName(null);
 
         if (!file) {
             return;
@@ -77,6 +103,8 @@ export default function ReviewDialog({
             window.setTimeout(() => {
                 setSent(false);
                 setVideoError(null);
+                setRecorderOpen(false);
+                setRecordedName(null);
             }, 300);
         }
     };
@@ -165,19 +193,50 @@ export default function ReviewDialog({
                                 <label className="pub-drawer__field pub-drawer__field--wide">
                                     <span>{t.fab.yourVideo}</span>
                                     <input
+                                        ref={videoInputRef}
                                         type="file"
                                         name="video"
                                         accept="video/*"
                                         className="pub-drawer__file"
                                         onChange={checkVideo}
                                     />
-                                    <em>{t.fab.videoNote}</em>
+                                    <em>
+                                        {recordedName
+                                            ? t.fab.recordReady
+                                            : t.fab.videoNote}
+                                    </em>
                                     {(videoError || errors.video) && (
                                         <small>
                                             {videoError ?? errors.video}
                                         </small>
                                     )}
                                 </label>
+
+                                {canRecord && (
+                                    <div className="pub-drawer__field pub-drawer__field--wide">
+                                        {recorderOpen ? (
+                                            <VideoRecorder
+                                                onUse={attachRecording}
+                                                onClose={() =>
+                                                    setRecorderOpen(false)
+                                                }
+                                            />
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                className="pub-recorder__open"
+                                                onClick={() =>
+                                                    setRecorderOpen(true)
+                                                }
+                                            >
+                                                <span aria-hidden="true">
+                                                    ●
+                                                </span>{' '}
+                                                {t.fab.recordOpen}
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
                             </div>
 
                             <button

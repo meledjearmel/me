@@ -278,6 +278,16 @@ const dictionaries = {
             videoTooHeavy: 'Vidéo trop lourde : 95 Mo au maximum.',
             videoTooLong: 'Vidéo trop longue : 3 minutes au maximum.',
             uploading: (percent: number) => `Envoi… ${percent} %`,
+            recordOpen: 'Ou filmez votre avis maintenant',
+            recordStart: "Lancer l'enregistrement",
+            recordStop: 'Arrêter',
+            recordUse: 'Utiliser cette vidéo',
+            recordRetake: 'Recommencer',
+            recordCancel: 'Annuler',
+            recordReady:
+                "Votre vidéo filmée est prête : elle partira avec l'avis.",
+            cameraDenied:
+                "Impossible d'accéder à la caméra. Autorisez-la dans votre navigateur, ou choisissez un fichier.",
             reviewDoneTitle: 'Merci !',
             reviewDone:
                 'Votre avis a bien été reçu. Il sera publié après relecture.',
@@ -610,6 +620,16 @@ const dictionaries = {
             videoTooHeavy: 'Video too large: 95 MB at most.',
             videoTooLong: 'Video too long: 3 minutes at most.',
             uploading: (percent: number) => `Uploading… ${percent}%`,
+            recordOpen: 'Or film your review now',
+            recordStart: 'Start recording',
+            recordStop: 'Stop',
+            recordUse: 'Use this video',
+            recordRetake: 'Retake',
+            recordCancel: 'Cancel',
+            recordReady:
+                'Your recorded video is ready: it will be sent with your review.',
+            cameraDenied:
+                "Can't access the camera. Allow it in your browser, or pick a file instead.",
             reviewDoneTitle: 'Thank you!',
             reviewDone:
                 'Your review has been received. It will be published after review.',
