@@ -1,6 +1,9 @@
 import { Link } from '@inertiajs/react';
 import {
     BriefcaseBusiness,
+    CalendarClock,
+    CalendarCog,
+    CalendarDays,
     Disc3,
     FolderGit2,
     GraduationCap,
@@ -33,6 +36,9 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import { index as appointmentTypesIndex } from '@/routes/admin/appointment-types';
+import { index as appointmentsIndex } from '@/routes/admin/appointments';
+import { index as availabilityIndex } from '@/routes/admin/availability';
 import { index as celebrationsIndex } from '@/routes/admin/celebrations';
 import { index as congratulationsIndex } from '@/routes/admin/congratulations';
 import { index as contactsIndex } from '@/routes/admin/contacts';
@@ -98,6 +104,16 @@ const inboxNavItems: NavItem[] = [
     { title: 'Félicitations', href: congratulationsIndex(), icon: Heart },
 ];
 
+const bookingNavItems: NavItem[] = [
+    { title: 'Rendez-vous', href: appointmentsIndex(), icon: CalendarDays },
+    { title: 'Disponibilités', href: availabilityIndex(), icon: CalendarClock },
+    {
+        title: 'Types de rendez-vous',
+        href: appointmentTypesIndex(),
+        icon: CalendarCog,
+    },
+];
+
 export function AppSidebar() {
     return (
         <Sidebar collapsible="icon" variant="inset">
@@ -120,6 +136,7 @@ export function AppSidebar() {
                 <NavMain items={referenceNavItems} label="Référentiels" />
                 <NavMain items={musicNavItems} label="Musique" />
                 <NavMain items={inboxNavItems} label="Échanges" />
+                <NavMain items={bookingNavItems} label="Rendez-vous" />
             </SidebarContent>
 
             <SidebarFooter>

@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AiController;
+use App\Http\Controllers\Api\V1\AppointmentController;
+use App\Http\Controllers\Api\V1\AppointmentTypeController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\AvailabilityController;
 use App\Http\Controllers\Api\V1\CelebrationController;
 use App\Http\Controllers\Api\V1\CongratulationController;
 use App\Http\Controllers\Api\V1\ContactController;
@@ -56,6 +59,17 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('contacts', ContactController::class)->except('store');
         Route::apiResource('cv-downloads', CvDownloadController::class)->only(['index', 'show', 'destroy']);
         Route::apiResource('engagements', EngagementController::class)->except('store');
+        Route::apiResource('appointments', AppointmentController::class)->only(['index', 'show', 'destroy']);
+        Route::post('appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
+        Route::post('appointments/{appointment}/decline', [AppointmentController::class, 'decline'])->name('appointments.decline');
+        Route::apiResource('appointment-types', AppointmentTypeController::class);
+        Route::prefix('availability')->name('availability.')->group(function (): void {
+            Route::get('/', [AvailabilityController::class, 'index'])->name('index');
+            Route::patch('settings', [AvailabilityController::class, 'updateSettings'])->name('settings.update');
+            Route::post('rules', [AvailabilityController::class, 'storeRule'])->name('rules.store');
+            Route::post('blocked-periods', [AvailabilityController::class, 'storeBlockedPeriod'])->name('blocked-periods.store');
+            Route::delete('{schedule}', [AvailabilityController::class, 'destroy'])->name('destroy');
+        });
         Route::apiResource('testimonials', TestimonialController::class)->except('store');
         Route::delete('testimonials/{testimonial}/video', [TestimonialController::class, 'destroyVideo'])->name('testimonials.video.destroy');
         Route::apiResource('congratulations', CongratulationController::class)->only(['index', 'show']);

@@ -290,3 +290,66 @@ export type TrashItem = {
     title: string;
     deleted_at: string;
 };
+
+export type AppointmentLocation = 'video' | 'phone' | 'whatsapp' | 'in_person';
+
+export type AppointmentStatus =
+    | 'pending'
+    | 'confirmed'
+    | 'declined'
+    | 'cancelled';
+
+export type AppointmentType = {
+    id: number;
+    name: Translatable;
+    description: Partial<Translatable> | null;
+    duration_minutes: number;
+    locations: AppointmentLocation[];
+    is_active: boolean;
+    sort_order: number;
+    appointments_count?: number;
+};
+
+export type Appointment = {
+    id: number;
+    appointment_type_id: number | null;
+    appointment_type?: AppointmentType | null;
+    name: string;
+    email: string;
+    phone: string | null;
+    company: string | null;
+    location: AppointmentLocation;
+    message: string | null;
+    starts_at: string;
+    ends_at: string;
+    timezone: string | null;
+    locale: string;
+    status: AppointmentStatus;
+    meeting_details: string | null;
+    decline_reason: string | null;
+    confirmed_at: string | null;
+    cancelled_at: string | null;
+    created_at: string;
+};
+
+export type BookingSettings = {
+    is_enabled: boolean;
+    min_notice_hours: number;
+    horizon_days: number;
+    buffer_minutes: number;
+    video_link: string | null;
+};
+
+export type AvailabilityRule = {
+    id: number;
+    days: string[];
+    start: string;
+    end: string;
+};
+
+export type BlockedPeriod = {
+    id: number;
+    label: string | null;
+    from: string;
+    to: string;
+};

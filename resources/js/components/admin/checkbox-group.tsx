@@ -10,8 +10,8 @@ import {
 type CheckboxGroupProps = {
     label: string;
     name: string;
-    options: { id: number; label: string }[];
-    defaultSelectedIds?: number[];
+    options: { id: number | string; label: string }[];
+    defaultSelectedIds?: (number | string)[];
 };
 
 export default function CheckboxGroup({

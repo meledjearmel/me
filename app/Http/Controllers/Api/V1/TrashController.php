@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\TrashItemResource;
+use App\Models\Appointment;
+use App\Models\AppointmentType;
 use App\Models\Contact;
 use App\Models\Domain;
 use App\Models\Education;
@@ -47,6 +49,8 @@ class TrashController extends Controller
         'testimonials' => ['model' => Testimonial::class, 'label' => 'Avis'],
         'contacts' => ['model' => Contact::class, 'label' => 'Message de contact'],
         'engagements' => ['model' => Engagement::class, 'label' => 'Demande de collaboration'],
+        'appointments' => ['model' => Appointment::class, 'label' => 'Rendez-vous'],
+        'appointment-types' => ['model' => AppointmentType::class, 'label' => 'Type de rendez-vous'],
     ];
 
     /**
@@ -132,6 +136,8 @@ class TrashController extends Controller
             'projects' => (string) $model->title,
             'testimonials' => (string) $model->author_name,
             'contacts', 'engagements' => trim("{$model->name} — {$model->subject}"),
+            'appointments' => trim("{$model->name} — {$model->starts_at?->format('d/m/Y H:i')}"),
+            'appointment-types' => (string) $model->name,
             default => (string) $model->id,
         };
     }

@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\AiAssistController;
+use App\Http\Controllers\Admin\AppointmentController;
+use App\Http\Controllers\Admin\AppointmentTypeController;
+use App\Http\Controllers\Admin\AvailabilityController;
 use App\Http\Controllers\Admin\CelebrationController;
 use App\Http\Controllers\Admin\CongratulationController;
 use App\Http\Controllers\Admin\ContactController;
@@ -70,4 +73,16 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('contacts', ContactController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
     Route::resource('engagements', EngagementController::class)->only(['index', 'show', 'update', 'destroy']);
     Route::resource('cv-downloads', CvDownloadController::class)->only(['index', 'show', 'destroy']);
+
+    Route::resource('appointments', AppointmentController::class)->only(['index', 'show', 'destroy']);
+    Route::patch('appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
+    Route::patch('appointments/{appointment}/decline', [AppointmentController::class, 'decline'])->name('appointments.decline');
+    Route::resource('appointment-types', AppointmentTypeController::class)->except('show');
+    Route::prefix('availability')->name('availability.')->group(function () {
+        Route::get('/', [AvailabilityController::class, 'index'])->name('index');
+        Route::patch('settings', [AvailabilityController::class, 'updateSettings'])->name('settings.update');
+        Route::post('rules', [AvailabilityController::class, 'storeRule'])->name('rules.store');
+        Route::post('blocked-periods', [AvailabilityController::class, 'storeBlockedPeriod'])->name('blocked-periods.store');
+        Route::delete('{schedule}', [AvailabilityController::class, 'destroy'])->name('destroy');
+    });
 });
