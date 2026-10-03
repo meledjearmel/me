@@ -16,7 +16,8 @@ use Throwable;
 /**
  * Envoie les emails d'un rendez-vous en tâche de fond :
  * - demande reçue : accusé au visiteur et notification au propriétaire ;
- * - confirmé ou refusé : un email au visiteur.
+ * - confirmé, refusé ou rappel de la veille : un email au visiteur ;
+ * - annulé par le visiteur : confirmation au visiteur et notification au propriétaire.
  * Un échec d'envoi est journalisé et ne casse jamais la demande, déjà enregistrée.
  */
 class SendAppointmentMails implements ShouldQueue
@@ -27,7 +28,7 @@ class SendAppointmentMails implements ShouldQueue
     public int $tries = 1;
 
     /**
-     * @param  'requested'|'confirmed'|'declined'  $event
+     * @param  'requested'|'confirmed'|'declined'|'cancelled'|'reminder'  $event
      */
     public function __construct(public int $appointmentId, public string $event) {}
 
@@ -44,8 +45,8 @@ class SendAppointmentMails implements ShouldQueue
 
         $ownerEmail = Profile::query()->value('email');
 
-        if ($this->event === 'requested' && $ownerEmail !== null) {
-            $this->send($appointment, fn () => Mail::to($ownerEmail)->send(new AppointmentReceivedMail($appointment)));
+        if (in_array($this->event, ['requested', 'cancelled'], true) && $ownerEmail !== null) {
+            $this->send($appointment, fn () => Mail::to($ownerEmail)->send(new AppointmentReceivedMail($appointment, $this->event)));
         }
     }
 

@@ -230,5 +230,7 @@ class BookingCalendar
             'cancelled_at' => now(),
         ]);
         $this->release($appointment);
+
+        SendAppointmentMails::dispatch($appointment->id, 'cancelled');
     }
 }

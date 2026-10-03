@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\AppointmentBookingController;
+use App\Http\Controllers\AppointmentCancellationController;
 use App\Http\Controllers\CelebrationCongratulationController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CongratulationController;
@@ -61,6 +62,12 @@ Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, Lo
     Route::post('appointments', [AppointmentBookingController::class, 'store'])
         ->middleware('throttle:5,1')
         ->name('appointments.store');
+    Route::get('appointments/{token}/cancel', [AppointmentCancellationController::class, 'show'])
+        ->middleware('throttle:30,1')
+        ->name('appointments.cancel');
+    Route::post('appointments/{token}/cancel', [AppointmentCancellationController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('appointments.cancel.store');
     Route::post('engagements', [EngagementController::class, 'store'])
         ->middleware('throttle:5,1')
         ->name('engagements.store');

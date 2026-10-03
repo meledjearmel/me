@@ -14,7 +14,9 @@ use Illuminate\Mail\Mailables\Envelope;
 
 /**
  * Les emails envoyés au visiteur sur son rendez-vous : demande reçue, confirmé
- * (avec l'invitation .ics) ou refusé. Dates et heures dans son fuseau horaire.
+ * (avec l'invitation .ics), refusé, annulé ou rappel de la veille. Dates et
+ * heures dans son fuseau horaire ; tant que le rendez-vous tient, l'email porte
+ * le lien pour l'annuler.
  *
  * Comme l'accusé de réception, il ne reprend aucun texte libre saisi par le
  * visiteur (son message), pour ne pas servir de relais à du spam.
@@ -24,7 +26,7 @@ class AppointmentVisitorMail extends Mailable
     use Queueable;
 
     /**
-     * @param  'requested'|'confirmed'|'declined'  $kind
+     * @param  'requested'|'confirmed'|'declined'|'cancelled'|'reminder'  $kind
      */
     public function __construct(public Appointment $appointment, public string $kind)
     {
@@ -40,6 +42,8 @@ class AppointmentVisitorMail extends Mailable
         $subject = match ($this->kind) {
             'confirmed' => $isEnglish ? "Appointment confirmed — {$owner}" : "Rendez-vous confirmé — {$owner}",
             'declined' => $isEnglish ? "About your appointment request — {$owner}" : "Votre demande de rendez-vous — {$owner}",
+            'cancelled' => $isEnglish ? "Appointment cancelled — {$owner}" : "Rendez-vous annulé — {$owner}",
+            'reminder' => $isEnglish ? "Reminder: our appointment tomorrow — {$owner}" : "Rappel : notre rendez-vous de demain — {$owner}",
             default => $isEnglish ? "Appointment request received — {$owner}" : "Demande de rendez-vous bien reçue — {$owner}",
         };
 
@@ -65,6 +69,10 @@ class AppointmentVisitorMail extends Mailable
                 'typeName' => $appointment->appointmentType?->getTranslation('name', $appointment->locale),
                 'when' => $startsAt->isoFormat('dddd D MMMM YYYY, HH:mm').' – '.$endsAt->format('H:i'),
                 'timezone' => $timezone,
+                'cancelUrl' => in_array($this->kind, ['requested', 'confirmed', 'reminder'], true)
+                    ? route('appointments.cancel', [$appointment->locale, $appointment->cancel_token])
+                    : null,
+                'bookingUrl' => route('appointments.index', $appointment->locale),
             ],
         );
     }

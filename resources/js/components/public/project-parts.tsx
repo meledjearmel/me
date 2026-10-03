@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { motion, useTransform } from 'framer-motion';
 import { useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
+import BookingInvite from '@/components/public/booking-invite';
 import EngageDialog from '@/components/public/engage-dialog';
 import ScrollText from '@/components/public/scroll-text';
 import { TechIcon } from '@/components/public/tech-marquee';
@@ -279,6 +280,7 @@ export function ProjectCta() {
                         {t.projects.ctaButton}
                         <span aria-hidden="true">→</span>
                     </button>
+                    <BookingInvite className="pub-review-invite--start pub-project-cta__booking" />
                 </div>
             </div>
 

@@ -1,10 +1,17 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUp, Handshake, MessageSquareQuote, X } from 'lucide-react';
+import { router, usePage } from '@inertiajs/react';
+import {
+    ArrowUp,
+    CalendarDays,
+    Handshake,
+    MessageSquareQuote,
+    X,
+} from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import EngageDialog from '@/components/public/engage-dialog';
 import ReviewDialog from '@/components/public/review-dialog';
-import { useTranslations } from '@/lib/i18n';
+import { useLocalizedPath, useTranslations } from '@/lib/i18n';
 import { OPEN_REVIEW_EVENT, REVIEW_QUERY_PARAM } from '@/lib/review';
 import type { ReviewContext } from '@/lib/review';
 
@@ -27,6 +34,8 @@ type Action = {
  */
 export default function ActionMenu() {
     const t = useTranslations();
+    const path = useLocalizedPath();
+    const { bookingOpen } = usePage<{ bookingOpen?: boolean }>().props;
     const root = useRef<HTMLDivElement>(null);
     const [open, setOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
@@ -47,7 +56,9 @@ export default function ActionMenu() {
     // expérience prérempli ; le lien ?avis=1 (celui que j'envoie) l'ouvre dès l'arrivée.
     useEffect(() => {
         const openReview = (event: Event) => {
-            setReviewContext((event as CustomEvent<ReviewContext | undefined>).detail);
+            setReviewContext(
+                (event as CustomEvent<ReviewContext | undefined>).detail,
+            );
             setReviewOpen(true);
         };
 
@@ -104,6 +115,16 @@ export default function ActionMenu() {
             icon: <Handshake size={22} aria-hidden="true" />,
             run: () => setEngageOpen(true),
         },
+        ...(bookingOpen
+            ? [
+                  {
+                      key: 'booking',
+                      label: t.booking.cta,
+                      icon: <CalendarDays size={22} aria-hidden="true" />,
+                      run: () => router.visit(path('appointments')),
+                  },
+              ]
+            : []),
         ...(scrolled
             ? [
                   {
@@ -126,7 +147,10 @@ export default function ActionMenu() {
                 Math.PI) /
             180;
 
-        return { x: Math.cos(angle) * RADIUS, y: -Math.sin(angle) * RADIUS };
+        // Au-delà de trois actions, l'éventail s'élargit pour que les pastilles ne se chevauchent pas.
+        const radius = RADIUS + Math.max(0, actions.length - 3) * 30;
+
+        return { x: Math.cos(angle) * radius, y: -Math.sin(angle) * radius };
     };
 
     return (

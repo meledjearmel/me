@@ -53,6 +53,17 @@ const dictionaries = {
             done: "Merci ! Le créneau est réservé pour vous. Vous recevez un email de confirmation dès que je l'aurai validé.",
             again: 'Prendre un autre rendez-vous',
             change: 'Modifier',
+            cancelTitle: 'Annuler le rendez-vous',
+            cancelText:
+                'Un empêchement ? Annulez ici : le créneau sera libéré et je serai prévenu.',
+            cancelSubmit: 'Annuler ce rendez-vous',
+            cancelledTitle: 'Rendez-vous annulé',
+            cancelledText:
+                'Ce rendez-vous est annulé. Vous pouvez en reprendre un quand vous voulez.',
+            cancelPast:
+                'Ce rendez-vous est déjà passé : il ne peut plus être annulé.',
+            cta: 'Prendre rendez-vous',
+            ctaHint: 'Plutôt en parler de vive voix ?',
         },
         nav: {
             about: 'À propos',
@@ -452,6 +463,17 @@ const dictionaries = {
             done: "Thank you! The slot is held for you. You'll get a confirmation email as soon as I've approved it.",
             again: 'Book another meeting',
             change: 'Change',
+            cancelTitle: 'Cancel the meeting',
+            cancelText:
+                "Can't make it? Cancel here: the slot will be freed and I'll be notified.",
+            cancelSubmit: 'Cancel this meeting',
+            cancelledTitle: 'Meeting cancelled',
+            cancelledText:
+                'This meeting is cancelled. You can book another one whenever you like.',
+            cancelPast:
+                'This meeting has already taken place: it can no longer be cancelled.',
+            cta: 'Book a meeting',
+            ctaHint: 'Rather talk it through?',
         },
         nav: {
             about: 'About',

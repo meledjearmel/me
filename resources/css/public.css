@@ -6060,7 +6060,8 @@ html.pub-scroll {
     font-size: 1rem;
 }
 
-.pub-review-invite button {
+.pub-review-invite button,
+.pub-review-invite a {
     padding: 0;
     border: 0;
     background: none;
@@ -6090,6 +6091,10 @@ html.pub-scroll {
     margin-top: 0.5rem;
     font-size: 0.85rem;
     font-family: var(--pub-font-body);
+}
+
+.pub-project-cta__booking {
+    margin-top: 1.25rem;
 }
 
 .pub-review-invite--contact {

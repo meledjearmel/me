@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // Base GeoLite2 (localisation des téléchargements du CV).
 Schedule::command('geoip:update')->weekly()->mondays()->at('04:00');
+
+// Rappel des rendez-vous confirmés, la veille.
+Schedule::command('appointments:send-reminders')->hourly();
