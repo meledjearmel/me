@@ -232,3 +232,52 @@ export function useTestimonialReader() {
         ),
     };
 }
+
+/** 102 → « PT1M42S » (durée ISO 8601 attendue par schema.org). */
+function isoDuration(seconds: number): string {
+    return `PT${Math.floor(seconds / 60)}M${seconds % 60}S`;
+}
+
+/**
+ * Données structurées VideoObject des avis vidéo, pour les résultats vidéo de
+ * Google. Seules les vidéos traitées (avec aperçu) sont éligibles : Google exige
+ * une miniature.
+ */
+export function testimonialVideosJsonLd(
+    testimonials: PublicTestimonial[],
+    siteUrl: string,
+    label: string,
+): Record<string, unknown>[] {
+    const absolute = (value: string) =>
+        /^https?:\/\//.test(value)
+            ? value
+            : `${siteUrl.replace(/\/$/, '')}${value.startsWith('/') ? '' : '/'}${value}`;
+
+    return testimonials.flatMap(({ video, ...testimonial }) => {
+        if (!video?.poster_url || !video.uploaded_at) {
+            return [];
+        }
+
+        return [
+            {
+                '@type': 'VideoObject',
+                name: `${label} — ${testimonial.author_name}`,
+                description: (
+                    testimonial.highlight ?? testimonial.content
+                ).slice(0, 300),
+                thumbnailUrl: absolute(video.poster_url),
+                contentUrl: absolute(video.url),
+                uploadDate: video.uploaded_at,
+                duration:
+                    video.duration !== null
+                        ? isoDuration(video.duration)
+                        : undefined,
+                transcript: testimonial.video_transcript ?? undefined,
+                creator: {
+                    '@type': 'Person',
+                    name: testimonial.author_name,
+                },
+            },
+        ];
+    });
+}

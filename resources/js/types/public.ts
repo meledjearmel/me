@@ -98,6 +98,7 @@ export type TestimonialVideo = {
     duration: number | null;
     width: number | null;
     height: number | null;
+    uploaded_at: string | null;
 };
 
 export type PublicTestimonial = {

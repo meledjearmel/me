@@ -1,3 +1,4 @@
+import { usePage } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import Seo from '@/components/public/seo';
 import PageHero from '@/components/public/page-hero';
@@ -6,6 +7,7 @@ import { OPEN_REVIEW_EVENT } from '@/components/public/action-menu';
 import {
     initials,
     TestimonialExcerpt,
+    testimonialVideosJsonLd,
     useTestimonialReader,
 } from '@/components/public/testimonial-parts';
 import { useTranslations } from '@/lib/i18n';
@@ -19,12 +21,18 @@ export default function Testimonials({
 }) {
     const t = useTranslations();
     const reader = useTestimonialReader();
+    const { siteUrl } = usePage<{ siteUrl: string }>().props;
 
     return (
         <>
             <Seo
                 title={t.testimonials.pageTitle}
                 description={t.testimonials.lead}
+                jsonLd={testimonialVideosJsonLd(
+                    testimonials,
+                    siteUrl,
+                    t.testimonials.videoBadge,
+                )}
             />
 
             <PublicShell overHero>

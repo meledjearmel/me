@@ -77,7 +77,7 @@ class Testimonial extends Model implements HasMedia
      * La vidéo telle que l'affiche le site. La durée et les dimensions ne sont
      * connues qu'une fois la vidéo traitée par ffmpeg.
      *
-     * @return array{url: string, poster_url: string|null, duration: int|null, width: int|null, height: int|null}|null
+     * @return array{url: string, poster_url: string|null, duration: int|null, width: int|null, height: int|null, uploaded_at: string|null}|null
      */
     public function videoData(): ?array
     {
@@ -93,6 +93,7 @@ class Testimonial extends Model implements HasMedia
             'duration' => $video->getCustomProperty('duration'),
             'width' => $video->getCustomProperty('width'),
             'height' => $video->getCustomProperty('height'),
+            'uploaded_at' => $video->created_at?->toIso8601String(),
         ];
     }
 
