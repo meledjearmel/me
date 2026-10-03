@@ -34,8 +34,6 @@ class TestimonialResource extends JsonResource
             /**
              * Vidéo de l'avis. `duration` (secondes), `width` et `height` restent nuls
              * tant que la vidéo n'a pas été traitée.
-             *
-             * @var array{url: string, poster_url: string|null, duration: int|null, width: int|null, height: int|null, uploaded_at: string|null}|null
              */
             'video' => $this->videoData(),
             'status' => $this->status,
