@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
-use Zap\Exceptions\ScheduleConflictException;
 use Zap\Models\Schedule;
 
 /**
@@ -68,18 +67,15 @@ class Appointment extends Model
             $appointment->cancel_token ??= Str::random(48);
         });
 
-        // Restauré depuis la corbeille : il reprend son créneau, seulement si la plage
-        // est encore libre (sinon il revient sans bloquer l'agenda).
-        static::restored(function (Appointment $appointment): void {
+        // Restauré depuis la corbeille : il reprend son créneau. Si la plage est déjà
+        // occupée (autre rendez-vous, période bloquée), la restauration est refusée :
+        // ScheduleConflictException interrompt restore() avant l'enregistrement.
+        static::restoring(function (Appointment $appointment): void {
             if (! $appointment->status->holdsSlot() || $appointment->schedule_id !== null || $appointment->starts_at->isPast()) {
                 return;
             }
 
-            try {
-                app(BookingCalendar::class)->hold($appointment);
-            } catch (ScheduleConflictException) {
-                // Plage déjà occupée par un autre rendez-vous ou une période bloquée.
-            }
+            $appointment->schedule_id = app(BookingCalendar::class)->reserve($appointment)->id;
         });
     }
 

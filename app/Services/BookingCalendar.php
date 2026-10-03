@@ -167,15 +167,22 @@ class BookingCalendar
      */
     public function hold(Appointment $appointment): void
     {
-        $schedule = Zap::for($this->settings())
+        $appointment->forceFill(['schedule_id' => $this->reserve($appointment)->id])->save();
+    }
+
+    /**
+     * Réserve la plage du rendez-vous dans l'agenda, sans enregistrer le rendez-vous
+     * (utile avant sa restauration). Lève ScheduleConflictException si elle est prise.
+     */
+    public function reserve(Appointment $appointment): Schedule
+    {
+        return Zap::for($this->settings())
             ->named('Rendez-vous #'.$appointment->id)
             ->appointment()
             ->from($appointment->starts_at->toDateString())
             ->addPeriod($appointment->starts_at->format('H:i'), $appointment->ends_at->format('H:i'))
             ->withMetadata(['appointment_id' => $appointment->id])
             ->save();
-
-        $appointment->forceFill(['schedule_id' => $schedule->id])->save();
     }
 
     /** Libère le créneau (demande refusée, annulée ou supprimée). */

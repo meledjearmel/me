@@ -8,6 +8,7 @@ use App\Models\BookingSetting;
 use App\Models\User;
 use App\Services\BookingCalendar;
 use Carbon\CarbonImmutable;
+use Laravel\Sanctum\Sanctum;
 use Zap\Models\Schedule;
 
 beforeEach(function () {
@@ -152,7 +153,7 @@ test('a restored appointment takes its slot back when it is still free', functio
         ->and(Schedule::query()->count())->toBe(1);
 });
 
-test('a restored appointment stays without a slot when the range is taken', function () {
+test('an appointment cannot be restored when its range is taken', function () {
     $appointment = Appointment::factory()->create();
     app(BookingCalendar::class)->hold($appointment);
     $this->actingAs($this->user)->delete(route('admin.appointments.destroy', $appointment));
@@ -160,12 +161,25 @@ test('a restored appointment stays without a slot when the range is taken', func
     $other = Appointment::factory()->create(['starts_at' => $appointment->starts_at, 'ends_at' => $appointment->ends_at]);
     app(BookingCalendar::class)->hold($other);
 
-    $this->actingAs($this->user)->patch(route('admin.trash.restore', ['appointments', $appointment->id]));
+    $this->actingAs($this->user)
+        ->patch(route('admin.trash.restore', ['appointments', $appointment->id]))
+        ->assertRedirect(route('admin.trash.index'))
+        ->assertInertiaFlash('toast.type', 'error');
 
-    expect($appointment->fresh())
-        ->deleted_at->toBeNull()
-        ->schedule_id->toBeNull()
+    expect(Appointment::onlyTrashed()->find($appointment->id))->not->toBeNull()
         ->and(Schedule::query()->count())->toBe(1);
+});
+
+test('the API refuses to restore an appointment whose range is taken', function () {
+    $appointment = Appointment::factory()->create();
+    $appointment->delete();
+    app(BookingCalendar::class)->hold(Appointment::factory()->create(['starts_at' => $appointment->starts_at, 'ends_at' => $appointment->ends_at]));
+
+    Sanctum::actingAs($this->user);
+
+    $this->patchJson(route('api.v1.trash.restore', ['appointments', $appointment->id]))->assertStatus(409);
+
+    expect(Appointment::onlyTrashed()->find($appointment->id))->not->toBeNull();
 });
 
 test('deleting an appointment frees its slot', function () {

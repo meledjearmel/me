@@ -27,6 +27,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
+use Zap\Exceptions\ScheduleConflictException;
 
 /**
  * @tags Corbeille
@@ -108,7 +109,12 @@ class TrashController extends Controller
     {
         abort_unless(array_key_exists($type, self::TYPES), 404);
 
-        self::TYPES[$type]['model']::onlyTrashed()->findOrFail($id)->restore();
+        try {
+            self::TYPES[$type]['model']::onlyTrashed()->findOrFail($id)->restore();
+        } catch (ScheduleConflictException) {
+            // Un rendez-vous dont la plage a été reprise entre-temps reste dans la corbeille.
+            abort(409, __('Impossible de restaurer ce rendez-vous : sa plage est déjà occupée.'));
+        }
 
         return response()->noContent();
     }

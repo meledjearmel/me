@@ -26,6 +26,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
+use Zap\Exceptions\ScheduleConflictException;
 
 class TrashController extends Controller
 {
@@ -101,7 +102,14 @@ class TrashController extends Controller
     {
         abort_unless(array_key_exists($type, self::TYPES), 404);
 
-        self::TYPES[$type]['model']::onlyTrashed()->findOrFail($id)->restore();
+        try {
+            self::TYPES[$type]['model']::onlyTrashed()->findOrFail($id)->restore();
+        } catch (ScheduleConflictException) {
+            // Un rendez-vous dont la plage a été reprise entre-temps reste dans la corbeille.
+            Inertia::flash('toast', ['type' => 'error', 'message' => __('Impossible de restaurer ce rendez-vous : sa plage est déjà occupée.')]);
+
+            return to_route('admin.trash.index');
+        }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Élément restauré.')]);
 
