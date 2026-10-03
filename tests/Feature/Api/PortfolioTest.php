@@ -174,6 +174,21 @@ test('le profil se lit et se modifie', function () {
     $this->patchJson(route('api.v1.profile.update'), [])->assertUnprocessable();
 });
 
+test('les avis vidéo des visiteurs se désactivent depuis l\'API', function () {
+    $profile = Profile::factory()->create();
+
+    $this->getJson(route('api.v1.profile.show'))->assertJsonPath('testimonial_video_enabled', true);
+
+    $this->patchJson(route('api.v1.profile.update'), [
+        'name' => $profile->name,
+        'headline' => $profile->getTranslations('headline'),
+        'bio_short' => $profile->getTranslations('bio_short'),
+        'bio_full' => $profile->getTranslations('bio_full'),
+        'email' => $profile->email,
+        'testimonial_video_enabled' => false,
+    ])->assertOk()->assertJsonPath('testimonial_video_enabled', false);
+});
+
 test('les photos du profil s\'envoient en multipart', function () {
     Storage::fake('public');
     $profile = Profile::factory()->create();
