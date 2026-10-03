@@ -9,6 +9,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Exceptions\PostTooLargeException;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
+use Illuminate\Http\Middleware\ValidatePostSize;
 use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -23,11 +24,22 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
+        // La taille du corps est vérifiée dans les groupes, après le démarrage de la session :
+        // en middleware global, l'erreur « fichier trop lourd » renvoyée au formulaire était
+        // perdue faute de session. Le jeton CSRF arrive par l'en-tête X-XSRF-TOKEN, qui
+        // survit au corps vidé par PHP.
+        $middleware->remove(ValidatePostSize::class);
+
         $middleware->web(append: [
             HandleAppearance::class,
             NoIndexPrivateAreas::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
+            ValidatePostSize::class,
+        ]);
+
+        $middleware->api(append: [
+            ValidatePostSize::class,
         ]);
 
         $middleware->alias([
