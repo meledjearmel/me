@@ -3,9 +3,10 @@ import type { ChangeEvent } from 'react';
 import PubDialog from '@/components/public/pub-dialog';
 import VideoRecorder, {
     canRecordVideo,
+    formatVideoSize,
     resolveInfiniteDuration,
 } from '@/components/public/video-recorder';
-import { useTranslations } from '@/lib/i18n';
+import { useLocale, useTranslations } from '@/lib/i18n';
 
 /** Mêmes limites que le serveur : 95 Mo (plafond Cloudflare) et 3 minutes. */
 const MAX_VIDEO_BYTES = 95 * 1024 * 1024;
@@ -52,10 +53,6 @@ function formatDuration(seconds: number): string {
     const rounded = Math.round(seconds);
 
     return `${Math.floor(rounded / 60)}:${String(rounded % 60).padStart(2, '0')}`;
-}
-
-function formatSize(bytes: number): string {
-    return `${(bytes / (1024 * 1024)).toFixed(1).replace('.0', '')} Mo`;
 }
 
 type Selected = { file: File; url: string; duration: number | null };
@@ -106,6 +103,7 @@ function CameraIcon() {
  */
 export default function ReviewVideoField({ error }: { error?: string }) {
     const t = useTranslations();
+    const locale = useLocale();
     const inputRef = useRef<HTMLInputElement>(null);
     const [canRecord, setCanRecord] = useState(false);
     const [recording, setRecording] = useState(false);
@@ -210,7 +208,7 @@ export default function ReviewVideoField({ error }: { error?: string }) {
                             {[
                                 selected.duration !== null &&
                                     formatDuration(selected.duration),
-                                formatSize(selected.file.size),
+                                formatVideoSize(selected.file.size, locale),
                             ]
                                 .filter(Boolean)
                                 .join(' · ')}

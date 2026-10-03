@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useTranslations } from '@/lib/i18n';
+import { useLocale, useTranslations } from '@/lib/i18n';
 
 /** Même plafond que le formulaire : 3 minutes. */
 const MAX_SECONDS = 180;
@@ -49,6 +49,15 @@ export function canRecordVideo(): boolean {
     );
 }
 
+/** 13 002 342 octets → « 12,4 Mo » (ou « 12.4 MB » en anglais). */
+export function formatVideoSize(bytes: number, locale: string): string {
+    const megabytes = (bytes / (1024 * 1024)).toLocaleString(locale, {
+        maximumFractionDigits: 1,
+    });
+
+    return `${megabytes} ${locale === 'fr' ? 'Mo' : 'MB'}`;
+}
+
 function formatClock(seconds: number): string {
     return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 }
@@ -68,11 +77,13 @@ export default function VideoRecorder({
     onClose: () => void;
 }) {
     const t = useTranslations();
+    const locale = useLocale();
     const liveRef = useRef<HTMLVideoElement>(null);
     const streamRef = useRef<MediaStream | null>(null);
     const recorderRef = useRef<MediaRecorder | null>(null);
     const [phase, setPhase] = useState<Phase>('preview');
     const [elapsed, setElapsed] = useState(0);
+    const [recordedBytes, setRecordedBytes] = useState(0);
     const [recording, setRecording] = useState<File | null>(null);
     const [recordingUrl, setRecordingUrl] = useState<string | null>(null);
 
@@ -158,6 +169,7 @@ export default function VideoRecorder({
         recorder.ondataavailable = (event) => {
             if (event.data.size > 0) {
                 chunks.push(event.data);
+                setRecordedBytes((total) => total + event.data.size);
             }
         };
         recorder.onstop = () => {
@@ -175,6 +187,7 @@ export default function VideoRecorder({
 
         recorderRef.current = recorder;
         setElapsed(0);
+        setRecordedBytes(0);
         recorder.start(1000);
         setPhase('recording');
     };
@@ -248,6 +261,11 @@ export default function VideoRecorder({
                                 />
                             )}
                             {formatClock(elapsed)} / {formatClock(MAX_SECONDS)}
+                            {phase === 'recording' && (
+                                <span className="pub-vrec__size">
+                                    {formatVideoSize(recordedBytes, locale)}
+                                </span>
+                            )}
                         </p>
 
                         <button
@@ -281,6 +299,10 @@ export default function VideoRecorder({
             <div className="pub-vrec__actions">
                 {isReview && recording ? (
                     <>
+                        <p className="pub-vrec__meta">
+                            {formatClock(elapsed)} ·{' '}
+                            {formatVideoSize(recording.size, locale)}
+                        </p>
                         <button
                             type="button"
                             className="pub-vrec__primary"
