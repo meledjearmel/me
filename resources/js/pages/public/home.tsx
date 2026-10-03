@@ -60,7 +60,8 @@ export default function Home({
                     {
                         '@type': 'WebSite',
                         name: props.profile.name,
-                        url: props.siteUrl,
+                        alternateName: `${props.profile.name} — ${props.profile.headline}`,
+                        url: `${props.siteUrl}/`,
                         inLanguage: locale,
                         publisher: { '@id': `${props.siteUrl}/#person` },
                     },

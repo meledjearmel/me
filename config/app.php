@@ -64,7 +64,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://me.armeldev.xyz'),
+    'url' => env('APP_URL', 'https://armeldev.xyz'),
 
     /*
     |--------------------------------------------------------------------------

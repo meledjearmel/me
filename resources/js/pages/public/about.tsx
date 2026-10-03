@@ -6,7 +6,7 @@ import AboutStory from '@/components/public/about-story';
 import AboutYears from '@/components/public/about-years';
 import ExperienceList from '@/components/public/experience-list';
 import PublicShell from '@/components/public/public-shell';
-import { useTranslations } from '@/lib/i18n';
+import { useLocale, useTranslations } from '@/lib/i18n';
 import EducationList from '@/components/public/education-list';
 import type { PublicEducation, PublicExperience, PublicProfile } from '@/types';
 
@@ -23,13 +23,15 @@ export default function About({
 }) {
     const { props } = usePage<{ profile: PublicProfile; siteUrl: string }>();
     const t = useTranslations();
+    const locale = useLocale();
 
     return (
         <>
             <Seo
                 title={t.about.title}
-                description={props.profile.bio_short}
+                description={t.seo.about(props.profile.name)}
                 type="profile"
+                breadcrumbs={[[t.nav.about, `/${locale}/about`]]}
                 jsonLd={{
                     '@type': 'ProfilePage',
                     mainEntity: {

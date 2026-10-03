@@ -6,7 +6,7 @@ import PageHero from '@/components/public/page-hero';
 import PublicShell from '@/components/public/public-shell';
 import SkillDomains, { domainAnchor } from '@/components/public/skill-domains';
 import TechMarquee from '@/components/public/tech-marquee';
-import { useLocalizedPath, useTranslations } from '@/lib/i18n';
+import { useLocale, useLocalizedPath, useTranslations } from '@/lib/i18n';
 import type { PublicDomain, PublicSkill, PublicTechnology } from '@/types';
 
 export default function Skills({
@@ -19,6 +19,7 @@ export default function Skills({
     technologies: PublicTechnology[];
 }) {
     const t = useTranslations();
+    const locale = useLocale();
     const path = useLocalizedPath();
     const filledDomains = domains.filter((domain) =>
         skills.some((skill) => skill.domain.id === domain.id),
@@ -26,7 +27,11 @@ export default function Skills({
 
     return (
         <>
-            <Seo title={t.skills.title} description={t.skills.hook} />
+            <Seo
+                title={t.skills.title}
+                description={t.seo.skills}
+                breadcrumbs={[[t.nav.skills, `/${locale}/skills`]]}
+            />
 
             <PublicShell overHero>
                 <PageHero

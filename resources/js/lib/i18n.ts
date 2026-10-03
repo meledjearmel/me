@@ -4,6 +4,17 @@ export type Locale = 'fr' | 'en';
 
 const dictionaries = {
     fr: {
+        seo: {
+            home: 'Accueil',
+            pagesLabel: 'Pages du site',
+            about: (name: string) =>
+                `Le parcours de ${name} : expériences, formation et façon de travailler.`,
+            skills: "Les langages, frameworks et outils que j'utilise au quotidien pour concevoir et livrer des applications web et mobiles.",
+            projects:
+                'Une sélection de projets web et mobiles, chacun raconté en trois temps : contexte, réalisation, résultat.',
+            contact:
+                'Un projet, une mission ou une question ? Écrivez-moi, je réponds sous 48 heures.',
+        },
         nav: {
             about: 'À propos',
             skills: 'Compétences',
@@ -321,6 +332,17 @@ const dictionaries = {
         },
     },
     en: {
+        seo: {
+            home: 'Home',
+            pagesLabel: 'Site pages',
+            about: (name: string) =>
+                `${name}'s background: experience, education and way of working.`,
+            skills: 'The languages, frameworks and tools I use every day to design and ship web and mobile apps.',
+            projects:
+                'A selection of web and mobile projects, each told in three acts: context, build, result.',
+            contact:
+                "A project, a role or a question? Write to me, I'll reply within 48 hours.",
+        },
         nav: {
             about: 'About',
             skills: 'Skills',

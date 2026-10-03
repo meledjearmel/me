@@ -92,7 +92,11 @@ export default function Contact() {
 
     return (
         <>
-            <Seo title={t.contact.title} description={t.contactDrawer.intro} />
+            <Seo
+                title={t.contact.title}
+                description={t.seo.contact}
+                breadcrumbs={[[t.nav.contact, `/${locale}/contact`]]}
+            />
 
             <PublicShell overHero>
                 <PageHero

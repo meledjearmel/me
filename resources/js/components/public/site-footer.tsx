@@ -1,10 +1,11 @@
+import { Link } from '@inertiajs/react';
 import { motion, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import Skyline from '@/components/public/skyline';
 import Letters from '@/components/public/letters';
 import { useViewportProgress } from '@/hooks/use-viewport-progress';
 import { useContactDrawer } from '@/lib/contact-drawer';
-import { useTranslations } from '@/lib/i18n';
+import { useLocalizedPath, useTranslations } from '@/lib/i18n';
 import type { PublicProfile } from '@/types';
 import { usePrefersReducedMotion } from '@/hooks/use-media-query';
 
@@ -24,6 +25,7 @@ export default function SiteFooter({
     socialLinks: PublicProfile['social_links'];
 }) {
     const t = useTranslations();
+    const path = useLocalizedPath();
     const { open } = useContactDrawer();
     const reduceMotion = usePrefersReducedMotion();
     const headlineRef = useRef<HTMLDivElement>(null);
@@ -41,6 +43,16 @@ export default function SiteFooter({
     ].filter((link): link is { label: string; href: string } =>
         Boolean(link.href),
     );
+
+    // Les pages principales, avec les mêmes intitulés que le menu : Google y
+    // choisit souvent les liens qu'il affiche sous le résultat (sitelinks).
+    const pages = [
+        { label: t.nav.about, href: path('about') },
+        { label: t.nav.skills, href: path('skills') },
+        { label: t.nav.projects, href: path('projects') },
+        { label: t.testimonials.pageTitle, href: path('testimonials') },
+        { label: t.nav.contact, href: path('contact') },
+    ];
 
     return (
         <footer className="pub-footer">
@@ -87,6 +99,14 @@ export default function SiteFooter({
                 <p>
                     © {new Date().getFullYear()} {name}. {t.footer.rights}
                 </p>
+
+                <nav aria-label={t.seo.pagesLabel}>
+                    {pages.map((page) => (
+                        <Link key={page.href} href={page.href}>
+                            {page.label}
+                        </Link>
+                    ))}
+                </nav>
 
                 <nav aria-label={t.footer.linksLabel}>
                     {links.map((link) => (

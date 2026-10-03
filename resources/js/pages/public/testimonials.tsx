@@ -10,7 +10,7 @@ import {
     testimonialVideosJsonLd,
     useTestimonialReader,
 } from '@/components/public/testimonial-parts';
-import { useTranslations } from '@/lib/i18n';
+import { useLocale, useTranslations } from '@/lib/i18n';
 import type { PublicTestimonial } from '@/types';
 
 /** Tous les avis approuvés, en colonnes qui s'ajustent à la longueur de chacun. */
@@ -20,6 +20,7 @@ export default function Testimonials({
     testimonials: PublicTestimonial[];
 }) {
     const t = useTranslations();
+    const locale = useLocale();
     const reader = useTestimonialReader();
     const { siteUrl } = usePage<{ siteUrl: string }>().props;
 
@@ -28,6 +29,9 @@ export default function Testimonials({
             <Seo
                 title={t.testimonials.pageTitle}
                 description={t.testimonials.lead}
+                breadcrumbs={[
+                    [t.testimonials.pageTitle, `/${locale}/testimonials`],
+                ]}
                 jsonLd={testimonialVideosJsonLd(
                     testimonials,
                     siteUrl,

@@ -5,7 +5,7 @@ import Seo from '@/components/public/seo';
 import PageHero from '@/components/public/page-hero';
 import ProjectCard from '@/components/public/project-card';
 import PublicShell from '@/components/public/public-shell';
-import { useTranslations } from '@/lib/i18n';
+import { useLocale, useTranslations } from '@/lib/i18n';
 import type { PublicDomain, PublicProject } from '@/types';
 
 /** Comme sur l'accueil : rangées alternées large / étroit, la dernière seule prend toute la largeur. */
@@ -27,6 +27,7 @@ export default function ProjectsIndex({
     domains: PublicDomain[];
 }) {
     const t = useTranslations();
+    const locale = useLocale();
     // Un domaine (son id), les projets open source, ou tous les projets (null).
     const [activeFilter, setActiveFilter] = useState<
         number | 'open-source' | null
@@ -72,7 +73,11 @@ export default function ProjectsIndex({
 
     return (
         <>
-            <Seo title={t.projects.title} description={t.projects.hook} />
+            <Seo
+                title={t.projects.title}
+                description={t.seo.projects}
+                breadcrumbs={[[t.nav.projects, `/${locale}/projects`]]}
+            />
 
             <PublicShell overHero>
                 <PageHero

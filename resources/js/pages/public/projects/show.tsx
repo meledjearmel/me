@@ -42,6 +42,10 @@ export default function ProjectShow({
                 description={project.result}
                 image={project.cover_url}
                 type="article"
+                breadcrumbs={[
+                    [t.projects.title, `/${locale}/projects`],
+                    [project.title, `/${locale}/projects/${project.slug}`],
+                ]}
                 jsonLd={[
                     {
                         '@type': 'CreativeWork',
@@ -54,21 +58,6 @@ export default function ProjectShow({
                             .map((technology) => technology.name)
                             .join(', '),
                         codeRepository: project.repo_url ?? undefined,
-                    },
-                    {
-                        '@type': 'BreadcrumbList',
-                        itemListElement: [
-                            [t.projects.title, `/${locale}/projects`],
-                            [
-                                project.title,
-                                `/${locale}/projects/${project.slug}`,
-                            ],
-                        ].map(([name, item], index) => ({
-                            '@type': 'ListItem',
-                            position: index + 1,
-                            name,
-                            item: `${props.siteUrl}${item}`,
-                        })),
                     },
                 ]}
             />

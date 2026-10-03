@@ -1,6 +1,6 @@
 import { Head, usePage } from '@inertiajs/react';
 import type { ReactNode } from 'react';
-import { useLocale } from '@/lib/i18n';
+import { useLocale, useTranslations } from '@/lib/i18n';
 import type { PublicProfile } from '@/types';
 
 type JsonLd = Record<string, unknown>;
@@ -11,6 +11,8 @@ type SeoProps = {
     image?: string | null;
     type?: 'website' | 'article' | 'profile';
     jsonLd?: JsonLd | JsonLd[];
+    /** Fil d'Ariane après l'accueil : [nom, chemin]. Aide Google à lire la structure du site. */
+    breadcrumbs?: [string, string][];
     children?: ReactNode;
 };
 
@@ -27,6 +29,7 @@ export default function Seo({
     image,
     type = 'website',
     jsonLd,
+    breadcrumbs,
     children,
 }: SeoProps) {
     const { props, url } = usePage<{
@@ -50,7 +53,27 @@ export default function Seo({
     const canonical = absolute(path);
     const imageUrl = absolute(image ?? DEFAULT_IMAGE);
     const fullTitle = `${title} - ${props.profile.name}`;
-    const blocks = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+    const t = useTranslations();
+    const blocks = jsonLd
+        ? Array.isArray(jsonLd)
+            ? [...jsonLd]
+            : [jsonLd]
+        : [];
+
+    if (breadcrumbs) {
+        blocks.push({
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+                [t.seo.home, `/${locale}`] as [string, string],
+                ...breadcrumbs,
+            ].map(([name, item], index) => ({
+                '@type': 'ListItem',
+                position: index + 1,
+                name,
+                item: absolute(item),
+            })),
+        });
+    }
 
     return (
         <Head title={title}>
