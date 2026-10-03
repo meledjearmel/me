@@ -2,11 +2,9 @@
 
 namespace App\Models;
 
-use App\Enums\CvSource;
 use Database\Factories\ProfileFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -32,29 +30,12 @@ class Profile extends Model implements HasMedia
         'phone',
         'location',
         'social_links',
-        'congratulation_notify_minutes',
-        'cv_job_profile_id',
-        'cv_source',
-        'testimonial_video_enabled',
     ];
 
     /** @var array<string, string> */
     protected $casts = [
         'social_links' => 'array',
-        'congratulation_notify_minutes' => 'integer',
-        'cv_source' => CvSource::class,
-        'testimonial_video_enabled' => 'boolean',
     ];
-
-    /**
-     * Profil métier dont le CV est proposé au téléchargement sur le site.
-     *
-     * @return BelongsTo<JobProfile, $this>
-     */
-    public function cvJobProfile(): BelongsTo
-    {
-        return $this->belongsTo(JobProfile::class, 'cv_job_profile_id');
-    }
 
     public function registerMediaCollections(): void
     {

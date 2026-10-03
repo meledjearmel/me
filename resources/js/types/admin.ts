@@ -254,10 +254,6 @@ export type Profile = {
     phone: string | null;
     location: string | null;
     social_links: { github?: string; linkedin?: string } | null;
-    congratulation_notify_minutes: number;
-    cv_job_profile_id: number | null;
-    cv_source: 'uploaded' | 'generated';
-    testimonial_video_enabled: boolean;
     cv_last_name?: string | null;
     cv_first_name?: string | null;
     photo_url?: string | null;
@@ -332,12 +328,17 @@ export type Appointment = {
     created_at: string;
 };
 
-export type BookingSettings = {
-    is_enabled: boolean;
-    min_notice_hours: number;
-    horizon_days: number;
-    buffer_minutes: number;
-    video_link: string | null;
+export type SiteSettings = {
+    contact_opens_drawer: boolean;
+    testimonial_video_enabled: boolean;
+    cv_job_profile_id: number | null;
+    cv_source: 'uploaded' | 'generated';
+    congratulation_notify_minutes: number;
+    booking_enabled: boolean;
+    booking_min_notice_hours: number;
+    booking_horizon_days: number;
+    booking_buffer_minutes: number;
+    booking_video_link: string | null;
 };
 
 export type AvailabilityRule = {

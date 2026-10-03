@@ -5,8 +5,8 @@ use App\Jobs\SendAppointmentMails;
 use App\Mail\AppointmentReceivedMail;
 use App\Mail\AppointmentVisitorMail;
 use App\Models\Appointment;
-use App\Models\BookingSetting;
 use App\Models\Profile;
+use App\Models\SiteSetting;
 use App\Services\BookingCalendar;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Mail;
@@ -16,7 +16,7 @@ use Zap\Models\Schedule;
 beforeEach(function () {
     $this->travelTo(CarbonImmutable::parse('2026-10-05 08:00'));
     Profile::factory()->create(['email' => 'armel@example.test']);
-    BookingSetting::factory()->create();
+    SiteSetting::factory()->bookable()->create();
 });
 
 test('the cancellation page shows the appointment from its link', function () {

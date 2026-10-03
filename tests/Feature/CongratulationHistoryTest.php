@@ -6,6 +6,7 @@ use App\Models\Celebration;
 use App\Models\Congratulation;
 use App\Models\Counter;
 use App\Models\Profile;
+use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
@@ -68,7 +69,8 @@ test('notifications are throttled per reason', function () {
 });
 
 test('the notification delay is read from the profile', function () {
-    Profile::factory()->create(['congratulation_notify_minutes' => 60]);
+    Profile::factory()->create();
+    SiteSetting::factory()->create(['congratulation_notify_minutes' => 60]);
 
     $this->postJson('/fr/congratulations', ['count' => 1]);
     $this->travel(30)->minutes();
@@ -83,7 +85,8 @@ test('the notification delay is read from the profile', function () {
 });
 
 test('a zero delay notifies every congratulation', function () {
-    Profile::factory()->create(['congratulation_notify_minutes' => 0]);
+    Profile::factory()->create();
+    SiteSetting::factory()->create(['congratulation_notify_minutes' => 0]);
 
     $this->postJson('/fr/congratulations', ['count' => 1]);
     $this->postJson('/fr/congratulations', ['count' => 1]);

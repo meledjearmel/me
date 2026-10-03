@@ -68,7 +68,6 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::patch('site-settings', [SiteSettingController::class, 'update'])->name('site-settings.update');
         Route::prefix('availability')->name('availability.')->group(function (): void {
             Route::get('/', [AvailabilityController::class, 'index'])->name('index');
-            Route::patch('settings', [AvailabilityController::class, 'updateSettings'])->name('settings.update');
             Route::post('rules', [AvailabilityController::class, 'storeRule'])->name('rules.store');
             Route::post('blocked-periods', [AvailabilityController::class, 'storeBlockedPeriod'])->name('blocked-periods.store');
             Route::delete('{schedule}', [AvailabilityController::class, 'destroy'])->name('destroy');

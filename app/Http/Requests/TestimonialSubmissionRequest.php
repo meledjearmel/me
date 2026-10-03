@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\ProjectStatus;
-use App\Models\Profile;
+use App\Models\SiteSetting;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -28,7 +28,7 @@ class TestimonialSubmissionRequest extends FormRequest
             // Vidéo facultative, refusée si je l'ai désactivée dans l'admin (Profil). Mêmes
             // formats que dans l'admin ; 95 Mo car Cloudflare refuse les corps de plus de
             // 100 Mo. La durée (3 min) est vérifiée dans le navigateur.
-            'video' => [Rule::prohibitedIf(fn (): bool => ! Profile::query()->value('testimonial_video_enabled')), 'nullable', 'file', 'mimetypes:video/mp4,video/quicktime,video/webm,video/x-matroska,video/3gpp', 'max:97280'],
+            'video' => [Rule::prohibitedIf(fn (): bool => ! SiteSetting::current()->testimonial_video_enabled), 'nullable', 'file', 'mimetypes:video/mp4,video/quicktime,video/webm,video/x-matroska,video/3gpp', 'max:97280'],
             // Piège anti-spam : un humain ne le voit ni ne le remplit jamais.
             'website' => ['prohibited'],
         ];

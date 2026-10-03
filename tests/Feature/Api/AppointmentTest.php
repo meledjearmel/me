@@ -3,7 +3,7 @@
 use App\Enums\AppointmentStatus;
 use App\Models\Appointment;
 use App\Models\AppointmentType;
-use App\Models\BookingSetting;
+use App\Models\SiteSetting;
 use App\Models\User;
 use App\Services\BookingCalendar;
 use Carbon\CarbonImmutable;
@@ -12,7 +12,7 @@ use Laravel\Sanctum\Sanctum;
 beforeEach(function () {
     $this->travelTo(CarbonImmutable::parse('2026-10-05 08:00'));
     Sanctum::actingAs(User::factory()->create());
-    BookingSetting::factory()->create();
+    SiteSetting::factory()->bookable()->create();
 });
 
 test('la liste des rendez-vous est paginée et filtrable par statut', function () {
@@ -70,15 +70,7 @@ test('les disponibilités se lisent et se modifient par l’API', function () {
         ->assertCreated()
         ->assertJsonPath('blocked_periods.0.from', '2026-10-20');
 
-    $this->patchJson(route('api.v1.availability.settings.update'), [
-        'is_enabled' => true,
-        'min_notice_hours' => 48,
-        'horizon_days' => 15,
-        'buffer_minutes' => 0,
-        'video_link' => null,
-    ])->assertOk()->assertJsonPath('settings.min_notice_hours', 48);
-
     $this->getJson(route('api.v1.availability.index'))
         ->assertOk()
-        ->assertJsonStructure(['settings', 'rules', 'blocked_periods']);
+        ->assertJsonStructure(['rules', 'blocked_periods']);
 });

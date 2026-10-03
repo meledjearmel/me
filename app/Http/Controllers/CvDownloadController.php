@@ -7,7 +7,7 @@ use App\Http\Requests\CvDownloadRequest;
 use App\Jobs\SendPushNotification;
 use App\Models\CvDownload;
 use App\Models\JobProfile;
-use App\Models\Profile;
+use App\Models\SiteSetting;
 use App\Services\CvGenerator;
 use App\Services\GeoLocator;
 use App\Services\VisitorContext;
@@ -49,7 +49,7 @@ class CvDownloadController extends Controller
      */
     public static function primaryJobProfile(): ?JobProfile
     {
-        $chosen = Profile::query()->value('cv_job_profile_id');
+        $chosen = SiteSetting::current()->cv_job_profile_id;
 
         return ($chosen ? JobProfile::query()->published()->find($chosen) : null)
             ?? JobProfile::query()->published()->orderBy('sort_order')->first();

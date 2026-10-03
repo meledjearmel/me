@@ -30,7 +30,7 @@ class AppointmentController extends Controller
     {
         return Inertia::render('admin/appointments/show', [
             'appointment' => $appointment->load('appointmentType'),
-            'defaultVideoLink' => $this->calendar->settings()->video_link,
+            'defaultVideoLink' => $this->calendar->settings()->booking_video_link,
         ]);
     }
 

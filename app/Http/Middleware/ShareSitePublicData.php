@@ -51,6 +51,8 @@ class ShareSitePublicData
             // La prise de rendez-vous est ouverte : la page et ses raccourcis s'affichent.
             // Le bouton « Contact » ouvre le tiroir latéral, ou mène à la page Contact.
             'contactOpensDrawer' => fn () => SiteSetting::current()->contact_opens_drawer,
+            // Les visiteurs peuvent joindre ou filmer une vidéo avec leur avis.
+            'testimonialVideoEnabled' => fn () => SiteSetting::current()->testimonial_video_enabled,
             'bookingOpen' => fn () => app(BookingCalendar::class)->isOpen(),
             // Profils proposés dans la fenêtre « Embauche » : chacun a son CV.
             'cvProfiles' => fn () => JobProfile::query()

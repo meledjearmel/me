@@ -9,7 +9,6 @@ export type PublicProfile = {
     social_links: { github?: string; linkedin?: string } | null;
     photo_url: string | null;
     /** Les visiteurs peuvent joindre ou filmer une vidéo avec leur avis. */
-    testimonial_video_enabled: boolean;
 };
 
 export type PublicDomain = {

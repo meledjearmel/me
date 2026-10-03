@@ -81,7 +81,7 @@ class Congratulation extends Model
      */
     private static function shouldNotify(int|string $reasonKey): bool
     {
-        $minutes = Profile::query()->value('congratulation_notify_minutes') ?? self::DEFAULT_NOTIFY_EVERY_MINUTES;
+        $minutes = SiteSetting::current()->congratulation_notify_minutes ?? self::DEFAULT_NOTIFY_EVERY_MINUTES;
 
         if ($minutes <= 0) {
             return true;

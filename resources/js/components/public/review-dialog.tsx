@@ -5,7 +5,6 @@ import PubDialog, { DialogDone } from '@/components/public/pub-dialog';
 import ReviewVideoField from '@/components/public/review-video-field';
 import { useLocale, useTranslations } from '@/lib/i18n';
 import type { ReviewContext } from '@/lib/review';
-import type { PublicProfile } from '@/types';
 
 /**
  * « Laisser un avis » : le visiteur écrit son avis, avec une vidéo s'il le
@@ -23,8 +22,10 @@ export default function ReviewDialog({
     const t = useTranslations();
     const locale = useLocale();
     const [sent, setSent] = useState(false);
-    const videoEnabled = usePage<{ profile: PublicProfile }>().props.profile
-        .testimonial_video_enabled;
+    // Réglable dans l'admin (Réglages du site).
+    const videoEnabled =
+        usePage<{ testimonialVideoEnabled?: boolean }>().props
+            .testimonialVideoEnabled !== false;
     const change = (next: boolean) => {
         onOpenChange(next);
 

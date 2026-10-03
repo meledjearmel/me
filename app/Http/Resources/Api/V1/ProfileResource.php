@@ -36,14 +36,6 @@ class ProfileResource extends JsonResource
              * @var array{github?: string|null, linkedin?: string|null}|null
              */
             'social_links' => $this->social_links,
-            /** Au plus une notification push de félicitations par motif sur ce nombre de minutes (0 = à chaque envoi). */
-            'congratulation_notify_minutes' => $this->congratulation_notify_minutes,
-            /** Profil métier dont le CV est téléchargeable sur le site (`null` : le premier publié). */
-            'cv_job_profile_id' => $this->cv_job_profile_id,
-            /** Source prioritaire du CV téléchargeable : `uploaded` (PDF importé) ou `generated`, l'autre en repli. */
-            'cv_source' => $this->cv_source,
-            /** Les visiteurs peuvent joindre ou filmer une vidéo avec leur avis. */
-            'testimonial_video_enabled' => $this->testimonial_video_enabled,
             'photo_url' => $this->getFirstMediaUrl('photo') ?: null,
             'cv_photo_url' => $this->getFirstMediaUrl('cv_photo') ?: null,
             /** Bande audio du site uploadée (`null` si absente : le lecteur utilise la piste par défaut). */

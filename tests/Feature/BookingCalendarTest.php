@@ -2,7 +2,7 @@
 
 use App\Models\Appointment;
 use App\Models\AppointmentType;
-use App\Models\BookingSetting;
+use App\Models\SiteSetting;
 use App\Services\BookingCalendar;
 use Carbon\CarbonImmutable;
 use Zap\Exceptions\ScheduleConflictException;
@@ -11,10 +11,9 @@ beforeEach(function () {
     // Un lundi matin : mercredi est dans l'horizon, et au-delà du délai minimum.
     $this->travelTo(CarbonImmutable::parse('2026-10-05 08:00'));
 
-    $this->settings = BookingSetting::factory()->create([
-        'min_notice_hours' => 24,
-        'horizon_days' => 30,
-        'buffer_minutes' => 0,
+    $this->settings = SiteSetting::factory()->bookable()->create([
+        'booking_min_notice_hours' => 24,
+        'booking_horizon_days' => 30,
     ]);
     $this->type = AppointmentType::factory()->create(['duration_minutes' => 60]);
     $this->calendar = app(BookingCalendar::class);
@@ -76,7 +75,7 @@ test('a blocked period removes the slots of those days', function () {
 });
 
 test('the buffer leaves a pause between two slots', function () {
-    $this->settings->update(['buffer_minutes' => 30]);
+    $this->settings->update(['booking_buffer_minutes' => 30]);
 
     expect(startTimes($this->calendar->availableStarts($this->type, CarbonImmutable::parse('2026-10-07'))))->toBe(['09:00', '10:30']);
 });

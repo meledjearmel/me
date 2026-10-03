@@ -4,7 +4,7 @@ use App\Enums\AppointmentLocation;
 use App\Enums\AppointmentStatus;
 use App\Models\Appointment;
 use App\Models\AppointmentType;
-use App\Models\BookingSetting;
+use App\Models\SiteSetting;
 use App\Models\User;
 use App\Services\BookingCalendar;
 use Carbon\CarbonImmutable;
@@ -14,7 +14,7 @@ use Zap\Models\Schedule;
 beforeEach(function () {
     $this->travelTo(CarbonImmutable::parse('2026-10-05 08:00'));
     $this->user = User::factory()->create();
-    BookingSetting::factory()->create(['video_link' => 'https://meet.example.test/armel']);
+    SiteSetting::factory()->bookable()->create();
 });
 
 test('guests are redirected to the login page', function () {
@@ -57,15 +57,7 @@ test('an appointment type needs at least one known location', function () {
     ])->assertSessionHasErrors('locations.0');
 });
 
-test('settings, weekly ranges and blocked periods can be managed', function () {
-    $this->actingAs($this->user)->patch(route('admin.availability.settings.update'), [
-        'is_enabled' => '1',
-        'min_notice_hours' => 12,
-        'horizon_days' => 60,
-        'buffer_minutes' => 10,
-        'video_link' => 'https://meet.example.test/new',
-    ])->assertSessionHasNoErrors();
-
+test('weekly ranges and blocked periods can be managed', function () {
     $this->actingAs($this->user)->post(route('admin.availability.rules.store'), [
         'days' => ['monday', 'friday'],
         'start' => '09:00',
@@ -80,8 +72,7 @@ test('settings, weekly ranges and blocked periods can be managed', function () {
 
     $calendar = app(BookingCalendar::class);
 
-    expect(BookingSetting::current()->only(['is_enabled', 'min_notice_hours', 'horizon_days']))->toBe(['is_enabled' => true, 'min_notice_hours' => 12, 'horizon_days' => 60])
-        ->and($calendar->availabilityRules())->toHaveCount(1)
+    expect($calendar->availabilityRules())->toHaveCount(1)
         ->and($calendar->blockedPeriods())->toHaveCount(1);
 
     $this->actingAs($this->user)->delete(route('admin.availability.destroy', $calendar->availabilityRules()->first()['id']));

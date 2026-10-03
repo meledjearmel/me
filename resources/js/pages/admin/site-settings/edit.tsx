@@ -1,8 +1,10 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, Link } from '@inertiajs/react';
+import type { ReactNode } from 'react';
 import SiteSettingController from '@/actions/App/Http/Controllers/Admin/SiteSettingController';
 import FormSelect from '@/components/admin/form-select';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     Field,
     FieldDescription,
@@ -10,12 +12,65 @@ import {
     FieldGroup,
     FieldLabel,
 } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { index as availabilityIndex } from '@/routes/admin/availability';
 import { edit as pageEdit } from '@/routes/admin/site-settings';
+import type { JobProfile, SiteSettings } from '@/types';
+
+function Section({
+    title,
+    description,
+    children,
+}: {
+    title: string;
+    description?: ReactNode;
+    children: ReactNode;
+}) {
+    return (
+        <section className="grid gap-4 rounded-lg border p-4">
+            <div>
+                <h2 className="font-semibold">{title}</h2>
+                {description && (
+                    <p className="text-sm text-muted-foreground">
+                        {description}
+                    </p>
+                )}
+            </div>
+            {children}
+        </section>
+    );
+}
+
+/** Case à cocher envoyée même décochée (valeur 0). */
+function Toggle({
+    name,
+    label,
+    defaultChecked,
+}: {
+    name: string;
+    label: string;
+    defaultChecked: boolean;
+}) {
+    return (
+        <Field orientation="horizontal">
+            <input type="hidden" name={name} value="0" />
+            <Checkbox
+                id={name}
+                name={name}
+                value="1"
+                defaultChecked={defaultChecked}
+            />
+            <FieldLabel htmlFor={name}>{label}</FieldLabel>
+        </Field>
+    );
+}
 
 export default function SiteSettingsEdit({
     settings,
+    jobProfiles,
 }: {
-    settings: { contact_opens_drawer: boolean };
+    settings: SiteSettings;
+    jobProfiles: Pick<JobProfile, 'id' | 'label'>[];
 }) {
     return (
         <>
@@ -24,7 +79,7 @@ export default function SiteSettingsEdit({
             <div className="flex max-w-3xl flex-col gap-6 p-4">
                 <Heading
                     title="Réglages du site"
-                    description="Comment le site public se comporte pour les visiteurs"
+                    description="Comment le site fonctionne pour les visiteurs"
                 />
 
                 <Form
@@ -34,35 +89,281 @@ export default function SiteSettingsEdit({
                 >
                     {({ processing, errors }) => (
                         <FieldGroup>
-                            <Field data-invalid={!!errors.contact_opens_drawer}>
-                                <FieldLabel htmlFor="contact_opens_drawer">
-                                    Bouton « Contact » du menu
-                                </FieldLabel>
-                                <FormSelect
-                                    id="contact_opens_drawer"
-                                    name="contact_opens_drawer"
-                                    defaultValue={
-                                        settings.contact_opens_drawer
-                                            ? '1'
-                                            : '0'
-                                    }
+                            <Section title="Site">
+                                <Field
+                                    data-invalid={!!errors.contact_opens_drawer}
                                 >
-                                    <option value="1">
-                                        Ouvre un tiroir latéral avec le
-                                        formulaire, sans quitter la page
-                                    </option>
-                                    <option value="0">
-                                        Mène à la page Contact
-                                    </option>
-                                </FormSelect>
+                                    <FieldLabel htmlFor="contact_opens_drawer">
+                                        Bouton « Contact » du menu
+                                    </FieldLabel>
+                                    <FormSelect
+                                        id="contact_opens_drawer"
+                                        name="contact_opens_drawer"
+                                        defaultValue={
+                                            settings.contact_opens_drawer
+                                                ? '1'
+                                                : '0'
+                                        }
+                                    >
+                                        <option value="1">
+                                            Ouvre un tiroir latéral avec le
+                                            formulaire, sans quitter la page
+                                        </option>
+                                        <option value="0">
+                                            Mène à la page Contact
+                                        </option>
+                                    </FormSelect>
+                                    <FieldDescription>
+                                        S'applique aussi au grand titre du pied
+                                        de page.
+                                    </FieldDescription>
+                                    <FieldError>
+                                        {errors.contact_opens_drawer}
+                                    </FieldError>
+                                </Field>
+                            </Section>
+
+                            <Section title="Avis">
+                                <Toggle
+                                    name="testimonial_video_enabled"
+                                    label="Autoriser les avis vidéo"
+                                    defaultChecked={
+                                        settings.testimonial_video_enabled
+                                    }
+                                />
                                 <FieldDescription>
-                                    S'applique aussi au grand titre du pied de
-                                    page.
+                                    Les visiteurs peuvent joindre une vidéo à
+                                    leur avis ou se filmer depuis la page.
+                                    Désactivé, le formulaire ne propose plus que
+                                    le texte. Les vidéos déjà reçues restent
+                                    affichées.
                                 </FieldDescription>
                                 <FieldError>
-                                    {errors.contact_opens_drawer}
+                                    {errors.testimonial_video_enabled}
                                 </FieldError>
-                            </Field>
+                            </Section>
+
+                            <Section title="CV téléchargeable">
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <Field
+                                        data-invalid={
+                                            !!errors.cv_job_profile_id
+                                        }
+                                    >
+                                        <FieldLabel htmlFor="cv_job_profile_id">
+                                            Profil métier principal
+                                        </FieldLabel>
+                                        <FormSelect
+                                            id="cv_job_profile_id"
+                                            name="cv_job_profile_id"
+                                            defaultValue={
+                                                settings.cv_job_profile_id ?? ''
+                                            }
+                                        >
+                                            <option value="">
+                                                Le premier profil publié
+                                            </option>
+                                            {jobProfiles.map((jobProfile) => (
+                                                <option
+                                                    key={jobProfile.id}
+                                                    value={jobProfile.id}
+                                                >
+                                                    {jobProfile.label.fr}
+                                                </option>
+                                            ))}
+                                        </FormSelect>
+                                        <FieldDescription>
+                                            Son CV est proposé au
+                                            téléchargement, dans la langue de la
+                                            page.
+                                        </FieldDescription>
+                                        <FieldError>
+                                            {errors.cv_job_profile_id}
+                                        </FieldError>
+                                    </Field>
+
+                                    <Field data-invalid={!!errors.cv_source}>
+                                        <FieldLabel htmlFor="cv_source">
+                                            Source prioritaire
+                                        </FieldLabel>
+                                        <FormSelect
+                                            id="cv_source"
+                                            name="cv_source"
+                                            defaultValue={settings.cv_source}
+                                        >
+                                            <option value="uploaded">
+                                                CV importé (PDF du profil
+                                                métier)
+                                            </option>
+                                            <option value="generated">
+                                                CV généré depuis le site
+                                            </option>
+                                        </FormSelect>
+                                        <FieldDescription>
+                                            Sans CV importé, le CV généré prend
+                                            le relais. S'applique aussi au CV
+                                            envoyé aux recruteurs.
+                                        </FieldDescription>
+                                        <FieldError>
+                                            {errors.cv_source}
+                                        </FieldError>
+                                    </Field>
+                                </div>
+                            </Section>
+
+                            <Section title="Notifications">
+                                <Field
+                                    data-invalid={
+                                        !!errors.congratulation_notify_minutes
+                                    }
+                                >
+                                    <FieldLabel htmlFor="congratulation_notify_minutes">
+                                        Notification de félicitations au plus
+                                        toutes les (minutes)
+                                    </FieldLabel>
+                                    <Input
+                                        id="congratulation_notify_minutes"
+                                        name="congratulation_notify_minutes"
+                                        type="number"
+                                        min={0}
+                                        max={1440}
+                                        defaultValue={
+                                            settings.congratulation_notify_minutes
+                                        }
+                                        required
+                                    />
+                                    <FieldDescription>
+                                        Par motif (chaque surprise, la page À
+                                        propos). 0 : une notification à chaque
+                                        envoi. L'historique garde toutes les
+                                        félicitations.
+                                    </FieldDescription>
+                                    <FieldError>
+                                        {errors.congratulation_notify_minutes}
+                                    </FieldError>
+                                </Field>
+                            </Section>
+
+                            <Section
+                                title="Rendez-vous"
+                                description={
+                                    <>
+                                        Les plages horaires et les jours bloqués
+                                        se gèrent dans{' '}
+                                        <Link
+                                            href={availabilityIndex()}
+                                            className="underline"
+                                        >
+                                            Disponibilités
+                                        </Link>
+                                        . Heures d'Abidjan (GMT).
+                                    </>
+                                }
+                            >
+                                <Toggle
+                                    name="booking_enabled"
+                                    label="Prise de rendez-vous ouverte"
+                                    defaultChecked={settings.booking_enabled}
+                                />
+                                <FieldDescription>
+                                    Fermée, la page de réservation et ses
+                                    raccourcis disparaissent du site.
+                                </FieldDescription>
+
+                                <div className="grid gap-4 sm:grid-cols-3">
+                                    <Field
+                                        data-invalid={
+                                            !!errors.booking_min_notice_hours
+                                        }
+                                    >
+                                        <FieldLabel htmlFor="booking_min_notice_hours">
+                                            Délai minimum (heures)
+                                        </FieldLabel>
+                                        <Input
+                                            id="booking_min_notice_hours"
+                                            name="booking_min_notice_hours"
+                                            type="number"
+                                            min={0}
+                                            max={720}
+                                            defaultValue={
+                                                settings.booking_min_notice_hours
+                                            }
+                                        />
+                                        <FieldError>
+                                            {errors.booking_min_notice_hours}
+                                        </FieldError>
+                                    </Field>
+                                    <Field
+                                        data-invalid={
+                                            !!errors.booking_horizon_days
+                                        }
+                                    >
+                                        <FieldLabel htmlFor="booking_horizon_days">
+                                            Réservable jusqu'à (jours)
+                                        </FieldLabel>
+                                        <Input
+                                            id="booking_horizon_days"
+                                            name="booking_horizon_days"
+                                            type="number"
+                                            min={1}
+                                            max={365}
+                                            defaultValue={
+                                                settings.booking_horizon_days
+                                            }
+                                        />
+                                        <FieldError>
+                                            {errors.booking_horizon_days}
+                                        </FieldError>
+                                    </Field>
+                                    <Field
+                                        data-invalid={
+                                            !!errors.booking_buffer_minutes
+                                        }
+                                    >
+                                        <FieldLabel htmlFor="booking_buffer_minutes">
+                                            Pause entre deux RDV (min)
+                                        </FieldLabel>
+                                        <Input
+                                            id="booking_buffer_minutes"
+                                            name="booking_buffer_minutes"
+                                            type="number"
+                                            min={0}
+                                            max={240}
+                                            step={5}
+                                            defaultValue={
+                                                settings.booking_buffer_minutes
+                                            }
+                                        />
+                                        <FieldError>
+                                            {errors.booking_buffer_minutes}
+                                        </FieldError>
+                                    </Field>
+                                </div>
+
+                                <Field
+                                    data-invalid={!!errors.booking_video_link}
+                                >
+                                    <FieldLabel htmlFor="booking_video_link">
+                                        Lien visio par défaut
+                                    </FieldLabel>
+                                    <Input
+                                        id="booking_video_link"
+                                        name="booking_video_link"
+                                        type="url"
+                                        placeholder="https://meet.google.com/…"
+                                        defaultValue={
+                                            settings.booking_video_link ?? ''
+                                        }
+                                    />
+                                    <FieldDescription>
+                                        Repris à la confirmation d'une visio si
+                                        vous n'en précisez pas d'autre.
+                                    </FieldDescription>
+                                    <FieldError>
+                                        {errors.booking_video_link}
+                                    </FieldError>
+                                </Field>
+                            </Section>
 
                             <Button disabled={processing} className="w-fit">
                                 Enregistrer

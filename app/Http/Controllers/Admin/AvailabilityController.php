@@ -5,14 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AvailabilityRuleRequest;
 use App\Http\Requests\Admin\BlockedPeriodRequest;
-use App\Http\Requests\Admin\BookingSettingsRequest;
 use App\Services\BookingCalendar;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 use Zap\Models\Schedule;
 
-/** Mes disponibilités pour les rendez-vous : réglages, plages hebdomadaires et périodes bloquées. */
+/** Mon agenda de rendez-vous : plages hebdomadaires et périodes bloquées (les réglages sont dans les Réglages du site). */
 class AvailabilityController extends Controller
 {
     public function __construct(private BookingCalendar $calendar) {}
@@ -20,19 +19,9 @@ class AvailabilityController extends Controller
     public function index(): Response
     {
         return Inertia::render('admin/availability/index', [
-            'settings' => $this->calendar->settings(),
             'rules' => $this->calendar->availabilityRules(),
             'blockedPeriods' => $this->calendar->blockedPeriods(),
         ]);
-    }
-
-    public function updateSettings(BookingSettingsRequest $request): RedirectResponse
-    {
-        $this->calendar->settings()->update($request->validated());
-
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('Réglages enregistrés.')]);
-
-        return back();
     }
 
     public function storeRule(AvailabilityRuleRequest $request): RedirectResponse

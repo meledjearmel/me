@@ -16,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { WEEK_DAYS } from '@/lib/admin-options';
 import { index as pageIndex } from '@/routes/admin/availability';
-import type { AvailabilityRule, BlockedPeriod, BookingSettings } from '@/types';
+import type { AvailabilityRule, BlockedPeriod } from '@/types';
 
 /** « Lundi, mardi, mercredi » : les jours d'une plage, dans l'ordre de la semaine. */
 const daysLabel = (days: string[]) =>
@@ -25,11 +25,9 @@ const daysLabel = (days: string[]) =>
         .join(', ');
 
 export default function AvailabilityIndex({
-    settings,
     rules,
     blockedPeriods,
 }: {
-    settings: BookingSettings;
     rules: AvailabilityRule[];
     blockedPeriods: BlockedPeriod[];
 }) {
@@ -42,124 +40,8 @@ export default function AvailabilityIndex({
             <div className="flex max-w-4xl flex-col gap-10 p-4">
                 <Heading
                     title="Disponibilités"
-                    description="Quand les visiteurs peuvent réserver un rendez-vous. Les heures sont celles d'Abidjan (GMT)."
+                    description="Quand les visiteurs peuvent réserver un rendez-vous. Les heures sont celles d'Abidjan (GMT). Ouverture, délais et lien visio : Réglages du site."
                 />
-
-                <section className="space-y-4">
-                    <h2 className="text-lg font-semibold">Réglages</h2>
-                    <Form
-                        {...AvailabilityController.updateSettings.form()}
-                        options={{ preserveScroll: true }}
-                        className="space-y-6"
-                    >
-                        {({ processing, errors }) => (
-                            <FieldGroup>
-                                <Field orientation="horizontal">
-                                    <input
-                                        type="hidden"
-                                        name="is_enabled"
-                                        value="0"
-                                    />
-                                    <Checkbox
-                                        id="is_enabled"
-                                        name="is_enabled"
-                                        value="1"
-                                        defaultChecked={settings.is_enabled}
-                                    />
-                                    <FieldLabel htmlFor="is_enabled">
-                                        Prise de rendez-vous ouverte
-                                    </FieldLabel>
-                                </Field>
-                                <FieldDescription>
-                                    Fermée, la page de réservation et ses
-                                    raccourcis disparaissent du site.
-                                </FieldDescription>
-
-                                <div className="grid gap-4 sm:grid-cols-3">
-                                    <Field
-                                        data-invalid={!!errors.min_notice_hours}
-                                    >
-                                        <FieldLabel htmlFor="min_notice_hours">
-                                            Délai minimum (heures)
-                                        </FieldLabel>
-                                        <Input
-                                            id="min_notice_hours"
-                                            name="min_notice_hours"
-                                            type="number"
-                                            min={0}
-                                            max={720}
-                                            defaultValue={
-                                                settings.min_notice_hours
-                                            }
-                                        />
-                                        <FieldError>
-                                            {errors.min_notice_hours}
-                                        </FieldError>
-                                    </Field>
-                                    <Field data-invalid={!!errors.horizon_days}>
-                                        <FieldLabel htmlFor="horizon_days">
-                                            Réservable jusqu'à (jours)
-                                        </FieldLabel>
-                                        <Input
-                                            id="horizon_days"
-                                            name="horizon_days"
-                                            type="number"
-                                            min={1}
-                                            max={365}
-                                            defaultValue={settings.horizon_days}
-                                        />
-                                        <FieldError>
-                                            {errors.horizon_days}
-                                        </FieldError>
-                                    </Field>
-                                    <Field
-                                        data-invalid={!!errors.buffer_minutes}
-                                    >
-                                        <FieldLabel htmlFor="buffer_minutes">
-                                            Pause entre deux RDV (min)
-                                        </FieldLabel>
-                                        <Input
-                                            id="buffer_minutes"
-                                            name="buffer_minutes"
-                                            type="number"
-                                            min={0}
-                                            max={240}
-                                            step={5}
-                                            defaultValue={
-                                                settings.buffer_minutes
-                                            }
-                                        />
-                                        <FieldError>
-                                            {errors.buffer_minutes}
-                                        </FieldError>
-                                    </Field>
-                                </div>
-
-                                <Field data-invalid={!!errors.video_link}>
-                                    <FieldLabel htmlFor="video_link">
-                                        Lien visio par défaut
-                                    </FieldLabel>
-                                    <Input
-                                        id="video_link"
-                                        name="video_link"
-                                        type="url"
-                                        placeholder="https://meet.google.com/…"
-                                        defaultValue={settings.video_link ?? ''}
-                                    />
-                                    <FieldDescription>
-                                        Repris à la confirmation d'une visio si
-                                        vous n'en précisez pas d'autre.
-                                    </FieldDescription>
-                                    <FieldError>{errors.video_link}</FieldError>
-                                </Field>
-
-                                <Button disabled={processing} className="w-fit">
-                                    Enregistrer
-                                </Button>
-                            </FieldGroup>
-                        )}
-                    </Form>
-                </section>
 
                 <section className="space-y-4">
                     <h2 className="text-lg font-semibold">

@@ -4,26 +4,17 @@ import Heading from '@/components/heading';
 import TranslatableField from '@/components/translatable-field';
 import {
     Field,
-    FieldDescription,
     FieldError,
     FieldGroup,
     FieldLabel,
 } from '@/components/ui/field';
-import FormSelect from '@/components/admin/form-select';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { edit as profileEdit } from '@/routes/admin/profile';
-import type { JobProfile, Profile } from '@/types';
+import type { Profile } from '@/types';
 
-export default function ProfileEdit({
-    profile,
-    jobProfiles,
-}: {
-    profile: Profile;
-    jobProfiles: Pick<JobProfile, 'id' | 'label'>[];
-}) {
+export default function ProfileEdit({ profile }: { profile: Profile }) {
     return (
         <>
             <Head title="Profil" />
@@ -287,135 +278,6 @@ export default function ProfileEdit({
                                         {errors['social_links.linkedin']}
                                     </FieldError>
                                 </Field>
-                            </div>
-
-                            <Field
-                                data-invalid={
-                                    !!errors.congratulation_notify_minutes
-                                }
-                            >
-                                <FieldLabel htmlFor="congratulation_notify_minutes">
-                                    Notification de félicitations au plus toutes
-                                    les (minutes)
-                                </FieldLabel>
-                                <Input
-                                    id="congratulation_notify_minutes"
-                                    name="congratulation_notify_minutes"
-                                    type="number"
-                                    min={0}
-                                    max={1440}
-                                    defaultValue={
-                                        profile.congratulation_notify_minutes
-                                    }
-                                    required
-                                />
-                                <FieldDescription>
-                                    Par motif (chaque surprise, la page À
-                                    propos). 0 : une notification à chaque
-                                    envoi. L'historique garde toutes les
-                                    félicitations.
-                                </FieldDescription>
-                                <FieldError>
-                                    {errors.congratulation_notify_minutes}
-                                </FieldError>
-                            </Field>
-
-                            <div className="grid gap-4 rounded-lg border p-4 sm:grid-cols-2">
-                                <p className="text-sm font-medium sm:col-span-2">
-                                    CV téléchargeable (page contact)
-                                </p>
-
-                                <Field
-                                    data-invalid={!!errors.cv_job_profile_id}
-                                >
-                                    <FieldLabel htmlFor="cv_job_profile_id">
-                                        Profil métier principal
-                                    </FieldLabel>
-                                    <FormSelect
-                                        id="cv_job_profile_id"
-                                        name="cv_job_profile_id"
-                                        defaultValue={
-                                            profile.cv_job_profile_id ?? ''
-                                        }
-                                    >
-                                        <option value="">
-                                            Le premier profil publié
-                                        </option>
-                                        {jobProfiles.map((jobProfile) => (
-                                            <option
-                                                key={jobProfile.id}
-                                                value={jobProfile.id}
-                                            >
-                                                {jobProfile.label.fr}
-                                            </option>
-                                        ))}
-                                    </FormSelect>
-                                    <FieldDescription>
-                                        Son CV est proposé au téléchargement,
-                                        dans la langue de la page.
-                                    </FieldDescription>
-                                    <FieldError>
-                                        {errors.cv_job_profile_id}
-                                    </FieldError>
-                                </Field>
-
-                                <Field data-invalid={!!errors.cv_source}>
-                                    <FieldLabel htmlFor="cv_source">
-                                        Source prioritaire
-                                    </FieldLabel>
-                                    <FormSelect
-                                        id="cv_source"
-                                        name="cv_source"
-                                        defaultValue={profile.cv_source}
-                                    >
-                                        <option value="uploaded">
-                                            CV importé (PDF du profil métier)
-                                        </option>
-                                        <option value="generated">
-                                            CV généré depuis le site
-                                        </option>
-                                    </FormSelect>
-                                    <FieldDescription>
-                                        Sans CV importé, le CV généré prend le
-                                        relais. S'applique aussi au CV envoyé
-                                        aux recruteurs.
-                                    </FieldDescription>
-                                    <FieldError>{errors.cv_source}</FieldError>
-                                </Field>
-                            </div>
-
-                            <div className="grid gap-2 rounded-lg border p-4">
-                                <p className="text-sm font-medium">
-                                    Avis des visiteurs
-                                </p>
-                                <Field orientation="horizontal">
-                                    <input
-                                        type="hidden"
-                                        name="testimonial_video_enabled"
-                                        value="0"
-                                    />
-                                    <Checkbox
-                                        id="testimonial_video_enabled"
-                                        name="testimonial_video_enabled"
-                                        value="1"
-                                        defaultChecked={
-                                            profile.testimonial_video_enabled
-                                        }
-                                    />
-                                    <FieldLabel htmlFor="testimonial_video_enabled">
-                                        Autoriser les avis vidéo
-                                    </FieldLabel>
-                                </Field>
-                                <FieldDescription>
-                                    Les visiteurs peuvent joindre une vidéo à
-                                    leur avis ou se filmer depuis la page.
-                                    Désactivé, le formulaire ne propose plus que
-                                    le texte. Les vidéos déjà reçues restent
-                                    affichées.
-                                </FieldDescription>
-                                <FieldError>
-                                    {errors.testimonial_video_enabled}
-                                </FieldError>
                             </div>
 
                             <Button disabled={processing}>Enregistrer</Button>

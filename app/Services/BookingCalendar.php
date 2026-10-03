@@ -7,7 +7,7 @@ use App\Enums\AppointmentStatus;
 use App\Jobs\SendAppointmentMails;
 use App\Models\Appointment;
 use App\Models\AppointmentType;
-use App\Models\BookingSetting;
+use App\Models\SiteSetting;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 use Zap\Enums\ScheduleTypes;
@@ -15,7 +15,7 @@ use Zap\Facades\Zap;
 use Zap\Models\Schedule;
 
 /**
- * Mon agenda de rendez-vous, posé sur Zap (schedules des réglages de réservation) :
+ * Mon agenda de rendez-vous, posé sur Zap (schedules des réglages du site) :
  * - mes disponibilités : des plages hebdomadaires (« lundi à vendredi, 9 h – 12 h ») ;
  * - mes périodes bloquées : congés, déplacements… (journées entières) ;
  * - les rendez-vous : un créneau bloqué tant que la demande est en attente ou confirmée.
@@ -26,15 +26,15 @@ class BookingCalendar
     /** Jours de la semaine, dans l'ordre et au format attendu par Zap. */
     public const array DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
-    public function settings(): BookingSetting
+    public function settings(): SiteSetting
     {
-        return BookingSetting::current();
+        return SiteSetting::current();
     }
 
     /** La réservation est ouverte et au moins un type de rendez-vous est proposé. */
     public function isOpen(): bool
     {
-        return $this->settings()->is_enabled
+        return $this->settings()->booking_enabled
             && AppointmentType::query()->where('is_active', true)->exists();
     }
 
@@ -139,9 +139,9 @@ class BookingCalendar
             return [];
         }
 
-        $earliest = now()->addHours($settings->min_notice_hours);
+        $earliest = now()->addHours($settings->booking_min_notice_hours);
 
-        return collect($settings->getBookableSlots($date->toDateString(), $type->duration_minutes, $settings->buffer_minutes))
+        return collect($settings->getBookableSlots($date->toDateString(), $type->duration_minutes, $settings->booking_buffer_minutes))
             ->filter(fn (array $slot): bool => (bool) $slot['is_available'])
             ->map(fn (array $slot): CarbonImmutable => CarbonImmutable::parse($date->toDateString().' '.$slot['start_time']))
             ->filter(fn (CarbonImmutable $start): bool => $start->gte($earliest))
@@ -158,7 +158,7 @@ class BookingCalendar
 
     public function lastBookableDay(): CarbonImmutable
     {
-        return CarbonImmutable::today()->addDays($this->settings()->horizon_days);
+        return CarbonImmutable::today()->addDays($this->settings()->booking_horizon_days);
     }
 
     /**
@@ -201,7 +201,7 @@ class BookingCalendar
         abort_unless($appointment->status === AppointmentStatus::Pending, 409, __('Ce rendez-vous n’est plus en attente.'));
 
         if (blank($meetingDetails) && $appointment->location === AppointmentLocation::Video) {
-            $meetingDetails = $this->settings()->video_link;
+            $meetingDetails = $this->settings()->booking_video_link;
         }
 
         $appointment->update([

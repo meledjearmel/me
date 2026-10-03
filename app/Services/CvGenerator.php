@@ -11,6 +11,7 @@ use App\Models\JobProfile;
 use App\Models\ProfessionalReference;
 use App\Models\Profile;
 use App\Models\Project;
+use App\Models\SiteSetting;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 /**
@@ -193,8 +194,7 @@ class CvGenerator
      */
     public function resolve(JobProfile $jobProfile, string $locale): array
     {
-        $setting = Profile::query()->value('cv_source');
-        $priority = $setting instanceof CvSource ? $setting : (CvSource::tryFrom((string) $setting) ?? CvSource::Uploaded);
+        $priority = SiteSetting::current()->cv_source ?? CvSource::Uploaded;
 
         if ($priority === CvSource::Uploaded && ($uploaded = $this->uploadedPdf($jobProfile, $locale)) !== null) {
             return ['content' => $uploaded, 'source' => CvSource::Uploaded];

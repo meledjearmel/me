@@ -8,6 +8,7 @@ use App\Models\Education;
 use App\Models\Experience;
 use App\Models\Profile;
 use App\Models\Project;
+use App\Models\SiteSetting;
 use App\Models\Testimonial;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -137,7 +138,7 @@ test('a review video must be a video under 95 MB', function (UploadedFile $file)
 
 test('a review video is refused when video reviews are disabled in the admin', function () {
     Storage::fake('public');
-    Profile::query()->update(['testimonial_video_enabled' => false]);
+    SiteSetting::current()->update(['testimonial_video_enabled' => false]);
 
     $this->post('/fr/testimonials', [
         'author_name' => 'Sam Client',
@@ -146,19 +147,13 @@ test('a review video is refused when video reviews are disabled in the admin', f
         'video' => UploadedFile::fake()->create('avis.mp4', 100, 'video/mp4'),
     ])->assertSessionHasErrors('video');
 
-    $this->get('/fr/testimonials')->assertInertia(fn ($page) => $page->where('profile.testimonial_video_enabled', false));
+    $this->get('/fr/testimonials')->assertInertia(fn ($page) => $page->where('testimonialVideoEnabled', false));
 });
 
 test('the admin can turn video reviews off', function () {
-    $profile = Profile::query()->firstOrFail();
-
-    $this->actingAs(User::factory()->create())->patch(route('admin.profile.update'), [
-        ...$profile->only(['name', 'email']),
-        'headline' => ['fr' => 'Titre', 'en' => 'Title'],
-        'bio_short' => ['fr' => 'Court', 'en' => 'Short'],
-        'bio_full' => ['fr' => 'Long', 'en' => 'Long'],
+    $this->actingAs(User::factory()->create())->patch(route('admin.site-settings.update'), [
         'testimonial_video_enabled' => '0',
     ])->assertSessionHasNoErrors();
 
-    expect($profile->fresh()->testimonial_video_enabled)->toBeFalse();
+    expect(SiteSetting::current()->testimonial_video_enabled)->toBeFalse();
 });

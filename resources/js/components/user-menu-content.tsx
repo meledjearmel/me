@@ -1,5 +1,5 @@
 import { Link, router } from '@inertiajs/react';
-import { LogOut, Settings, Trash2 } from 'lucide-react';
+import { LogOut, Settings, Settings2, Trash2 } from 'lucide-react';
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
@@ -9,6 +9,7 @@ import {
 import { UserInfo } from '@/components/user-info';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { logout } from '@/routes';
+import { edit as siteSettingsEdit } from '@/routes/admin/site-settings';
 import { index as trashIndex } from '@/routes/admin/trash';
 import { edit } from '@/routes/profile';
 import type { User } from '@/types';
@@ -34,6 +35,17 @@ export function UserMenuContent({ user }: Props) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
+                <DropdownMenuItem asChild>
+                    <Link
+                        className="block w-full cursor-pointer"
+                        href={siteSettingsEdit()}
+                        prefetch
+                        onClick={cleanup}
+                    >
+                        <Settings2 className="mr-2" />
+                        Réglages du site
+                    </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                     <Link
                         className="block w-full cursor-pointer"

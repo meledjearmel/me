@@ -83,7 +83,6 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('appointment-types', AppointmentTypeController::class)->except('show');
     Route::prefix('availability')->name('availability.')->group(function () {
         Route::get('/', [AvailabilityController::class, 'index'])->name('index');
-        Route::patch('settings', [AvailabilityController::class, 'updateSettings'])->name('settings.update');
         Route::post('rules', [AvailabilityController::class, 'storeRule'])->name('rules.store');
         Route::post('blocked-periods', [AvailabilityController::class, 'storeBlockedPeriod'])->name('blocked-periods.store');
         Route::delete('{schedule}', [AvailabilityController::class, 'destroy'])->name('destroy');

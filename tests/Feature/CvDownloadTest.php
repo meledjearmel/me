@@ -6,6 +6,7 @@ use App\Jobs\SendPushNotification;
 use App\Models\CvDownload;
 use App\Models\JobProfile;
 use App\Models\Profile;
+use App\Models\SiteSetting;
 use App\Models\User;
 use App\Services\GeoLocator;
 use Illuminate\Http\UploadedFile;
@@ -18,7 +19,7 @@ const BROWSER = ['User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chro
 
 beforeEach(function () {
     Queue::fake();
-    $this->profile = Profile::factory()->create(['email' => 'owner@example.test', 'cv_source' => CvSource::Uploaded]);
+    $this->profile = Profile::factory()->create(['email' => 'owner@example.test']);
     $this->jobProfile = JobProfile::factory()->create();
 });
 
@@ -80,7 +81,7 @@ test('the generated CV is served when it has priority or when nothing is uploade
     expect(CvDownload::query()->latest('id')->first()->source)->toBe(CvSource::Generated);
 
     uploadCv($this->jobProfile, 'en');
-    $this->profile->update(['cv_source' => CvSource::Generated]);
+    SiteSetting::current()->update(['cv_source' => CvSource::Generated]);
     CvDownload::query()->delete();
 
     $response = $this->withHeaders(BROWSER)->post('/en/cv')->assertOk();
@@ -90,7 +91,7 @@ test('the generated CV is served when it has priority or when nothing is uploade
 
 test('the job profile chosen in the admin is the one served', function () {
     $chosen = JobProfile::factory()->create(['sort_order' => 99]);
-    $this->profile->update(['cv_job_profile_id' => $chosen->id]);
+    SiteSetting::current()->update(['cv_job_profile_id' => $chosen->id]);
 
     $this->withHeaders(BROWSER)->post('/fr/cv')->assertOk();
 
@@ -141,16 +142,12 @@ test('the admin lists and shows downloads, and saves the CV settings', function 
     $this->actingAs($user)->get(route('admin.cv-downloads.show', $download))
         ->assertInertia(fn ($page) => $page->where('download.email', $download->email));
 
-    $this->actingAs($user)->patch(route('admin.profile.update'), [
-        ...$this->profile->only(['name', 'email']),
-        'headline' => ['fr' => 'Titre', 'en' => 'Title'],
-        'bio_short' => ['fr' => 'Court', 'en' => 'Short'],
-        'bio_full' => ['fr' => 'Long', 'en' => 'Long'],
+    $this->actingAs($user)->patch(route('admin.site-settings.update'), [
         'cv_job_profile_id' => $this->jobProfile->id,
         'cv_source' => 'generated',
     ])->assertSessionHasNoErrors();
 
-    expect($this->profile->fresh())
+    expect(SiteSetting::current())
         ->cv_job_profile_id->toBe($this->jobProfile->id)
         ->cv_source->toBe(CvSource::Generated);
 });

@@ -8,8 +8,8 @@ use App\Mail\AppointmentReceivedMail;
 use App\Mail\AppointmentVisitorMail;
 use App\Models\Appointment;
 use App\Models\AppointmentType;
-use App\Models\BookingSetting;
 use App\Models\Profile;
+use App\Models\SiteSetting;
 use App\Services\AppointmentInvite;
 use App\Services\BookingCalendar;
 use Carbon\CarbonImmutable;
@@ -20,7 +20,7 @@ beforeEach(function () {
     // Lundi 5 octobre, 8 h : mercredi 7 est réservable (délai de 24 h).
     $this->travelTo(CarbonImmutable::parse('2026-10-05 08:00'));
     Profile::factory()->create(['email' => 'armel@example.test']);
-    BookingSetting::factory()->create(['buffer_minutes' => 0]);
+    SiteSetting::factory()->bookable()->create();
     $this->type = AppointmentType::factory()->create([
         'duration_minutes' => 60,
         'locations' => [AppointmentLocation::Video, AppointmentLocation::Phone],
@@ -45,7 +45,7 @@ function booking(array $overrides = []): array
 }
 
 test('the booking page is hidden while booking is closed', function () {
-    BookingSetting::current()->update(['is_enabled' => false]);
+    SiteSetting::current()->update(['booking_enabled' => false]);
 
     $this->get('/fr/appointments')->assertNotFound();
 });
