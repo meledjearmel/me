@@ -4,12 +4,14 @@ namespace App\Models;
 
 use App\Enums\AppointmentLocation;
 use App\Enums\AppointmentStatus;
+use App\Services\BookingCalendar;
 use Database\Factories\AppointmentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Zap\Exceptions\ScheduleConflictException;
 use Zap\Models\Schedule;
 
 /**
@@ -64,6 +66,20 @@ class Appointment extends Model
     {
         static::creating(function (Appointment $appointment): void {
             $appointment->cancel_token ??= Str::random(48);
+        });
+
+        // Restauré depuis la corbeille : il reprend son créneau, seulement si la plage
+        // est encore libre (sinon il revient sans bloquer l'agenda).
+        static::restored(function (Appointment $appointment): void {
+            if (! $appointment->status->holdsSlot() || $appointment->schedule_id !== null || $appointment->starts_at->isPast()) {
+                return;
+            }
+
+            try {
+                app(BookingCalendar::class)->hold($appointment);
+            } catch (ScheduleConflictException) {
+                // Plage déjà occupée par un autre rendez-vous ou une période bloquée.
+            }
         });
     }
 

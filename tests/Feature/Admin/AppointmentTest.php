@@ -141,6 +141,33 @@ test('an appointment that is no longer pending cannot be confirmed', function ()
     $this->actingAs($this->user)->patch(route('admin.appointments.confirm', $appointment))->assertStatus(409);
 });
 
+test('a restored appointment takes its slot back when it is still free', function () {
+    $appointment = Appointment::factory()->create();
+    app(BookingCalendar::class)->hold($appointment);
+    $this->actingAs($this->user)->delete(route('admin.appointments.destroy', $appointment));
+
+    $this->actingAs($this->user)->patch(route('admin.trash.restore', ['appointments', $appointment->id]));
+
+    expect($appointment->fresh()->schedule_id)->not->toBeNull()
+        ->and(Schedule::query()->count())->toBe(1);
+});
+
+test('a restored appointment stays without a slot when the range is taken', function () {
+    $appointment = Appointment::factory()->create();
+    app(BookingCalendar::class)->hold($appointment);
+    $this->actingAs($this->user)->delete(route('admin.appointments.destroy', $appointment));
+
+    $other = Appointment::factory()->create(['starts_at' => $appointment->starts_at, 'ends_at' => $appointment->ends_at]);
+    app(BookingCalendar::class)->hold($other);
+
+    $this->actingAs($this->user)->patch(route('admin.trash.restore', ['appointments', $appointment->id]));
+
+    expect($appointment->fresh())
+        ->deleted_at->toBeNull()
+        ->schedule_id->toBeNull()
+        ->and(Schedule::query()->count())->toBe(1);
+});
+
 test('deleting an appointment frees its slot', function () {
     $appointment = Appointment::factory()->create();
     app(BookingCalendar::class)->hold($appointment);
