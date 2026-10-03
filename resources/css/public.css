@@ -1185,6 +1185,22 @@ html.pub-theming .pub *::after {
     html.pub-cursor-on .pub * {
         cursor: none !important;
     }
+
+    /* zones où le curseur du site gênerait (caméra) : retour au curseur natif */
+    html.pub-cursor-on .pub [data-cursor='native'],
+    html.pub-cursor-on .pub [data-cursor='native'] * {
+        cursor: auto !important;
+    }
+
+    html.pub-cursor-on .pub [data-cursor='native'] :is(button, a, label) {
+        cursor: pointer !important;
+    }
+}
+
+/* Caméra ouverte : le filtre d'inversion du curseur déborde sur une vidéo en
+   lecture (défaut de rendu Chromium, un grand halo clair) ; on le retire. */
+html:has([data-cursor='native']) :is(.pub-cursor__dot, .pub-cursor__ring) {
+    display: none;
 }
 
 .pub-cursor__dot,
@@ -5327,100 +5343,306 @@ html.pub-scroll {
     opacity: 0.55;
 }
 
-/* champ vidéo : le bouton natif prend l'allure d'une pilule du site */
-.pub-drawer__field .pub-drawer__file {
-    padding: 8px 0 12px;
-    font-size: 15px;
-    cursor: pointer;
+/* ---------- Vidéo de l'avis : importer ou filmer ---------- */
+.pub-vfield {
+    gap: 12px;
 }
 
-.pub-drawer__file::file-selector-button {
-    margin-right: 12px;
-    padding: 8px 16px;
-    border: 1px solid var(--pub-drawer-line);
-    border-radius: 999px;
-    background: transparent;
+/* fenêtre d'enregistrement : plus large, la caméra au premier plan */
+.pub-modal--recorder {
+    --domain: #ff4d3a;
+
+    width: min(820px, calc(100% - 2rem));
+    padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.pub-modal--recorder .pub-vrec {
+    min-width: 0;
+}
+
+/* le champ est une colonne alignée à gauche : ces blocs prennent toute la largeur */
+.pub-vfield > .pub-vfield__choices,
+.pub-vfield > .pub-vfield__selected {
+    align-self: stretch;
+    width: 100%;
+}
+
+/* le vrai champ fichier reste dans le formulaire, invisible : les tuiles le pilotent */
+.pub-vfield__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.pub-vfield__choices {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.pub-vfield__tile {
+    display: grid;
+    justify-items: start;
+    gap: 6px;
+    padding: 18px;
+    border: 1px dashed var(--pub-drawer-line);
+    border-radius: 20px;
+    background: color-mix(in oklab, var(--pub-text) 4%, transparent);
     color: inherit;
     font: inherit;
+    text-align: left;
     cursor: pointer;
-    transition: border-color 0.18s ease;
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.pub-drawer__file:hover::file-selector-button {
+.pub-vfield__tile:hover,
+.pub-vfield__input:focus-visible + .pub-vfield__choices .pub-vfield__tile:first-child {
     border-color: var(--pub-gold);
+    background: color-mix(in oklab, var(--pub-gold) 8%, transparent);
 }
 
-/* ---------- Enregistrement d'un avis vidéo ---------- */
-.pub-recorder__open {
-    align-self: flex-start;
+.pub-vfield__tile:active {
+    transform: scale(0.98);
+}
+
+.pub-vfield__tile:focus-visible {
+    outline: 2px solid var(--pub-gold);
+    outline-offset: 2px;
+}
+
+.pub-vfield__tile svg {
+    width: 26px;
+    height: 26px;
+    margin-bottom: 4px;
+    color: var(--pub-gold);
+}
+
+.pub-vfield__tile--record svg {
+    color: #e0654a;
+}
+
+.pub-vfield__tile strong {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.pub-vfield__hint {
+    font-size: 12.5px;
+    line-height: 1.4;
+    opacity: 0.6;
+}
+
+/* la vidéo choisie : miniature lisible + ce qui partira */
+.pub-vfield__selected {
+    display: grid;
+    grid-template-columns: minmax(0, 220px) 1fr;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+    border: 1px solid var(--pub-drawer-line);
+    border-radius: 20px;
+}
+
+.pub-vfield__thumb {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    border-radius: 14px;
+    background: #000;
+    object-fit: cover;
+}
+
+.pub-vfield__meta {
+    display: grid;
+    justify-items: start;
+    gap: 4px;
+}
+
+.pub-vfield__meta strong {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.pub-vfield__meta span {
+    font-family: var(--pub-font-mono);
+    font-size: 12px;
+    opacity: 0.65;
+}
+
+.pub-vfield__remove {
+    margin-top: 6px;
     padding: 0 0 2px;
     border: 0;
     border-bottom: 1px solid currentColor;
     background: none;
     color: inherit;
     font: inherit;
-    font-size: 15px;
+    font-size: 14px;
     cursor: pointer;
 }
 
-.pub-recorder__open span {
-    color: #d1543b;
+.pub-vfield__remove:hover {
+    color: #e0654a;
 }
 
-.pub-recorder {
+@media (max-width: 520px) {
+    .pub-vfield__selected {
+        grid-template-columns: 1fr;
+    }
+
+    /* tuiles compactes : icône à gauche, texte à droite */
+    .pub-vfield__tile {
+        grid-template-columns: auto 1fr;
+        column-gap: 14px;
+        row-gap: 2px;
+        align-items: center;
+        padding: 14px 16px;
+    }
+
+    .pub-vfield__tile svg {
+        grid-row: span 2;
+        margin-bottom: 0;
+    }
+}
+
+/* ---------- Enregistreur : une vraie interface caméra ---------- */
+.pub-vrec {
     display: grid;
-    gap: 12px;
+    gap: 14px;
 }
 
-.pub-recorder__screen {
-    width: 100%;
-    max-height: 46svh;
-    border-radius: 18px;
+.pub-vrec__stage {
+    position: relative;
+    overflow: hidden;
+    border-radius: 22px;
     background: #000;
+    aspect-ratio: 16 / 10;
+    max-height: 62svh;
+}
+
+.pub-vrec__screen {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+[data-phase='review'] .pub-vrec__screen {
     object-fit: contain;
 }
 
 /* l'aperçu en direct se lit comme un miroir, comme toutes les caméras frontales */
-.pub-recorder__screen--live {
+.pub-vrec__screen--live {
     transform: scaleX(-1);
 }
 
-.pub-recorder__clock {
-    display: flex;
+.pub-vrec__clock {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
     margin: 0;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgb(0 0 0 / 0.6);
+    color: #fff;
     font-family: var(--pub-font-mono);
-    font-size: 13px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
 }
 
-.pub-recorder__dot {
-    width: 10px;
-    height: 10px;
+.pub-vrec__dot {
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background: #d1543b;
-    animation: pub-recorder-blink 1s steps(2, start) infinite;
+    background: #ff4d3a;
+    animation: pub-vrec-blink 1s steps(2, start) infinite;
 }
 
-@keyframes pub-recorder-blink {
+@keyframes pub-vrec-blink {
     to {
         visibility: hidden;
     }
 }
 
-.pub-recorder__actions {
+/* déclencheur : anneau blanc, rond rouge qui devient carré pendant l'enregistrement */
+.pub-vrec__shutter {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 68px;
+    height: 68px;
+    padding: 0;
+    border: 4px solid #fff;
+    border-radius: 50%;
+    background: rgb(0 0 0 / 0.25);
+    cursor: pointer;
+    transform: translateX(-50%);
+    transition: transform 0.2s ease;
+}
+
+.pub-vrec__shutter:active {
+    transform: translateX(-50%) scale(0.94);
+}
+
+.pub-vrec__shutter:focus-visible {
+    outline: 3px solid var(--pub-gold);
+    outline-offset: 3px;
+}
+
+.pub-vrec__shutter span {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #ff4d3a;
+    transition:
+        width 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+        height 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+        border-radius 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-phase='recording'] .pub-vrec__shutter span {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+}
+
+/* les 3 minutes se remplissent le long du bas de l'image */
+.pub-vrec__progress {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: #ff4d3a;
+    transform-origin: left;
+    transition: transform 1s linear;
+}
+
+.pub-vrec__actions {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 12px 20px;
 }
 
-.pub-recorder__actions .pub-contact__again {
-    margin-top: 0;
+.pub-vrec__hint {
+    flex: 1;
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.65;
 }
 
-.pub-recorder__main {
-    padding: 10px 20px;
+.pub-vrec__primary {
+    padding: 11px 22px;
     border: 0;
     border-radius: 999px;
     background: var(--pub-gold);
@@ -5431,14 +5653,39 @@ html.pub-scroll {
     cursor: pointer;
 }
 
-.pub-recorder__message {
+.pub-vrec__ghost {
+    padding: 0 0 2px;
+    border: 0;
+    border-bottom: 1px solid currentColor;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.pub-vrec--error {
+    padding: 18px;
+    border: 1px solid var(--pub-drawer-line);
+    border-radius: 20px;
+    justify-items: start;
+}
+
+.pub-vrec--error p {
     margin: 0;
     font-size: 15px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .pub-recorder__dot {
+    .pub-vrec__dot {
         animation: none;
+    }
+
+    .pub-vfield__tile,
+    .pub-vrec__shutter,
+    .pub-vrec__shutter span,
+    .pub-vrec__progress {
+        transition: none;
     }
 }
 

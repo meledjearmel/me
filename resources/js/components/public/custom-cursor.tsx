@@ -71,6 +71,14 @@ export default function CustomCursor() {
 
             const element =
                 event.target instanceof Element ? event.target : null;
+
+            // Zone marquée data-cursor="native" : le curseur du site s'efface.
+            if (element?.closest('[data-cursor="native"]')) {
+                onLeave();
+
+                return;
+            }
+
             const labelled = element?.closest<HTMLElement>(
                 '[data-cursor-label]',
             );

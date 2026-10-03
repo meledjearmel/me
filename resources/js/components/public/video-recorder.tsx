@@ -169,11 +169,15 @@ export default function VideoRecorder({
 
     if (phase === 'error') {
         return (
-            <div className="pub-recorder" role="alert">
-                <p className="pub-recorder__message">{t.fab.cameraDenied}</p>
+            <div
+                className="pub-vrec pub-vrec--error"
+                role="alert"
+                data-cursor="native"
+            >
+                <p>{t.fab.cameraDenied}</p>
                 <button
                     type="button"
-                    className="pub-contact__again"
+                    className="pub-vrec__ghost"
                     onClick={close}
                 >
                     {t.skills.close}
@@ -182,73 +186,97 @@ export default function VideoRecorder({
         );
     }
 
+    const isReview = phase === 'review' && recordingUrl;
+
     return (
-        <div className="pub-recorder">
-            {phase === 'review' && recordingUrl ? (
-                <video
-                    className="pub-recorder__screen"
-                    src={recordingUrl}
-                    controls
-                    playsInline
-                />
-            ) : (
-                <video
-                    ref={liveRef}
-                    className="pub-recorder__screen pub-recorder__screen--live"
-                    autoPlay
-                    muted
-                    playsInline
-                />
-            )}
-
-            {phase === 'recording' && (
-                <p className="pub-recorder__clock" aria-live="polite">
-                    <span className="pub-recorder__dot" aria-hidden="true" />
-                    {formatClock(elapsed)} / {formatClock(MAX_SECONDS)}
-                </p>
-            )}
-
-            <div className="pub-recorder__actions">
-                {phase === 'preview' && (
-                    <button
-                        type="button"
-                        className="pub-recorder__main"
-                        onClick={start}
-                    >
-                        {t.fab.recordStart}
-                    </button>
+        <div className="pub-vrec" data-phase={phase} data-cursor="native">
+            <div className="pub-vrec__stage">
+                {isReview ? (
+                    <video
+                        className="pub-vrec__screen"
+                        src={recordingUrl}
+                        controls
+                        playsInline
+                    />
+                ) : (
+                    <video
+                        ref={liveRef}
+                        className="pub-vrec__screen pub-vrec__screen--live"
+                        autoPlay
+                        muted
+                        playsInline
+                    />
                 )}
-                {phase === 'recording' && (
-                    <button
-                        type="button"
-                        className="pub-recorder__main"
-                        onClick={() => recorderRef.current?.stop()}
-                    >
-                        {t.fab.recordStop}
-                    </button>
+
+                {!isReview && (
+                    <>
+                        <p className="pub-vrec__clock" aria-live="polite">
+                            {phase === 'recording' && (
+                                <span
+                                    className="pub-vrec__dot"
+                                    aria-hidden="true"
+                                />
+                            )}
+                            {formatClock(elapsed)} / {formatClock(MAX_SECONDS)}
+                        </p>
+
+                        <button
+                            type="button"
+                            className="pub-vrec__shutter"
+                            aria-label={
+                                phase === 'recording'
+                                    ? t.fab.recordStop
+                                    : t.fab.recordStart
+                            }
+                            onClick={
+                                phase === 'recording'
+                                    ? () => recorderRef.current?.stop()
+                                    : start
+                            }
+                        >
+                            <span aria-hidden="true" />
+                        </button>
+
+                        <span
+                            className="pub-vrec__progress"
+                            style={{
+                                transform: `scaleX(${elapsed / MAX_SECONDS})`,
+                            }}
+                            aria-hidden="true"
+                        />
+                    </>
                 )}
-                {phase === 'review' && recording && (
+            </div>
+
+            <div className="pub-vrec__actions">
+                {isReview && recording ? (
                     <>
                         <button
                             type="button"
-                            className="pub-recorder__main"
+                            className="pub-vrec__primary"
                             onClick={() => onUse(recording)}
                         >
                             {t.fab.recordUse}
                         </button>
                         <button
                             type="button"
-                            className="pub-contact__again"
+                            className="pub-vrec__ghost"
                             onClick={retake}
                         >
                             {t.fab.recordRetake}
                         </button>
                     </>
+                ) : (
+                    <p className="pub-vrec__hint">
+                        {phase === 'recording'
+                            ? t.fab.recordStop
+                            : t.fab.recordStart}
+                    </p>
                 )}
                 {phase !== 'recording' && (
                     <button
                         type="button"
-                        className="pub-contact__again"
+                        className="pub-vrec__ghost"
                         onClick={close}
                     >
                         {t.fab.recordCancel}
