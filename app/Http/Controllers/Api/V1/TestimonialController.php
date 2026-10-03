@@ -45,9 +45,16 @@ class TestimonialController extends Controller
     /**
      * Modérer un témoignage
      *
-     * Statut, projet associé, mise à la une (trois témoignages au maximum), accroche
-     * et vidéo. La vidéo s'envoie en `multipart/form-data` (95 Mo au plus, limite Cloudflare) : elle est
-     * ensuite compressée en tâche de fond, l'aperçu et la durée arrivent après.
+     * Statut, projet associé, mise à la une (trois témoignages au maximum), accroche,
+     * transcription et vidéo.
+     *
+     * Avec une vidéo, envoyer un `POST` en `multipart/form-data` avec le champ `_method=PUT` :
+     * PHP ne lit pas les fichiers d'une requête `PUT` directe. Formats acceptés : MP4, MOV,
+     * WebM, MKV, 3GP ; 95 Mo au plus (Cloudflare refuse les corps de plus de 100 Mo). Une
+     * nouvelle vidéo remplace l'ancienne. Elle est ensuite compressée en tâche de fond :
+     * `video.poster_url`, `video.duration`, `video.width` et `video.height` restent nuls
+     * jusqu'à la fin du traitement (quelques secondes à quelques minutes). Pour retirer la
+     * vidéo, utiliser `DELETE /testimonials/{testimonial}/video`.
      */
     public function update(TestimonialRequest $request, Testimonial $testimonial): TestimonialResource
     {

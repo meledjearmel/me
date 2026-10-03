@@ -3,10 +3,14 @@
 use App\Enums\ContactStatus;
 use App\Enums\EngagementStatus;
 use App\Enums\TestimonialStatus;
+use App\Jobs\ProcessTestimonialVideo;
 use App\Models\Contact;
 use App\Models\Engagement;
 use App\Models\Testimonial;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 
 beforeEach(function () {
@@ -122,4 +126,34 @@ test('corriger le contenu exige les deux langues', function () {
         'status' => $testimonial->status->value,
         'content' => ['fr' => 'Seulement le français'],
     ])->assertUnprocessable()->assertJsonValidationErrors('content.en');
+});
+
+test('une vidéo et une accroche s\'ajoutent à un témoignage en multipart', function () {
+    Storage::fake('public');
+    Queue::fake();
+    $testimonial = Testimonial::factory()->create();
+
+    $this->post(route('api.v1.testimonials.update', $testimonial), [
+        '_method' => 'PUT',
+        'status' => $testimonial->status->value,
+        'highlight' => ['fr' => 'Un travail remarquable.', 'en' => 'Remarkable work.'],
+        'video' => UploadedFile::fake()->create('avis.mp4', 2048, 'video/mp4'),
+    ], ['Accept' => 'application/json'])
+        ->assertOk()
+        ->assertJsonPath('highlight.en', 'Remarkable work.')
+        ->assertJsonPath('video.poster_url', null)
+        ->assertJsonPath('video.url', fn (string $url): bool => str_ends_with($url, '.mp4'));
+
+    Queue::assertPushed(ProcessTestimonialVideo::class);
+});
+
+test('la vidéo d\'un témoignage se retire', function () {
+    Storage::fake('public');
+    Queue::fake();
+    $testimonial = Testimonial::factory()->create();
+    $testimonial->attachVideo(UploadedFile::fake()->create('avis.mp4', 100, 'video/mp4'));
+
+    $this->deleteJson(route('api.v1.testimonials.video.destroy', $testimonial))
+        ->assertOk()
+        ->assertJsonPath('video', null);
 });
