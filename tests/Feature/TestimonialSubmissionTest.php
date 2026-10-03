@@ -1,10 +1,13 @@
 <?php
 
 use App\Enums\TestimonialStatus;
+use App\Jobs\ProcessTestimonialVideo;
 use App\Jobs\SendPushNotification;
 use App\Models\Profile;
 use App\Models\Testimonial;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     Profile::factory()->create();
@@ -56,3 +59,38 @@ test('the honeypot field rejects bots on reviews', function () {
         'website' => 'https://spam.test',
     ])->assertSessionHasErrors('website');
 });
+
+test('a visitor can attach a video to a review, which stays pending', function () {
+    Storage::fake('public');
+    Queue::fake();
+
+    $this->post('/fr/testimonials', [
+        'author_name' => 'Sam Client',
+        'author_email' => 'sam@example.test',
+        'content' => 'Un travail sérieux et une communication claire du début à la fin.',
+        'video' => UploadedFile::fake()->create('avis.mp4', 4096, 'video/mp4'),
+    ])->assertRedirect()->assertSessionHasNoErrors();
+
+    $testimonial = Testimonial::query()->firstOrFail();
+
+    expect($testimonial->status)->toBe(TestimonialStatus::Pending)
+        ->and($testimonial->videoData())->not->toBeNull();
+    Queue::assertPushed(ProcessTestimonialVideo::class);
+    Queue::assertPushed(SendPushNotification::class, fn (SendPushNotification $job) => $job->title === 'Nouvel avis vidéo');
+});
+
+test('a review video must be a video under 95 MB', function (UploadedFile $file) {
+    Storage::fake('public');
+
+    $this->post('/fr/testimonials', [
+        'author_name' => 'Sam Client',
+        'author_email' => 'sam@example.test',
+        'content' => 'Un travail sérieux et une communication claire du début à la fin.',
+        'video' => $file,
+    ])->assertSessionHasErrors('video');
+
+    expect(Testimonial::query()->count())->toBe(0);
+})->with([
+    'not a video' => fn () => UploadedFile::fake()->create('avis.pdf', 100, 'application/pdf'),
+    'too heavy' => fn () => UploadedFile::fake()->create('avis.mp4', 97281, 'video/mp4'),
+]);

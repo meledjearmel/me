@@ -272,6 +272,12 @@ const dictionaries = {
             yourRole: 'Votre rôle ou votre entreprise (facultatif)',
             yourReview: 'Votre avis',
             reviewSend: 'Envoyer mon avis',
+            yourVideo: 'Une vidéo de votre avis (facultatif)',
+            videoNote:
+                "3 minutes et 95 Mo au plus. Filmée au téléphone, c'est parfait.",
+            videoTooHeavy: 'Vidéo trop lourde : 95 Mo au maximum.',
+            videoTooLong: 'Vidéo trop longue : 3 minutes au maximum.',
+            uploading: (percent: number) => `Envoi… ${percent} %`,
             reviewDoneTitle: 'Merci !',
             reviewDone:
                 'Votre avis a bien été reçu. Il sera publié après relecture.',
@@ -598,6 +604,12 @@ const dictionaries = {
             yourRole: 'Your role or company (optional)',
             yourReview: 'Your review',
             reviewSend: 'Send my review',
+            yourVideo: 'A video of your review (optional)',
+            videoNote:
+                '3 minutes and 95 MB at most. Filmed on a phone is perfect.',
+            videoTooHeavy: 'Video too large: 95 MB at most.',
+            videoTooLong: 'Video too long: 3 minutes at most.',
+            uploading: (percent: number) => `Uploading… ${percent}%`,
             reviewDoneTitle: 'Thank you!',
             reviewDone:
                 'Your review has been received. It will be published after review.',

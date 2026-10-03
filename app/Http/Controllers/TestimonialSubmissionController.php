@@ -12,7 +12,7 @@ use Inertia\Inertia;
 class TestimonialSubmissionController extends Controller
 {
     /**
-     * Un avis déposé depuis le site : il reste « en attente » tant que je ne l'ai
+     * Un avis déposé depuis le site, avec ou sans vidéo : il reste « en attente » tant que je ne l'ai
      * pas relu et approuvé dans l'admin, et n'apparaît pas avant.
      */
     public function store(TestimonialSubmissionRequest $request): RedirectResponse
@@ -26,7 +26,15 @@ class TestimonialSubmissionController extends Controller
             'submitted_at' => now(),
         ]);
 
-        SendPushNotification::dispatch('Nouvel avis', $testimonial->author_name, ['type' => 'testimonial', 'id' => (string) $testimonial->id]);
+        if ($request->hasFile('video')) {
+            $testimonial->attachVideo($request->file('video'));
+        }
+
+        SendPushNotification::dispatch(
+            $request->hasFile('video') ? 'Nouvel avis vidéo' : 'Nouvel avis',
+            $testimonial->author_name,
+            ['type' => 'testimonial', 'id' => (string) $testimonial->id],
+        );
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Merci pour votre avis !')]);
 

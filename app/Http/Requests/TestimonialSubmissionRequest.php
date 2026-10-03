@@ -18,6 +18,9 @@ class TestimonialSubmissionRequest extends FormRequest
             'author_email' => ['required', 'email', 'max:255'],
             'author_role' => ['nullable', 'string', 'max:255'],
             'content' => ['required', 'string', 'min:20', 'max:2000'],
+            // Vidéo facultative, mêmes formats que dans l'admin ; 95 Mo car Cloudflare
+            // refuse les corps de plus de 100 Mo. La durée (3 min) est vérifiée dans le navigateur.
+            'video' => ['nullable', 'file', 'mimetypes:video/mp4,video/quicktime,video/webm,video/x-matroska,video/3gpp', 'max:97280'],
             // Piège anti-spam : un humain ne le voit ni ne le remplit jamais.
             'website' => ['prohibited'],
         ];
