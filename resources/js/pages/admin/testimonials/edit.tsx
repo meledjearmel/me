@@ -15,16 +15,26 @@ import { Label } from '@/components/ui/label';
 import FormSelect from '@/components/admin/form-select';
 import { TESTIMONIAL_STATUSES } from '@/lib/admin-options';
 import { index as testimonialsIndex } from '@/routes/admin/testimonials';
-import type { Project, Testimonial, TestimonialVideo } from '@/types';
+import type {
+    Education,
+    Experience,
+    Project,
+    Testimonial,
+    TestimonialVideo,
+} from '@/types';
 
 export default function TestimonialEdit({
     testimonial,
     video,
     projects,
+    experiences,
+    educations,
 }: {
     testimonial: Testimonial;
     video: TestimonialVideo | null;
     projects: Project[];
+    experiences: Pick<Experience, 'id' | 'company' | 'role'>[];
+    educations: Pick<Education, 'id' | 'institution' | 'degree'>[];
 }) {
     return (
         <>
@@ -241,6 +251,54 @@ export default function TestimonialEdit({
                                     ))}
                                 </FormSelect>
                                 <FieldError>{errors.project_id}</FieldError>
+                            </Field>
+
+                            <Field data-invalid={!!errors.experience_id}>
+                                <FieldLabel htmlFor="experience_id">
+                                    Expérience liée
+                                </FieldLabel>
+                                <FormSelect
+                                    id="experience_id"
+                                    name="experience_id"
+                                    defaultValue={
+                                        testimonial.experience_id ?? ''
+                                    }
+                                >
+                                    <option value="">Aucune</option>
+                                    {experiences.map((experience) => (
+                                        <option
+                                            key={experience.id}
+                                            value={experience.id}
+                                        >
+                                            {experience.role.fr} —{' '}
+                                            {experience.company}
+                                        </option>
+                                    ))}
+                                </FormSelect>
+                                <FieldError>{errors.experience_id}</FieldError>
+                            </Field>
+
+                            <Field data-invalid={!!errors.education_id}>
+                                <FieldLabel htmlFor="education_id">
+                                    Formation liée
+                                </FieldLabel>
+                                <FormSelect
+                                    id="education_id"
+                                    name="education_id"
+                                    defaultValue={testimonial.education_id ?? ''}
+                                >
+                                    <option value="">Aucune</option>
+                                    {educations.map((education) => (
+                                        <option
+                                            key={education.id}
+                                            value={education.id}
+                                        >
+                                            {education.degree.fr} —{' '}
+                                            {education.institution}
+                                        </option>
+                                    ))}
+                                </FormSelect>
+                                <FieldError>{errors.education_id}</FieldError>
                             </Field>
 
                             <div className="flex items-center gap-3">

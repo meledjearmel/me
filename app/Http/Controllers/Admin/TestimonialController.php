@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Concerns\PaginatesAdminLists;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\TestimonialRequest;
+use App\Models\Education;
+use App\Models\Experience;
 use App\Models\Project;
 use App\Models\Testimonial;
 use Illuminate\Http\RedirectResponse;
@@ -19,7 +21,7 @@ class TestimonialController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('admin/testimonials/index', [
-            'testimonials' => $this->paginateList(Testimonial::query()->with('project')->latest('submitted_at'), $request, ['author_name', 'author_email', 'author_role', 'content->fr', 'content->en'], ['status', 'is_featured']),
+            'testimonials' => $this->paginateList(Testimonial::query()->with(['project', 'experience', 'education'])->latest('submitted_at'), $request, ['author_name', 'author_email', 'author_role', 'content->fr', 'content->en'], ['status', 'is_featured']),
             'filters' => $this->listFilters($request, ['status', 'is_featured']),
         ]);
     }
@@ -27,7 +29,7 @@ class TestimonialController extends Controller
     public function show(Testimonial $testimonial): Response
     {
         return Inertia::render('admin/testimonials/show', [
-            'testimonial' => $testimonial->load('project'),
+            'testimonial' => $testimonial->load(['project', 'experience', 'education']),
             'video' => $testimonial->videoData(),
         ]);
     }
@@ -38,6 +40,8 @@ class TestimonialController extends Controller
             'testimonial' => $testimonial,
             'video' => $testimonial->videoData(),
             'projects' => Project::query()->orderBy('sort_order')->get(['id', 'title', 'slug']),
+            'experiences' => Experience::query()->orderByDesc('start_date')->get(['id', 'company', 'role']),
+            'educations' => Education::query()->orderByDesc('start_date')->get(['id', 'institution', 'degree']),
         ]);
     }
 

@@ -59,6 +59,18 @@ export default function TestimonialShow({
                             ),
                         },
                         {
+                            label: 'Expérience',
+                            value: row.experience
+                                ? `${row.experience.role.fr} — ${row.experience.company}`
+                                : '—',
+                        },
+                        {
+                            label: 'Formation',
+                            value: row.education
+                                ? `${row.education.degree.fr} — ${row.education.institution}`
+                                : '—',
+                        },
+                        {
                             label: 'Reçu le',
                             value: formatDate(row.submitted_at),
                         },

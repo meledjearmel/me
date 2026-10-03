@@ -5,9 +5,8 @@ import type { ReactNode } from 'react';
 import EngageDialog from '@/components/public/engage-dialog';
 import ReviewDialog from '@/components/public/review-dialog';
 import { useTranslations } from '@/lib/i18n';
-
-/** Événement qui ouvre la fenêtre « Laisser un avis » depuis n'importe où dans le site. */
-export const OPEN_REVIEW_EVENT = 'pub:open-review';
+import { OPEN_REVIEW_EVENT, REVIEW_QUERY_PARAM } from '@/lib/review';
+import type { ReviewContext } from '@/lib/review';
 
 /** Distance à partir de laquelle « Remonter » apparaît. */
 const SCROLL_THRESHOLD = 480;
@@ -32,6 +31,7 @@ export default function ActionMenu() {
     const [open, setOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [reviewOpen, setReviewOpen] = useState(false);
+    const [reviewContext, setReviewContext] = useState<ReviewContext>();
     const [engageOpen, setEngageOpen] = useState(false);
 
     useEffect(() => {
@@ -43,9 +43,19 @@ export default function ActionMenu() {
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
-    // Un bouton d'une page (ex. la page des avis) peut demander l'ouverture de la fenêtre d'avis.
+    // Un bouton d'une page peut demander l'ouverture de la fenêtre d'avis, avec un projet ou une
+    // expérience prérempli ; le lien ?avis=1 (celui que j'envoie) l'ouvre dès l'arrivée.
     useEffect(() => {
-        const openReview = () => setReviewOpen(true);
+        const openReview = (event: Event) => {
+            setReviewContext((event as CustomEvent<ReviewContext | undefined>).detail);
+            setReviewOpen(true);
+        };
+
+        if (
+            new URL(window.location.href).searchParams.has(REVIEW_QUERY_PARAM)
+        ) {
+            setReviewOpen(true);
+        }
 
         window.addEventListener(OPEN_REVIEW_EVENT, openReview);
 
@@ -83,7 +93,10 @@ export default function ActionMenu() {
             key: 'review',
             label: t.fab.review,
             icon: <MessageSquareQuote size={22} aria-hidden="true" />,
-            run: () => setReviewOpen(true),
+            run: () => {
+                setReviewContext(undefined);
+                setReviewOpen(true);
+            },
         },
         {
             key: 'engage',
@@ -212,7 +225,11 @@ export default function ActionMenu() {
                 </motion.button>
             </div>
 
-            <ReviewDialog open={reviewOpen} onOpenChange={setReviewOpen} />
+            <ReviewDialog
+                open={reviewOpen}
+                onOpenChange={setReviewOpen}
+                context={reviewContext}
+            />
             <EngageDialog open={engageOpen} onOpenChange={setEngageOpen} />
         </>
     );

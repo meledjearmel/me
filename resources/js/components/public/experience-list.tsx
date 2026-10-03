@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
+import ReviewInvite from '@/components/public/review-invite';
 import { useLocale, useTranslations } from '@/lib/i18n';
 import type { PublicExperience } from '@/types';
 
@@ -111,6 +112,19 @@ export default function ExperienceList({
                                                     highlights={
                                                         experience.highlights
                                                     }
+                                                />
+
+                                                <ReviewInvite
+                                                    className="pub-review-invite--start"
+                                                    text={t.fab.reviewExperience(
+                                                        experience.company,
+                                                    )}
+                                                    cta={t.fab.reviewInviteCta}
+                                                    context={{
+                                                        label: `${experience.role} — ${experience.company}`,
+                                                        experienceId:
+                                                            experience.id,
+                                                    }}
                                                 />
                                             </div>
                                         </motion.div>

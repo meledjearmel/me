@@ -30,7 +30,7 @@ class TestimonialController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         return TestimonialResource::collection(
-            $this->paginateList(Testimonial::query()->with(['project', 'media'])->latest('submitted_at'), $request, ['author_name', 'author_email', 'author_role', 'content->fr', 'content->en'], ['status', 'is_featured'])
+            $this->paginateList(Testimonial::query()->with(['project', 'experience', 'education', 'media'])->latest('submitted_at'), $request, ['author_name', 'author_email', 'author_role', 'content->fr', 'content->en'], ['status', 'is_featured'])
         );
     }
 
@@ -39,7 +39,7 @@ class TestimonialController extends Controller
      */
     public function show(Testimonial $testimonial): TestimonialResource
     {
-        return new TestimonialResource($testimonial->load('project'));
+        return new TestimonialResource($testimonial->load(['project', 'experience', 'education']));
     }
 
     /**
@@ -64,7 +64,7 @@ class TestimonialController extends Controller
             $testimonial->attachVideo($request->file('video'));
         }
 
-        return new TestimonialResource($testimonial->refresh()->load('project'));
+        return new TestimonialResource($testimonial->refresh()->load(['project', 'experience', 'education']));
     }
 
     /**
@@ -76,7 +76,7 @@ class TestimonialController extends Controller
     {
         $testimonial->removeVideo();
 
-        return new TestimonialResource($testimonial->refresh()->load('project'));
+        return new TestimonialResource($testimonial->refresh()->load(['project', 'experience', 'education']));
     }
 
     /**

@@ -6,6 +6,7 @@ import ChatAssistant from '@/components/public/chat-assistant';
 import SiteFooter from '@/components/public/site-footer';
 import SiteHeader from '@/components/public/site-header';
 import { useSmoothAnchors } from '@/hooks/use-smooth-anchors';
+import { useTranslations } from '@/lib/i18n';
 import type { PublicProfile } from '@/types';
 
 export default function PublicShell({
@@ -16,6 +17,7 @@ export default function PublicShell({
     overHero?: boolean;
 }) {
     const { props } = usePage<{ profile: PublicProfile }>();
+    const t = useTranslations();
 
     useSmoothAnchors();
 
@@ -23,9 +25,16 @@ export default function PublicShell({
     return (
         <MotionConfig reducedMotion="user">
             <div className={`pub${overHero ? '' : ' pub--plain'}`}>
+                <a className="pub-skip" href="#contenu">
+                    {t.nav.skipToContent}
+                </a>
                 <SiteHeader overHero={overHero} />
                 {/* role explicite : main est en display: contents (voir public.css) */}
-                <main role="main">{children}</main>
+                <main role="main">
+                    {/* main en display: contents ne peut pas recevoir le focus : la cible du lien d'évitement est cet élément. */}
+                    <div id="contenu" tabIndex={-1} className="pub-skip-target" />
+                    {children}
+                </main>
                 <SiteFooter
                     name={props.profile.name}
                     email={props.profile.email}

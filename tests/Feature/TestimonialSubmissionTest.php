@@ -1,9 +1,13 @@
 <?php
 
+use App\Enums\ProjectStatus;
 use App\Enums\TestimonialStatus;
 use App\Jobs\ProcessTestimonialVideo;
 use App\Jobs\SendPushNotification;
+use App\Models\Education;
+use App\Models\Experience;
 use App\Models\Profile;
+use App\Models\Project;
 use App\Models\Testimonial;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -30,6 +34,41 @@ test('a submitted review stays pending and is stored in the visitor language', f
         ->and($testimonial->getTranslation('content', 'en'))->toContain('Very reliable')
         ->and($testimonial->submitted_at)->not->toBeNull();
     Queue::assertPushed(SendPushNotification::class, fn (SendPushNotification $job) => $job->data['type'] === 'testimonial');
+});
+
+test('a review left from a project, an experience or an education is linked to it', function () {
+    Queue::fake();
+    $project = Project::factory()->create();
+    $experience = Experience::factory()->create();
+    $education = Education::factory()->create();
+
+    $this->post('/fr/testimonials', [
+        'author_name' => 'Sam Client',
+        'author_email' => 'sam@example.test',
+        'content' => 'Un travail sérieux et une communication claire du début à la fin.',
+        'project_id' => $project->id,
+        'experience_id' => $experience->id,
+        'education_id' => $education->id,
+    ])->assertSessionHasNoErrors();
+
+    $testimonial = Testimonial::query()->firstOrFail();
+
+    expect($testimonial->project_id)->toBe($project->id)
+        ->and($testimonial->experience_id)->toBe($experience->id)
+        ->and($testimonial->education_id)->toBe($education->id);
+});
+
+test('a review cannot be linked to an archived project', function () {
+    $project = Project::factory()->create(['status' => ProjectStatus::Archived]);
+
+    $this->post('/fr/testimonials', [
+        'author_name' => 'Sam Client',
+        'author_email' => 'sam@example.test',
+        'content' => 'Un travail sérieux et une communication claire du début à la fin.',
+        'project_id' => $project->id,
+    ])->assertSessionHasErrors('project_id');
+
+    expect(Testimonial::query()->count())->toBe(0);
 });
 
 test('a pending review is not shown on the home page', function () {

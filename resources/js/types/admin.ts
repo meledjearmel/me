@@ -191,6 +191,10 @@ export type Testimonial = {
     video_transcript: Partial<Translatable> | null;
     project_id: number | null;
     project?: Project;
+    experience_id: number | null;
+    experience?: Pick<Experience, 'id' | 'company' | 'role'> | null;
+    education_id: number | null;
+    education?: Pick<Education, 'id' | 'institution' | 'degree'> | null;
     status: 'pending' | 'approved' | 'rejected';
     is_featured: boolean;
     submitted_at: string;

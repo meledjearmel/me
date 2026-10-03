@@ -44,6 +44,18 @@ class TestimonialResource extends JsonResource
                 /** @var array{fr: string, en: string} */
                 'title' => $this->project->getTranslations('title'),
             ]),
+            'experience' => $this->whenLoaded('experience', fn (): ?array => $this->experience === null ? null : [
+                'id' => $this->experience->id,
+                'company' => $this->experience->company,
+                /** @var array{fr: string, en: string} */
+                'role' => $this->experience->getTranslations('role'),
+            ]),
+            'education' => $this->whenLoaded('education', fn (): ?array => $this->education === null ? null : [
+                'id' => $this->education->id,
+                'institution' => $this->education->institution,
+                /** @var array{fr: string, en: string} */
+                'degree' => $this->education->getTranslations('degree'),
+            ]),
             'submitted_at' => $this->submitted_at,
         ];
     }

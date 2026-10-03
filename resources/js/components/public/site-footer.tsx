@@ -6,6 +6,7 @@ import Letters from '@/components/public/letters';
 import { useViewportProgress } from '@/hooks/use-viewport-progress';
 import { useContactDrawer } from '@/lib/contact-drawer';
 import { useLocalizedPath, useTranslations } from '@/lib/i18n';
+import { openReview } from '@/lib/review';
 import type { PublicProfile } from '@/types';
 import { usePrefersReducedMotion } from '@/hooks/use-media-query';
 
@@ -106,6 +107,13 @@ export default function SiteFooter({
                             {page.label}
                         </Link>
                     ))}
+                    <button
+                        type="button"
+                        className="pub-footer__review"
+                        onClick={() => openReview()}
+                    >
+                        {t.fab.review}
+                    </button>
                 </nav>
 
                 <nav aria-label={t.footer.linksLabel}>

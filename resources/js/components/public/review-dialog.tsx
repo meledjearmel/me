@@ -4,6 +4,7 @@ import TestimonialSubmissionController from '@/actions/App/Http/Controllers/Test
 import PubDialog, { DialogDone } from '@/components/public/pub-dialog';
 import ReviewVideoField from '@/components/public/review-video-field';
 import { useLocale, useTranslations } from '@/lib/i18n';
+import type { ReviewContext } from '@/lib/review';
 import type { PublicProfile } from '@/types';
 
 /**
@@ -13,9 +14,11 @@ import type { PublicProfile } from '@/types';
 export default function ReviewDialog({
     open,
     onOpenChange,
+    context,
 }: {
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    context?: ReviewContext;
 }) {
     const t = useTranslations();
     const locale = useLocale();
@@ -63,6 +66,34 @@ export default function ReviewDialog({
                                 hidden
                                 aria-hidden="true"
                             />
+
+                            {context && (
+                                <p className="pub-review-context">
+                                    {t.fab.reviewAbout}{' '}
+                                    <strong>{context.label}</strong>
+                                </p>
+                            )}
+                            {context?.projectId && (
+                                <input
+                                    type="hidden"
+                                    name="project_id"
+                                    value={context.projectId}
+                                />
+                            )}
+                            {context?.educationId && (
+                                <input
+                                    type="hidden"
+                                    name="education_id"
+                                    value={context.educationId}
+                                />
+                            )}
+                            {context?.experienceId && (
+                                <input
+                                    type="hidden"
+                                    name="experience_id"
+                                    value={context.experienceId}
+                                />
+                            )}
 
                             <div className="pub-drawer__fields">
                                 <label className="pub-drawer__field">

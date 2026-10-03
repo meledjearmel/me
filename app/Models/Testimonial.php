@@ -36,6 +36,8 @@ class Testimonial extends Model implements HasMedia
         'highlight',
         'video_transcript',
         'project_id',
+        'experience_id',
+        'education_id',
         'status',
         'is_featured',
         'submitted_at',
@@ -101,6 +103,18 @@ class Testimonial extends Model implements HasMedia
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    /** @return BelongsTo<Experience, $this> */
+    public function experience(): BelongsTo
+    {
+        return $this->belongsTo(Experience::class);
+    }
+
+    /** @return BelongsTo<Education, $this> */
+    public function education(): BelongsTo
+    {
+        return $this->belongsTo(Education::class);
     }
 
     /** Nombre maximum d'avis « à la une » (et de cartes du paquet de l'accueil). */

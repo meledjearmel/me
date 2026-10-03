@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import ReviewInvite from '@/components/public/review-invite';
 import { useTranslations } from '@/lib/i18n';
 import type { PublicEducation } from '@/types';
 
@@ -48,6 +49,15 @@ export default function EducationList({
                                 <span className="pub-exp__role">
                                     {education.institution}
                                 </span>
+                                <ReviewInvite
+                                    className="pub-review-invite--start pub-review-invite--small"
+                                    text={t.fab.reviewEducation}
+                                    cta={t.fab.reviewInviteCta}
+                                    context={{
+                                        label: education.institution,
+                                        educationId: education.id,
+                                    }}
+                                />
                             </span>
                             <span className="pub-exp__date">
                                 {education.end_date?.slice(0, 4)}

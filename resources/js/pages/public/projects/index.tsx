@@ -1,3 +1,4 @@
+import { router, usePage } from '@inertiajs/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMemo, useState } from 'react';
 import type { CSSProperties } from 'react';
@@ -28,10 +29,44 @@ export default function ProjectsIndex({
 }) {
     const t = useTranslations();
     const locale = useLocale();
+    const { url } = usePage();
     // Un domaine (son id), les projets open source, ou tous les projets (null).
-    const [activeFilter, setActiveFilter] = useState<
+    // Le filtre vit dans l'URL (?filtre=<clé du domaine>|open-source) pour être partagé et retrouvé.
+    const [activeFilter, setActiveFilterState] = useState<
         number | 'open-source' | null
-    >(null);
+    >(() => {
+        const filter = new URL(url, 'http://localhost').searchParams.get(
+            'filtre',
+        );
+
+        if (filter === 'open-source') {
+            return 'open-source';
+        }
+
+        return domains.find((domain) => domain.key === filter)?.id ?? null;
+    });
+
+    const setActiveFilter = (filter: number | 'open-source' | null) => {
+        setActiveFilterState(filter);
+
+        const key =
+            filter === 'open-source'
+                ? filter
+                : domains.find((domain) => domain.id === filter)?.key;
+        const nextUrl = new URL(window.location.href);
+
+        if (key) {
+            nextUrl.searchParams.set('filtre', key);
+        } else {
+            nextUrl.searchParams.delete('filtre');
+        }
+
+        router.replace({
+            url: nextUrl.pathname + nextUrl.search,
+            preserveScroll: true,
+            preserveState: true,
+        });
+    };
 
     const usedDomains = useMemo(
         () =>

@@ -23,6 +23,7 @@ const dictionaries = {
             switchLanguage: 'Passer le site en anglais',
             openMenu: 'Ouvrir le menu',
             closeMenu: 'Fermer le menu',
+            skipToContent: 'Aller au contenu',
         },
         testimonials: {
             kicker: 'Témoignages',
@@ -264,6 +265,18 @@ const dictionaries = {
             engage: 'Collaborer',
             top: 'Remonter',
             reviewTitle: 'Laisser un avis',
+            reviewAbout: 'Votre avis porte sur :',
+            reviewInvite: 'Vous avez travaillé avec moi ?',
+            reviewInviteCta: 'Laissez un avis',
+            reviewProject: 'Vous étiez sur ce projet ?',
+            reviewProjectCta: 'Donnez votre avis',
+            reviewExperience: (company: string) => `Vous étiez chez ${company} ?`,
+            reviewEducation: 'Camarade de promo ou formateur ?',
+            reviewContactHint: 'Déjà travaillé ensemble ?',
+            reviewContactCta: 'Laissez plutôt un avis',
+            reviewCardTitle: 'Votre avis ici',
+            reviewCardText:
+                'Un projet, une mission, une équipe partagée : racontez-le en quelques lignes.',
             reviewIntro:
                 "Un mot sur notre collaboration ? Votre avis sera relu avant d'être publié.",
             yourName: 'Votre nom',
@@ -369,6 +382,7 @@ const dictionaries = {
             switchLanguage: 'Switch the site to French',
             openMenu: 'Open the menu',
             closeMenu: 'Close the menu',
+            skipToContent: 'Skip to content',
         },
         testimonials: {
             kicker: 'Testimonials',
@@ -608,6 +622,18 @@ const dictionaries = {
             engage: 'Work together',
             top: 'Back to top',
             reviewTitle: 'Leave a review',
+            reviewAbout: 'Your review is about:',
+            reviewInvite: 'Have we worked together?',
+            reviewInviteCta: 'Leave a review',
+            reviewProject: 'Were you on this project?',
+            reviewProjectCta: 'Share your feedback',
+            reviewExperience: (company: string) => `Were you at ${company}?`,
+            reviewEducation: 'Classmate or teacher?',
+            reviewContactHint: 'Already worked together?',
+            reviewContactCta: 'Leave a review instead',
+            reviewCardTitle: 'Your review here',
+            reviewCardText:
+                'A project, a mission, a shared team: tell it in a few lines.',
             reviewIntro:
                 'A word about our collaboration? Your review will be read before it is published.',
             yourName: 'Your name',

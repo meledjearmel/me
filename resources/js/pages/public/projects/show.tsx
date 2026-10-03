@@ -10,6 +10,7 @@ import {
 } from '@/components/public/project-parts';
 import Seo from '@/components/public/seo';
 import PublicShell from '@/components/public/public-shell';
+import ReviewInvite from '@/components/public/review-invite';
 import { useLocale, useLocalizedPath, useTranslations } from '@/lib/i18n';
 import type { PublicProfile, PublicProject } from '@/types';
 
@@ -129,6 +130,16 @@ export default function ProjectShow({
                     )}
 
                     <ProjectCta />
+
+                    <ReviewInvite
+                        className="pub-review-invite--block site-wrap"
+                        text={t.fab.reviewProject}
+                        cta={t.fab.reviewProjectCta}
+                        context={{
+                            label: project.title,
+                            projectId: project.id,
+                        }}
+                    />
 
                     {nextProject && <ReadNext project={nextProject} />}
                 </div>

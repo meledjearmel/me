@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import Seo from '@/components/public/seo';
 import PageHero from '@/components/public/page-hero';
 import PublicShell from '@/components/public/public-shell';
-import { OPEN_REVIEW_EVENT } from '@/components/public/action-menu';
 import {
     initials,
     TestimonialExcerpt,
@@ -11,6 +10,7 @@ import {
     useTestimonialReader,
 } from '@/components/public/testimonial-parts';
 import { useLocale, useTranslations } from '@/lib/i18n';
+import { openReview } from '@/lib/review';
 import type { PublicTestimonial } from '@/types';
 
 /** Tous les avis approuvés, en colonnes qui s'ajustent à la longueur de chacun. */
@@ -50,11 +50,7 @@ export default function Testimonials({
                             <button
                                 type="button"
                                 className="pub-page-hero__back pub-reviews__cta"
-                                onClick={() =>
-                                    window.dispatchEvent(
-                                        new Event(OPEN_REVIEW_EVENT),
-                                    )
-                                }
+                                onClick={() => openReview()}
                             >
                                 {t.fab.review} →
                             </button>
@@ -71,12 +67,34 @@ export default function Testimonials({
                             {testimonials.length} {t.testimonials.countLabel}
                         </p>
 
-                        {testimonials.length === 0 ? (
+                        {testimonials.length === 0 && (
                             <p className="pub-reviews__empty">
                                 {t.testimonials.empty}
                             </p>
-                        ) : (
-                            <ul className="pub-reviews__grid">
+                        )}
+
+                        <ul className="pub-reviews__grid">
+                                {/* Première case : l'invitation à laisser son avis, bien visible. */}
+                                <li className="pub-review pub-review--invite">
+                                    <button
+                                        type="button"
+                                        onClick={() => openReview()}
+                                    >
+                                        <span
+                                            className="pub-review__invite-mark"
+                                            aria-hidden="true"
+                                        >
+                                            +
+                                        </span>
+                                        <strong>{t.fab.reviewCardTitle}</strong>
+                                        <span>{t.fab.reviewCardText}</span>
+                                        <em>
+                                            {t.fab.review}{' '}
+                                            <span aria-hidden="true">→</span>
+                                        </em>
+                                    </button>
+                                </li>
+
                                 {testimonials.map((testimonial, index) => (
                                     <motion.li
                                         key={testimonial.id}
@@ -129,8 +147,7 @@ export default function Testimonials({
                                         </figure>
                                     </motion.li>
                                 ))}
-                            </ul>
-                        )}
+                        </ul>
                     </div>
                 </section>
             </PublicShell>

@@ -8,6 +8,7 @@ import { Link } from '@inertiajs/react';
 import { useRef } from 'react';
 import { useViewportProgress } from '@/hooks/use-viewport-progress';
 import CloudBank from '@/components/public/cloud-bank';
+import ReviewInvite from '@/components/public/review-invite';
 import {
     initials,
     TestimonialExcerpt,
@@ -152,6 +153,11 @@ export default function Testimonials({
                                 <span aria-hidden="true">→</span>
                             </Link>
                         )}
+
+                        <ReviewInvite
+                            text={t.fab.reviewInvite}
+                            cta={t.fab.reviewInviteCta}
+                        />
                     </header>
 
                     <div className="pub-testi__cards">

@@ -69,6 +69,7 @@ export default function MobileMenu({
                                     <Link
                                         href={link.href}
                                         className="pub-menu__link"
+                                        prefetch
                                         aria-current={
                                             link.active ? 'page' : undefined
                                         }

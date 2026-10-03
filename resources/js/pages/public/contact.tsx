@@ -6,6 +6,7 @@ import Seo from '@/components/public/seo';
 import PageHero from '@/components/public/page-hero';
 import PhoneLink from '@/components/public/phone-link';
 import PublicShell from '@/components/public/public-shell';
+import ReviewInvite from '@/components/public/review-invite';
 import { useLocale, useTranslations } from '@/lib/i18n';
 import type { PublicProfile } from '@/types';
 
@@ -257,6 +258,12 @@ export default function Contact() {
                                     )}
                                 </Form>
                             )}
+
+                            <ReviewInvite
+                                className="pub-review-invite--start pub-review-invite--contact"
+                                text={t.fab.reviewContactHint}
+                                cta={t.fab.reviewContactCta}
+                            />
                         </div>
 
                         <aside className="pub-contact__side">

@@ -138,6 +138,7 @@ export default function SiteHeader({
                             key={link.href}
                             href={link.href}
                             className="pub-link"
+                            prefetch
                             aria-current={
                                 isActive(link.href) ? 'page' : undefined
                             }

@@ -62,6 +62,8 @@ export function useSmoothAnchors(): void {
                 behavior: reduceMotion ? 'auto' : 'smooth',
                 block: 'start',
             });
+            // Le focus suit le défilement (lien d'évitement, navigation au clavier).
+            target.focus({ preventScroll: true });
             window.history.pushState(null, '', url.hash);
         };
 

@@ -20,6 +20,8 @@ class TestimonialRequest extends FormRequest
         return [
             'status' => ['required', Rule::enum(TestimonialStatus::class)],
             'project_id' => ['nullable', 'exists:projects,id'],
+            'experience_id' => ['nullable', 'exists:experiences,id'],
+            'education_id' => ['nullable', 'exists:educations,id'],
             'is_featured' => ['boolean'],
             'author_name' => ['sometimes', 'string', 'max:255'],
             'author_role' => ['sometimes', 'nullable', 'string', 'max:255'],
