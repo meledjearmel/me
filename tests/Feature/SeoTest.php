@@ -44,3 +44,12 @@ test('llms.txt summarises the profile and published projects for ai engines', fu
     $response->assertSee(config('app.url').'/fr/projects/visible', false);
     $response->assertDontSee('hidden');
 });
+
+test('robots.txt points to the sitemap of the current domain', function () {
+    config(['app.url' => 'https://armeldev.xyz']);
+
+    $response = $this->get('/robots.txt');
+
+    $response->assertOk()->assertSee('Sitemap: https://armeldev.xyz/sitemap.xml', false);
+    expect($response->headers->get('Content-Type'))->toContain('text/plain');
+});

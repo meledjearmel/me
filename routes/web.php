@@ -12,6 +12,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LlmsTxtController;
 use App\Http\Controllers\LocaleRedirectController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\RobotsTxtController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SkillController;
 use App\Http\Controllers\TestimonialController;
@@ -26,6 +27,7 @@ Route::pattern('locale', implode('|', SetLocale::LOCALES));
 
 Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('llms.txt', LlmsTxtController::class)->name('llms');
+Route::get('robots.txt', RobotsTxtController::class)->name('robots');
 
 // La query string est conservée : un lien de campagne (?ref=linkedin) garde sa provenance.
 Route::get('/', function () {

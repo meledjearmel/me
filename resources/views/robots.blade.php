@@ -21,4 +21,4 @@ Disallow: /settings
 Disallow: /login
 Disallow: /api
 
-Sitemap: https://me.armeldev.xyz/sitemap.xml
+Sitemap: {{ $baseUrl }}/sitemap.xml
