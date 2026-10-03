@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\MusicGenreController;
 use App\Http\Controllers\Admin\ProfessionalReferenceController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProjectController;
+use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\SkillController;
 use App\Http\Controllers\Admin\TechnologyCategoryController;
 use App\Http\Controllers\Admin\TechnologyController;
@@ -31,6 +32,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('profile/music', [ProfileController::class, 'destroyMusic'])->name('profile.music.destroy');
+    Route::get('site-settings', [SiteSettingController::class, 'edit'])->name('site-settings.edit');
+    Route::patch('site-settings', [SiteSettingController::class, 'update'])->name('site-settings.update');
 
     Route::prefix('ai')->name('ai.')->middleware('throttle:ai-assist')->group(function () {
         Route::post('translate', [AiAssistController::class, 'translate'])->name('translate');

@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\ProfessionalReferenceController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\ProjectController;
 use App\Http\Controllers\Api\V1\PushTokenController;
+use App\Http\Controllers\Api\V1\SiteSettingController;
 use App\Http\Controllers\Api\V1\SkillController;
 use App\Http\Controllers\Api\V1\TechnologyCategoryController;
 use App\Http\Controllers\Api\V1\TechnologyController;
@@ -63,6 +64,8 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::post('appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
         Route::post('appointments/{appointment}/decline', [AppointmentController::class, 'decline'])->name('appointments.decline');
         Route::apiResource('appointment-types', AppointmentTypeController::class);
+        Route::get('site-settings', [SiteSettingController::class, 'show'])->name('site-settings.show');
+        Route::patch('site-settings', [SiteSettingController::class, 'update'])->name('site-settings.update');
         Route::prefix('availability')->name('availability.')->group(function (): void {
             Route::get('/', [AvailabilityController::class, 'index'])->name('index');
             Route::patch('settings', [AvailabilityController::class, 'updateSettings'])->name('settings.update');

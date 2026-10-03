@@ -36,6 +36,7 @@ class BookingSetting extends Model
     /** Les réglages, créés avec leurs valeurs par défaut au premier accès. */
     public static function current(): self
     {
-        return static::query()->firstOrCreate([]);
+        // refresh() : une ligne tout juste créée récupère les valeurs par défaut de la base.
+        return static::query()->first() ?? static::query()->create()->refresh();
     }
 }

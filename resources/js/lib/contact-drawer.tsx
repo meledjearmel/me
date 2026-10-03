@@ -1,4 +1,6 @@
+import { router, usePage } from '@inertiajs/react';
 import { createContext, useContext, useState, type ReactNode } from 'react';
+import { useLocalizedPath } from '@/lib/i18n';
 
 type ContactDrawerState = {
     isOpen: boolean;
@@ -14,6 +16,11 @@ const ContactDrawerContext = createContext<ContactDrawerState | null>(null);
  */
 export function ContactDrawerProvider({ children }: { children: ReactNode }) {
     const [isOpen, setOpen] = useState(false);
+    const path = useLocalizedPath();
+    // Réglable dans l'admin (Réglages du site) : tiroir latéral, ou page Contact.
+    const opensDrawer =
+        usePage<{ contactOpensDrawer?: boolean }>().props.contactOpensDrawer !==
+        false;
 
     return (
         <ContactDrawerContext.Provider
@@ -31,6 +38,12 @@ export function ContactDrawerProvider({ children }: { children: ReactNode }) {
                         form.querySelector<HTMLElement>(
                             'input:not([hidden])',
                         )?.focus({ preventScroll: true });
+
+                        return;
+                    }
+
+                    if (!opensDrawer) {
+                        router.visit(path('contact'));
 
                         return;
                     }

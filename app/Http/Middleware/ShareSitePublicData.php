@@ -7,6 +7,7 @@ use App\Models\Celebration;
 use App\Models\JobProfile;
 use App\Models\PageVisit;
 use App\Models\Profile;
+use App\Models\SiteSetting;
 use App\Services\BookingCalendar;
 use Closure;
 use Illuminate\Http\Request;
@@ -48,6 +49,8 @@ class ShareSitePublicData
             },
             'visitCount' => fn () => PageVisit::query()->count(),
             // La prise de rendez-vous est ouverte : la page et ses raccourcis s'affichent.
+            // Le bouton « Contact » ouvre le tiroir latéral, ou mène à la page Contact.
+            'contactOpensDrawer' => fn () => SiteSetting::current()->contact_opens_drawer,
             'bookingOpen' => fn () => app(BookingCalendar::class)->isOpen(),
             // Profils proposés dans la fenêtre « Embauche » : chacun a son CV.
             'cvProfiles' => fn () => JobProfile::query()

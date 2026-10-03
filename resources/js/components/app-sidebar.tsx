@@ -16,6 +16,7 @@ import {
     Mail,
     MessageSquareQuote,
     Music,
+    Settings2,
     PartyPopper,
     Sparkles,
     Tags,
@@ -49,6 +50,7 @@ import { index as educationsIndex } from '@/routes/admin/educations';
 import { index as experiencesIndex } from '@/routes/admin/experiences';
 import { index as jobProfilesIndex } from '@/routes/admin/job-profiles';
 import { edit as profileEdit } from '@/routes/admin/profile';
+import { edit as siteSettingsEdit } from '@/routes/admin/site-settings';
 import { index as referencesIndex } from '@/routes/admin/professional-references';
 import { index as projectsIndex } from '@/routes/admin/projects';
 import { index as skillsIndex } from '@/routes/admin/skills';
@@ -69,6 +71,7 @@ const mainNavItems: NavItem[] = [
 
 const careerNavItems: NavItem[] = [
     { title: 'Profil', href: profileEdit(), icon: User },
+    { title: 'Réglages du site', href: siteSettingsEdit(), icon: Settings2 },
     { title: 'Expériences', href: experiencesIndex(), icon: BriefcaseBusiness },
     { title: 'Formation', href: educationsIndex(), icon: GraduationCap },
     { title: 'Compétences', href: skillsIndex(), icon: Sparkles },
