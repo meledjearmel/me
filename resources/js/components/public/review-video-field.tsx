@@ -3,6 +3,7 @@ import type { ChangeEvent } from 'react';
 import PubDialog from '@/components/public/pub-dialog';
 import VideoRecorder, {
     canRecordVideo,
+    resolveInfiniteDuration,
 } from '@/components/public/video-recorder';
 import { useTranslations } from '@/lib/i18n';
 
@@ -15,15 +16,34 @@ function videoDuration(file: File): Promise<number | null> {
     return new Promise((resolve) => {
         const video = document.createElement('video');
         const url = URL.createObjectURL(file);
+        let settled = false;
         const done = (value: number | null) => {
+            if (settled) {
+                return;
+            }
+
+            settled = true;
             URL.revokeObjectURL(url);
             resolve(value);
         };
 
         video.preload = 'metadata';
-        video.onloadedmetadata = () =>
-            done(Number.isFinite(video.duration) ? video.duration : null);
+        video.muted = true;
+        // WebM filmé dans Chrome : durée inconnue (Infinity) jusqu'à ce qu'on la force.
+        video.ondurationchange = () => {
+            if (Number.isFinite(video.duration)) {
+                done(video.duration);
+            }
+        };
+        video.onloadedmetadata = () => {
+            if (Number.isFinite(video.duration)) {
+                done(video.duration);
+            } else {
+                resolveInfiniteDuration(video);
+            }
+        };
         video.onerror = () => done(null);
+        window.setTimeout(() => done(null), 5000);
         video.src = url;
     });
 }
@@ -180,6 +200,9 @@ export default function ReviewVideoField({ error }: { error?: string }) {
                         controls
                         playsInline
                         preload="metadata"
+                        onLoadedMetadata={(event) =>
+                            resolveInfiniteDuration(event.currentTarget)
+                        }
                     />
                     <div className="pub-vfield__meta">
                         <strong>{t.fab.videoReady}</strong>

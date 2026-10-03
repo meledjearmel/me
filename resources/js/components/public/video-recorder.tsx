@@ -7,14 +7,37 @@ const MAX_SECONDS = 180;
 /** ~2,5 Mbit/s : 3 minutes tiennent sous 60 Mo, loin des 95 Mo autorisés. */
 const VIDEO_BITRATE = 2_500_000;
 
-/** Premier format que le navigateur sait enregistrer (Safari : MP4, les autres : WebM). */
+/**
+ * Premier format que le navigateur sait enregistrer. WebM d'abord : le MP4
+ * fragmenté de Chrome ne se relit pas depuis un blob (la relecture reste
+ * bloquée en chargement). Safari, qui n'enregistre qu'en MP4, le relit bien.
+ */
 function pickMimeType(): string | undefined {
     return [
-        'video/mp4',
         'video/webm;codecs=vp9,opus',
         'video/webm;codecs=vp8,opus',
         'video/webm',
+        'video/mp4',
     ].find((type) => MediaRecorder.isTypeSupported(type));
+}
+
+/**
+ * Le WebM enregistré par Chrome n'inscrit pas sa durée (Infinity) : la barre de
+ * lecture est alors inutilisable. Sauter très loin force le navigateur à la
+ * calculer, puis on revient au début.
+ */
+export function resolveInfiniteDuration(video: HTMLVideoElement): void {
+    if (video.duration !== Infinity) {
+        return;
+    }
+
+    const rewind = () => {
+        video.removeEventListener('timeupdate', rewind);
+        video.currentTime = 0;
+    };
+
+    video.addEventListener('timeupdate', rewind);
+    video.currentTime = Number.MAX_SAFE_INTEGER;
 }
 
 /** L'enregistrement n'est proposé que si le navigateur sait filmer. */
@@ -191,15 +214,22 @@ export default function VideoRecorder({
     return (
         <div className="pub-vrec" data-phase={phase} data-cursor="native">
             <div className="pub-vrec__stage">
+                {/* Deux éléments distincts (key) : sinon React réutilise celui de
+                    l'aperçu, dont le flux caméra (srcObject) masque la relecture. */}
                 {isReview ? (
                     <video
+                        key="review"
                         className="pub-vrec__screen"
                         src={recordingUrl}
                         controls
                         playsInline
+                        onLoadedMetadata={(event) =>
+                            resolveInfiniteDuration(event.currentTarget)
+                        }
                     />
                 ) : (
                     <video
+                        key="live"
                         ref={liveRef}
                         className="pub-vrec__screen pub-vrec__screen--live"
                         autoPlay
