@@ -142,3 +142,11 @@ export type SharedCelebration = {
     /** Fermée par le visiteur, elle ne lui est plus proposée pendant ce nombre de jours. */
     snoozeDays: number;
 };
+
+export type PublicAppointmentType = {
+    id: number;
+    name: string;
+    description: string | null;
+    duration_minutes: number;
+    locations: ('video' | 'phone' | 'whatsapp' | 'in_person')[];
+};

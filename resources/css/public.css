@@ -7467,3 +7467,191 @@ html.pub-scroll {
         transform: translateY(-0.375rem) scale(0.97);
     }
 }
+
+/* ---------- Prise de rendez-vous ---------- */
+.pub-booking__card {
+    display: grid;
+    gap: clamp(1.75rem, 4vw, 2.75rem);
+    max-width: 920px;
+    margin-inline: auto;
+}
+
+.pub-booking__step {
+    display: grid;
+    gap: 0.9rem;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.pub-booking__step legend,
+.pub-booking__legend {
+    margin: 0 0 0.4rem;
+    padding: 0;
+    font-family: var(--pub-font-display);
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+}
+
+.pub-booking__step legend span,
+.pub-booking__legend span {
+    margin-right: 0.4em;
+    font-family: var(--pub-font-mono);
+    font-size: 0.45em;
+    letter-spacing: 0.1em;
+    opacity: 0.6;
+    vertical-align: middle;
+}
+
+.pub-booking__types {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 0.8rem;
+}
+
+.pub-booking__type {
+    display: grid;
+    gap: 0.35rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid color-mix(in oklab, var(--pub-text) 22%, transparent);
+    border-radius: 22px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition:
+        border-color 0.25s ease,
+        background-color 0.25s ease,
+        transform 0.25s ease;
+}
+
+.pub-booking__type:hover {
+    transform: translateY(-2px);
+    border-color: var(--pub-text);
+}
+
+.pub-booking__type[aria-pressed='true'] {
+    border-color: var(--pub-gold);
+    background: color-mix(in oklab, var(--pub-gold) 18%, transparent);
+}
+
+.pub-booking__type strong {
+    font-size: 1.1rem;
+}
+
+.pub-booking__type em {
+    font-family: var(--pub-font-mono);
+    font-size: 12px;
+    font-style: normal;
+    letter-spacing: 0.08em;
+    opacity: 0.7;
+}
+
+.pub-booking__type span {
+    font-size: 0.92rem;
+    opacity: 0.8;
+}
+
+.pub-booking__label {
+    margin: 0.4rem 0 0;
+    font-family: var(--pub-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.68;
+}
+
+.pub-booking__days,
+.pub-booking__times {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Beaucoup de jours : une rangée qui défile plutôt qu'un mur de pastilles. */
+.pub-booking__days {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.4rem;
+    scrollbar-width: none;
+}
+
+.pub-booking__days .pub-filter {
+    flex-shrink: 0;
+}
+
+.pub-booking__note {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.75;
+}
+
+.pub-booking__link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.pub-booking__summary {
+    display: grid;
+    gap: 0.2rem;
+    margin: 0;
+    padding: 0.9rem 1.1rem;
+    border-radius: 16px;
+    background: color-mix(in oklab, var(--pub-gold) 22%, transparent);
+}
+
+.pub-booking__summary span {
+    font-family: var(--pub-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.pub-booking__summary strong::first-letter {
+    text-transform: uppercase;
+}
+
+.pub-booking__error {
+    color: var(--pub-coral);
+    font-size: 0.85rem;
+}
+
+.pub-booking__skeleton {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.pub-booking__skeleton i {
+    width: 92px;
+    height: 42px;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--pub-text) 10%, transparent);
+    animation: pub-booking-pulse 1.2s ease-in-out infinite;
+}
+
+.pub-booking__skeleton i:nth-child(even) {
+    animation-delay: 0.2s;
+}
+
+@keyframes pub-booking-pulse {
+    50% {
+        opacity: 0.4;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pub-booking__skeleton i {
+        animation: none;
+    }
+}

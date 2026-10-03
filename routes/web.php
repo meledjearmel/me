@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\AppointmentBookingController;
 use App\Http\Controllers\CelebrationCongratulationController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CongratulationController;
@@ -53,6 +54,13 @@ Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, Lo
     Route::post('testimonials', [TestimonialSubmissionController::class, 'store'])
         ->middleware('throttle:5,1')
         ->name('testimonials.store');
+    Route::get('appointments', [AppointmentBookingController::class, 'index'])->name('appointments.index');
+    Route::get('appointments/slots', [AppointmentBookingController::class, 'slots'])
+        ->middleware('throttle:60,1')
+        ->name('appointments.slots');
+    Route::post('appointments', [AppointmentBookingController::class, 'store'])
+        ->middleware('throttle:5,1')
+        ->name('appointments.store');
     Route::post('engagements', [EngagementController::class, 'store'])
         ->middleware('throttle:5,1')
         ->name('engagements.store');

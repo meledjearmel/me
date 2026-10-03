@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\AppointmentLocation;
 use App\Enums\AppointmentStatus;
+use App\Jobs\SendAppointmentMails;
 use App\Models\Appointment;
 use App\Models\AppointmentType;
 use App\Models\BookingSetting;
@@ -28,6 +29,13 @@ class BookingCalendar
     public function settings(): BookingSetting
     {
         return BookingSetting::current();
+    }
+
+    /** La réservation est ouverte et au moins un type de rendez-vous est proposé. */
+    public function isOpen(): bool
+    {
+        return $this->settings()->is_enabled
+            && AppointmentType::query()->where('is_active', true)->exists();
     }
 
     /**
@@ -194,6 +202,8 @@ class BookingCalendar
             'meeting_details' => $meetingDetails,
             'confirmed_at' => now(),
         ]);
+
+        SendAppointmentMails::dispatch($appointment->id, 'confirmed');
     }
 
     /** Refuse une demande (en attente ou déjà confirmée) et libère son créneau. */
@@ -206,6 +216,8 @@ class BookingCalendar
             'decline_reason' => $reason,
         ]);
         $this->release($appointment);
+
+        SendAppointmentMails::dispatch($appointment->id, 'declined');
     }
 
     /** Annulation par le visiteur (lien reçu par email) : le créneau est libéré. */
