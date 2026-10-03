@@ -36,6 +36,7 @@ class ProfileRequest extends FormRequest
             'cv_job_profile_id' => ['sometimes', 'nullable', 'integer', 'exists:job_profiles,id'],
             // Source prioritaire du CV (téléchargement et envoi aux recruteurs) ; l'autre sert de repli.
             'cv_source' => ['sometimes', Rule::enum(CvSource::class)],
+            'testimonial_video_enabled' => ['sometimes', 'boolean'],
             'photo' => ['nullable', 'image', 'max:5120'],
             'cv_photo' => ['nullable', 'image', 'max:5120'],
             'music' => ['nullable', 'file', 'mimes:mp3,ogg,wav,m4a,aac', 'max:20480'],

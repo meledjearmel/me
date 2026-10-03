@@ -5,6 +5,7 @@ use App\Jobs\ProcessTestimonialVideo;
 use App\Jobs\SendPushNotification;
 use App\Models\Profile;
 use App\Models\Testimonial;
+use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
@@ -94,3 +95,31 @@ test('a review video must be a video under 95 MB', function (UploadedFile $file)
     'not a video' => fn () => UploadedFile::fake()->create('avis.pdf', 100, 'application/pdf'),
     'too heavy' => fn () => UploadedFile::fake()->create('avis.mp4', 97281, 'video/mp4'),
 ]);
+
+test('a review video is refused when video reviews are disabled in the admin', function () {
+    Storage::fake('public');
+    Profile::query()->update(['testimonial_video_enabled' => false]);
+
+    $this->post('/fr/testimonials', [
+        'author_name' => 'Sam Client',
+        'author_email' => 'sam@example.test',
+        'content' => 'Un travail sérieux et une communication claire du début à la fin.',
+        'video' => UploadedFile::fake()->create('avis.mp4', 100, 'video/mp4'),
+    ])->assertSessionHasErrors('video');
+
+    $this->get('/fr/testimonials')->assertInertia(fn ($page) => $page->where('profile.testimonial_video_enabled', false));
+});
+
+test('the admin can turn video reviews off', function () {
+    $profile = Profile::query()->firstOrFail();
+
+    $this->actingAs(User::factory()->create())->patch(route('admin.profile.update'), [
+        ...$profile->only(['name', 'email']),
+        'headline' => ['fr' => 'Titre', 'en' => 'Title'],
+        'bio_short' => ['fr' => 'Court', 'en' => 'Short'],
+        'bio_full' => ['fr' => 'Long', 'en' => 'Long'],
+        'testimonial_video_enabled' => '0',
+    ])->assertSessionHasNoErrors();
+
+    expect($profile->fresh()->testimonial_video_enabled)->toBeFalse();
+});

@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/field';
 import FormSelect from '@/components/admin/form-select';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { edit as profileEdit } from '@/routes/admin/profile';
@@ -381,6 +382,40 @@ export default function ProfileEdit({
                                     </FieldDescription>
                                     <FieldError>{errors.cv_source}</FieldError>
                                 </Field>
+                            </div>
+
+                            <div className="grid gap-2 rounded-lg border p-4">
+                                <p className="text-sm font-medium">
+                                    Avis des visiteurs
+                                </p>
+                                <Field orientation="horizontal">
+                                    <input
+                                        type="hidden"
+                                        name="testimonial_video_enabled"
+                                        value="0"
+                                    />
+                                    <Checkbox
+                                        id="testimonial_video_enabled"
+                                        name="testimonial_video_enabled"
+                                        value="1"
+                                        defaultChecked={
+                                            profile.testimonial_video_enabled
+                                        }
+                                    />
+                                    <FieldLabel htmlFor="testimonial_video_enabled">
+                                        Autoriser les avis vidéo
+                                    </FieldLabel>
+                                </Field>
+                                <FieldDescription>
+                                    Les visiteurs peuvent joindre une vidéo à
+                                    leur avis ou se filmer depuis la page.
+                                    Désactivé, le formulaire ne propose plus que
+                                    le texte. Les vidéos déjà reçues restent
+                                    affichées.
+                                </FieldDescription>
+                                <FieldError>
+                                    {errors.testimonial_video_enabled}
+                                </FieldError>
                             </div>
 
                             <Button disabled={processing}>Enregistrer</Button>

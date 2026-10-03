@@ -1,9 +1,10 @@
-import { Form } from '@inertiajs/react';
+import { Form, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import TestimonialSubmissionController from '@/actions/App/Http/Controllers/TestimonialSubmissionController';
 import PubDialog, { DialogDone } from '@/components/public/pub-dialog';
 import ReviewVideoField from '@/components/public/review-video-field';
 import { useLocale, useTranslations } from '@/lib/i18n';
+import type { PublicProfile } from '@/types';
 
 /**
  * « Laisser un avis » : le visiteur écrit son avis, avec une vidéo s'il le
@@ -19,6 +20,8 @@ export default function ReviewDialog({
     const t = useTranslations();
     const locale = useLocale();
     const [sent, setSent] = useState(false);
+    const videoEnabled = usePage<{ profile: PublicProfile }>().props.profile
+        .testimonial_video_enabled;
     const change = (next: boolean) => {
         onOpenChange(next);
 
@@ -109,7 +112,9 @@ export default function ReviewDialog({
                                     )}
                                 </label>
 
-                                <ReviewVideoField error={errors.video} />
+                                {videoEnabled && (
+                                    <ReviewVideoField error={errors.video} />
+                                )}
                             </div>
 
                             <button

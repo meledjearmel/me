@@ -253,6 +253,7 @@ export type Profile = {
     congratulation_notify_minutes: number;
     cv_job_profile_id: number | null;
     cv_source: 'uploaded' | 'generated';
+    testimonial_video_enabled: boolean;
     cv_last_name?: string | null;
     cv_first_name?: string | null;
     photo_url?: string | null;

@@ -35,6 +35,7 @@ class Profile extends Model implements HasMedia
         'congratulation_notify_minutes',
         'cv_job_profile_id',
         'cv_source',
+        'testimonial_video_enabled',
     ];
 
     /** @var array<string, string> */
@@ -42,6 +43,7 @@ class Profile extends Model implements HasMedia
         'social_links' => 'array',
         'congratulation_notify_minutes' => 'integer',
         'cv_source' => CvSource::class,
+        'testimonial_video_enabled' => 'boolean',
     ];
 
     /**
