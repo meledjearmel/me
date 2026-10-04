@@ -51,9 +51,20 @@ test('the uses seeder adds the site technologies in the matching category, witho
 
     $nginx = UsesItem::query()->where('name', 'Nginx')->sole();
     expect($nginx->category)->toBe(UsesCategory::Services)
+        ->and($nginx->url)->toBe('https://nginx.org/')
         ->and($nginx->getTranslation('description', 'en'))->toBe('Web server')
         ->and(UsesItem::query()->where('name', 'MikroTik')->sole()->category)->toBe(UsesCategory::Hardware)
         ->and(UsesItem::query()->where('name', 'PhpStorm')->sole()->category)->toBe(UsesCategory::Development);
+});
+
+test('the uses seeder fills a missing technology link but keeps one set by hand', function () {
+    $missing = UsesItem::factory()->create(['name' => 'Laravel', 'url' => null]);
+    $custom = UsesItem::factory()->create(['name' => 'React', 'url' => 'https://example.com/react']);
+
+    (new UsesItemSeeder)->run();
+
+    expect($missing->refresh()->url)->toBe('https://laravel.com/')
+        ->and($custom->refresh()->url)->toBe('https://example.com/react');
 });
 
 test('running the uses seeder again never overwrites an edit nor restores a deleted item', function () {

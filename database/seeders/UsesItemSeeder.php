@@ -13,6 +13,7 @@ use Illuminate\Database\Seeder;
  *
  * N'ajoute que les éléments absents (par nom) : un re-seed n'écrase jamais une
  * modification et ne recrée pas un élément supprimé (il reste dans la corbeille).
+ * Seule exception : il complète le lien d'une technologie quand il est vide.
  */
 class UsesItemSeeder extends Seeder
 {
@@ -47,6 +48,67 @@ class UsesItemSeeder extends Seeder
     /** Les technologies passent après les outils décrits à la main dans chaque rubrique. */
     private const int TECHNOLOGY_SORT_OFFSET = 100;
 
+    /**
+     * Site officiel de chaque technologie (le modèle Technology n'a pas de lien).
+     *
+     * @var array<string, string>
+     */
+    private const array TECHNOLOGY_URLS = [
+        'PHP' => 'https://www.php.net/',
+        'TypeScript' => 'https://www.typescriptlang.org/',
+        'Laravel' => 'https://laravel.com/',
+        'Inertia' => 'https://inertiajs.com/',
+        'React' => 'https://react.dev/',
+        'PostgreSQL' => 'https://www.postgresql.org/',
+        'MySQL' => 'https://www.mysql.com/',
+        'Redis' => 'https://redis.io/',
+        'Pest' => 'https://pestphp.com/',
+        'PHPStan' => 'https://phpstan.org/',
+        'Fortify (2FA)' => 'https://laravel.com/docs/fortify',
+        'Proxmox' => 'https://www.proxmox.com/',
+        'Docker' => 'https://www.docker.com/',
+        'Nginx' => 'https://nginx.org/',
+        'Ollama' => 'https://ollama.com/',
+        'Vite' => 'https://vite.dev/',
+        'TailwindCSS' => 'https://tailwindcss.com/',
+        'Alpine.js' => 'https://alpinejs.dev/',
+        'Livewire' => 'https://livewire.laravel.com/',
+        'Expo' => 'https://expo.dev/',
+        'JS Vanilla' => 'https://developer.mozilla.org/docs/Web/JavaScript',
+        'Node.js' => 'https://nodejs.org/',
+        'Figma' => 'https://www.figma.com/',
+        'Anthropic AI' => 'https://www.anthropic.com/',
+        'OpenAI' => 'https://openai.com/',
+        'WordPress' => 'https://wordpress.org/',
+        'Elementor' => 'https://elementor.com/',
+        'Divi' => 'https://www.elegantthemes.com/gallery/divi/',
+        'Alphabet' => 'https://abc.xyz/',
+        'PhpStorm' => 'https://www.jetbrains.com/phpstorm/',
+        'Cursor' => 'https://cursor.com/',
+        'Ubuntu' => 'https://ubuntu.com/',
+        'Debian' => 'https://www.debian.org/',
+        'Apache' => 'https://httpd.apache.org/',
+        'MikroTik' => 'https://mikrotik.com/',
+        'WireGuard' => 'https://www.wireguard.com/',
+        'Tailscale' => 'https://tailscale.com/',
+        'PHPUnit' => 'https://phpunit.de/',
+        'Git' => 'https://git-scm.com/',
+        'GitHub' => 'https://github.com/',
+        'GitLab' => 'https://about.gitlab.com/',
+        'Flutter' => 'https://flutter.dev/',
+        'Dart' => 'https://dart.dev/',
+        'React Native' => 'https://reactnative.dev/',
+        'Vue.js' => 'https://vuejs.org/',
+        'Linux' => 'https://www.kernel.org/',
+        'Zabbix' => 'https://www.zabbix.com/',
+        'GLPI' => 'https://glpi-project.org/',
+        'MariaDB' => 'https://mariadb.org/',
+        'SQLite' => 'https://www.sqlite.org/',
+        'Vitest' => 'https://vitest.dev/',
+        'Angular' => 'https://angular.dev/',
+        'NativePHP' => 'https://nativephp.com/',
+    ];
+
     public function run(): void
     {
         $existing = UsesItem::withTrashed()->pluck('name')->map(fn (string $name): string => mb_strtolower($name))->flip();
@@ -80,10 +142,16 @@ class UsesItemSeeder extends Seeder
             $add([
                 'category' => $category,
                 'name' => $technology->name,
-                'url' => null,
+                'url' => self::TECHNOLOGY_URLS[$technology->name] ?? null,
                 'description' => $technology->getTranslations('description') ?: null,
                 'sort_order' => self::TECHNOLOGY_SORT_OFFSET + $order,
             ]);
+        }
+
+        // Éléments créés avant que les liens existent : on complète un lien vide, sans
+        // jamais remplacer un lien saisi dans l'administration.
+        foreach (self::TECHNOLOGY_URLS as $name => $url) {
+            UsesItem::withTrashed()->where('name', $name)->whereNull('url')->update(['url' => $url]);
         }
     }
 
