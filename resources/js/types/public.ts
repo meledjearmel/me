@@ -84,6 +84,29 @@ export type PublicProject = {
     related_projects: PublicProject[];
 };
 
+export type PublicPostTag = {
+    slug: string;
+    name: string;
+};
+
+export type PublicPost = {
+    id: number;
+    slug: string;
+    title: string;
+    excerpt: string | null;
+    reading_minutes: number;
+    is_featured: boolean;
+    published_at: string;
+    updated_at: string;
+    cover_url: string | null;
+    /** Langue réelle du contenu : `fr` quand l'article n'est pas traduit. */
+    content_locale: 'fr' | 'en';
+    tags: PublicPostTag[];
+    /** Page de l'article seulement : HTML nettoyé, titres ancrés. */
+    body?: string;
+    toc?: { id: string; text: string; level: number }[];
+};
+
 export type PublicJobProfile = {
     id: number;
     key: string;

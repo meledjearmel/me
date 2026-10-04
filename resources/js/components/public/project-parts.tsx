@@ -260,7 +260,13 @@ export function ProjectGallery({ urls }: { urls: string[] }) {
  * Invitation à demander une démo : ouvre la même fenêtre « Collaborer »
  * que le bouton d'action flottant.
  */
-export function ProjectCta() {
+export function ProjectCta({
+    title,
+    text,
+}: {
+    title?: string;
+    text?: string;
+} = {}) {
     const t = useTranslations();
     const [engageOpen, setEngageOpen] = useState(false);
 
@@ -268,10 +274,10 @@ export function ProjectCta() {
         <section className="pub-project-cta" aria-labelledby="pub-project-cta">
             <div className="site-wrap pub-project-cta__grid">
                 <h2 id="pub-project-cta" className="pub-project-cta__title">
-                    {t.projects.ctaTitle}
+                    {title ?? t.projects.ctaTitle}
                 </h2>
                 <div className="pub-project-cta__body">
-                    <p>{t.projects.ctaText}</p>
+                    <p>{text ?? t.projects.ctaText}</p>
                     <button
                         type="button"
                         className="pub-project-cta__button"

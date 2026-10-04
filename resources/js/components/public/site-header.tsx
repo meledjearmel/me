@@ -51,7 +51,10 @@ export default function SiteHeader({
 }) {
     const t = useTranslations();
     const path = useLocalizedPath();
-    const { props, url } = usePage<{ profile: PublicProfile }>();
+    const { props, url } = usePage<{
+        profile: PublicProfile;
+        blogEnabled: boolean;
+    }>();
     const { compact, onDark } = useNavState(overHero);
     const { profile } = props;
     const [menuOpen, setMenuOpen] = useState(false);
@@ -77,6 +80,9 @@ export default function SiteHeader({
         { href: path('about'), label: t.nav.about },
         { href: path('skills'), label: t.nav.skills },
         { href: path('projects'), label: t.nav.projects },
+        ...(props.blogEnabled
+            ? [{ href: path('blog'), label: t.nav.blog }]
+            : []),
     ];
 
     const menuLinks = [

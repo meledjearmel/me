@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { motion, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import Skyline from '@/components/public/skyline';
@@ -28,6 +28,7 @@ export default function SiteFooter({
     const t = useTranslations();
     const path = useLocalizedPath();
     const { open } = useContactDrawer();
+    const { blogEnabled } = usePage<{ blogEnabled: boolean }>().props;
     const reduceMotion = usePrefersReducedMotion();
     const headlineRef = useRef<HTMLDivElement>(null);
     const progress = useViewportProgress(headlineRef, HEADLINE_RANGE);
@@ -51,6 +52,7 @@ export default function SiteFooter({
         { label: t.nav.about, href: path('about') },
         { label: t.nav.skills, href: path('skills') },
         { label: t.nav.projects, href: path('projects') },
+        ...(blogEnabled ? [{ label: t.nav.blog, href: path('blog') }] : []),
         { label: t.testimonials.pageTitle, href: path('testimonials') },
         { label: t.nav.contact, href: path('contact') },
     ];
