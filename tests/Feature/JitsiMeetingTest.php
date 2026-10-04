@@ -25,7 +25,7 @@ test('confirming a video appointment creates a unique Jitsi room by default', fu
     app(BookingCalendar::class)->confirm($first);
     app(BookingCalendar::class)->confirm($second);
 
-    expect($first->fresh()->meeting_details)->toMatch('#^https://meet\.jit\.si/armel-meledje-appel-decouverte-[a-z0-9]{12}$#')
+    expect($first->fresh()->meeting_details)->toMatch('#^https://meet\.jit\.si/armel-dev-appel-decouverte-[a-z0-9]{12}$#')
         ->and($second->fresh()->meeting_details)->not->toBe($first->fresh()->meeting_details);
 });
 
@@ -51,13 +51,13 @@ test('a phone appointment gets no video room', function () {
 });
 
 test('the confirmation email and the calendar invitation carry the room link', function () {
-    $appointment = Appointment::factory()->confirmed()->create(['meeting_details' => 'https://meet.jit.si/armel-meledje-appel-abc123']);
+    $appointment = Appointment::factory()->confirmed()->create(['meeting_details' => 'https://meet.jit.si/armel-dev-appel-abc123']);
 
     (new AppointmentVisitorMail($appointment, 'confirmed'))
         ->assertSeeInHtml('Rejoindre la visio')
-        ->assertSeeInHtml('https://meet.jit.si/armel-meledje-appel-abc123');
+        ->assertSeeInHtml('https://meet.jit.si/armel-dev-appel-abc123');
 
-    expect(app(AppointmentInvite::class)->ics($appointment))->toContain('URL:https://meet.jit.si/armel-meledje-appel-abc123');
+    expect(app(AppointmentInvite::class)->ics($appointment))->toContain('URL:https://meet.jit.si/armel-dev-appel-abc123');
 });
 
 test('the video mode is set from the admin and needs a link when fixed', function () {

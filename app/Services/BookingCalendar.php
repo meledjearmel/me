@@ -7,7 +7,6 @@ use App\Enums\AppointmentStatus;
 use App\Jobs\SendAppointmentMails;
 use App\Models\Appointment;
 use App\Models\AppointmentType;
-use App\Models\Profile;
 use App\Models\SiteSetting;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
@@ -27,6 +26,9 @@ class BookingCalendar
 {
     /** Jours de la semaine, dans l'ordre et au format attendu par Zap. */
     public const array DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+    /** Début du nom des salles Jitsi : https://meet.jit.si/armel-dev-… */
+    public const string JITSI_ROOM_PREFIX = 'armel-dev';
 
     public function settings(): SiteSetting
     {
@@ -224,10 +226,9 @@ class BookingCalendar
      */
     public function jitsiRoomUrl(Appointment $appointment): string
     {
-        $owner = Str::slug((string) (Profile::query()->value('name') ?? config('app.name')));
         $type = Str::slug((string) $appointment->appointmentType?->getTranslation('name', 'fr'));
 
-        return 'https://meet.jit.si/'.collect([$owner, $type, Str::lower(Str::random(12))])->filter()->implode('-');
+        return 'https://meet.jit.si/'.collect([self::JITSI_ROOM_PREFIX, $type, Str::lower(Str::random(12))])->filter()->implode('-');
     }
 
     /** Refuse une demande (en attente ou déjà confirmée) et libère son créneau. */
