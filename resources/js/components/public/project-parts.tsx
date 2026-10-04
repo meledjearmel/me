@@ -6,10 +6,18 @@ import BookingInvite from '@/components/public/booking-invite';
 import EngageDialog from '@/components/public/engage-dialog';
 import ScrollText from '@/components/public/scroll-text';
 import { TechIcon } from '@/components/public/tech-marquee';
+import {
+    TestimonialExcerpt,
+    useTestimonialReader,
+} from '@/components/public/testimonial-parts';
 import { useViewportProgress } from '@/hooks/use-viewport-progress';
 import { accentFor, readableTextOn } from '@/lib/accent';
-import { useLocalizedPath, useTranslations } from '@/lib/i18n';
-import type { PublicProject, PublicTechnology } from '@/types';
+import { useLocale, useLocalizedPath, useTranslations } from '@/lib/i18n';
+import type {
+    PublicProject,
+    PublicTechnology,
+    PublicTestimonial,
+} from '@/types';
 import { usePrefersReducedMotion } from '@/hooks/use-media-query';
 
 /** Variables CSS d'un projet : sa couleur d'accent et la couleur de texte lisible dessus. */
@@ -25,13 +33,45 @@ export function accentStyle(
     } as CSSProperties;
 }
 
+/** « mars 2024 – juin 2024 », « mars 2024 – en cours », ou rien sans date de début. */
+function projectPeriod(
+    project: PublicProject,
+    locale: string,
+    ongoing: string,
+): string | null {
+    if (!project.started_on) {
+        return null;
+    }
+
+    // Le 15 du mois : aucun fuseau ne fait basculer la date sur le mois voisin.
+    const format = (month: string) =>
+        new Intl.DateTimeFormat(locale, {
+            month: 'short',
+            year: 'numeric',
+        }).format(new Date(`${month}-15T12:00:00`));
+
+    const start = format(project.started_on);
+
+    if (project.ended_on === project.started_on) {
+        return start;
+    }
+
+    return `${start} – ${project.ended_on ? format(project.ended_on) : ongoing}`;
+}
+
 /** Panneau de faits dans le bandeau : domaines, technologies, code, démo. */
 export function ProjectMeta({ project }: { project: PublicProject }) {
     const t = useTranslations();
+    const locale = useLocale();
     const identity = [
         [t.projects.roleLabel, project.role],
         [t.projects.clientLabel, project.client],
         [t.projects.platformLabel, project.platform],
+        [t.projects.periodLabel, projectPeriod(project, locale, t.projects.ongoing)],
+        [
+            t.projects.teamLabel,
+            project.team_size ? t.projects.team(project.team_size) : null,
+        ],
     ].filter((entry): entry is [string, string] => Boolean(entry[1]));
 
     return (
@@ -175,8 +215,15 @@ function TechnologyRows({
  * et réalisation s'écrivent au défilement, le résultat passe sur un fond à la
  * couleur du projet, puis viennent les technologies.
  */
-export function ProjectStory({ project }: { project: PublicProject }) {
+export function ProjectStory({
+    project,
+    testimonial,
+}: {
+    project: PublicProject;
+    testimonial: PublicTestimonial | null;
+}) {
     const t = useTranslations();
+    const reader = useTestimonialReader();
     let number = 0;
     const next = () => String(++number).padStart(2, '0');
 
@@ -189,12 +236,34 @@ export function ProjectStory({ project }: { project: PublicProject }) {
                 />
             </LedgerSection>
 
+            {project.challenges && (
+                <LedgerSection number={next()} label={t.projects.challenges}>
+                    <ScrollText
+                        text={project.challenges}
+                        className="pub-ledger__text"
+                    />
+                </LedgerSection>
+            )}
+
             <LedgerSection number={next()} label={t.projects.realization}>
                 <ScrollText
                     text={project.realization}
                     className="pub-ledger__text"
                 />
             </LedgerSection>
+
+            {project.decisions.length > 0 && (
+                <LedgerSection number={next()} label={t.projects.decisions}>
+                    <ol className="pub-decisions">
+                        {project.decisions.map((decision, index) => (
+                            <li key={index}>
+                                <h3>{decision.choice}</h3>
+                                <p>{decision.reason}</p>
+                            </li>
+                        ))}
+                    </ol>
+                </LedgerSection>
+            )}
 
             <LedgerSection
                 number={next()}
@@ -229,6 +298,30 @@ export function ProjectStory({ project }: { project: PublicProject }) {
                     </dl>
                 )}
             </LedgerSection>
+
+            {testimonial && (
+                <LedgerSection
+                    number={next()}
+                    label={t.projects.testimonialLabel}
+                >
+                    <figure className="pub-project-testi">
+                        <TestimonialExcerpt
+                            testimonial={testimonial}
+                            lines={8}
+                            quoteClassName="pub-project-testi__quote"
+                            expandInline={!testimonial.video}
+                            onOpen={() => reader.open(testimonial)}
+                        />
+                        <figcaption>
+                            <strong>{testimonial.author_name}</strong>
+                            {testimonial.author_role && (
+                                <span>{testimonial.author_role}</span>
+                            )}
+                        </figcaption>
+                    </figure>
+                    {reader.reader}
+                </LedgerSection>
+            )}
 
             {project.technologies.length > 0 && (
                 <LedgerSection number={next()} label={t.projects.techLabel}>

@@ -8073,3 +8073,70 @@ html.pub-scroll {
     text-transform: uppercase;
     opacity: 0.6;
 }
+
+/* Étude de cas : choix techniques et avis du client */
+.pub-decisions {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.25rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: decision;
+}
+
+.pub-decisions li {
+    display: grid;
+    gap: 0.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid color-mix(in oklab, var(--pub-text) 16%, transparent);
+    counter-increment: decision;
+}
+
+.pub-decisions h3 {
+    margin: 0;
+    font-family: var(--pub-font-display);
+    font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+}
+
+.pub-decisions h3::before {
+    content: counter(decision, decimal-leading-zero) ' ';
+    color: var(--accent);
+    font-family: var(--pub-font-mono);
+    font-size: 0.6em;
+    vertical-align: 0.35em;
+}
+
+.pub-decisions p {
+    margin: 0;
+    max-width: 62ch;
+    font-size: clamp(1rem, 1.3vw, 1.1rem);
+    line-height: 1.6;
+    opacity: 0.8;
+}
+
+.pub-project-testi {
+    display: grid;
+    gap: 1.25rem;
+    margin: 0;
+}
+
+.pub-project-testi__quote {
+    margin: 0;
+    font-family: var(--pub-font-display);
+    font-size: clamp(1.4rem, 2.8vw, 2.2rem);
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+}
+
+.pub-project-testi figcaption {
+    display: grid;
+    gap: 0.15rem;
+}
+
+.pub-project-testi figcaption span {
+    font-size: 0.95rem;
+    opacity: 0.7;
+}

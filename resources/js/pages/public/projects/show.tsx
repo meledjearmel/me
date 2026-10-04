@@ -12,7 +12,11 @@ import Seo from '@/components/public/seo';
 import PublicShell from '@/components/public/public-shell';
 import ReviewInvite from '@/components/public/review-invite';
 import { useLocale, useLocalizedPath, useTranslations } from '@/lib/i18n';
-import type { PublicProfile, PublicProject } from '@/types';
+import type {
+    PublicProfile,
+    PublicProject,
+    PublicTestimonial,
+} from '@/types';
 
 /** Première phrase d'un texte : sert de chapô dans le bandeau. */
 const firstSentence = (text: string) => {
@@ -24,9 +28,11 @@ const firstSentence = (text: string) => {
 export default function ProjectShow({
     project,
     nextProject,
+    testimonial,
 }: {
     project: PublicProject;
     nextProject: PublicProject | null;
+    testimonial: PublicTestimonial | null;
 }) {
     const t = useTranslations();
     const locale = useLocale();
@@ -97,7 +103,7 @@ export default function ProjectShow({
                         </div>
                     )}
 
-                    <ProjectStory project={project} />
+                    <ProjectStory project={project} testimonial={testimonial} />
                     <ProjectGallery urls={project.gallery_urls} />
 
                     {otherRelated.length > 0 && (

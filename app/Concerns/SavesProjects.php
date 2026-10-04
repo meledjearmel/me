@@ -18,13 +18,23 @@ trait SavesProjects
      */
     private function projectAttributes(ProjectRequest $request): array
     {
-        return [
+        $attributes = [
             ...$request->safe()->except([
                 'cover', 'gallery', 'domains', 'job_profiles', 'technologies', 'related_projects',
             ]),
-            // Un formulaire sans chiffre clé n'envoie pas le champ : on vide la liste.
+            // Un formulaire sans chiffre clé ni choix technique n'envoie pas le champ : on vide la liste.
             'key_figures' => array_values($request->validated('key_figures', [])),
+            'decisions' => array_values($request->validated('decisions', [])),
         ];
+
+        // Les mois (AAAA-MM) sont stockés au premier jour du mois.
+        foreach (['started_on', 'ended_on'] as $field) {
+            if (array_key_exists($field, $attributes)) {
+                $attributes[$field] = $attributes[$field] ? "{$attributes[$field]}-01" : null;
+            }
+        }
+
+        return $attributes;
     }
 
     private function syncRelations(Project $project, ProjectRequest $request): void

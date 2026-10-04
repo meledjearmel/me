@@ -148,6 +148,60 @@ test('authenticated users can save the case study details of a project', functio
     expect($project->refresh()->key_figures)->toBe([]);
 });
 
+test('authenticated users can save the challenges, technical choices and project sheet', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create();
+    $decision = ['choice' => ['fr' => 'Inertia', 'en' => 'Inertia'], 'reason' => ['fr' => 'Une seule app', 'en' => 'One app']];
+
+    $payload = fn (array $extra): array => [
+        'title' => $project->getTranslations('title'),
+        'slug' => $project->slug,
+        'context' => $project->getTranslations('context'),
+        'realization' => $project->getTranslations('realization'),
+        'result' => $project->getTranslations('result'),
+        'status' => $project->status->value,
+        'sort_order' => $project->sort_order,
+        ...$extra,
+    ];
+
+    $this->actingAs($user)->put(route('admin.projects.update', $project), $payload([
+        'challenges' => ['fr' => 'Trois mois', 'en' => 'Three months'],
+        'decisions' => [$decision],
+        'started_on' => '2024-03',
+        'ended_on' => '2024-06',
+        'team_size' => 3,
+    ]))->assertRedirect(route('admin.projects.index'));
+
+    $project->refresh();
+    expect($project->getTranslation('challenges', 'en'))->toBe('Three months')
+        ->and($project->decisions)->toBe([$decision])
+        ->and($project->started_on->toDateString())->toBe('2024-03-01')
+        ->and($project->ended_on->toDateString())->toBe('2024-06-01')
+        ->and($project->team_size)->toBe(3);
+
+    // Le formulaire envoie toujours les champs de la fiche, vides une fois effacés.
+    $this->actingAs($user)->put(route('admin.projects.update', $project), $payload([
+        'started_on' => null,
+        'ended_on' => null,
+        'team_size' => null,
+    ]));
+
+    $project->refresh();
+    expect($project->decisions)->toBe([])
+        ->and($project->started_on)->toBeNull()
+        ->and($project->team_size)->toBeNull();
+});
+
+test('a technical choice needs both texts in both languages and the end cannot precede the start', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->post(route('admin.projects.store'), [
+        'decisions' => [['choice' => ['fr' => 'Inertia']]],
+        'started_on' => '2024-06',
+        'ended_on' => '2024-03',
+    ])->assertSessionHasErrors(['decisions.0.choice.en', 'decisions.0.reason.fr', 'ended_on']);
+});
+
 test('a key figure needs a value and both labels', function () {
     $user = User::factory()->create();
 

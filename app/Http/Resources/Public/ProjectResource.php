@@ -25,7 +25,15 @@ class ProjectResource extends JsonResource
             'client' => $this->getTranslation('client', $locale) ?: null,
             'platform' => $this->getTranslation('platform', $locale) ?: null,
             'context' => $this->getTranslation('context', $locale),
+            'challenges' => $this->getTranslation('challenges', $locale) ?: null,
             'realization' => $this->getTranslation('realization', $locale),
+            'decisions' => collect($this->decisions ?? [])->map(fn (array $decision): array => [
+                'choice' => $decision['choice'][$locale] ?? $decision['choice']['fr'] ?? '',
+                'reason' => $decision['reason'][$locale] ?? $decision['reason']['fr'] ?? '',
+            ])->values(),
+            'started_on' => $this->started_on?->format('Y-m'),
+            'ended_on' => $this->ended_on?->format('Y-m'),
+            'team_size' => $this->team_size,
             'result' => $this->getTranslation('result', $locale),
             'key_figures' => collect($this->key_figures ?? [])->map(fn (array $figure): array => [
                 'value' => $figure['value'],

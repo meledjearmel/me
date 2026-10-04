@@ -5,7 +5,8 @@ import TranslatableField from '@/components/translatable-field';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type { Project, ProjectKeyFigure } from '@/types';
+import { Textarea } from '@/components/ui/textarea';
+import type { Project, ProjectDecision, ProjectKeyFigure } from '@/types';
 
 /** Au-delà, la bande de chiffres de la page publique perd sa lisibilité. */
 const MAX_KEY_FIGURES = 4;
@@ -62,11 +63,154 @@ export default function ProjectCaseStudyFields({
                 />
             </div>
 
+            <div className="grid gap-2 sm:grid-cols-3">
+                <div className="grid gap-2">
+                    <Label htmlFor="started_on">Début (mois)</Label>
+                    <Input
+                        id="started_on"
+                        name="started_on"
+                        type="month"
+                        defaultValue={project?.started_on ?? ''}
+                    />
+                    <InputError message={errors.started_on} />
+                </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="ended_on">Fin (vide : en cours)</Label>
+                    <Input
+                        id="ended_on"
+                        name="ended_on"
+                        type="month"
+                        defaultValue={project?.ended_on ?? ''}
+                    />
+                    <InputError message={errors.ended_on} />
+                </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="team_size">Taille de l’équipe</Label>
+                    <Input
+                        id="team_size"
+                        name="team_size"
+                        type="number"
+                        min={1}
+                        max={200}
+                        defaultValue={project?.team_size ?? ''}
+                    />
+                    <InputError message={errors.team_size} />
+                </div>
+            </div>
+
             <KeyFiguresField
                 defaultFigures={project?.key_figures ?? []}
                 errors={errors}
             />
         </>
+    );
+}
+
+/** Au-delà, la section perd son rôle de synthèse. */
+const MAX_DECISIONS = 6;
+
+type DecisionRow = { key: string; decision?: ProjectDecision };
+
+/** Choix techniques argumentés : « le choix » et « pourquoi », en français et en anglais. */
+export function ProjectDecisionsField({
+    project,
+    errors,
+}: {
+    project?: Project;
+    errors: Record<string, string>;
+}) {
+    const idPrefix = useId();
+    const [rows, setRows] = useState<DecisionRow[]>(
+        (project?.decisions ?? []).map((decision, index) => ({
+            key: `${idPrefix}-${index}`,
+            decision,
+        })),
+    );
+
+    return (
+        <div className="grid gap-3">
+            <Label>
+                Choix techniques argumentés ({MAX_DECISIONS} max., facultatif)
+            </Label>
+
+            {rows.map((row, index) => (
+                <div
+                    key={row.key}
+                    className="flex items-start gap-2 rounded-md border p-3"
+                >
+                    <div className="grid flex-1 gap-2 sm:grid-cols-2">
+                        {(['fr', 'en'] as const).map((locale) => (
+                            <div key={locale} className="grid gap-2">
+                                <Input
+                                    name={`decisions[${index}][choice][${locale}]`}
+                                    placeholder={`Le choix (${locale.toUpperCase()})`}
+                                    maxLength={160}
+                                    defaultValue={row.decision?.choice[locale]}
+                                />
+                                <InputError
+                                    message={
+                                        errors[
+                                            `decisions.${index}.choice.${locale}`
+                                        ]
+                                    }
+                                />
+                                <Textarea
+                                    name={`decisions[${index}][reason][${locale}]`}
+                                    placeholder={`Pourquoi (${locale.toUpperCase()})`}
+                                    maxLength={600}
+                                    rows={3}
+                                    defaultValue={row.decision?.reason[locale]}
+                                />
+                                <InputError
+                                    message={
+                                        errors[
+                                            `decisions.${index}.reason.${locale}`
+                                        ]
+                                    }
+                                />
+                            </div>
+                        ))}
+                    </div>
+
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Retirer ce choix"
+                        onClick={() =>
+                            setRows((current) =>
+                                current.filter(
+                                    (candidate) => candidate.key !== row.key,
+                                ),
+                            )
+                        }
+                    >
+                        <Trash2 className="text-destructive" />
+                    </Button>
+                </div>
+            ))}
+
+            <InputError message={errors.decisions} />
+
+            {rows.length < MAX_DECISIONS && (
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-fit"
+                    onClick={() =>
+                        setRows((current) => [
+                            ...current,
+                            {
+                                key: `${idPrefix}-${current.length}-${Date.now()}`,
+                            },
+                        ])
+                    }
+                >
+                    <Plus /> Ajouter un choix
+                </Button>
+            )}
+        </div>
     );
 }
 

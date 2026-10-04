@@ -194,6 +194,37 @@ test('the project page exposes the case study details in the page language', fun
     );
 });
 
+test('the project page exposes the challenges, technical choices and project sheet', function () {
+    Project::factory()->create([
+        'slug' => 'case-study',
+        'challenges' => ['fr' => 'Trois mois', 'en' => 'Three months'],
+        'decisions' => [['choice' => ['fr' => 'Inertia', 'en' => 'Inertia'], 'reason' => ['fr' => 'Une seule app', 'en' => 'One app']]],
+        'started_on' => '2024-03-01',
+        'team_size' => 3,
+    ]);
+
+    $this->get('/en/projects/case-study')->assertInertia(fn ($page) => $page
+        ->where('project.challenges', 'Three months')
+        ->where('project.decisions.0', ['choice' => 'Inertia', 'reason' => 'One app'])
+        ->where('project.started_on', '2024-03')
+        ->where('project.ended_on', null)
+        ->where('project.team_size', 3)
+        ->where('testimonial', null)
+    );
+});
+
+test('the project page shows the approved review left on it, the featured one first', function () {
+    $project = Project::factory()->create(['slug' => 'reviewed']);
+    Testimonial::factory()->create(['project_id' => $project->id, 'status' => TestimonialStatus::Approved, 'submitted_at' => now()]);
+    $featured = Testimonial::factory()->create(['project_id' => $project->id, 'status' => TestimonialStatus::Approved, 'is_featured' => true, 'submitted_at' => now()->subYear()]);
+    Testimonial::factory()->create(['project_id' => $project->id, 'status' => TestimonialStatus::Pending, 'is_featured' => true]);
+    Testimonial::factory()->create(['status' => TestimonialStatus::Approved, 'is_featured' => true]);
+
+    $this->get('/fr/projects/reviewed')->assertInertia(fn ($page) => $page
+        ->where('testimonial.id', $featured->id)
+    );
+});
+
 test('the reviews page lists every approved review, not only the three shown on the home page', function () {
     Testimonial::factory()->count(5)->create(['status' => TestimonialStatus::Approved]);
     Testimonial::factory()->count(2)->create(['status' => TestimonialStatus::Pending]);

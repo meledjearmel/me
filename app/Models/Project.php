@@ -19,7 +19,7 @@ class Project extends Model implements HasMedia
     use HasFactory, HasTranslations, InteractsWithMedia, SoftDeletes;
 
     /** @var array<int, string> */
-    protected $translatable = ['title', 'tagline', 'role', 'client', 'platform', 'context', 'realization', 'result'];
+    protected $translatable = ['title', 'tagline', 'role', 'client', 'platform', 'context', 'challenges', 'realization', 'result'];
 
     /** @var list<string> */
     protected $fillable = [
@@ -30,9 +30,14 @@ class Project extends Model implements HasMedia
         'client',
         'platform',
         'context',
+        'challenges',
         'realization',
+        'decisions',
         'result',
         'key_figures',
+        'started_on',
+        'ended_on',
+        'team_size',
         'accent_color',
         'repo_url',
         'demo_url',
@@ -47,6 +52,11 @@ class Project extends Model implements HasMedia
         'is_featured' => 'boolean',
         'is_open_source' => 'boolean',
         'key_figures' => 'array',
+        'decisions' => 'array',
+        // Sérialisés en mois (AAAA-MM), le format des champs de l'administration et de l'API.
+        'started_on' => 'date:Y-m',
+        'ended_on' => 'date:Y-m',
+        'team_size' => 'integer',
         'status' => ProjectStatus::class,
     ];
 

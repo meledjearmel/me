@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ProjectStatus;
+use App\Enums\TestimonialStatus;
 use App\Http\Resources\Public\DomainResource;
 use App\Http\Resources\Public\ProjectResource;
+use App\Http\Resources\Public\TestimonialResource;
 use App\Models\Domain;
 use App\Models\Project;
+use App\Models\Testimonial;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
@@ -36,11 +39,25 @@ class ProjectController extends Controller
         $project->load(['domains', 'technologies.category', 'relatedProjects']);
 
         $next = $this->nextProject($project);
+        $testimonial = $this->testimonialFor($project);
 
         return Inertia::render('public/projects/show', [
             'project' => new ProjectResource($project),
             'nextProject' => $next ? new ProjectResource($next) : null,
+            'testimonial' => $testimonial ? new TestimonialResource($testimonial) : null,
         ]);
+    }
+
+    /** L'avis approuvé laissé sur ce projet : celui mis à la une, sinon le plus récent. */
+    private function testimonialFor(Project $project): ?Testimonial
+    {
+        return Testimonial::query()
+            ->with('media')
+            ->where('project_id', $project->id)
+            ->where('status', TestimonialStatus::Approved)
+            ->orderByDesc('is_featured')
+            ->latest('submitted_at')
+            ->first();
     }
 
     /**

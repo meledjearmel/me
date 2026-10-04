@@ -60,10 +60,32 @@ class ProjectResource extends JsonResource
              * @var array{fr?: string, en?: string}|null
              */
             'platform' => $this->getTranslations('platform') ?: null,
+            /**
+             * Début du projet, au mois près (AAAA-MM).
+             */
+            'started_on' => $this->started_on?->format('Y-m'),
+            /**
+             * Fin du projet (AAAA-MM). `null` avec un début renseigné : projet en cours.
+             */
+            'ended_on' => $this->ended_on?->format('Y-m'),
+            /** Taille de l'équipe, moi compris. */
+            'team_size' => $this->team_size,
             /** @var array{fr: string, en: string} */
             'context' => $this->getTranslations('context'),
+            /**
+             * Défis et contraintes du projet (section facultative de l'étude de cas).
+             *
+             * @var array{fr?: string, en?: string}|null
+             */
+            'challenges' => $this->getTranslations('challenges') ?: null,
             /** @var array{fr: string, en: string} */
             'realization' => $this->getTranslations('realization'),
+            /**
+             * Choix techniques argumentés (6 au plus), dans l'ordre.
+             *
+             * @var list<array{choice: array{fr: string, en: string}, reason: array{fr: string, en: string}}>
+             */
+            'decisions' => $this->decisions ?? [],
             /** @var array{fr: string, en: string} */
             'result' => $this->getTranslations('result'),
             /**

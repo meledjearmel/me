@@ -153,12 +153,23 @@ export type ProjectKeyFigure = {
     label: Translatable;
 };
 
+export type ProjectDecision = {
+    choice: Translatable;
+    reason: Translatable;
+};
+
 export type Project = {
     id: number;
     title: Translatable;
     slug: string;
     context: Translatable;
+    challenges: Translatable | null;
     realization: Translatable;
+    decisions: ProjectDecision[] | null;
+    /** Mois au format AAAA-MM. */
+    started_on: string | null;
+    ended_on: string | null;
+    team_size: number | null;
     result: Translatable;
     tagline: Translatable | null;
     role: Translatable | null;

@@ -65,8 +65,14 @@ export type PublicProject = {
     title: string;
     slug: string;
     context: string;
+    challenges: string | null;
     realization: string;
+    decisions: { choice: string; reason: string }[];
     result: string;
+    /** Mois au format AAAA-MM. */
+    started_on: string | null;
+    ended_on: string | null;
+    team_size: number | null;
     tagline: string | null;
     role: string | null;
     client: string | null;
