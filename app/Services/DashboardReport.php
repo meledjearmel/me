@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\AppointmentStatus;
 use App\Enums\ContactStatus;
 use App\Enums\EngagementStatus;
 use App\Enums\EngagementType;
@@ -24,6 +25,7 @@ use App\Models\Skill;
 use App\Models\Technology;
 use App\Models\TechnologyCategory;
 use App\Models\Testimonial;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -33,14 +35,29 @@ use Illuminate\Support\Facades\DB;
  */
 class DashboardReport
 {
-    /** Nombre de jours affichés dans la courbe d'audience. */
-    private const int VISIT_DAYS = 30;
+    /** Période par défaut, en jours. */
+    public const int DEFAULT_DAYS = 30;
+
+    /** Périodes proposées, en jours ; `all` remonte à la toute première donnée. */
+    public const array PERIODS = ['7', '30', '90', '365', 'all'];
+
+    /** Types de contenu par lesquels filtrer `visits.top_content`. */
+    public const array CONTENT_TYPES = ['post', 'project'];
+
+    /** Durée de la période en jours, `null` depuis la toute première donnée. */
+    private ?int $days = self::DEFAULT_DAYS;
+
+    /** Type de contenu gardé dans `visits.top_content`, `null` pour les deux. */
+    private ?string $contentType = null;
 
     /**
      * @return array<string, mixed>
      */
-    public function toArray(): array
+    public function toArray(?int $days = self::DEFAULT_DAYS, ?string $contentType = null): array
     {
+        $this->days = $days;
+        $this->contentType = $contentType;
+
         return [
             'todo' => $this->todo(),
             'visits' => $this->visits(),
@@ -54,12 +71,13 @@ class DashboardReport
     }
 
     /**
-     * Téléchargements du CV : volumes, et d'où viennent ceux des 30 derniers
-     * jours (pays, provenance : campagne, sinon site d'origine, sinon direct).
+     * Téléchargements du CV : volumes, et d'où viennent ceux de la période
+     * (pays, provenance : campagne, sinon site d'origine, sinon direct).
      *
      * @return array{
      *     total: int,
-     *     period_days: int,
+     *     period_days: int|null,
+     *     since: string|null,
      *     period: int,
      *     with_email: int,
      *     by_country: list<array{label: string, count: int}>,
@@ -68,30 +86,31 @@ class DashboardReport
      */
     private function cvDownloads(): array
     {
-        $since = Carbon::now()->subDays(self::VISIT_DAYS);
+        $since = $this->days === null ? null : Carbon::now()->subDays($this->days);
+        $start = $since ?? $this->dayOf(CvDownload::query()->min('created_at'));
 
         return [
             'total' => CvDownload::query()->count(),
-            'period_days' => self::VISIT_DAYS,
-            'period' => CvDownload::query()->where('created_at', '>=', $since)->count(),
+            'period_days' => $this->days,
+            'since' => $start?->toDateString(),
+            'period' => $this->inPeriod(CvDownload::query(), $since)->count(),
             'with_email' => CvDownload::query()->whereNotNull('email')->count(),
-            /** @var list<array{label: string, count: int}> Les 5 premiers pays sur la période (« Lieu inconnu » sans localisation). */
+            /** Les 5 premiers pays sur la période (« Lieu inconnu » sans localisation). */
             'by_country' => $this->topCvDownloadsBy("coalesce(country, 'Lieu inconnu')", $since),
-            /** @var list<array{label: string, count: int}> Les 5 premières provenances sur la période : campagne, sinon site d'origine, sinon `direct`. */
+            /** Les 5 premières provenances sur la période : campagne, sinon site d'origine, sinon `direct`. */
             'by_origin' => $this->topCvDownloadsBy("coalesce(utm_source, referrer_host, 'direct')", $since),
         ];
     }
 
     /**
      * Les 5 valeurs les plus fréquentes d'une expression SQL parmi les
-     * téléchargements du CV depuis une date.
+     * téléchargements du CV de la période.
      *
      * @return list<array{label: string, count: int}>
      */
-    private function topCvDownloadsBy(string $expression, Carbon $since): array
+    private function topCvDownloadsBy(string $expression, ?Carbon $since): array
     {
-        return CvDownload::query()
-            ->where('created_at', '>=', $since)
+        return $this->inPeriod(CvDownload::query(), $since)
             ->selectRaw("{$expression} as label, count(*) as count")
             ->groupBy('label')
             ->orderByDesc('count')
@@ -100,6 +119,35 @@ class DashboardReport
             ->map(fn (CvDownload $row): array => ['label' => (string) $row->getAttribute('label'), 'count' => (int) $row->getAttribute('count')])
             ->values()
             ->all();
+    }
+
+    /**
+     * Limite une requête à la période, ou la laisse entière sans début de période.
+     *
+     * @template TBuilder of Builder
+     *
+     * @param  TBuilder  $query
+     * @return TBuilder
+     */
+    private function inPeriod(Builder $query, ?Carbon $since): Builder
+    {
+        return $query->when($since, fn (Builder $query) => $query->where('created_at', '>=', $since));
+    }
+
+    /**
+     * Début de la période des visites, `null` depuis la toute première visite.
+     */
+    private function visitsSince(): ?Carbon
+    {
+        return $this->days === null ? null : Carbon::today()->subDays($this->days - 1);
+    }
+
+    /**
+     * Le jour d'une date brute lue en base, `null` sans donnée.
+     */
+    private function dayOf(mixed $value): ?Carbon
+    {
+        return $value === null ? null : Carbon::parse($value)->startOfDay();
     }
 
     /**
@@ -113,34 +161,22 @@ class DashboardReport
             'contacts' => Contact::query()->where('status', ContactStatus::New)->count(),
             'engagements' => Engagement::query()->where('status', EngagementStatus::New)->count(),
             'testimonials' => Testimonial::query()->where('status', TestimonialStatus::Pending)->count(),
+            'appointments' => Appointment::query()->where('status', AppointmentStatus::Pending)->count(),
         ];
     }
 
     /**
-     * Audience : visites sur la période, courbe quotidienne, pages les plus vues.
+     * Audience : visites sur la période, courbe, pages les plus vues.
      *
      * @return array<string, mixed>
      */
     private function visits(): array
     {
-        $since = Carbon::today()->subDays(self::VISIT_DAYS - 1);
+        $since = $this->visitsSince();
+        $start = $since ?? $this->dayOf(PageVisit::query()->min('created_at'));
+        [$granularity, $daily] = $this->visitCurve($start);
 
-        $perDay = PageVisit::query()
-            ->where('created_at', '>=', $since)
-            ->selectRaw('date(created_at) as day, count(*) as total')
-            ->groupBy('day')
-            ->pluck('total', 'day');
-
-        $daily = collect(range(0, self::VISIT_DAYS - 1))
-            ->map(function (int $offset) use ($since, $perDay): array {
-                $date = $since->copy()->addDays($offset)->toDateString();
-
-                return ['date' => $date, 'count' => (int) ($perDay[$date] ?? 0)];
-            })
-            ->all();
-
-        $topPages = PageVisit::query()
-            ->where('created_at', '>=', $since)
+        $topPages = $this->inPeriod(PageVisit::query(), $since)
             ->select('path', DB::raw('count(*) as total'))
             ->groupBy('path')
             ->orderByDesc('total')
@@ -149,20 +185,23 @@ class DashboardReport
             ->map(fn (PageVisit $visit): array => ['path' => '/'.ltrim($visit->path, '/'), 'count' => (int) $visit->total])
             ->all();
 
-        $inPeriod = PageVisit::query()->where('created_at', '>=', $since);
+        $inPeriod = $this->inPeriod(PageVisit::query(), $since);
 
         return [
             'total' => PageVisit::query()->count(),
-            'period_days' => self::VISIT_DAYS,
+            'period_days' => $this->days,
+            'since' => $start?->toDateString(),
             'period' => (clone $inPeriod)->count(),
             'today' => PageVisit::query()->where('created_at', '>=', Carbon::today())->count(),
             'french' => (clone $inPeriod)->where('path', 'like', 'fr%')->count(),
             'english' => (clone $inPeriod)->where('path', 'like', 'en%')->count(),
             'visitors' => (clone $inPeriod)->whereNotNull('visitor_hash')->distinct()->count('visitor_hash'),
+            /** @var 'day'|'month'|'year' Pas de la courbe `daily`. */
+            'granularity' => $granularity,
             'daily' => $daily,
-            /** @var list<array{label: string, count: int}> Visiteurs uniques par provenance (campagne, sinon site d'origine, sinon `direct`). */
+            /** Visiteurs uniques par provenance (campagne, sinon site d'origine, sinon `direct`). */
             'by_source' => $this->topVisitorsBy("coalesce(source, 'direct')", $since),
-            /** @var list<array{label: string, count: int}> Visiteurs uniques par type d'appareil. */
+            /** Visiteurs uniques par type d'appareil. */
             'by_device' => $this->topVisitorsBy("coalesce(device, 'inconnu')", $since),
             /** @var list<array{path: string, count: int}> */
             'top_pages' => $topPages,
@@ -175,15 +214,61 @@ class DashboardReport
     }
 
     /**
+     * La courbe des visites, sans trou : un point par jour jusqu'à 90 jours, par mois
+     * au-delà (les 12 derniers mois sur 365 jours), par an quand toute la période
+     * dépasse 3 ans.
+     *
+     * @return array{0: 'day'|'month'|'year', 1: list<array{date: string, count: int}>}
+     */
+    private function visitCurve(?Carbon $start): array
+    {
+        $today = Carbon::today();
+
+        [$granularity, $from] = match (true) {
+            $start === null => ['day', null],
+            $this->days !== null && $this->days <= 90 => ['day', $start->copy()],
+            $this->days !== null => ['month', $today->copy()->startOfMonth()->subMonths(11)],
+            $start->diffInYears($today) > 3 => ['year', $start->copy()->startOfYear()],
+            default => ['month', $start->copy()->startOfMonth()],
+        };
+
+        if ($from === null) {
+            return [$granularity, []];
+        }
+
+        $format = ['day' => 'Y-m-d', 'month' => 'Y-m-01', 'year' => 'Y-01-01'][$granularity];
+
+        $perBucket = PageVisit::query()
+            ->where('created_at', '>=', $from)
+            ->selectRaw('date(created_at) as day, count(*) as total')
+            ->groupBy('day')
+            ->pluck('total', 'day')
+            ->reduce(function (array $buckets, mixed $total, string $day) use ($format): array {
+                $key = Carbon::parse($day)->format($format);
+                $buckets[$key] = ($buckets[$key] ?? 0) + (int) $total;
+
+                return $buckets;
+            }, []);
+
+        $points = [];
+
+        for ($date = $from->copy(); $date->lte($today); $date->add(1, $granularity)) {
+            $key = $date->format($format);
+            $points[] = ['date' => $key, 'count' => $perBucket[$key] ?? 0];
+        }
+
+        return [$granularity, $points];
+    }
+
+    /**
      * Les visites des pages d'article (`blog/<slug>`) et de projet (`projects/<slug>`),
-     * regroupées par contenu quelle que soit la langue.
+     * regroupées par contenu quelle que soit la langue, éventuellement d'un seul type.
      *
      * @return list<array{type: string, title: string, url: string, visits: int, visitors: int, top_source: string}>
      */
-    private function topContent(Carbon $since): array
+    private function topContent(?Carbon $since): array
     {
-        $groups = PageVisit::query()
-            ->where('created_at', '>=', $since)
+        $groups = $this->inPeriod(PageVisit::query(), $since)
             ->where(fn ($query) => $query->where('path', 'like', '%/blog/%')->orWhere('path', 'like', '%/projects/%'))
             ->get(['path', 'visitor_hash', 'source'])
             ->map(function (PageVisit $visit): ?array {
@@ -193,7 +278,7 @@ class DashboardReport
 
                 return ['type' => $matches[1] === 'blog' ? 'post' : 'project', 'slug' => $matches[2], 'visit' => $visit];
             })
-            ->filter()
+            ->filter(fn (?array $row): bool => $row !== null && ($this->contentType === null || $row['type'] === $this->contentType))
             ->groupBy(fn (array $row): string => "{$row['type']}:{$row['slug']}")
             ->sortByDesc(fn ($rows) => $rows->count())
             ->take(8);
@@ -229,10 +314,9 @@ class DashboardReport
      *
      * @return list<array{label: string, count: int}>
      */
-    private function topVisitorsBy(string $expression, Carbon $since): array
+    private function topVisitorsBy(string $expression, ?Carbon $since): array
     {
-        return PageVisit::query()
-            ->where('created_at', '>=', $since)
+        return $this->inPeriod(PageVisit::query(), $since)
             ->whereNotNull('visitor_hash')
             ->selectRaw("{$expression} as label, count(distinct visitor_hash) as count")
             ->groupBy('label')
@@ -248,26 +332,27 @@ class DashboardReport
      * Ce que les visiteurs font sur la période : CV, messages, collaborations,
      * rendez-vous, et la part des visiteurs uniques que cela représente.
      *
-     * @return array{period_days: int, visitors: int, goals: list<array{key: string, count: int, rate: float}>}
+     * @return array{period_days: int|null, since: string|null, visitors: int, goals: list<array{key: string, count: int, rate: float}>}
      */
     private function conversions(): array
     {
-        $since = Carbon::today()->subDays(self::VISIT_DAYS - 1);
-        $visitors = PageVisit::query()
-            ->where('created_at', '>=', $since)
+        $since = $this->visitsSince();
+        $start = $since ?? $this->dayOf(PageVisit::query()->min('created_at'));
+        $visitors = $this->inPeriod(PageVisit::query(), $since)
             ->whereNotNull('visitor_hash')
             ->distinct()
             ->count('visitor_hash');
 
         $counts = [
-            'cv_downloads' => CvDownload::query()->where('created_at', '>=', $since)->count(),
-            'contacts' => Contact::query()->where('created_at', '>=', $since)->count(),
-            'engagements' => Engagement::query()->where('created_at', '>=', $since)->count(),
-            'appointments' => Appointment::query()->where('created_at', '>=', $since)->count(),
+            'cv_downloads' => $this->inPeriod(CvDownload::query(), $since)->count(),
+            'contacts' => $this->inPeriod(Contact::query(), $since)->count(),
+            'engagements' => $this->inPeriod(Engagement::query(), $since)->count(),
+            'appointments' => $this->inPeriod(Appointment::query(), $since)->count(),
         ];
 
         return [
-            'period_days' => self::VISIT_DAYS,
+            'period_days' => $this->days,
+            'since' => $start?->toDateString(),
             'visitors' => $visitors,
             'goals' => collect($counts)
                 ->map(fn (int $count, string $key): array => [
@@ -344,7 +429,6 @@ class DashboardReport
             'skills_by_domain' => $domains->map(fn (Domain $domain): array => [
                 'label' => $label($domain), 'color' => $domain->color, 'count' => $domain->skills_count,
             ])->filter(fn (array $row): bool => $row['count'] > 0)->values()->all(),
-            /** @var list<array{label: string, count: int}> */
             'technologies_by_category' => TechnologyCategory::query()
                 ->withCount('technologies')
                 ->get()
@@ -391,7 +475,6 @@ class DashboardReport
     private function recent(): array
     {
         return [
-            /** @var list<array{id: int, name: string, subject: string|null, is_new: bool, at: string}> */
             'contacts' => Contact::query()->latest()->limit(5)->get()
                 ->map(fn (Contact $contact): array => [
                     'id' => $contact->id,

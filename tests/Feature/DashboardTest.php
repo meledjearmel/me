@@ -1,6 +1,8 @@
 <?php
 
+use App\Enums\AppointmentStatus;
 use App\Enums\TestimonialStatus;
+use App\Models\Appointment;
 use App\Models\Contact;
 use App\Models\Engagement;
 use App\Models\PageVisit;
@@ -9,6 +11,7 @@ use App\Models\Profile;
 use App\Models\Project;
 use App\Models\Testimonial;
 use App\Models\User;
+use Laravel\Sanctum\Sanctum;
 
 test('guests are redirected to the login page', function () {
     $response = $this->get(route('dashboard'));
@@ -129,3 +132,90 @@ test('the dashboard ranks posts and projects by visits, both languages together'
         ->where('visits.top_content.1.title', 'Mon projet')
         ->where('visits.top_content.1.visits', 1));
 });
+
+test('the api dashboard covers thirty days by default', function () {
+    Sanctum::actingAs(User::factory()->create());
+    PageVisit::factory()->create();
+    PageVisit::factory()->create()->forceFill(['created_at' => now()->subDays(60)])->save();
+
+    $this->getJson(route('api.v1.dashboard'))
+        ->assertOk()
+        ->assertJsonPath('visits.period_days', 30)
+        ->assertJsonPath('visits.period', 1)
+        ->assertJsonPath('visits.since', today()->subDays(29)->toDateString())
+        ->assertJsonPath('visits.granularity', 'day')
+        ->assertJsonCount(30, 'visits.daily')
+        ->assertJsonPath('conversions.period_days', 30)
+        ->assertJsonPath('cv_downloads.period_days', 30);
+});
+
+test('the api dashboard can narrow the audience to seven days', function () {
+    Sanctum::actingAs(User::factory()->create());
+    PageVisit::factory()->create();
+    PageVisit::factory()->create()->forceFill(['created_at' => now()->subDays(10)])->save();
+
+    $this->getJson(route('api.v1.dashboard', ['days' => '7']))
+        ->assertOk()
+        ->assertJsonPath('visits.period_days', 7)
+        ->assertJsonPath('visits.period', 1)
+        ->assertJsonPath('visits.total', 2)
+        ->assertJsonCount(7, 'visits.daily');
+});
+
+test('the api dashboard draws a year month by month', function () {
+    Sanctum::actingAs(User::factory()->create());
+    PageVisit::factory()->create();
+    PageVisit::factory()->create()->forceFill(['created_at' => now()->subDays(200)])->save();
+
+    $this->getJson(route('api.v1.dashboard', ['days' => '365']))
+        ->assertOk()
+        ->assertJsonPath('visits.granularity', 'month')
+        ->assertJsonPath('visits.period', 2)
+        ->assertJsonCount(12, 'visits.daily')
+        ->assertJsonPath('visits.daily.11', ['date' => today()->startOfMonth()->toDateString(), 'count' => 1]);
+});
+
+test('the api dashboard can go back to the very first visit', function () {
+    Sanctum::actingAs(User::factory()->create());
+    PageVisit::factory()->create();
+    $first = now()->subYears(2)->startOfDay()->addHours(10);
+    PageVisit::factory()->create()->forceFill(['created_at' => $first])->save();
+
+    $this->getJson(route('api.v1.dashboard', ['days' => 'all']))
+        ->assertOk()
+        ->assertJsonPath('visits.period_days', null)
+        ->assertJsonPath('visits.period', 2)
+        ->assertJsonPath('visits.since', $first->toDateString())
+        ->assertJsonPath('visits.granularity', 'month')
+        ->assertJsonPath('conversions.since', $first->toDateString())
+        ->assertJsonPath('cv_downloads.since', null);
+});
+
+test('the api dashboard can rank projects only', function () {
+    Sanctum::actingAs(User::factory()->create());
+    PageVisit::factory()->create(['path' => 'fr/blog/mon-article']);
+    PageVisit::factory()->create(['path' => 'fr/blog/mon-article']);
+    PageVisit::factory()->create(['path' => 'fr/projects/mon-projet']);
+
+    $this->getJson(route('api.v1.dashboard', ['type' => 'project']))
+        ->assertOk()
+        ->assertJsonCount(1, 'visits.top_content')
+        ->assertJsonPath('visits.top_content.0.type', 'project');
+});
+
+test('the api dashboard counts pending appointment requests', function () {
+    Sanctum::actingAs(User::factory()->create());
+    Appointment::factory()->create(['status' => AppointmentStatus::Pending]);
+    Appointment::factory()->create(['status' => AppointmentStatus::Confirmed]);
+
+    $this->getJson(route('api.v1.dashboard'))->assertJsonPath('todo.appointments', 1);
+});
+
+test('the api dashboard rejects an unknown period or content type', function (array $query, string $field) {
+    Sanctum::actingAs(User::factory()->create());
+
+    $this->getJson(route('api.v1.dashboard', $query))->assertUnprocessable()->assertJsonValidationErrors($field);
+})->with([
+    'days' => [['days' => '14'], 'days'],
+    'type' => [['type' => 'page'], 'type'],
+]);
