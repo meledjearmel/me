@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\SkillController;
+use App\Http\Controllers\Admin\SubscriberController;
 use App\Http\Controllers\Admin\TechnologyCategoryController;
 use App\Http\Controllers\Admin\TechnologyController;
 use App\Http\Controllers\Admin\TechnologyIconController;
@@ -82,6 +83,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('contacts', ContactController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
     Route::resource('engagements', EngagementController::class)->only(['index', 'show', 'update', 'destroy']);
     Route::resource('cv-downloads', CvDownloadController::class)->only(['index', 'show', 'destroy']);
+    Route::resource('subscribers', SubscriberController::class)->only(['index', 'destroy']);
 
     Route::resource('appointments', AppointmentController::class)->only(['index', 'show', 'destroy']);
     Route::patch('appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');

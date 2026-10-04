@@ -7937,3 +7937,66 @@ html.pub-scroll {
         display: none;
     }
 }
+
+/* Newsletter du blog */
+.pub-newsletter {
+    --pub-drawer-line: color-mix(in oklab, var(--pub-text) 22%, transparent);
+    padding: clamp(3.5rem, 8vw, 6rem) 0;
+    border-top: 1px solid var(--pub-drawer-line);
+}
+
+.pub-newsletter__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: end;
+    gap: clamp(1.5rem, 5vw, 4rem);
+}
+
+.pub-newsletter__title {
+    margin: 0;
+    font-family: var(--pub-font-display);
+    font-size: clamp(2rem, 4.5vw, 3.6rem);
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    line-height: 0.98;
+}
+
+.pub-newsletter__text {
+    margin: 1rem 0 0;
+    font-size: clamp(1rem, 1.4vw, 1.15rem);
+    line-height: 1.55;
+    opacity: 0.8;
+}
+
+.pub-newsletter__form {
+    display: grid;
+    justify-items: start;
+    gap: 1.25rem;
+}
+
+.pub-newsletter__form .pub-drawer__field {
+    width: 100%;
+}
+
+.pub-newsletter__form button:disabled {
+    opacity: 0.6;
+    cursor: progress;
+}
+
+.pub-newsletter__hint,
+.pub-newsletter__done {
+    margin: 0;
+    font-size: 0.95rem;
+    opacity: 0.75;
+}
+
+.pub-newsletter__done {
+    font-size: 1.1rem;
+    opacity: 1;
+}
+
+@media (max-width: 760px) {
+    .pub-newsletter__grid {
+        grid-template-columns: 1fr;
+    }
+}

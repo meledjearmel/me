@@ -13,3 +13,6 @@ Schedule::command('geoip:update')->weekly()->mondays()->at('04:00');
 
 // Rappel des rendez-vous confirmés, la veille.
 Schedule::command('appointments:send-reminders')->hourly();
+
+// Annonce des nouveaux articles aux abonnés de la newsletter.
+Schedule::command('newsletter:send')->everyFifteenMinutes();

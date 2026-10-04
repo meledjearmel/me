@@ -46,6 +46,7 @@ class Post extends Model implements HasMedia
         'is_featured' => 'boolean',
         'status' => PublicationStatus::class,
         'published_at' => 'datetime',
+        'newsletter_sent_at' => 'datetime',
         'reading_minutes' => 'integer',
     ];
 

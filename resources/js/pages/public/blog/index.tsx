@@ -1,4 +1,5 @@
 import { Link } from "@inertiajs/react";
+import NewsletterSignup from "@/components/public/newsletter-signup";
 import PageHero from "@/components/public/page-hero";
 import PostCard from "@/components/public/post-card";
 import PublicShell from "@/components/public/public-shell";
@@ -149,6 +150,8 @@ export default function BlogIndex({
                         )}
                     </div>
                 </section>
+
+                <NewsletterSignup />
             </PublicShell>
         </>
     );

@@ -219,6 +219,15 @@ export type CvDownload = {
     created_at: string;
 };
 
+export type Subscriber = {
+    id: number;
+    email: string;
+    locale: "fr" | "en";
+    confirmed_at: string | null;
+    unsubscribed_at: string | null;
+    created_at: string;
+};
+
 export type Contact = {
     id: number;
     name: string;

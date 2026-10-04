@@ -1,5 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
+import NewsletterSignup from '@/components/public/newsletter-signup';
 import PageHero from '@/components/public/page-hero';
 import PostCard, { formatPostDate } from '@/components/public/post-card';
 import { ProjectCta } from '@/components/public/project-parts';
@@ -203,6 +204,8 @@ export default function BlogShow({
                             </div>
                         </div>
                     </section>
+
+                    <NewsletterSignup />
 
                     <ProjectCta title={t.blog.ctaTitle} text={t.blog.ctaText} />
 

@@ -15,6 +15,7 @@ use App\Http\Controllers\EngagementController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LlmsTxtController;
 use App\Http\Controllers\LocaleRedirectController;
+use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RobotsTxtController;
 use App\Http\Controllers\SitemapController;
@@ -49,6 +50,18 @@ Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, Lo
     Route::get('blog', [BlogController::class, 'index'])->name('blog.index');
     Route::get('blog/feed', BlogFeedController::class)->name('blog.feed');
     Route::get('blog/{post:slug}', [BlogController::class, 'show'])->name('blog.show');
+    Route::post('newsletter', [NewsletterController::class, 'store'])
+        ->middleware('throttle:5,1')
+        ->name('newsletter.store');
+    Route::get('newsletter/{token}/confirm', [NewsletterController::class, 'confirm'])
+        ->middleware('throttle:30,1')
+        ->name('newsletter.confirm');
+    Route::get('newsletter/{token}/unsubscribe', [NewsletterController::class, 'show'])
+        ->middleware('throttle:30,1')
+        ->name('newsletter.unsubscribe');
+    Route::post('newsletter/{token}/unsubscribe', [NewsletterController::class, 'destroy'])
+        ->middleware('throttle:10,1')
+        ->name('newsletter.unsubscribe.store');
     Route::get('contact', [ContactController::class, 'index'])->name('contact.index');
     Route::post('contact', [ContactController::class, 'store'])
         ->middleware('throttle:5,1')

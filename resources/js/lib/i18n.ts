@@ -241,6 +241,22 @@ const dictionaries = {
             ctaText:
                 'Si cet article vous parle, discutons de ce que vous construisez.',
         },
+        newsletter: {
+            title: 'Les prochains articles, par email.',
+            text: 'Un email à chaque nouvel article, rien d’autre. Désinscription en un clic.',
+            email: 'Votre email',
+            placeholder: 'vous@exemple.com',
+            submit: 'S’inscrire',
+            hint: 'Je vous envoie un lien pour confirmer votre inscription.',
+            done: 'Presque fini : confirmez votre inscription depuis l’email que je viens de vous envoyer.',
+            unsubscribeTitle: 'Se désinscrire',
+            unsubscribeText: (email: string) =>
+                `Vous ne recevrez plus les nouveaux articles à l’adresse ${email}.`,
+            unsubscribeSubmit: 'Confirmer la désinscription',
+            unsubscribedTitle: 'C’est fait.',
+            unsubscribedText:
+                'Vous ne recevrez plus d’email. Vous pouvez vous réinscrire à tout moment depuis le blog.',
+        },
         contact: {
             kicker: 'Contact',
             title: 'Discutons de votre projet',
@@ -676,6 +692,22 @@ const dictionaries = {
             ctaTitle: 'A project in mind?',
             ctaText:
                 "If this article speaks to you, let's talk about what you're building.",
+        },
+        newsletter: {
+            title: 'New articles, by email.',
+            text: 'One email per new article, nothing else. Unsubscribe in one click.',
+            email: 'Your email',
+            placeholder: 'you@example.com',
+            submit: 'Subscribe',
+            hint: 'I will send you a link to confirm your subscription.',
+            done: 'Almost done: confirm your subscription from the email I just sent you.',
+            unsubscribeTitle: 'Unsubscribe',
+            unsubscribeText: (email: string) =>
+                `You will no longer receive new articles at ${email}.`,
+            unsubscribeSubmit: 'Confirm unsubscription',
+            unsubscribedTitle: 'Done.',
+            unsubscribedText:
+                'You will not receive any more emails. You can subscribe again at any time from the blog.',
         },
         contact: {
             kicker: 'Contact',

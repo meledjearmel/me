@@ -42,6 +42,9 @@ return Application::configure(basePath: dirname(__DIR__))
             ValidatePostSize::class,
         ]);
 
+        // Désinscription en un clic depuis la messagerie (RFC 8058) : requête sans jeton CSRF.
+        $middleware->preventRequestForgery(except: ['*/newsletter/*/unsubscribe']);
+
         $middleware->alias([
             'locale' => SetLocale::class,
         ]);
