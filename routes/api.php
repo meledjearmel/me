@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\V1\EngagementController;
 use App\Http\Controllers\Api\V1\ExperienceController;
 use App\Http\Controllers\Api\V1\JobProfileController;
 use App\Http\Controllers\Api\V1\MusicGenreController;
+use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\ProfessionalReferenceController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\ProjectController;
@@ -49,6 +50,8 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             Route::post('translate', [AiController::class, 'translate'])->name('translate');
             Route::post('improve', [AiController::class, 'improve'])->name('improve');
             Route::post('describe-technology', [AiController::class, 'describeTechnology'])->name('describe-technology');
+            Route::post('translate-html', [AiController::class, 'translateHtml'])->name('translate-html');
+            Route::post('write-post', [AiController::class, 'writePost'])->name('write-post');
         });
 
         Route::prefix('trash')->name('trash.')->group(function (): void {
@@ -101,6 +104,10 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('celebrations', CelebrationController::class);
         Route::apiResource('experiences', ExperienceController::class);
         Route::apiResource('projects', ProjectController::class);
+        Route::get('posts/tags', [PostController::class, 'tags'])->name('posts.tags');
+        Route::post('posts/images', [PostController::class, 'storeImage'])->name('posts.images.store');
+        Route::apiResource('posts', PostController::class);
+        Route::delete('posts/{post}/cover', [PostController::class, 'destroyCover'])->name('posts.cover.destroy');
         Route::delete('projects/{project}/cover', [ProjectController::class, 'destroyCover'])->name('projects.cover.destroy');
         Route::delete('projects/{project}/gallery/{media}', [ProjectController::class, 'destroyGalleryImage'])->name('projects.gallery.destroy');
 

@@ -6,7 +6,9 @@ use App\Enums\TextTone;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ai\DescribeTechnologyRequest;
 use App\Http\Requests\Ai\ImproveTextRequest;
+use App\Http\Requests\Ai\TranslateHtmlRequest;
 use App\Http\Requests\Ai\TranslateTextRequest;
+use App\Http\Requests\Ai\WritePostRequest;
 use App\Services\Ai\TextAssistService;
 use Illuminate\Http\JsonResponse;
 
@@ -80,6 +82,40 @@ class AiController extends Controller
         }
 
         return response()->json(['description' => $description]);
+    }
+
+    /**
+     * Traduire un fragment d'article
+     *
+     * Traduit un fragment HTML d'article du blog en conservant ses balises (6 000 caractères au plus :
+     * découper un long article par blocs).
+     *
+     * @response array{text: string}
+     */
+    public function translateHtml(TranslateHtmlRequest $request): JsonResponse
+    {
+        return $this->respond($this->assist->translateHtml(
+            $request->validated('html'),
+            $request->validated('source_locale'),
+            $request->validated('target_locale'),
+        ));
+    }
+
+    /**
+     * Rédiger dans un article
+     *
+     * Réécrit `selection` (HTML) selon la consigne, ou, sans sélection, rédige le passage à insérer
+     * après `context` (texte qui précède le curseur). Renvoie du HTML.
+     *
+     * @response array{text: string}
+     */
+    public function writePost(WritePostRequest $request): JsonResponse
+    {
+        return $this->respond($this->assist->writePost(
+            $request->validated('instruction'),
+            $request->validated('locale'),
+            $request->safe()->only(['title', 'excerpt', 'selection', 'context']),
+        ));
     }
 
     /**
