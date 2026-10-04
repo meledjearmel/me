@@ -357,6 +357,9 @@ export type Appointment = {
 
 export type SiteSettings = {
     contact_opens_drawer: boolean;
+    availability_status: 'available' | 'from' | 'unavailable';
+    /** AAAA-MM-JJ. */
+    available_from: string | null;
     testimonial_video_enabled: boolean;
     blog_enabled: boolean;
     cv_job_profile_id: number | null;

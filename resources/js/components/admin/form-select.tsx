@@ -18,6 +18,8 @@ type FormSelectProps = {
     required?: boolean;
     disabled?: boolean;
     'aria-invalid'?: boolean;
+    /** Appelée à chaque choix, pour afficher ou masquer des champs selon la valeur. */
+    onValueChange?: (value: string) => void;
     /** Des `<option>` : une option vide désactivée sert de texte d'invite, une option vide active de choix « aucun ». */
     children: ReactNode;
 };
@@ -52,6 +54,7 @@ export default function FormSelect({
     defaultValue,
     required,
     disabled,
+    onValueChange,
     children,
     ...rest
 }: FormSelectProps) {
@@ -74,7 +77,12 @@ export default function FormSelect({
             <input type="hidden" name={name} value={value} />
             <Select
                 value={value === '' ? (hasNone ? NONE : undefined) : value}
-                onValueChange={(next) => setValue(next === NONE ? '' : next)}
+                onValueChange={(next) => {
+                    const chosen = next === NONE ? '' : next;
+
+                    setValue(chosen);
+                    onValueChange?.(chosen);
+                }}
                 required={required}
                 disabled={disabled}
             >

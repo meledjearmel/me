@@ -56,6 +56,8 @@ class ShareSitePublicData
             'testimonialVideoEnabled' => fn () => SiteSetting::current()->testimonial_video_enabled,
             // Le blog est affiché (navigation, pages).
             'blogEnabled' => fn () => SiteSetting::current()->blog_enabled,
+            // Ma disponibilité : badge de l'en-tête et fenêtre de contact.
+            'availability' => fn () => SiteSetting::current()->publicAvailability(),
             // La page « Uses » n'est proposée que si elle a du contenu publié.
             'usesEnabled' => fn () => UsesItem::query()->published()->exists(),
             'bookingOpen' => fn () => app(BookingCalendar::class)->isOpen(),

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import ContactController from '@/actions/App/Http/Controllers/ContactController';
 import PhoneLink from '@/components/public/phone-link';
 import { useContactDrawer } from '@/lib/contact-drawer';
+import { useAvailability } from '@/lib/availability';
 import { useLocale, useTranslations } from '@/lib/i18n';
 import type { PublicProfile } from '@/types';
 
@@ -14,6 +15,7 @@ import type { PublicProfile } from '@/types';
  */
 export default function ContactDrawer() {
     const t = useTranslations();
+    const availability = useAvailability();
     const locale = useLocale();
     const { isOpen, setOpen } = useContactDrawer();
     const { props } = usePage<{ profile: PublicProfile }>();
@@ -55,12 +57,14 @@ export default function ContactDrawer() {
                     />
 
                     <div className="pub-drawer__body">
-                        <p className="pub-drawer__eyebrow">
+                        <p
+                            className={`pub-drawer__eyebrow pub-avail--${availability.status}`}
+                        >
                             <span
                                 className="pub-drawer__dot"
                                 aria-hidden="true"
                             />
-                            {t.contactDrawer.eyebrow}
+                            {availability.eyebrow}
                         </p>
 
                         <Dialog.Title className="pub-drawer__title">

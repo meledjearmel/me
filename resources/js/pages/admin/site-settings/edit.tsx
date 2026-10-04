@@ -33,6 +33,8 @@ type Tab = (typeof TABS)[number]['value'];
 /** L'onglet de chaque réglage : en cas d'erreur, la page bascule sur le premier concerné. */
 const FIELD_TAB: Record<string, Tab> = {
     contact_opens_drawer: 'site',
+    availability_status: 'site',
+    available_from: 'site',
     testimonial_video_enabled: 'reviews',
     blog_enabled: 'blog',
     cv_job_profile_id: 'cv',
@@ -70,6 +72,63 @@ function Section({
             )}
             {children}
         </TabsContent>
+    );
+}
+
+/**
+ * Ma disponibilité, affichée dans le badge de l'en-tête et la fenêtre de contact.
+ * La date n'apparaît que pour « à partir du… ».
+ */
+function AvailabilityFields({
+    settings,
+    errors,
+}: {
+    settings: SiteSettings;
+    errors: Record<string, string>;
+}) {
+    const [status, setStatus] = useState(settings.availability_status);
+
+    return (
+        <div className="grid gap-4 sm:grid-cols-2">
+            <Field data-invalid={!!errors.availability_status}>
+                <FieldLabel htmlFor="availability_status">
+                    Ma disponibilité
+                </FieldLabel>
+                <FormSelect
+                    id="availability_status"
+                    name="availability_status"
+                    defaultValue={status}
+                    onValueChange={(value) =>
+                        setStatus(value as SiteSettings['availability_status'])
+                    }
+                >
+                    <option value="available">Disponible</option>
+                    <option value="from">Disponible à partir d’une date</option>
+                    <option value="unavailable">Indisponible</option>
+                </FormSelect>
+                <FieldDescription>
+                    Badge de l’en-tête et mention de la fenêtre de contact. Une
+                    date passée affiche « Disponible ».
+                </FieldDescription>
+                <FieldError>{errors.availability_status}</FieldError>
+            </Field>
+
+            {status === 'from' && (
+                <Field data-invalid={!!errors.available_from}>
+                    <FieldLabel htmlFor="available_from">
+                        Disponible à partir du
+                    </FieldLabel>
+                    <Input
+                        id="available_from"
+                        name="available_from"
+                        type="date"
+                        required
+                        defaultValue={settings.available_from ?? ''}
+                    />
+                    <FieldError>{errors.available_from}</FieldError>
+                </Field>
+            )}
+        </div>
     );
 }
 
@@ -181,6 +240,11 @@ export default function SiteSettingsEdit({
                                             {errors.contact_opens_drawer}
                                         </FieldError>
                                     </Field>
+
+                                    <AvailabilityFields
+                                        settings={settings}
+                                        errors={errors}
+                                    />
                                 </Section>
 
                                 <Section value="reviews">

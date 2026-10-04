@@ -8,6 +8,7 @@ import PageHero from '@/components/public/page-hero';
 import PhoneLink from '@/components/public/phone-link';
 import PublicShell from '@/components/public/public-shell';
 import ReviewInvite from '@/components/public/review-invite';
+import { useAvailability } from '@/lib/availability';
 import { useLocale, useTranslations } from '@/lib/i18n';
 import type { PublicProfile } from '@/types';
 
@@ -74,6 +75,7 @@ function ContactMeta({ profile }: { profile: PublicProfile }) {
 
 export default function Contact() {
     const t = useTranslations();
+    const availability = useAvailability();
     const locale = useLocale();
     const { props } = usePage<{
         profile: PublicProfile;
@@ -109,9 +111,11 @@ export default function Contact() {
                     lead={
                         <>
                             <p>{t.contactDrawer.intro}</p>
-                            <p className="pub-contact__avail">
+                            <p
+                                className={`pub-contact__avail pub-avail--${availability.status}`}
+                            >
                                 <i aria-hidden="true" />
-                                {t.contactDrawer.eyebrow}
+                                {availability.eyebrow}
                             </p>
                         </>
                     }

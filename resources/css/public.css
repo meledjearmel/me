@@ -8196,3 +8196,22 @@ html.pub-scroll {
         grid-template-columns: 1fr;
     }
 }
+
+/* Indisponible : point gris, sans pulsation (badge de l'en-tête, fenêtre et page de contact) */
+.pub-avail--unavailable .pub-avail__dot,
+.pub-avail--unavailable .pub-drawer__dot,
+.pub-avail--unavailable.pub-contact__avail i {
+    background: color-mix(in oklab, currentColor 45%, transparent);
+    box-shadow: none;
+    animation: none;
+}
+
+.pub-avail--unavailable .pub-avail__dot::after,
+.pub-avail--unavailable .pub-drawer__dot::after {
+    display: none;
+}
+
+/* « À partir du … » est plus long que « Disponible pour travailler » */
+.pub-pill.is-compact .pub-avail--from {
+    max-width: 340px;
+}

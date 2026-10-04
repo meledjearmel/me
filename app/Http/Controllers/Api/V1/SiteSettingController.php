@@ -35,7 +35,7 @@ class SiteSettingController extends Controller
     }
 
     /**
-     * @return array{contact_opens_drawer: bool, testimonial_video_enabled: bool, blog_enabled: bool, cv_job_profile_id: int|null, cv_source: string, congratulation_notify_minutes: int, booking_enabled: bool, booking_min_notice_hours: int, booking_horizon_days: int, booking_buffer_minutes: int, booking_video_provider: string, booking_video_link: string|null}
+     * @return array{contact_opens_drawer: bool, availability_status: string, available_from: string|null, testimonial_video_enabled: bool, blog_enabled: bool, cv_job_profile_id: int|null, cv_source: string, congratulation_notify_minutes: int, booking_enabled: bool, booking_min_notice_hours: int, booking_horizon_days: int, booking_buffer_minutes: int, booking_video_provider: string, booking_video_link: string|null}
      */
     private function payload(): array
     {
@@ -44,6 +44,13 @@ class SiteSettingController extends Controller
         return [
             /** Le bouton « Contact » ouvre le tiroir latéral (`true`) ou mène à la page Contact (`false`). */
             'contact_opens_drawer' => $settings->contact_opens_drawer,
+            /**
+             * Disponibilité affichée sur le site : `available`, `from` (à partir de `available_from`,
+             * puis « disponible » une fois la date passée) ou `unavailable`.
+             */
+            'availability_status' => $settings->availability_status->value,
+            /** Date de disponibilité (AAAA-MM-JJ), utilisée avec le statut `from`. */
+            'available_from' => $settings->available_from?->toDateString(),
             /** Les visiteurs peuvent joindre ou filmer une vidéo avec leur avis. */
             'testimonial_video_enabled' => $settings->testimonial_video_enabled,
             /** Le blog est affiché sur le site public (pages, navigation, plan du site). */

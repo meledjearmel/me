@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\AvailabilityStatus;
 use App\Enums\CvSource;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -21,6 +22,13 @@ class SiteSettingRequest extends FormRequest
             'contact_opens_drawer' => ['sometimes', 'boolean'],
             // Avis : les visiteurs peuvent joindre ou filmer une vidéo.
             'testimonial_video_enabled' => ['sometimes', 'boolean'],
+            // Disponibilité affichée : disponible, à partir d'une date (obligatoire, à venir) ou indisponible.
+            'availability_status' => ['sometimes', Rule::enum(AvailabilityStatus::class)],
+            'available_from' => [
+                // Sans `sometimes` : un statut `from` envoyé sans date doit être refusé.
+                'nullable', 'date', 'required_if:availability_status,from',
+                Rule::when($this->input('availability_status') === AvailabilityStatus::From->value, 'after:today'),
+            ],
             // Blog : affiché sur le site public.
             'blog_enabled' => ['sometimes', 'boolean'],
             // CV : profil métier proposé au téléchargement (`null` : le premier publié) et source prioritaire.

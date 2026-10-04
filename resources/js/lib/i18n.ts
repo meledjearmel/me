@@ -136,6 +136,8 @@ const dictionaries = {
             themeToggle: 'Basculer entre jour et nuit',
             status: 'Disponible',
             availableForWork: 'Disponible pour travailler',
+            availableFrom: (date: string) => `Disponible à partir du ${date}`,
+            unavailable: 'Indisponible pour le moment',
             ctaContact: 'Me contacter',
             ctaProjects: 'Voir les projets',
             visits: 'visites',
@@ -483,6 +485,10 @@ const dictionaries = {
         contactDrawer: {
             close: 'Fermer',
             eyebrow: 'DISPONIBLE POUR DE NOUVEAUX PROJETS',
+            eyebrowFrom: (date: string) =>
+                `DISPONIBLE POUR DE NOUVEAUX PROJETS À PARTIR DU ${date.toUpperCase()}`,
+            eyebrowUnavailable:
+                'INDISPONIBLE POUR LE MOMENT, MAIS VOUS POUVEZ M’ÉCRIRE',
             title: 'Parlons-en ?',
             intro: 'Dites-moi ce que vous construisez : un produit, un outil, une idée. Je vous réponds sous 48 heures.',
             doneTitle: 'Message envoyé !',
@@ -623,6 +629,8 @@ const dictionaries = {
             themeToggle: 'Toggle day and night',
             status: 'Available',
             availableForWork: 'Available for work',
+            availableFrom: (date: string) => `Available from ${date}`,
+            unavailable: 'Currently unavailable',
             ctaContact: 'Contact me',
             ctaProjects: 'View projects',
             visits: 'visits',
@@ -967,6 +975,9 @@ const dictionaries = {
         contactDrawer: {
             close: 'Close',
             eyebrow: 'AVAILABLE FOR NEW PROJECTS',
+            eyebrowFrom: (date: string) =>
+                `AVAILABLE FOR NEW PROJECTS FROM ${date.toUpperCase()}`,
+            eyebrowUnavailable: 'CURRENTLY UNAVAILABLE, BUT FEEL FREE TO WRITE',
             title: "Let's talk?",
             intro: "Tell me what you're building: a product, a tool, an idea. I'll write back within 48 hours.",
             doneTitle: 'Message sent!',

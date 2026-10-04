@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AvailabilityStatus;
 use App\Enums\CvSource;
 use Database\Factories\SiteSettingFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -33,6 +34,8 @@ class SiteSetting extends Model
         'booking_buffer_minutes',
         'booking_video_provider',
         'booking_video_link',
+        'availability_status',
+        'available_from',
     ];
 
     /** @var array<string, string> */
@@ -46,7 +49,28 @@ class SiteSetting extends Model
         'booking_min_notice_hours' => 'integer',
         'booking_horizon_days' => 'integer',
         'booking_buffer_minutes' => 'integer',
+        'availability_status' => AvailabilityStatus::class,
+        'available_from' => 'date:Y-m-d',
     ];
+
+    /**
+     * La disponibilité telle que le site l'affiche : une date passée vaut « disponible ».
+     *
+     * @return array{status: string, from: string|null}
+     */
+    public function publicAvailability(): array
+    {
+        if ($this->availability_status === AvailabilityStatus::From && $this->available_from?->isFuture()) {
+            return ['status' => AvailabilityStatus::From->value, 'from' => $this->available_from->toDateString()];
+        }
+
+        return [
+            'status' => $this->availability_status === AvailabilityStatus::Unavailable
+                ? AvailabilityStatus::Unavailable->value
+                : AvailabilityStatus::Available->value,
+            'from' => null,
+        ];
+    }
 
     /** Les réglages, créés avec leurs valeurs par défaut au premier accès. */
     public static function current(): self
