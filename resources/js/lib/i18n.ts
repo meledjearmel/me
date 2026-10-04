@@ -77,6 +77,20 @@ const dictionaries = {
             closeMenu: 'Fermer le menu',
             skipToContent: 'Aller au contenu',
         },
+        search: {
+            open: 'Rechercher (Ctrl+K)',
+            title: 'Rechercher',
+            label: 'Rechercher dans le site',
+            placeholder: 'Un article, un projet, une technologie…',
+            hint: 'Tapez au moins deux lettres.',
+            empty: 'Aucun résultat.',
+            failed: 'La recherche n’a pas abouti. Réessayez.',
+            types: {
+                post: 'Article',
+                project: 'Projet',
+                skill: 'Compétence',
+            },
+        },
         testimonials: {
             kicker: 'Témoignages',
             title: "Ce qu'ils en disent",
@@ -529,6 +543,20 @@ const dictionaries = {
             openMenu: 'Open the menu',
             closeMenu: 'Close the menu',
             skipToContent: 'Skip to content',
+        },
+        search: {
+            open: 'Search (Ctrl+K)',
+            title: 'Search',
+            label: 'Search the site',
+            placeholder: 'An article, a project, a technology…',
+            hint: 'Type at least two letters.',
+            empty: 'No results.',
+            failed: 'The search failed. Please try again.',
+            types: {
+                post: 'Article',
+                project: 'Project',
+                skill: 'Skill',
+            },
         },
         testimonials: {
             kicker: 'Testimonials',

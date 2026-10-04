@@ -1,8 +1,11 @@
 import { Link, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import LanguageSwitch from '@/components/public/language-switch';
 import MobileMenu from '@/components/public/mobile-menu';
 import MusicControl from '@/components/public/music-control';
+import SearchDialog, {
+    useSearchShortcut,
+} from '@/components/public/search-dialog';
 import ThemeToggle from '@/components/public/theme-toggle';
 import { useContactDrawer } from '@/lib/contact-drawer';
 import { useLocalizedPath, useTranslations } from '@/lib/i18n';
@@ -59,6 +62,10 @@ export default function SiteHeader({
     const { profile } = props;
     const [menuOpen, setMenuOpen] = useState(false);
     const { open: openContact } = useContactDrawer();
+    const [searchOpen, setSearchOpen] = useState(false);
+    const openSearch = useCallback(() => setSearchOpen(true), []);
+
+    useSearchShortcut(openSearch);
 
     // Le menu plein écran n'existe qu'en petite largeur : on le ferme si la
     // fenêtre s'élargit.
@@ -182,10 +189,41 @@ export default function SiteHeader({
             </div>
 
             <div className="pub-nav__side pub-nav__tools">
+                <button
+                    type="button"
+                    className="pub-round"
+                    aria-label={t.search.open}
+                    title={t.search.open}
+                    onClick={openSearch}
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        width="15"
+                        height="15"
+                        aria-hidden="true"
+                    >
+                        <circle
+                            cx="10.5"
+                            cy="10.5"
+                            r="6.5"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.2"
+                        />
+                        <path
+                            d="m15.5 15.5 5 5"
+                            stroke="currentColor"
+                            strokeWidth="2.2"
+                            strokeLinecap="round"
+                        />
+                    </svg>
+                </button>
                 <LanguageSwitch />
                 <MusicControl />
                 <ThemeToggle />
             </div>
+
+            <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
 
             <MobileMenu
                 open={menuOpen}

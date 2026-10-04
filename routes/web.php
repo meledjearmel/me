@@ -18,6 +18,7 @@ use App\Http\Controllers\LocaleRedirectController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RobotsTxtController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SkillController;
 use App\Http\Controllers\TestimonialController;
@@ -50,6 +51,11 @@ Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, Lo
     Route::get('blog', [BlogController::class, 'index'])->name('blog.index');
     Route::get('blog/feed', BlogFeedController::class)->name('blog.feed');
     Route::get('blog/{post:slug}', [BlogController::class, 'show'])->name('blog.show');
+    // Appel de la fenêtre de recherche, pas une page : il ne compte pas dans l'audience.
+    Route::get('search', SearchController::class)
+        ->middleware('throttle:60,1')
+        ->withoutMiddleware(LogPageVisit::class)
+        ->name('search');
     Route::post('newsletter', [NewsletterController::class, 'store'])
         ->middleware('throttle:5,1')
         ->name('newsletter.store');
