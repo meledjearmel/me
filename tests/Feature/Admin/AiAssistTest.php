@@ -276,3 +276,18 @@ test('a post fragment is translated with its html', function () {
         'target_locale' => 'en',
     ])->assertOk()->assertExactJson(['text' => '<h2>Hello</h2>']);
 });
+
+test('an AI call from the console leaves the process time limit untouched', function () {
+    // Sous Windows, set_time_limit compte le temps réel : posée pendant les tests,
+    // la limite coupait la suite quelques dizaines de secondes plus tard.
+    $limit = ini_get('max_execution_time');
+    TextTranslator::fake(['Hello']);
+
+    $this->actingAs(User::factory()->create())->postJson(route('admin.ai.translate'), [
+        'text' => 'Bonjour',
+        'source_locale' => 'fr',
+        'target_locale' => 'en',
+    ])->assertOk();
+
+    expect(ini_get('max_execution_time'))->toBe($limit);
+});

@@ -126,7 +126,12 @@ class TextAssistService
         $start = microtime(true);
         $tried = [];
 
-        set_time_limit((int) ceil($budget) + self::TIME_LIMIT_MARGIN);
+        // Requêtes web seulement : en console (tests, workers de file, qui ont leur propre
+        // délai par tâche), la limite resterait posée sur tout le processus, et sous Windows
+        // elle compte le temps réel, ce qui coupait la suite de tests en cours de route.
+        if (! app()->runningInConsole()) {
+            set_time_limit((int) ceil($budget) + self::TIME_LIMIT_MARGIN);
+        }
 
         foreach (config('ai.text_assist.providers') as $entry) {
             [$provider, $model] = array_pad(explode(':', $entry, 2), 2, null);
