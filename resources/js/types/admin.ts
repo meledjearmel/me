@@ -192,6 +192,17 @@ export type Project = {
     gallery?: { id: number; url: string }[];
 };
 
+export type PostComment = {
+    id: number;
+    author_name: string;
+    author_email: string | null;
+    body: string;
+    locale: "fr" | "en";
+    status: "pending" | "approved" | "rejected";
+    post: { id: number; slug: string; title: Translatable } | null;
+    created_at: string;
+};
+
 export type Testimonial = {
     id: number;
     author_name: string;
@@ -394,6 +405,8 @@ export type SiteSettings = {
     available_from: string | null;
     testimonial_video_enabled: boolean;
     blog_enabled: boolean;
+    blog_reactions_enabled: boolean;
+    blog_comments_enabled: boolean;
     cv_job_profile_id: number | null;
     cv_source: "uploaded" | "generated";
     congratulation_notify_minutes: number;

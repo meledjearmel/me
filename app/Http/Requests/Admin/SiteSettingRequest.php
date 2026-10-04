@@ -35,6 +35,10 @@ class SiteSettingRequest extends FormRequest
             ],
             // Blog : affiché sur le site public.
             'blog_enabled' => ['sometimes', 'boolean'],
+            // Réactions anonymes (emojis) sous les articles.
+            'blog_reactions_enabled' => ['sometimes', 'boolean'],
+            // Commentaires sous les articles, publiés après modération.
+            'blog_comments_enabled' => ['sometimes', 'boolean'],
             // CV : profil métier proposé au téléchargement (`null` : le premier publié) et source prioritaire.
             'cv_job_profile_id' => ['sometimes', 'nullable', 'integer', 'exists:job_profiles,id'],
             'cv_source' => ['sometimes', Rule::enum(CvSource::class)],

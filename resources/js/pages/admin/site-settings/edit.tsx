@@ -37,6 +37,8 @@ const FIELD_TAB: Record<string, Tab> = {
     available_from: 'site',
     testimonial_video_enabled: 'reviews',
     blog_enabled: 'blog',
+    blog_reactions_enabled: 'blog',
+    blog_comments_enabled: 'blog',
     cv_job_profile_id: 'cv',
     cv_source: 'cv',
     congratulation_notify_minutes: 'notifications',
@@ -282,6 +284,43 @@ export default function SiteSettingsEdit({
                                     <FieldError>
                                         {errors.blog_enabled}
                                     </FieldError>
+
+                                    <Toggle
+                                        name="blog_reactions_enabled"
+                                        label="Réactions sous les articles"
+                                        defaultChecked={
+                                            settings.blog_reactions_enabled
+                                        }
+                                    />
+                                    <FieldDescription>
+                                        Les lecteurs réagissent sans compte
+                                        (j’aime, j’adore, impressionnant,
+                                        instructif, réflexion), une fois par
+                                        réaction.
+                                        Désactivé, les boutons disparaissent ;
+                                        les réactions déjà données sont
+                                        conservées.
+                                    </FieldDescription>
+                                    <FieldError>
+                                        {errors.blog_reactions_enabled}
+                                    </FieldError>
+
+                                    <Toggle
+                                        name="blog_comments_enabled"
+                                        label="Commentaires sous les articles"
+                                        defaultChecked={
+                                            settings.blog_comments_enabled
+                                        }
+                                    />
+                                    <FieldDescription>
+                                        Un commentaire n’apparaît qu’une fois
+                                        publié depuis « Commentaires ».
+                                        Désactivé, le formulaire et les
+                                        commentaires sont masqués.
+                                    </FieldDescription>
+                                    <FieldError>
+                                        {errors.blog_comments_enabled}
+                                    </FieldError>
                                 </Section>
 
                                 <Section value="cv">
@@ -372,8 +411,9 @@ export default function SiteSettingsEdit({
                                         }
                                     >
                                         <FieldLabel htmlFor="congratulation_notify_minutes">
-                                            Notification de félicitations au
-                                            plus toutes les (minutes)
+                                            Notification de félicitations et
+                                            de réactions au plus toutes les
+                                            (minutes)
                                         </FieldLabel>
                                         <Input
                                             id="congratulation_notify_minutes"
@@ -388,9 +428,12 @@ export default function SiteSettingsEdit({
                                         />
                                         <FieldDescription>
                                             Par motif (chaque surprise, la page
-                                            À propos). 0 : une notification à
-                                            chaque envoi. L'historique garde
-                                            toutes les félicitations.
+                                            À propos) et par article du blog
+                                            pour les réactions. 0 : une
+                                            notification à chaque envoi.
+                                            L'historique garde toutes les
+                                            félicitations. Chaque commentaire
+                                            est notifié.
                                         </FieldDescription>
                                         <FieldError>
                                             {

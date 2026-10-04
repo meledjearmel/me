@@ -40,7 +40,7 @@ class SiteSettingController extends Controller
     }
 
     /**
-     * @return array{contact_opens_drawer: bool, availability_status: string, available_from: string|null, now_content: array<string, string|null>|null, now_updated_at: string|null, testimonial_video_enabled: bool, blog_enabled: bool, cv_job_profile_id: int|null, cv_source: string, congratulation_notify_minutes: int, booking_enabled: bool, booking_min_notice_hours: int, booking_horizon_days: int, booking_buffer_minutes: int, booking_video_provider: string, booking_video_link: string|null}
+     * @return array{contact_opens_drawer: bool, availability_status: string, available_from: string|null, now_content: array<string, string|null>|null, now_updated_at: string|null, testimonial_video_enabled: bool, blog_enabled: bool, blog_reactions_enabled: bool, blog_comments_enabled: bool, cv_job_profile_id: int|null, cv_source: string, congratulation_notify_minutes: int, booking_enabled: bool, booking_min_notice_hours: int, booking_horizon_days: int, booking_buffer_minutes: int, booking_video_provider: string, booking_video_link: string|null}
      */
     private function payload(): array
     {
@@ -69,11 +69,15 @@ class SiteSettingController extends Controller
             'testimonial_video_enabled' => $settings->testimonial_video_enabled,
             /** Le blog est affiché sur le site public (pages, navigation, plan du site). */
             'blog_enabled' => $settings->blog_enabled,
+            /** Les lecteurs peuvent réagir aux articles (j’aime, j’adore, impressionnant, instructif, réflexion), sans compte, une fois par réaction. */
+            'blog_reactions_enabled' => $settings->blog_reactions_enabled,
+            /** Les lecteurs peuvent commenter les articles ; un commentaire n'est affiché qu'une fois approuvé. Désactivé, le formulaire et les commentaires disparaissent. */
+            'blog_comments_enabled' => $settings->blog_comments_enabled,
             /** Profil métier dont le CV est téléchargeable sur le site (`null` : le premier publié). */
             'cv_job_profile_id' => $settings->cv_job_profile_id,
             /** Source prioritaire du CV : `uploaded` (PDF importé) ou `generated`, l'autre en repli. */
             'cv_source' => $settings->cv_source->value,
-            /** Au plus une notification push de félicitations par motif sur ce nombre de minutes (0 = à chaque envoi). */
+            /** Au plus une notification push de félicitations par motif, et de réactions par article du blog, sur ce nombre de minutes (0 = à chaque envoi). Chaque commentaire est notifié. */
             'congratulation_notify_minutes' => $settings->congratulation_notify_minutes,
             /** La prise de rendez-vous est ouverte sur le site. */
             'booking_enabled' => $settings->booking_enabled,

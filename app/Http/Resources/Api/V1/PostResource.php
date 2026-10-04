@@ -48,6 +48,14 @@ class PostResource extends JsonResource
              * 72 heures : il s'ouvre sans compte, même pour un brouillon ou un article programmé.
              */
             'preview_url' => $this->previewUrl(),
+            /**
+             * Réactions anonymes des lecteurs : nombre de `like`, `love`, `fire`, `idea` et `think`.
+             *
+             * @var array{like: int, love: int, fire: int, idea: int, think: int}
+             */
+            'reactions' => $this->reactionCounts(),
+            /** Commentaires en attente de modération. */
+            'pending_comments_count' => $this->comments()->where('status', 'pending')->count(),
             'cover_url' => $this->getFirstMediaUrl('cover') ?: null,
             /** @var list<string> */
             'tags' => $this->whenLoaded('tags', fn () => $this->tags

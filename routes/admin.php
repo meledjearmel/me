@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\GitHubController;
 use App\Http\Controllers\Admin\JobProfileController;
 use App\Http\Controllers\Admin\MusicGenreController;
 use App\Http\Controllers\Admin\NowPageController;
+use App\Http\Controllers\Admin\PostCommentController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\PostSeriesController;
 use App\Http\Controllers\Admin\PostTagController;
@@ -88,6 +89,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('projects', ProjectController::class);
     Route::post('posts/images', [PostController::class, 'storeImage'])->name('posts.images.store');
     Route::resource('posts', PostController::class)->except('show');
+    Route::resource('post-comments', PostCommentController::class)->only(['index', 'update', 'destroy'])->parameters(['post-comments' => 'comment']);
     Route::resource('post-tags', PostTagController::class)->only(['index', 'edit', 'update', 'destroy']);
     Route::resource('post-series', PostSeriesController::class)
         ->only(['index', 'edit', 'update', 'destroy'])

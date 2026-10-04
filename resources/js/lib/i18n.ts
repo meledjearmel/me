@@ -320,6 +320,26 @@ const dictionaries = {
             previousPost: 'Article précédent',
             nextPost: 'Article suivant',
             readingProgress: 'Progression de la lecture',
+            reactionsLabel: 'Réagir à l’article',
+            comments: {
+                title: (count: number) =>
+                    count === 0
+                        ? 'Commentaires'
+                        : `${count} commentaire${count > 1 ? 's' : ''}`,
+                name: 'Votre nom',
+                email: 'Email (facultatif, jamais affiché)',
+                body: 'Votre commentaire',
+                hint: 'Votre commentaire sera publié après relecture.',
+                submit: 'Envoyer',
+                sent: 'Merci ! Votre commentaire sera visible une fois relu.',
+            },
+            reactions: {
+                like: 'J’aime',
+                love: 'J’adore',
+                fire: 'Impressionnant',
+                idea: 'Instructif',
+                think: 'Ça fait réfléchir',
+            },
             previous: '← Plus récents',
             next: 'Plus anciens →',
             pageOf: (page: number, total: number) =>
@@ -863,6 +883,26 @@ const dictionaries = {
             previousPost: 'Previous article',
             nextPost: 'Next article',
             readingProgress: 'Reading progress',
+            reactionsLabel: 'React to this article',
+            comments: {
+                title: (count: number) =>
+                    count === 0
+                        ? 'Comments'
+                        : `${count} comment${count > 1 ? 's' : ''}`,
+                name: 'Your name',
+                email: 'Email (optional, never shown)',
+                body: 'Your comment',
+                hint: 'Your comment will be published after review.',
+                submit: 'Send',
+                sent: 'Thanks! Your comment will appear once reviewed.',
+            },
+            reactions: {
+                like: 'Like',
+                love: 'Love',
+                fire: 'Impressive',
+                idea: 'Insightful',
+                think: 'Thought-provoking',
+            },
             previous: '← Newer',
             next: 'Older →',
             pageOf: (page: number, total: number) => `Page ${page} of ${total}`,

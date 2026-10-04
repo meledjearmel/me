@@ -7982,6 +7982,141 @@ html.pub-scroll {
     will-change: transform;
 }
 
+/* Réactions anonymes, sous le contenu */
+.pub-reactions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 3rem;
+}
+
+.pub-reactions__button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid color-mix(in oklab, var(--pub-text) 22%, transparent);
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    transition:
+        background 0.25s ease,
+        border-color 0.25s ease,
+        transform 0.3s var(--pub-ease-spring);
+}
+
+.pub-reactions__button:hover {
+    transform: translateY(-2px);
+    border-color: var(--pub-text);
+}
+
+.pub-reactions__button[aria-pressed='true'] {
+    border-color: var(--pub-gold);
+    background: color-mix(in oklab, var(--pub-gold) 30%, transparent);
+}
+
+.pub-reactions {
+    --reaction-like: var(--pub-gold);
+    --reaction-love: #f43f5e;
+    --reaction-fire: #ff6a1a;
+    --reaction-fire-core: #ffd23f;
+    --reaction-idea: #ffcf33;
+    --reaction-think: #8b5cf6;
+}
+
+/* Les éclats, braises et rayons débordent volontairement du carré de l'icône. */
+.pub-reaction-icon {
+    width: 1.35rem;
+    height: 1.35rem;
+    overflow: visible;
+}
+
+/* Le compteur défile dans une fenêtre d'une ligne. */
+.pub-reactions__count {
+    display: inline-grid;
+    min-width: 1ch;
+    overflow: hidden;
+}
+
+.pub-reactions__count > span {
+    grid-area: 1 / 1;
+}
+
+/* Commentaires, sous les réactions */
+.pub-comments {
+    margin-top: 3.5rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid color-mix(in oklab, var(--pub-text) 14%, transparent);
+}
+
+.pub-comments__title {
+    margin: 0 0 1.5rem;
+    font-family: var(--pub-font-display);
+    font-size: clamp(1.6rem, 2.5vw, 2rem);
+    font-weight: 400;
+    line-height: 1.2;
+}
+
+.pub-comments__list {
+    display: grid;
+    gap: 1rem;
+    margin: 0 0 2.5rem;
+    padding: 0;
+    list-style: none;
+}
+
+.pub-comments__item {
+    padding: 1.1rem 1.3rem;
+    border-radius: 14px;
+    background: var(--pub-surface);
+}
+
+.pub-comments__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin: 0 0 0.4rem;
+}
+
+.pub-comments__meta time {
+    font-size: 0.85rem;
+    opacity: 0.65;
+}
+
+.pub-comments__body {
+    margin: 0;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+}
+
+.pub-comments__form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.75rem;
+}
+
+.pub-comments__form > label {
+    align-self: stretch;
+}
+
+.pub-comments__row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.75rem;
+    align-self: stretch;
+}
+
+@media (max-width: 640px) {
+    .pub-comments__row {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Article précédent / suivant, sous le contenu */
 .pub-post__adjacent {
     display: grid;

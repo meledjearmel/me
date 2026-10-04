@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PostReactionType;
 use App\Enums\PublicationStatus;
 use App\Services\PostContent;
 use Database\Factories\PostFactory;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\URL;
 use Spatie\MediaLibrary\HasMedia;
@@ -87,6 +89,36 @@ class Post extends Model implements HasMedia
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(PostTag::class);
+    }
+
+    /** @return HasMany<PostComment, $this> */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(PostComment::class);
+    }
+
+    /** @return HasMany<PostReaction, $this> */
+    public function reactions(): HasMany
+    {
+        return $this->hasMany(PostReaction::class);
+    }
+
+    /**
+     * Nombre de chaque réaction reçue, toutes à zéro par défaut.
+     *
+     * @return array<string, int>
+     */
+    public function reactionCounts(): array
+    {
+        $counts = $this->reactions()
+            ->toBase()
+            ->selectRaw('type, count(*) as total')
+            ->groupBy('type')
+            ->pluck('total', 'type');
+
+        return collect(PostReactionType::cases())
+            ->mapWithKeys(fn (PostReactionType $type): array => [$type->value => (int) ($counts[$type->value] ?? 0)])
+            ->all();
     }
 
     /**

@@ -22,6 +22,8 @@ class SiteSettingFactory extends Factory
             'contact_opens_drawer' => true,
             'testimonial_video_enabled' => true,
             'blog_enabled' => true,
+            'blog_reactions_enabled' => true,
+            'blog_comments_enabled' => true,
             'cv_source' => CvSource::Uploaded,
             'congratulation_notify_minutes' => 10,
             'booking_enabled' => false,

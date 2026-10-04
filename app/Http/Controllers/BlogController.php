@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\Public\PostResource;
 use App\Models\Post;
+use App\Models\PostComment;
 use App\Models\PostTag;
 use App\Models\SiteSetting;
+use App\Services\PostReactions;
 use App\Services\TextSearch;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -21,7 +23,7 @@ class BlogController extends Controller
 
     private const int RELATED_COUNT = 3;
 
-    public function __construct(private TextSearch $search) {}
+    public function __construct(private TextSearch $search, private PostReactions $reactions) {}
 
     public function index(Request $request): Response
     {
@@ -61,12 +63,12 @@ class BlogController extends Controller
         ]);
     }
 
-    public function show(string $locale, Post $post): Response
+    public function show(Request $request, string $locale, Post $post): Response
     {
         $this->ensureBlogIsEnabled();
         abort_unless($post->isPublished(), HttpResponse::HTTP_NOT_FOUND);
 
-        return $this->renderPost($post, $locale);
+        return $this->renderPost($post, $locale, $this->reactions->readerHash($request));
     }
 
     /**
@@ -78,7 +80,7 @@ class BlogController extends Controller
         return $this->renderPost($post, $locale, preview: true);
     }
 
-    private function renderPost(Post $post, string $locale, bool $preview = false): Response
+    private function renderPost(Post $post, string $locale, ?string $readerHash = null, bool $preview = false): Response
     {
         $post->load(['tags', 'media']);
 
@@ -88,6 +90,19 @@ class BlogController extends Controller
             'series' => $this->series($post, $locale),
             'adjacent' => $this->adjacentPosts($post, $locale),
             'preview' => $preview,
+            // Pas de réaction sur un aperçu : l'article n'est pas encore public.
+            'reactions' => ! $preview && SiteSetting::current()->blog_reactions_enabled
+                ? $this->reactions->summary($post, $readerHash)
+                : null,
+            'comments' => ! $preview && SiteSetting::current()->blog_comments_enabled
+                ? $post->comments()->approved()->oldest()->get(['id', 'author_name', 'body', 'created_at'])
+                    ->map(fn (PostComment $comment): array => [
+                        'id' => $comment->id,
+                        'author_name' => $comment->author_name,
+                        'body' => $comment->body,
+                        'created_at' => $comment->created_at->toIso8601String(),
+                    ])
+                : null,
         ]);
     }
 

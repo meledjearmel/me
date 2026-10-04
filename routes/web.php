@@ -18,6 +18,8 @@ use App\Http\Controllers\LlmsTxtController;
 use App\Http\Controllers\LocaleRedirectController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\NowController;
+use App\Http\Controllers\PostCommentController;
+use App\Http\Controllers\PostReactionController;
 use App\Http\Controllers\PostShareImageController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RobotsTxtController;
@@ -60,6 +62,12 @@ Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, Lo
         ->middleware('signed')
         ->withoutMiddleware(LogPageVisit::class)
         ->name('blog.preview');
+    Route::post('blog/{post:slug}/reactions', PostReactionController::class)
+        ->middleware('throttle:30,1')
+        ->name('blog.reactions');
+    Route::post('blog/{post:slug}/comments', [PostCommentController::class, 'store'])
+        ->middleware('throttle:5,1')
+        ->name('blog.comments.store');
     // Image lue par les réseaux sociaux, pas une page : elle ne compte pas dans l'audience.
     Route::get('blog/{post:slug}/share.png', PostShareImageController::class)
         ->middleware('throttle:60,1')

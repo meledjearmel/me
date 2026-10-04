@@ -4,6 +4,10 @@ import type { RefObject } from 'react';
 import NewsletterSignup from '@/components/public/newsletter-signup';
 import PageHero from '@/components/public/page-hero';
 import PostCard, { formatPostDate } from '@/components/public/post-card';
+import PostComments from '@/components/public/post-comments';
+import type { PublicComment } from '@/components/public/post-comments';
+import PostReactions from '@/components/public/post-reactions';
+import type { ReactionSummary } from '@/components/public/post-reactions';
 import { ProjectCta } from '@/components/public/project-parts';
 import PublicShell from '@/components/public/public-shell';
 import Seo from '@/components/public/seo';
@@ -186,6 +190,8 @@ export default function BlogShow({
     relatedPosts,
     series,
     adjacent,
+    reactions,
+    comments,
     preview = false,
 }: {
     post: PublicPost;
@@ -193,6 +199,10 @@ export default function BlogShow({
     series: PostSeries | null;
     /** Articles publiés juste avant et juste après, par date. */
     adjacent: { previous: AdjacentPost; next: AdjacentPost };
+    /** Null quand les réactions sont désactivées ou sur un aperçu. */
+    reactions: ReactionSummary | null;
+    /** Commentaires approuvés ; null quand ils sont désactivés ou sur un aperçu. */
+    comments: PublicComment[] | null;
     /** Brouillon ou article programmé, ouvert depuis un lien d'aperçu signé. */
     preview?: boolean;
 }) {
@@ -381,6 +391,18 @@ export default function BlogShow({
                                         __html: post.body ?? '',
                                     }}
                                 />
+                                {reactions && (
+                                    <PostReactions
+                                        slug={post.slug}
+                                        initial={reactions}
+                                    />
+                                )}
+                                {comments && (
+                                    <PostComments
+                                        slug={post.slug}
+                                        comments={comments}
+                                    />
+                                )}
                                 {(adjacent.previous || adjacent.next) && (
                                     <nav
                                         className="pub-post__adjacent"

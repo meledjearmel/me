@@ -21,6 +21,7 @@ import {
     Mail,
     Link2,
     MessageSquareQuote,
+    MessagesSquare,
     Newspaper,
     Music,
     PartyPopper,
@@ -73,6 +74,7 @@ import { index as certificationsIndex } from "@/routes/admin/certifications";
 import { edit as nowPageEdit } from "@/routes/admin/now-page";
 import { edit as githubEdit } from "@/routes/admin/github";
 import { index as testimonialsIndex } from "@/routes/admin/testimonials";
+import { index as postCommentsIndex } from "@/routes/admin/post-comments";
 import { index as tracksIndex } from "@/routes/admin/tracks";
 import type { NavItem } from "@/types";
 
@@ -95,6 +97,7 @@ const blogNavItems: NavItem[] = [
     { title: "Articles", href: postsIndex(), icon: Newspaper },
     { title: "Tags du blog", href: postTagsIndex(), icon: Tags },
     { title: "Séries du blog", href: postSeriesIndex(), icon: ListOrdered },
+    { title: "Commentaires", href: postCommentsIndex(), icon: MessagesSquare },
 ];
 
 const portfolioNavItems: NavItem[] = [

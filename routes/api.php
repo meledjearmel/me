@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\V1\ExperienceController;
 use App\Http\Controllers\Api\V1\GitHubController;
 use App\Http\Controllers\Api\V1\JobProfileController;
 use App\Http\Controllers\Api\V1\MusicGenreController;
+use App\Http\Controllers\Api\V1\PostCommentController;
 use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\PostSeriesController;
 use App\Http\Controllers\Api\V1\PostTagController;
@@ -114,6 +115,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::get('posts/tags', [PostController::class, 'tags'])->name('posts.tags');
         Route::post('posts/images', [PostController::class, 'storeImage'])->name('posts.images.store');
         Route::apiResource('posts', PostController::class);
+        Route::apiResource('post-comments', PostCommentController::class)->except('store')->parameters(['post-comments' => 'comment']);
         Route::apiResource('post-tags', PostTagController::class)->except('store');
         Route::apiResource('post-series', PostSeriesController::class)
             ->except('store')

@@ -2,15 +2,9 @@ import { Download } from 'lucide-react';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useLocalizedPath, useTranslations } from '@/lib/i18n';
+import { xsrfToken } from '@/lib/utils';
 
 type Status = 'idle' | 'loading' | 'done' | 'error';
-
-/** Jeton CSRF que Laravel dépose en cookie (le même que celui d'Inertia). */
-function xsrfToken(): string {
-    const match = document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]*)/);
-
-    return match ? decodeURIComponent(match[1]) : '';
-}
 
 /** Nom du fichier proposé par le serveur (Content-Disposition), sinon un nom par défaut. */
 function filenameFrom(response: Response): string {
