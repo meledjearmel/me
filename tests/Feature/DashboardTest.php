@@ -73,3 +73,32 @@ test('the dashboard counts the content of the site', function () {
         ->has('distribution.technologies_by_category')
     );
 });
+
+test('a public page view records an anonymous visitor, its device and where it came from', function () {
+    $this->withHeaders(['User-Agent' => 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0) Mobile Safari'])
+        ->get('/fr/about?utm_source=LinkedIn');
+
+    $visit = PageVisit::query()->sole();
+
+    expect($visit->visitor_hash)->toHaveLength(64)
+        ->and($visit->visitor_hash)->not->toContain('127.0.0.1')
+        ->and($visit->device)->toBe('mobile')
+        ->and($visit->source)->toBe('linkedin');
+});
+
+test('the dashboard counts unique visitors by source and device, and the conversions they lead to', function () {
+    PageVisit::factory()->create(['visitor_hash' => 'a', 'source' => 'linkedin', 'device' => 'mobile']);
+    PageVisit::factory()->create(['visitor_hash' => 'a', 'source' => 'linkedin', 'device' => 'mobile']);
+    PageVisit::factory()->create(['visitor_hash' => 'b', 'source' => null, 'device' => 'desktop']);
+    PageVisit::factory()->create(['visitor_hash' => 'c', 'source' => 'linkedin', 'device' => 'desktop']);
+    PageVisit::factory()->create(['visitor_hash' => 'd', 'source' => 'linkedin', 'device' => 'desktop']);
+    Contact::factory()->create();
+
+    $this->actingAs(User::factory()->create())->get(route('dashboard'))->assertInertia(fn ($page) => $page
+        ->where('visits.visitors', 4)
+        ->where('visits.by_source', [['label' => 'linkedin', 'count' => 3], ['label' => 'direct', 'count' => 1]])
+        ->where('visits.by_device.0', ['label' => 'desktop', 'count' => 3])
+        ->where('conversions.visitors', 4)
+        ->where('conversions.goals', fn ($goals) => collect($goals)->firstWhere('key', 'contacts') == ['key' => 'contacts', 'count' => 1, 'rate' => 25])
+    );
+});

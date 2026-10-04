@@ -56,7 +56,10 @@ type DashboardProps = {
         today: number;
         french: number;
         english: number;
+        visitors: number;
         daily: { date: string; count: number }[];
+        by_source: Bar[];
+        by_device: Bar[];
         top_pages: { path: string; count: number }[];
     };
     content: {
@@ -97,6 +100,11 @@ type DashboardProps = {
         by_country: Bar[];
         by_origin: Bar[];
     };
+    conversions: {
+        period_days: number;
+        visitors: number;
+        goals: { key: keyof typeof GOALS; count: number; rate: number }[];
+    };
     recent: {
         contacts: {
             id: number;
@@ -134,6 +142,22 @@ const longDate = new Intl.DateTimeFormat('fr-FR', {
     month: 'long',
     year: 'numeric',
 });
+
+/** Libellés des objectifs suivis dans « Conversions ». */
+const GOALS = {
+    cv_downloads: 'CV téléchargés',
+    contacts: 'Messages envoyés',
+    engagements: 'Demandes de collaboration',
+    appointments: 'Rendez-vous pris',
+} as const;
+
+/** Libellés des types d'appareil. */
+const DEVICES: Record<string, string> = {
+    desktop: 'Ordinateur',
+    mobile: 'Mobile',
+    tablet: 'Tablette',
+    inconnu: 'Inconnu',
+};
 
 /** Libellés et liens de la liste « à compléter ». */
 const HEALTH = {
@@ -448,6 +472,7 @@ export default function Dashboard({
     health,
     recent,
     cv_downloads: cvDownloads,
+    conversions,
 }: DashboardProps) {
     const { auth } = usePage().props;
     const firstName = auth.user.name.split(' ')[0];
@@ -510,7 +535,7 @@ export default function Dashboard({
                     <StatCard
                         title={`Visites sur ${visits.period_days} jours`}
                         value={number.format(visits.period)}
-                        hint={`${french} % en français`}
+                        hint={`${number.format(visits.visitors)} visiteurs uniques · ${french} % en français`}
                         icon={Eye}
                     />
                     <StatCard
@@ -566,6 +591,56 @@ export default function Dashboard({
                                 ))}
                             </ul>
                         )}
+                    </Section>
+                </div>
+
+                {/* Provenance, appareils et conversions */}
+                <div className="grid gap-4 lg:grid-cols-3">
+                    <Section
+                        title="Provenance des visiteurs"
+                        description="Campagne, sinon site d'origine, sinon direct"
+                    >
+                        <Bars
+                            rows={visits.by_source}
+                            empty="Aucune visite enregistrée."
+                        />
+                    </Section>
+                    <Section
+                        title="Appareils"
+                        description={`Visiteurs uniques sur ${visits.period_days} jours`}
+                    >
+                        <Bars
+                            rows={visits.by_device.map((row) => ({
+                                ...row,
+                                label: DEVICES[row.label] ?? row.label,
+                            }))}
+                            empty="Aucune visite enregistrée."
+                        />
+                    </Section>
+                    <Section
+                        title="Conversions"
+                        description={`Sur ${conversions.period_days} jours, rapportées à ${number.format(conversions.visitors)} visiteurs uniques`}
+                    >
+                        <ul className="space-y-2.5">
+                            {conversions.goals.map((goal) => (
+                                <li
+                                    key={goal.key}
+                                    className="flex items-center justify-between gap-3 text-sm"
+                                >
+                                    <span className="truncate">
+                                        {GOALS[goal.key]}
+                                    </span>
+                                    <span className="flex items-baseline gap-2 tabular-nums">
+                                        <span className="font-medium">
+                                            {number.format(goal.count)}
+                                        </span>
+                                        <span className="w-14 text-right text-xs text-muted-foreground">
+                                            {goal.rate.toLocaleString('fr-FR')} %
+                                        </span>
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
                     </Section>
                 </div>
 

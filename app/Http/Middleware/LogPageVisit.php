@@ -19,9 +19,14 @@ class LogPageVisit
     public function handle(Request $request, Closure $next): Response
     {
         if ($request->isMethod('get') && ! $this->visitor->isBot($request) && ! $this->alreadySeen($request)) {
+            $source = $request->session()->get(CaptureTrafficSource::SESSION_KEY, []);
+
             PageVisit::query()->create([
                 'path' => $request->path(),
+                'visitor_hash' => $this->visitor->dailyHash($request),
                 'referrer' => $request->headers->get('referer'),
+                'source' => $source['utm_source'] ?? $source['referrer_host'] ?? null,
+                'device' => $this->visitor->device($request),
             ]);
         }
 

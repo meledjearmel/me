@@ -18,7 +18,9 @@ class PageVisit extends Model
         'visitable_type',
         'visitable_id',
         'path',
+        'visitor_hash',
         'referrer',
+        'source',
         'device',
         'duration_seconds',
     ];

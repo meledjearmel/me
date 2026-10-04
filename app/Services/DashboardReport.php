@@ -7,6 +7,7 @@ use App\Enums\EngagementStatus;
 use App\Enums\EngagementType;
 use App\Enums\ProjectStatus;
 use App\Enums\TestimonialStatus;
+use App\Models\Appointment;
 use App\Models\Contact;
 use App\Models\Counter;
 use App\Models\CvDownload;
@@ -47,6 +48,7 @@ class DashboardReport
             'health' => $this->health(),
             'recent' => $this->recent(),
             'cv_downloads' => $this->cvDownloads(),
+            'conversions' => $this->conversions(),
         ];
     }
 
@@ -155,9 +157,71 @@ class DashboardReport
             'today' => PageVisit::query()->where('created_at', '>=', Carbon::today())->count(),
             'french' => (clone $inPeriod)->where('path', 'like', 'fr%')->count(),
             'english' => (clone $inPeriod)->where('path', 'like', 'en%')->count(),
+            'visitors' => (clone $inPeriod)->whereNotNull('visitor_hash')->distinct()->count('visitor_hash'),
             'daily' => $daily,
+            /** @var list<array{label: string, count: int}> Visiteurs uniques par provenance (campagne, sinon site d'origine, sinon `direct`). */
+            'by_source' => $this->topVisitorsBy("coalesce(source, 'direct')", $since),
+            /** @var list<array{label: string, count: int}> Visiteurs uniques par type d'appareil. */
+            'by_device' => $this->topVisitorsBy("coalesce(device, 'inconnu')", $since),
             /** @var list<array{path: string, count: int}> */
             'top_pages' => $topPages,
+        ];
+    }
+
+    /**
+     * Visiteurs uniques (empreinte du jour) regroupés par une expression SQL,
+     * les 6 plus fréquents.
+     *
+     * @return list<array{label: string, count: int}>
+     */
+    private function topVisitorsBy(string $expression, Carbon $since): array
+    {
+        return PageVisit::query()
+            ->where('created_at', '>=', $since)
+            ->whereNotNull('visitor_hash')
+            ->selectRaw("{$expression} as label, count(distinct visitor_hash) as count")
+            ->groupBy('label')
+            ->orderByDesc('count')
+            ->limit(6)
+            ->get()
+            ->map(fn (PageVisit $row): array => ['label' => (string) $row->getAttribute('label'), 'count' => (int) $row->getAttribute('count')])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Ce que les visiteurs font sur la période : CV, messages, collaborations,
+     * rendez-vous, et la part des visiteurs uniques que cela représente.
+     *
+     * @return array{period_days: int, visitors: int, goals: list<array{key: string, count: int, rate: float}>}
+     */
+    private function conversions(): array
+    {
+        $since = Carbon::today()->subDays(self::VISIT_DAYS - 1);
+        $visitors = PageVisit::query()
+            ->where('created_at', '>=', $since)
+            ->whereNotNull('visitor_hash')
+            ->distinct()
+            ->count('visitor_hash');
+
+        $counts = [
+            'cv_downloads' => CvDownload::query()->where('created_at', '>=', $since)->count(),
+            'contacts' => Contact::query()->where('created_at', '>=', $since)->count(),
+            'engagements' => Engagement::query()->where('created_at', '>=', $since)->count(),
+            'appointments' => Appointment::query()->where('created_at', '>=', $since)->count(),
+        ];
+
+        return [
+            'period_days' => self::VISIT_DAYS,
+            'visitors' => $visitors,
+            'goals' => collect($counts)
+                ->map(fn (int $count, string $key): array => [
+                    'key' => $key,
+                    'count' => $count,
+                    'rate' => $visitors > 0 ? round($count / $visitors * 100, 1) : 0.0,
+                ])
+                ->values()
+                ->all(),
         ];
     }
 
