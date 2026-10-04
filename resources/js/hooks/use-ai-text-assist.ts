@@ -10,7 +10,7 @@ function csrfToken(): string {
     return match ? decodeURIComponent(match[1]) : "";
 }
 
-async function post<T = { text: string }>(
+export async function post<T = { text: string }>(
     url: string,
     body: unknown,
 ): Promise<T> {

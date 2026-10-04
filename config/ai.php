@@ -80,6 +80,8 @@ return [
             explode(',', (string) env('AI_TEXT_ASSIST_PROVIDERS', 'groq,groq-fallback,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,openrouter:inclusionai/ling-3.0-flash-fin:free,openrouter:poolside/laguna-s-2.1:free,gemini,gemini:gemini-3.8-flash,gemini:gemini-3.5-flash-lite')),
         ))),
         'max_text_length' => 2000,
+        // Fragment HTML d'article (rédaction, traduction) : l'éditeur découpe au-delà.
+        'max_html_length' => 6000,
         // Plafond par fournisseur, puis budget global de la requête (en secondes) :
         // il doit rester sous max_execution_time et le timeout du proxy.
         'timeout' => 20,

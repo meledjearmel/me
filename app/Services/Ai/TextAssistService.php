@@ -2,6 +2,8 @@
 
 namespace App\Services\Ai;
 
+use App\Ai\Agents\HtmlTranslator;
+use App\Ai\Agents\PostWriter;
 use App\Ai\Agents\TechnologyDescriber;
 use App\Ai\Agents\TextImprover;
 use App\Ai\Agents\TextTranslator;
@@ -33,6 +35,43 @@ class TextAssistService
             fn (string $provider, int $timeout, ?string $model): string => (new TextImprover($locale, $tone, $instructions))
                 ->prompt($text, provider: $provider, model: $model, timeout: $timeout)->text,
         );
+    }
+
+    /** Traduit un fragment HTML d'article en conservant ses balises. */
+    public function translateHtml(string $html, string $sourceLocale, string $targetLocale): ?string
+    {
+        return $this->attempt(
+            fn (string $provider, int $timeout, ?string $model): string => $this->unwrapHtml((new HtmlTranslator($sourceLocale, $targetLocale))
+                ->prompt($html, provider: $provider, model: $model, timeout: $timeout)->text),
+        );
+    }
+
+    /**
+     * Réécrit la sélection d'un article, ou rédige le passage à insérer au curseur, en HTML.
+     *
+     * @param  array{title?: string|null, excerpt?: string|null, selection?: string|null, context?: string|null}  $article
+     */
+    public function writePost(string $instruction, string $locale, array $article): ?string
+    {
+        $selection = $article['selection'] ?? null;
+        $context = $article['context'] ?? null;
+
+        $prompt = match (true) {
+            filled($selection) => "<selection>{$selection}</selection>\n\nConsigne : {$instruction}",
+            filled($context) => "<contexte>{$context}</contexte>\n\nConsigne : {$instruction}",
+            default => "Consigne : {$instruction}",
+        };
+
+        return $this->attempt(
+            fn (string $provider, int $timeout, ?string $model): string => $this->unwrapHtml((new PostWriter($locale, $article['title'] ?? null, $article['excerpt'] ?? null, filled($selection)))
+                ->prompt($prompt, provider: $provider, model: $model, timeout: $timeout)->text),
+        );
+    }
+
+    /** Retire le bloc de code Markdown (```html … ```) dont certains modèles entourent leur HTML. */
+    private function unwrapHtml(string $text): string
+    {
+        return trim((string) preg_replace('/^```(?:html)?\s*|\s*```$/i', '', trim($text)));
     }
 
     /** Longueur maximale d'une description de technologie (champ admin). */

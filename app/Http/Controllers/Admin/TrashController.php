@@ -12,6 +12,7 @@ use App\Models\Engagement;
 use App\Models\Experience;
 use App\Models\JobProfile;
 use App\Models\MusicGenre;
+use App\Models\Post;
 use App\Models\ProfessionalReference;
 use App\Models\Project;
 use App\Models\Skill;
@@ -42,6 +43,7 @@ class TrashController extends Controller
         'educations' => ['model' => Education::class, 'label' => 'Formation'],
         'experiences' => ['model' => Experience::class, 'label' => 'Expérience'],
         'projects' => ['model' => Project::class, 'label' => 'Projet'],
+        'posts' => ['model' => Post::class, 'label' => 'Article du blog'],
         'professional-references' => ['model' => ProfessionalReference::class, 'label' => 'Référence professionnelle'],
         'testimonials' => ['model' => Testimonial::class, 'label' => 'Avis'],
         'contacts' => ['model' => Contact::class, 'label' => 'Message de contact'],
@@ -135,7 +137,7 @@ class TrashController extends Controller
             'tracks' => trim("{$model->title} — {$model->artist}"),
             'educations' => trim("{$model->degree} · {$model->institution}"),
             'experiences' => trim("{$model->role} · {$model->company}"),
-            'projects' => (string) $model->title,
+            'projects', 'posts' => (string) $model->title,
             'testimonials' => (string) $model->author_name,
             'contacts', 'engagements' => trim("{$model->name} — {$model->subject}"),
             'appointments' => trim("{$model->name} — {$model->starts_at?->format('d/m/Y H:i')}"),

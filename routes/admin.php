@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\EngagementController;
 use App\Http\Controllers\Admin\ExperienceController;
 use App\Http\Controllers\Admin\JobProfileController;
 use App\Http\Controllers\Admin\MusicGenreController;
+use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ProfessionalReferenceController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProjectController;
@@ -38,6 +39,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::prefix('ai')->name('ai.')->middleware('throttle:ai-assist')->group(function () {
         Route::post('translate', [AiAssistController::class, 'translate'])->name('translate');
         Route::post('improve', [AiAssistController::class, 'improve'])->name('improve');
+        Route::post('translate-html', [AiAssistController::class, 'translateHtml'])->name('translate-html');
+        Route::post('write-post', [AiAssistController::class, 'writePost'])->name('write-post');
         Route::post('describe-technology', [AiAssistController::class, 'describeTechnology'])->name('describe-technology');
     });
 
@@ -67,6 +70,9 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('educations', EducationController::class);
     Route::resource('experiences', ExperienceController::class);
     Route::resource('projects', ProjectController::class);
+    Route::post('posts/images', [PostController::class, 'storeImage'])->name('posts.images.store');
+    Route::resource('posts', PostController::class)->except('show');
+    Route::delete('posts/{post}/cover', [PostController::class, 'destroyCover'])->name('posts.cover.destroy');
     Route::delete('projects/{project}/cover', [ProjectController::class, 'destroyCover'])->name('projects.cover.destroy');
     Route::delete('projects/{project}/gallery/{media}', [ProjectController::class, 'destroyGalleryImage'])->name('projects.gallery.destroy');
     Route::resource('professional-references', ProfessionalReferenceController::class);

@@ -11,22 +11,28 @@ test('only published posts whose date has passed are public', function () {
     expect(Post::query()->published()->pluck('id')->all())->toBe([$published->id]);
 });
 
-test('the markdown body is rendered with raw html escaped', function () {
+test('the body keeps the editor formatting and drops anything unsafe', function () {
     $post = Post::factory()->create([
-        'body' => ['fr' => "## Titre\n\n**gras** <script>alert(1)</script>", 'en' => 'Hello'],
+        'body' => [
+            'fr' => '<h2 style="text-align: center">Titre</h2>'
+                .'<p><strong>gras</strong> <mark>surligné</mark> <a href="javascript:alert(1)">piège</a></p>'
+                .'<script>alert(1)</script><p onclick="alert(1)">clic</p>',
+            'en' => '<p>Hello</p>',
+        ],
     ]);
 
-    $html = $post->bodyHtml('fr');
-
-    expect($html)
-        ->toContain('<h2>Titre</h2>')
+    expect($post->getTranslation('body', 'fr'))
+        ->toContain('<h2 style="text-align: center;">Titre</h2>')
         ->toContain('<strong>gras</strong>')
-        ->not->toContain('<script>');
+        ->toContain('<mark>surligné</mark>')
+        ->not->toContain('<script>')
+        ->not->toContain('javascript:')
+        ->not->toContain('onclick');
 });
 
 test('the reading time follows the longest translation', function () {
     $post = Post::factory()->create([
-        'body' => ['fr' => str_repeat('mot ', 500), 'en' => 'Short'],
+        'body' => ['fr' => '<p>'.str_repeat('mot ', 500).'</p>', 'en' => '<p>Short</p>'],
     ]);
 
     expect($post->reading_minutes)->toBe(3);

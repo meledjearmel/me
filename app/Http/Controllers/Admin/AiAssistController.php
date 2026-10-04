@@ -6,7 +6,9 @@ use App\Enums\TextTone;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ai\DescribeTechnologyRequest;
 use App\Http\Requests\Ai\ImproveTextRequest;
+use App\Http\Requests\Ai\TranslateHtmlRequest;
 use App\Http\Requests\Ai\TranslateTextRequest;
+use App\Http\Requests\Ai\WritePostRequest;
 use App\Services\Ai\TextAssistService;
 use Illuminate\Http\JsonResponse;
 
@@ -37,6 +39,25 @@ class AiAssistController extends Controller
         );
 
         return $this->respond($text);
+    }
+
+    public function translateHtml(TranslateHtmlRequest $request): JsonResponse
+    {
+        return $this->respond($this->assist->translateHtml(
+            $request->validated('html'),
+            $request->validated('source_locale'),
+            $request->validated('target_locale'),
+        ));
+    }
+
+    /** Barre IA de l'éditeur d'articles : réécrit la sélection ou rédige au curseur. */
+    public function writePost(WritePostRequest $request): JsonResponse
+    {
+        return $this->respond($this->assist->writePost(
+            $request->validated('instruction'),
+            $request->validated('locale'),
+            $request->safe()->only(['title', 'excerpt', 'selection', 'context']),
+        ));
     }
 
     public function describeTechnology(DescribeTechnologyRequest $request): JsonResponse

@@ -3,7 +3,7 @@ export type Translatable = {
     en: string;
 };
 
-export type PublicationStatus = 'draft' | 'published';
+export type PublicationStatus = "draft" | "published";
 
 export type Domain = {
     id: number;
@@ -56,7 +56,7 @@ export type Celebration = {
 /** Un envoi de félicitations d'un visiteur, avec son motif. */
 export type Congratulation = {
     id: number;
-    source: 'about' | 'surprise';
+    source: "about" | "surprise";
     celebration_id: number | null;
     reason: string;
     count: number;
@@ -98,7 +98,7 @@ export type JobProfile = {
     hero_title: Translatable | null;
     hero_words: Translatable | null;
     cv_description: Translatable;
-    cv_files?: Record<'fr' | 'en', { file_name: string; url: string } | null>;
+    cv_files?: Record<"fr" | "en", { file_name: string; url: string } | null>;
     sort_order: number;
     status: PublicationStatus;
     projects?: Project[];
@@ -170,7 +170,7 @@ export type Project = {
     demo_url: string | null;
     is_featured: boolean;
     is_open_source: boolean;
-    status: 'published' | 'archived';
+    status: "published" | "archived";
     sort_order: number;
     domains?: Domain[];
     job_profiles?: JobProfile[];
@@ -192,10 +192,10 @@ export type Testimonial = {
     project_id: number | null;
     project?: Project;
     experience_id: number | null;
-    experience?: Pick<Experience, 'id' | 'company' | 'role'> | null;
+    experience?: Pick<Experience, "id" | "company" | "role"> | null;
     education_id: number | null;
-    education?: Pick<Education, 'id' | 'institution' | 'degree'> | null;
-    status: 'pending' | 'approved' | 'rejected';
+    education?: Pick<Education, "id" | "institution" | "degree"> | null;
+    status: "pending" | "approved" | "rejected";
     is_featured: boolean;
     submitted_at: string;
 };
@@ -204,8 +204,8 @@ export type CvDownload = {
     id: number;
     job_profile_id: number | null;
     job_profile?: { id: number; label: Translatable } | null;
-    locale: 'fr' | 'en';
-    source: 'uploaded' | 'generated';
+    locale: "fr" | "en";
+    source: "uploaded" | "generated";
     email: string | null;
     country_code: string | null;
     country: string | null;
@@ -214,7 +214,7 @@ export type CvDownload = {
     utm_source: string | null;
     utm_medium: string | null;
     utm_campaign: string | null;
-    device: 'desktop' | 'mobile' | 'tablet' | null;
+    device: "desktop" | "mobile" | "tablet" | null;
     origin?: string;
     created_at: string;
 };
@@ -225,7 +225,7 @@ export type Contact = {
     email: string;
     subject: string | null;
     message: string;
-    status: 'new' | 'read' | 'replied';
+    status: "new" | "read" | "replied";
     created_at: string;
 };
 
@@ -263,7 +263,7 @@ export type Profile = {
 
 export type Engagement = {
     id: number;
-    type: 'freelance' | 'hiring';
+    type: "freelance" | "hiring";
     name: string;
     email: string;
     company: string | null;
@@ -273,7 +273,7 @@ export type Engagement = {
     timeline: string | null;
     message: string | null;
     locale: string;
-    status: 'new' | 'handled';
+    status: "new" | "handled";
     cv_sent_at: string | null;
     created_at: string;
     job_profile?: { id: number; label: Translatable } | null;
@@ -287,13 +287,10 @@ export type TrashItem = {
     deleted_at: string;
 };
 
-export type AppointmentLocation = 'video' | 'phone' | 'whatsapp' | 'in_person';
+export type AppointmentLocation = "video" | "phone" | "whatsapp" | "in_person";
 
 export type AppointmentStatus =
-    | 'pending'
-    | 'confirmed'
-    | 'declined'
-    | 'cancelled';
+    "pending" | "confirmed" | "declined" | "cancelled";
 
 export type AppointmentType = {
     id: number;
@@ -333,7 +330,7 @@ export type SiteSettings = {
     testimonial_video_enabled: boolean;
     blog_enabled: boolean;
     cv_job_profile_id: number | null;
-    cv_source: 'uploaded' | 'generated';
+    cv_source: "uploaded" | "generated";
     congratulation_notify_minutes: number;
     booking_enabled: boolean;
     booking_min_notice_hours: number;
@@ -354,4 +351,20 @@ export type BlockedPeriod = {
     label: string | null;
     from: string;
     to: string;
+};
+
+export type Post = {
+    id: number;
+    title: Partial<Translatable>;
+    slug: string;
+    excerpt: Partial<Translatable> | null;
+    body: Partial<Translatable>;
+    reading_minutes: number;
+    is_featured: boolean;
+    status: "draft" | "published";
+    published_at: string | null;
+    created_at: string;
+    updated_at: string;
+    tags: string[] | { id: number; name: Translatable; slug: string }[];
+    cover_url?: string | null;
 };

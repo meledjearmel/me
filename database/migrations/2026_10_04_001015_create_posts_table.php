@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Articles du blog. Le contenu (traduit) est rédigé dans Tiptap et stocké en Markdown.
+     * Articles du blog. Le contenu (traduit) est rédigé dans Tiptap et stocké en HTML nettoyé.
      */
     public function up(): void
     {

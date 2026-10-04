@@ -25,8 +25,8 @@ class PostFactory extends Factory
             'slug' => str($title)->slug()->toString(),
             'excerpt' => ['fr' => fake()->sentence(15), 'en' => fake()->sentence(15)],
             'body' => [
-                'fr' => "## Introduction\n\n".fake()->paragraphs(3, true),
-                'en' => "## Introduction\n\n".fake()->paragraphs(3, true),
+                'fr' => '<h2>Introduction</h2><p>'.implode('</p><p>', fake()->paragraphs(3)).'</p>',
+                'en' => '<h2>Introduction</h2><p>'.implode('</p><p>', fake()->paragraphs(3)).'</p>',
             ],
             'is_featured' => false,
             'status' => PublicationStatus::Published,

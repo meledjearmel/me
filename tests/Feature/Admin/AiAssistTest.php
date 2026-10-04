@@ -1,5 +1,7 @@
 <?php
 
+use App\Ai\Agents\HtmlTranslator;
+use App\Ai\Agents\PostWriter;
 use App\Ai\Agents\TechnologyDescriber;
 use App\Ai\Agents\TextImprover;
 use App\Ai\Agents\TextTranslator;
@@ -247,4 +249,30 @@ test('generating a technology description requires a name', function () {
         ->assertUnprocessable()->assertJsonValidationErrors('name');
 
     TechnologyDescriber::assertNeverPrompted();
+});
+
+test('the post editor rewrites the selection and strips the code fence around the html', function () {
+    $user = User::factory()->create();
+    PostWriter::fake(["```html\n<p>Version <strong>réécrite</strong>.</p>\n```"]);
+
+    $this->actingAs($user)->postJson(route('admin.ai.write-post'), [
+        'instruction' => 'Rends-le plus concis',
+        'locale' => 'fr',
+        'selection' => '<p>Un passage un peu trop long.</p>',
+        'title' => 'Mon article',
+    ])->assertOk()->assertExactJson(['text' => '<p>Version <strong>réécrite</strong>.</p>']);
+
+    PostWriter::assertPrompted(fn ($prompt) => $prompt->contains('<selection><p>Un passage un peu trop long.</p></selection>')
+        && $prompt->contains('Rends-le plus concis'));
+});
+
+test('a post fragment is translated with its html', function () {
+    $user = User::factory()->create();
+    HtmlTranslator::fake(['<h2>Hello</h2>']);
+
+    $this->actingAs($user)->postJson(route('admin.ai.translate-html'), [
+        'html' => '<h2>Bonjour</h2>',
+        'source_locale' => 'fr',
+        'target_locale' => 'en',
+    ])->assertOk()->assertExactJson(['text' => '<h2>Hello</h2>']);
 });
