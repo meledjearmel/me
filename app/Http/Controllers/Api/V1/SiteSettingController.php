@@ -29,13 +29,18 @@ class SiteSettingController extends Controller
      */
     public function update(SiteSettingRequest $request): JsonResponse
     {
-        SiteSetting::current()->update($request->validated());
+        $settings = SiteSetting::current();
+        $settings->update($request->safe()->except('now_content'));
+
+        if ($request->has('now_content')) {
+            $settings->updateNowContent($request->validated('now_content', []));
+        }
 
         return response()->json($this->payload());
     }
 
     /**
-     * @return array{contact_opens_drawer: bool, availability_status: string, available_from: string|null, testimonial_video_enabled: bool, blog_enabled: bool, cv_job_profile_id: int|null, cv_source: string, congratulation_notify_minutes: int, booking_enabled: bool, booking_min_notice_hours: int, booking_horizon_days: int, booking_buffer_minutes: int, booking_video_provider: string, booking_video_link: string|null}
+     * @return array{contact_opens_drawer: bool, availability_status: string, available_from: string|null, now_content: array<string, string|null>|null, now_updated_at: string|null, testimonial_video_enabled: bool, blog_enabled: bool, cv_job_profile_id: int|null, cv_source: string, congratulation_notify_minutes: int, booking_enabled: bool, booking_min_notice_hours: int, booking_horizon_days: int, booking_buffer_minutes: int, booking_video_provider: string, booking_video_link: string|null}
      */
     private function payload(): array
     {
@@ -51,6 +56,15 @@ class SiteSettingController extends Controller
             'availability_status' => $settings->availability_status->value,
             /** Date de disponibilité (AAAA-MM-JJ), utilisée avec le statut `from`. */
             'available_from' => $settings->available_from?->toDateString(),
+            /**
+             * Page « Now » : texte libre (une ligne vide entre deux paragraphes, « - » en début
+             * de ligne pour une liste). Vide en français, la page n'est pas affichée.
+             *
+             * @var array{fr?: string|null, en?: string|null}|null
+             */
+            'now_content' => $settings->now_content,
+            /** Dernière modification du texte de la page « Now ». */
+            'now_updated_at' => $settings->now_updated_at?->toIso8601String(),
             /** Les visiteurs peuvent joindre ou filmer une vidéo avec leur avis. */
             'testimonial_video_enabled' => $settings->testimonial_video_enabled,
             /** Le blog est affiché sur le site public (pages, navigation, plan du site). */

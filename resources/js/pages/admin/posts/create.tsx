@@ -4,7 +4,13 @@ import FormPageHeader from "@/components/admin/form-page-header";
 import PostForm from "@/components/admin/post-form";
 import { index as postsIndex } from "@/routes/admin/posts";
 
-export default function PostCreate({ tags }: { tags: string[] }) {
+export default function PostCreate({
+    tags,
+    seriesNames,
+}: {
+    tags: string[];
+    seriesNames: string[];
+}) {
     return (
         <>
             <Head title="Nouvel article" />
@@ -20,6 +26,7 @@ export default function PostCreate({ tags }: { tags: string[] }) {
                     {({ processing, errors }) => (
                         <PostForm
                             tags={tags}
+                            seriesNames={seriesNames}
                             errors={errors}
                             processing={processing}
                             submitLabel="Créer l’article"

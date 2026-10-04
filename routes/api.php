@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\AppointmentTypeController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AvailabilityController;
 use App\Http\Controllers\Api\V1\CelebrationController;
+use App\Http\Controllers\Api\V1\CertificationController;
 use App\Http\Controllers\Api\V1\CongratulationController;
 use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\CvDownloadController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\Api\V1\ExperienceController;
 use App\Http\Controllers\Api\V1\JobProfileController;
 use App\Http\Controllers\Api\V1\MusicGenreController;
 use App\Http\Controllers\Api\V1\PostController;
+use App\Http\Controllers\Api\V1\PostSeriesController;
 use App\Http\Controllers\Api\V1\PostTagController;
 use App\Http\Controllers\Api\V1\ProfessionalReferenceController;
 use App\Http\Controllers\Api\V1\ProfileController;
@@ -111,8 +113,13 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::post('posts/images', [PostController::class, 'storeImage'])->name('posts.images.store');
         Route::apiResource('posts', PostController::class);
         Route::apiResource('post-tags', PostTagController::class)->except('store');
+        Route::apiResource('post-series', PostSeriesController::class)
+            ->except('store')
+            ->parameters(['post-series' => 'postSeries']);
         Route::apiResource('subscribers', SubscriberController::class)->only(['index', 'destroy']);
         Route::apiResource('uses-items', UsesItemController::class);
+        Route::apiResource('certifications', CertificationController::class);
+        Route::delete('certifications/{certification}/badge', [CertificationController::class, 'destroyBadge'])->name('certifications.badge.destroy');
         Route::delete('posts/{post}/cover', [PostController::class, 'destroyCover'])->name('posts.cover.destroy');
         Route::delete('projects/{project}/cover', [ProjectController::class, 'destroyCover'])->name('projects.cover.destroy');
         Route::delete('projects/{project}/gallery/{media}', [ProjectController::class, 'destroyGalleryImage'])->name('projects.gallery.destroy');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\ProjectStatus;
 use App\Http\Middleware\SetLocale;
+use App\Models\Certification;
 use App\Models\Post;
 use App\Models\Project;
 use App\Models\SiteSetting;
@@ -22,6 +23,8 @@ class SitemapController extends Controller
         $entries = collect(self::STATIC_PATHS)
             // Page « Uses » sans élément publié : elle renvoie une 404.
             ->when(UsesItem::query()->published()->exists(), fn ($paths) => $paths->push('/uses'))
+            ->when(Certification::query()->published()->exists(), fn ($paths) => $paths->push('/certifications'))
+            ->when(SiteSetting::current()->nowText('fr') !== null, fn ($paths) => $paths->push('/now'))
             ->map(fn (string $path): array => ['path' => $path, 'lastmod' => null]);
 
         $projects = Project::query()

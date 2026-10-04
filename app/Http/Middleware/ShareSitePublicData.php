@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Http\Resources\Public\ProfileResource;
 use App\Models\Celebration;
+use App\Models\Certification;
 use App\Models\JobProfile;
 use App\Models\PageVisit;
 use App\Models\Profile;
@@ -60,6 +61,10 @@ class ShareSitePublicData
             'availability' => fn () => SiteSetting::current()->publicAvailability(),
             // La page « Uses » n'est proposée que si elle a du contenu publié.
             'usesEnabled' => fn () => UsesItem::query()->published()->exists(),
+            // Idem pour la page « Certifications ».
+            'certificationsEnabled' => fn () => Certification::query()->published()->exists(),
+            // La page « Now » n'existe que si elle a un texte.
+            'nowEnabled' => fn () => SiteSetting::current()->nowText('fr') !== null,
             'bookingOpen' => fn () => app(BookingCalendar::class)->isOpen(),
             // Profils proposés dans la fenêtre « Embauche » : chacun a son CV.
             'cvProfiles' => fn () => JobProfile::query()

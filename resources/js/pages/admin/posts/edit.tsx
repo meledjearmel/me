@@ -10,9 +10,11 @@ import type { Post } from "@/types";
 export default function PostEdit({
     post,
     tags,
+    seriesNames,
 }: {
     post: Post;
     tags: string[];
+    seriesNames: string[];
 }) {
     return (
         <>
@@ -51,6 +53,7 @@ export default function PostEdit({
                         <PostForm
                             post={post}
                             tags={tags}
+                            seriesNames={seriesNames}
                             errors={errors}
                             processing={processing}
                             submitLabel="Enregistrer"

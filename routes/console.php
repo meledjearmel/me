@@ -16,3 +16,6 @@ Schedule::command('appointments:send-reminders')->hourly();
 
 // Annonce des nouveaux articles aux abonnés de la newsletter.
 Schedule::command('newsletter:send')->everyFifteenMinutes();
+
+// Activité GitHub de la page À propos.
+Schedule::command('github:sync')->hourly();

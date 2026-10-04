@@ -7,12 +7,15 @@ use App\Http\Resources\Public\ExperienceResource;
 use App\Models\Counter;
 use App\Models\Education;
 use App\Models\Experience;
+use App\Services\GitHubActivity;
 use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class AboutController extends Controller
 {
+    public function __construct(private GitHubActivity $github) {}
+
     public function index(): Response
     {
         return Inertia::render('public/about', [
@@ -24,6 +27,8 @@ class AboutController extends Controller
             ),
             'congratulations' => Counter::total(Counter::CONGRATULATIONS),
             'yearsOfExperience' => $this->yearsOfExperience(),
+            // Lu dans le cache tenu par `github:sync` : null tant qu'aucune synchronisation n'a réussi.
+            'github' => $this->github->cached(),
         ]);
     }
 

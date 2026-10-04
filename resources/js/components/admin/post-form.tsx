@@ -144,12 +144,14 @@ function TagsField({
 export default function PostForm({
     post,
     tags,
+    seriesNames,
     errors,
     processing,
     submitLabel,
 }: {
     post?: Post;
     tags: string[];
+    seriesNames: string[];
     errors: Record<string, string>;
     processing: boolean;
     submitLabel: string;
@@ -385,6 +387,46 @@ export default function PostForm({
                     suggestions={tags}
                     error={errors.tags}
                 />
+
+                <div className="grid gap-4 sm:grid-cols-[1fr_8rem]">
+                    <Field data-invalid={!!errors.series}>
+                        <FieldLabel htmlFor="series">
+                            Série (facultatif)
+                        </FieldLabel>
+                        <Input
+                            id="series"
+                            name="series"
+                            list="post-series-suggestions"
+                            maxLength={80}
+                            placeholder="Ex. : Laravel de A à Z"
+                            defaultValue={post?.series ?? ""}
+                        />
+                        <datalist id="post-series-suggestions">
+                            {seriesNames.map((name) => (
+                                <option key={name} value={name} />
+                            ))}
+                        </datalist>
+                        <FieldDescription>
+                            Un nom nouveau crée la série ; vide, l’article
+                            n’en fait pas partie.
+                        </FieldDescription>
+                        <FieldError>{errors.series}</FieldError>
+                    </Field>
+                    <Field data-invalid={!!errors.series_position}>
+                        <FieldLabel htmlFor="series_position">
+                            Partie n°
+                        </FieldLabel>
+                        <Input
+                            id="series_position"
+                            name="series_position"
+                            type="number"
+                            min={1}
+                            max={99}
+                            defaultValue={post?.series_position ?? ""}
+                        />
+                        <FieldError>{errors.series_position}</FieldError>
+                    </Field>
+                </div>
 
                 <Field data-invalid={!!errors.cover}>
                     <FieldLabel htmlFor="cover">Image de couverture</FieldLabel>

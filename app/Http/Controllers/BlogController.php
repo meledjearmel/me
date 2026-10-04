@@ -62,7 +62,38 @@ class BlogController extends Controller
         return Inertia::render('public/blog/show', [
             'post' => (new PostResource($post))->withBody(),
             'relatedPosts' => PostResource::collection($this->relatedPosts($post)),
+            'series' => $this->series($post, $locale),
         ]);
+    }
+
+    /**
+     * La série de l'article : son nom et ses parties publiées, dans l'ordre.
+     *
+     * @return array{name: string, parts: list<array{slug: string, title: string, position: int|null, current: bool}>}|null
+     */
+    private function series(Post $post, string $locale): ?array
+    {
+        if ($post->series === null) {
+            return null;
+        }
+
+        return [
+            'name' => $post->series->getTranslation('name', $locale),
+            'parts' => $post->series->posts()
+                ->published()
+                ->orderByRaw('series_position is null')
+                ->orderBy('series_position')
+                ->orderBy('published_at')
+                ->get(['id', 'slug', 'title', 'series_position'])
+                ->map(fn (Post $part): array => [
+                    'slug' => $part->slug,
+                    'title' => $part->getTranslation('title', $locale),
+                    'position' => $part->series_position,
+                    'current' => $part->is($post),
+                ])
+                ->values()
+                ->all(),
+        ];
     }
 
     private function ensureBlogIsEnabled(): void

@@ -38,7 +38,7 @@ class PostController extends Controller
     {
         return PostResource::collection(
             $this->paginateList(
-                Post::query()->with(['tags', 'media'])->orderByRaw('published_at is not null')->latest('published_at')->latest(),
+                Post::query()->with(['tags', 'media', 'series'])->orderByRaw('published_at is not null')->latest('published_at')->latest(),
                 $request,
                 ['title->fr', 'title->en', 'slug'],
                 ['status', 'is_featured'],
@@ -58,6 +58,7 @@ class PostController extends Controller
         $post = DB::transaction(function () use ($request): Post {
             $post = Post::query()->create($this->postAttributes($request));
             $this->syncTags($post, $request);
+            $this->syncSeries($post, $request);
 
             return $post;
         });
@@ -85,6 +86,7 @@ class PostController extends Controller
         DB::transaction(function () use ($request, $post): void {
             $post->update($this->postAttributes($request, $post));
             $this->syncTags($post, $request);
+            $this->syncSeries($post, $request);
         });
 
         $this->syncCover($post, $request);
@@ -144,6 +146,6 @@ class PostController extends Controller
 
     private function respond(Post $post): PostResource
     {
-        return new PostResource($post->refresh()->load(['tags', 'media']));
+        return new PostResource($post->refresh()->load(['tags', 'media', 'series']));
     }
 }

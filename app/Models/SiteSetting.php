@@ -36,6 +36,8 @@ class SiteSetting extends Model
         'booking_video_link',
         'availability_status',
         'available_from',
+        'now_content',
+        'now_updated_at',
     ];
 
     /** @var array<string, string> */
@@ -51,7 +53,35 @@ class SiteSetting extends Model
         'booking_buffer_minutes' => 'integer',
         'availability_status' => AvailabilityStatus::class,
         'available_from' => 'date:Y-m-d',
+        'now_content' => 'array',
+        'now_updated_at' => 'datetime',
     ];
+
+    /**
+     * Le texte de la page « Now » dans la langue demandée, en repli sur le français.
+     * Null quand la page n'a pas de contenu.
+     */
+    public function nowText(string $locale): ?string
+    {
+        $content = array_filter($this->now_content ?? [], fn ($text): bool => filled($text));
+
+        return $content[$locale] ?? $content['fr'] ?? null;
+    }
+
+    /**
+     * Enregistre le texte de la page « Now » ; la date de mise à jour n'avance que si
+     * le texte change.
+     *
+     * @param  array{fr?: string|null, en?: string|null}  $content
+     */
+    public function updateNowContent(array $content): void
+    {
+        $content = array_map(fn ($text): ?string => filled($text) ? trim((string) $text) : null, $content);
+
+        if ($content !== ($this->now_content ?? [])) {
+            $this->update(['now_content' => $content, 'now_updated_at' => now()]);
+        }
+    }
 
     /**
      * La disponibilité telle que le site l'affiche : une date passée vaut « disponible ».

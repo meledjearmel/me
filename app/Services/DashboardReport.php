@@ -16,6 +16,7 @@ use App\Models\Education;
 use App\Models\Engagement;
 use App\Models\Experience;
 use App\Models\PageVisit;
+use App\Models\Post;
 use App\Models\ProfessionalReference;
 use App\Models\Profile;
 use App\Models\Project;
@@ -165,7 +166,63 @@ class DashboardReport
             'by_device' => $this->topVisitorsBy("coalesce(device, 'inconnu')", $since),
             /** @var list<array{path: string, count: int}> */
             'top_pages' => $topPages,
+            /**
+             * Articles et projets les plus vus, toutes langues réunies, avec leur titre, leurs
+             * visiteurs uniques et leur principale provenance.
+             *
+             * @var list<array{type: string, title: string, url: string, visits: int, visitors: int, top_source: string}>
+             */
+            'top_content' => $this->topContent($since),
         ];
+    }
+
+    /**
+     * Les visites des pages d'article (`blog/<slug>`) et de projet (`projects/<slug>`),
+     * regroupées par contenu quelle que soit la langue.
+     *
+     * @return list<array{type: string, title: string, url: string, visits: int, visitors: int, top_source: string}>
+     */
+    private function topContent(Carbon $since): array
+    {
+        $groups = PageVisit::query()
+            ->where('created_at', '>=', $since)
+            ->where(fn ($query) => $query->where('path', 'like', '%/blog/%')->orWhere('path', 'like', '%/projects/%'))
+            ->get(['path', 'visitor_hash', 'source'])
+            ->map(function (PageVisit $visit): ?array {
+                if (! preg_match('~^[a-z]{2}/(blog|projects)/([^/]+)$~', ltrim($visit->path, '/'), $matches) || $matches[2] === 'feed') {
+                    return null;
+                }
+
+                return ['type' => $matches[1] === 'blog' ? 'post' : 'project', 'slug' => $matches[2], 'visit' => $visit];
+            })
+            ->filter()
+            ->groupBy(fn (array $row): string => "{$row['type']}:{$row['slug']}")
+            ->sortByDesc(fn ($rows) => $rows->count())
+            ->take(8);
+
+        $slugs = $groups->map(fn ($rows) => $rows->first())->groupBy('type')->map(fn ($rows) => $rows->pluck('slug'));
+        $titles = [
+            'post' => Post::query()->whereIn('slug', $slugs->get('post', collect()))->get(['slug', 'title'])->mapWithKeys(fn (Post $post): array => [$post->slug => $post->getTranslation('title', 'fr')]),
+            'project' => Project::query()->whereIn('slug', $slugs->get('project', collect()))->get(['slug', 'title'])->mapWithKeys(fn (Project $project): array => [$project->slug => $project->getTranslation('title', 'fr')]),
+        ];
+
+        return $groups
+            ->map(function ($rows) use ($titles): array {
+                ['type' => $type, 'slug' => $slug] = $rows->first();
+                $visits = $rows->pluck('visit');
+
+                return [
+                    'type' => $type,
+                    // Un contenu supprimé ou renommé depuis garde son slug comme titre.
+                    'title' => $titles[$type][$slug] ?? $slug,
+                    'url' => '/fr/'.($type === 'post' ? 'blog' : 'projects')."/{$slug}",
+                    'visits' => $visits->count(),
+                    'visitors' => $visits->pluck('visitor_hash')->filter()->unique()->count(),
+                    'top_source' => (string) $visits->countBy(fn (PageVisit $visit): string => $visit->source ?? 'direct')->sortDesc()->keys()->first(),
+                ];
+            })
+            ->values()
+            ->all();
     }
 
     /**

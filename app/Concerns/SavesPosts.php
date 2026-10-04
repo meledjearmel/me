@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\PostImageRequest;
 use App\Http\Requests\Admin\PostRequest;
 use App\Jobs\TranslatePostTag;
 use App\Models\Post;
+use App\Models\PostSeries;
 use App\Models\PostTag;
 use Illuminate\Support\Facades\Storage;
 
@@ -22,7 +23,7 @@ trait SavesPosts
      */
     private function postAttributes(PostRequest $request, ?Post $post = null): array
     {
-        $attributes = $request->safe()->except(['cover', 'tags']);
+        $attributes = $request->safe()->except(['cover', 'tags', 'series']);
         $attributes['title'] = array_filter($attributes['title']);
         $attributes['excerpt'] = array_filter($attributes['excerpt'] ?? []);
         $attributes['body'] = array_filter($attributes['body']);
@@ -60,6 +61,32 @@ trait SavesPosts
         $post->tags()->sync($ids->all());
     }
 
+    /**
+     * Range l'article dans la série nommée (créée au besoin, comme un tag), ou l'en sort
+     * quand le nom est vide. Sans le champ, la série ne change pas (client partiel de l'API).
+     */
+    private function syncSeries(Post $post, PostRequest $request): void
+    {
+        if (! $request->exists('series')) {
+            return;
+        }
+
+        $name = trim((string) $request->validated('series'));
+
+        if ($name === '') {
+            $post->update(['post_series_id' => null, 'series_position' => null]);
+
+            return;
+        }
+
+        $series = PostSeries::query()->firstOrCreate(
+            ['slug' => str($name)->slug()->toString()],
+            ['name' => ['fr' => $name, 'en' => $name]],
+        );
+
+        $post->update(['post_series_id' => $series->id, 'series_position' => $request->validated('series_position')]);
+    }
+
     private function syncCover(Post $post, PostRequest $request): void
     {
         if ($request->hasFile('cover')) {
@@ -83,6 +110,7 @@ trait SavesPosts
             // Au format du champ datetime-local, dans le fuseau de l'application.
             'published_at' => $post->published_at?->format('Y-m-d\TH:i'),
             'tags' => $post->tags->map(fn (PostTag $tag): string => $tag->getTranslation('name', 'fr'))->values(),
+            'series' => $post->series?->getTranslation('name', 'fr'),
             'cover_url' => $post->getFirstMediaUrl('cover') ?: null,
         ];
     }

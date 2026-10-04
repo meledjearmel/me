@@ -23,6 +23,8 @@ class DashboardController extends Controller
      * anonyme qui change chaque jour, sans cookie) ; `by_source` et `by_device` les
      * répartissent par provenance (campagne, sinon site d'origine, sinon `direct`) et
      * par appareil (`desktop`, `mobile`, `tablet`), sous la forme `{label, count}`.
+     * `top_content` classe les articles et projets les plus vus, toutes langues réunies :
+     * `{type, title, url, visits, visitors, top_source}`, `type` valant `post` ou `project`.
      *
      * `conversions` rapporte aux visiteurs uniques les objectifs atteints sur 30 jours :
      * `goals` liste `{key, count, rate}` pour `cv_downloads`, `contacts`, `engagements`

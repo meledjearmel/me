@@ -23,7 +23,12 @@ class SiteSettingController extends Controller
 
     public function update(SiteSettingRequest $request): RedirectResponse
     {
-        SiteSetting::current()->update($request->validated());
+        $settings = SiteSetting::current();
+        $settings->update($request->safe()->except('now_content'));
+
+        if ($request->has('now_content')) {
+            $settings->updateNowContent($request->validated('now_content', []));
+        }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Réglages enregistrés.')]);
 

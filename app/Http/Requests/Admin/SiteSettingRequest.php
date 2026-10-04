@@ -22,6 +22,10 @@ class SiteSettingRequest extends FormRequest
             'contact_opens_drawer' => ['sometimes', 'boolean'],
             // Avis : les visiteurs peuvent joindre ou filmer une vidéo.
             'testimonial_video_enabled' => ['sometimes', 'boolean'],
+            // Page « Now » (API) : texte français et anglais ; vide en français, la page est masquée.
+            'now_content' => ['sometimes', 'array'],
+            'now_content.fr' => ['nullable', 'string', 'max:5000'],
+            'now_content.en' => ['nullable', 'string', 'max:5000'],
             // Disponibilité affichée : disponible, à partir d'une date (obligatoire, à venir) ou indisponible.
             'availability_status' => ['sometimes', Rule::enum(AvailabilityStatus::class)],
             'available_from' => [

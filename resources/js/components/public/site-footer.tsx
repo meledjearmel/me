@@ -28,9 +28,12 @@ export default function SiteFooter({
     const t = useTranslations();
     const path = useLocalizedPath();
     const { open } = useContactDrawer();
-    const { blogEnabled, usesEnabled } = usePage<{
+    const { blogEnabled, usesEnabled, certificationsEnabled, nowEnabled } =
+        usePage<{
         blogEnabled: boolean;
         usesEnabled: boolean;
+        certificationsEnabled: boolean;
+        nowEnabled: boolean;
     }>().props;
     const reduceMotion = usePrefersReducedMotion();
     const headlineRef = useRef<HTMLDivElement>(null);
@@ -57,7 +60,16 @@ export default function SiteFooter({
         { label: t.nav.projects, href: path('projects') },
         ...(blogEnabled ? [{ label: t.nav.blog, href: path('blog') }] : []),
         { label: t.testimonials.pageTitle, href: path('testimonials') },
+        ...(certificationsEnabled
+            ? [
+                  {
+                      label: t.certifications.title,
+                      href: path('certifications'),
+                  },
+              ]
+            : []),
         ...(usesEnabled ? [{ label: t.uses.title, href: path('uses') }] : []),
+        ...(nowEnabled ? [{ label: t.now.title, href: path('now') }] : []),
         { label: t.nav.contact, href: path('contact') },
     ];
 

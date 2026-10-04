@@ -8215,3 +8215,213 @@ html.pub-scroll {
 .pub-pill.is-compact .pub-avail--from {
     max-width: 340px;
 }
+
+/* Activité GitHub (page À propos) */
+.pub-github__stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 0 0 clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.pub-github__stats div {
+    padding: 1rem 1.25rem;
+    border-radius: 16px;
+    background: var(--pub-surface);
+}
+
+.pub-github__stats dt {
+    font-family: var(--pub-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.pub-github__stats dd {
+    margin: 0.35rem 0 0;
+    font-family: var(--pub-font-display);
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    line-height: 1;
+}
+
+.pub-github__repos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pub-github__repos a {
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+    height: 100%;
+    padding: 1.25rem;
+    border: 1px solid color-mix(in oklab, var(--pub-text) 16%, transparent);
+    border-radius: 16px;
+    color: inherit;
+    text-decoration: none;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.pub-github__repos a:hover,
+.pub-github__repos a:focus-visible {
+    border-color: var(--pub-gold);
+    transform: translateY(-2px);
+}
+
+.pub-github__repos strong {
+    font-size: 1.1rem;
+}
+
+.pub-github__repos p {
+    margin: 0;
+    line-height: 1.5;
+    opacity: 0.8;
+}
+
+.pub-github__meta {
+    margin-top: auto;
+    font-size: 0.85rem;
+    opacity: 0.65;
+}
+
+.pub-github__profile {
+    display: inline-block;
+    margin-top: 1.5rem;
+    color: inherit;
+    text-underline-offset: 0.25em;
+}
+
+@media (max-width: 560px) {
+    .pub-github__stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Série d'articles : encadré en tête de l'article */
+.pub-series {
+    margin: 0 0 2.5rem;
+    padding: 1.25rem 1.5rem;
+    border-left: 4px solid var(--pub-gold);
+    border-radius: 14px;
+    background: var(--pub-surface);
+}
+
+.pub-series__eyebrow {
+    margin: 0;
+    font-family: var(--pub-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.pub-series__name {
+    margin: 0.35rem 0 0.75rem;
+    font-family: var(--pub-font-display);
+    font-size: 1.5rem;
+    line-height: 1.2;
+}
+
+.pub-series ol {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0;
+    padding-left: 1.4rem;
+}
+
+.pub-series a {
+    color: inherit;
+    text-underline-offset: 0.2em;
+}
+
+.pub-series [aria-current='page'] {
+    font-weight: 600;
+}
+
+.pub-series__pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+}
+
+/* Page « Certifications » (reprend la mise en page de Uses) */
+.pub-certs {
+    display: grid;
+    gap: 1.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pub-certs li {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+}
+
+.pub-certs li.is-expired {
+    opacity: 0.6;
+}
+
+.pub-certs__badge {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    object-fit: contain;
+    background: var(--pub-surface);
+}
+
+.pub-certs h3 {
+    margin: 0;
+    font-family: var(--pub-font-display);
+    font-size: clamp(1.3rem, 2.2vw, 1.7rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+}
+
+.pub-certs__issuer {
+    margin: 0.25rem 0 0;
+    font-weight: 500;
+}
+
+.pub-certs__meta {
+    margin: 0.35rem 0 0;
+    font-size: 0.92rem;
+    opacity: 0.7;
+}
+
+.pub-certs__verify {
+    display: inline-block;
+    margin-top: 0.5rem;
+    color: inherit;
+    text-underline-offset: 0.2em;
+}
+
+/* Page « Now » */
+.pub-now {
+    max-width: 760px;
+    padding-block: clamp(3rem, 7vw, 5rem) calc(clamp(96px, 16vw, 240px) + clamp(3rem, 7vw, 6rem));
+    font-size: clamp(1.1rem, 1.4vw, 1.25rem);
+    line-height: 1.7;
+}
+
+.pub-now p,
+.pub-now ul {
+    margin: 0 0 1.25rem;
+}
+
+.pub-now ul {
+    padding-left: 1.4rem;
+}
+
+.pub-now li + li {
+    margin-top: 0.35rem;
+}

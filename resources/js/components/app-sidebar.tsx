@@ -6,6 +6,8 @@ import {
     CalendarDays,
     Disc3,
     Laptop,
+    BadgeCheck,
+    Clock,
     FolderGit2,
     GraduationCap,
     FileDown,
@@ -22,6 +24,7 @@ import {
     PartyPopper,
     Sparkles,
     Tags,
+    ListOrdered,
     User,
     UserCheck,
     Wrench,
@@ -56,12 +59,15 @@ import { edit as profileEdit } from "@/routes/admin/profile";
 import { index as referencesIndex } from "@/routes/admin/professional-references";
 import { index as postsIndex } from "@/routes/admin/posts";
 import { index as postTagsIndex } from "@/routes/admin/post-tags";
+import { index as postSeriesIndex } from "@/routes/admin/post-series";
 import { index as projectsIndex } from "@/routes/admin/projects";
 import { index as skillsIndex } from "@/routes/admin/skills";
 import { index as technologiesIndex } from "@/routes/admin/technologies";
 import { index as technologyCategoriesIndex } from "@/routes/admin/technology-categories";
 import { index as musicGenresIndex } from "@/routes/admin/music-genres";
 import { index as usesItemsIndex } from "@/routes/admin/uses-items";
+import { index as certificationsIndex } from "@/routes/admin/certifications";
+import { edit as nowPageEdit } from "@/routes/admin/now-page";
 import { index as testimonialsIndex } from "@/routes/admin/testimonials";
 import { index as tracksIndex } from "@/routes/admin/tracks";
 import type { NavItem } from "@/types";
@@ -85,9 +91,12 @@ const portfolioNavItems: NavItem[] = [
     { title: "Projets", href: projectsIndex(), icon: FolderGit2 },
     { title: "Blog", href: postsIndex(), icon: Newspaper },
     { title: "Tags du blog", href: postTagsIndex(), icon: Tags },
+    { title: "Séries du blog", href: postSeriesIndex(), icon: ListOrdered },
     { title: "Avis", href: testimonialsIndex(), icon: MessageSquareQuote },
     { title: "Références", href: referencesIndex(), icon: UserCheck },
     { title: "Uses", href: usesItemsIndex(), icon: Laptop },
+    { title: "Certifications", href: certificationsIndex(), icon: BadgeCheck },
+    { title: "Page « Now »", href: nowPageEdit(), icon: Clock },
     { title: "Surprises", href: celebrationsIndex(), icon: PartyPopper },
 ];
 

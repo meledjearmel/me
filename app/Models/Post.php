@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
@@ -39,6 +40,8 @@ class Post extends Model implements HasMedia
         'is_featured',
         'status',
         'published_at',
+        'post_series_id',
+        'series_position',
     ];
 
     /** @var array<string, string> */
@@ -48,6 +51,7 @@ class Post extends Model implements HasMedia
         'published_at' => 'datetime',
         'newsletter_sent_at' => 'datetime',
         'reading_minutes' => 'integer',
+        'series_position' => 'integer',
     ];
 
     protected static function booted(): void
@@ -70,6 +74,12 @@ class Post extends Model implements HasMedia
     {
         $this->addMediaCollection('cover')->singleFile();
         $this->addMediaCollection('images');
+    }
+
+    /** @return BelongsTo<PostSeries, $this> */
+    public function series(): BelongsTo
+    {
+        return $this->belongsTo(PostSeries::class, 'post_series_id');
     }
 
     /** @return BelongsToMany<PostTag, $this> */

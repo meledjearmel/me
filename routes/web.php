@@ -6,6 +6,7 @@ use App\Http\Controllers\AppointmentCancellationController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BlogFeedController;
 use App\Http\Controllers\CelebrationCongratulationController;
+use App\Http\Controllers\CertificationController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CongratulationController;
 use App\Http\Controllers\ContactController;
@@ -16,6 +17,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LlmsTxtController;
 use App\Http\Controllers\LocaleRedirectController;
 use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\NowController;
+use App\Http\Controllers\PostShareImageController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RobotsTxtController;
 use App\Http\Controllers\SearchController;
@@ -52,6 +55,11 @@ Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, Lo
     Route::get('blog', [BlogController::class, 'index'])->name('blog.index');
     Route::get('blog/feed', BlogFeedController::class)->name('blog.feed');
     Route::get('blog/{post:slug}', [BlogController::class, 'show'])->name('blog.show');
+    // Image lue par les réseaux sociaux, pas une page : elle ne compte pas dans l'audience.
+    Route::get('blog/{post:slug}/share.png', PostShareImageController::class)
+        ->middleware('throttle:60,1')
+        ->withoutMiddleware(LogPageVisit::class)
+        ->name('blog.share-image');
     // Appel de la fenêtre de recherche, pas une page : il ne compte pas dans l'audience.
     Route::get('search', SearchController::class)
         ->middleware('throttle:60,1')
@@ -70,6 +78,8 @@ Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, Lo
         ->middleware('throttle:10,1')
         ->name('newsletter.unsubscribe.store');
     Route::get('uses', [UsesController::class, 'index'])->name('uses');
+    Route::get('certifications', [CertificationController::class, 'index'])->name('certifications');
+    Route::get('now', NowController::class)->name('now');
     Route::get('contact', [ContactController::class, 'index'])->name('contact.index');
     Route::post('contact', [ContactController::class, 'store'])
         ->middleware('throttle:5,1')

@@ -61,6 +61,14 @@ type DashboardProps = {
         by_source: Bar[];
         by_device: Bar[];
         top_pages: { path: string; count: number }[];
+        top_content: {
+            type: 'post' | 'project';
+            title: string;
+            url: string;
+            visits: number;
+            visitors: number;
+            top_source: string;
+        }[];
     };
     content: {
         projects: {
@@ -593,6 +601,76 @@ export default function Dashboard({
                         )}
                     </Section>
                 </div>
+
+                {/* Articles et projets les plus lus */}
+                <Section
+                    title="Articles et projets les plus vus"
+                    description={`Toutes langues réunies, sur ${visits.period_days} jours`}
+                >
+                    {visits.top_content.length === 0 ? (
+                        <Empty className="border py-6">
+                            <EmptyHeader>
+                                <EmptyDescription>
+                                    Aucune visite d’article ou de projet.
+                                </EmptyDescription>
+                            </EmptyHeader>
+                        </Empty>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                                <thead className="text-left text-xs text-muted-foreground">
+                                    <tr>
+                                        <th className="pb-2 font-normal">
+                                            Contenu
+                                        </th>
+                                        <th className="pb-2 text-right font-normal">
+                                            Visites
+                                        </th>
+                                        <th className="pb-2 text-right font-normal">
+                                            Visiteurs
+                                        </th>
+                                        <th className="pb-2 pl-4 font-normal">
+                                            Provenance principale
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {visits.top_content.map((row) => (
+                                        <tr
+                                            key={row.url}
+                                            className="border-t"
+                                        >
+                                            <td className="py-2 pr-3">
+                                                <span className="mr-2 text-xs text-muted-foreground">
+                                                    {row.type === 'post'
+                                                        ? 'Article'
+                                                        : 'Projet'}
+                                                </span>
+                                                <a
+                                                    href={row.url}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="hover:underline"
+                                                >
+                                                    {row.title}
+                                                </a>
+                                            </td>
+                                            <td className="py-2 text-right tabular-nums">
+                                                {number.format(row.visits)}
+                                            </td>
+                                            <td className="py-2 text-right tabular-nums">
+                                                {number.format(row.visitors)}
+                                            </td>
+                                            <td className="py-2 pl-4">
+                                                {row.top_source}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </Section>
 
                 {/* Provenance, appareils et conversions */}
                 <div className="grid gap-4 lg:grid-cols-3">

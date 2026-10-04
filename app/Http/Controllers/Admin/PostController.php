@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PostImageRequest;
 use App\Http\Requests\Admin\PostRequest;
 use App\Models\Post;
+use App\Models\PostSeries;
 use App\Models\PostTag;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -43,6 +44,7 @@ class PostController extends Controller
         $post = DB::transaction(function () use ($request): Post {
             $post = Post::query()->create($this->postAttributes($request));
             $this->syncTags($post, $request);
+            $this->syncSeries($post, $request);
 
             return $post;
         });
@@ -67,6 +69,7 @@ class PostController extends Controller
         DB::transaction(function () use ($request, $post): void {
             $post->update($this->postAttributes($request, $post));
             $this->syncTags($post, $request);
+            $this->syncSeries($post, $request);
         });
 
         $this->syncCover($post, $request);
@@ -106,6 +109,9 @@ class PostController extends Controller
         return [
             'tags' => PostTag::query()->orderBy('slug')->get()
                 ->map(fn (PostTag $tag): string => $tag->getTranslation('name', 'fr'))
+                ->values(),
+            'seriesNames' => PostSeries::query()->orderBy('slug')->get()
+                ->map(fn (PostSeries $series): string => $series->getTranslation('name', 'fr'))
                 ->values(),
         ];
     }

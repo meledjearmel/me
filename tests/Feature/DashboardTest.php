@@ -4,6 +4,7 @@ use App\Enums\TestimonialStatus;
 use App\Models\Contact;
 use App\Models\Engagement;
 use App\Models\PageVisit;
+use App\Models\Post;
 use App\Models\Profile;
 use App\Models\Project;
 use App\Models\Testimonial;
@@ -101,4 +102,30 @@ test('the dashboard counts unique visitors by source and device, and the convers
         ->where('conversions.visitors', 4)
         ->where('conversions.goals', fn ($goals) => collect($goals)->firstWhere('key', 'contacts') == ['key' => 'contacts', 'count' => 1, 'rate' => 25])
     );
+});
+
+test('the dashboard ranks posts and projects by visits, both languages together', function () {
+    Post::factory()->create(['slug' => 'mon-article', 'title' => ['fr' => 'Mon article', 'en' => 'My post']]);
+    Project::factory()->create(['slug' => 'mon-projet', 'title' => ['fr' => 'Mon projet', 'en' => 'My project']]);
+
+    PageVisit::factory()->create(['path' => 'fr/blog/mon-article', 'visitor_hash' => 'a', 'source' => 'linkedin']);
+    PageVisit::factory()->create(['path' => 'en/blog/mon-article', 'visitor_hash' => 'b', 'source' => 'linkedin']);
+    PageVisit::factory()->create(['path' => 'fr/blog/mon-article', 'visitor_hash' => 'a', 'source' => null]);
+    PageVisit::factory()->create(['path' => 'fr/projects/mon-projet', 'visitor_hash' => 'c', 'source' => null]);
+    // Ni le flux RSS ni une page ancienne ne comptent.
+    PageVisit::factory()->create(['path' => 'fr/blog/feed']);
+    PageVisit::factory()->create(['path' => 'fr/projects/mon-projet'])->forceFill(['created_at' => now()->subDays(60)])->save();
+
+    $this->actingAs(User::factory()->create())->get(route('dashboard'))->assertInertia(fn ($page) => $page
+        ->has('visits.top_content', 2)
+        ->where('visits.top_content.0', [
+            'type' => 'post',
+            'title' => 'Mon article',
+            'url' => '/fr/blog/mon-article',
+            'visits' => 3,
+            'visitors' => 2,
+            'top_source' => 'linkedin',
+        ])
+        ->where('visits.top_content.1.title', 'Mon projet')
+        ->where('visits.top_content.1.visits', 1));
 });

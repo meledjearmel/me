@@ -48,6 +48,13 @@ class PostResource extends JsonResource
             'tags' => $this->whenLoaded('tags', fn () => $this->tags
                 ->map(fn (PostTag $tag): string => $tag->getTranslation('name', 'fr'))
                 ->values()),
+            /**
+             * Nom français de la série de l'article (`null` hors série). À l'écriture, le champ
+             * `series` range l'article dans la série de ce nom (créée au besoin) ; vide, il l'en sort.
+             */
+            'series' => $this->series?->getTranslation('name', 'fr'),
+            /** Place de l'article dans sa série (1, 2, 3…). */
+            'series_position' => $this->series_position,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

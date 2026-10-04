@@ -8,6 +8,8 @@ import ExperienceList from '@/components/public/experience-list';
 import PublicShell from '@/components/public/public-shell';
 import { useLocale, useTranslations } from '@/lib/i18n';
 import EducationList from '@/components/public/education-list';
+import GitHubActivity from '@/components/public/github-activity';
+import type { GitHubActivityData } from '@/components/public/github-activity';
 import type { PublicEducation, PublicExperience, PublicProfile } from '@/types';
 
 export default function About({
@@ -15,11 +17,13 @@ export default function About({
     educations,
     congratulations,
     yearsOfExperience,
+    github,
 }: {
     experiences: PublicExperience[];
     educations: PublicEducation[];
     congratulations: number;
     yearsOfExperience: number;
+    github: GitHubActivityData | null;
 }) {
     const { props } = usePage<{ profile: PublicProfile; siteUrl: string }>();
     const t = useTranslations();
@@ -51,6 +55,7 @@ export default function About({
                 <AboutYears years={yearsOfExperience} />
                 <ExperienceList experiences={experiences} />
                 <EducationList educations={educations} />
+                <GitHubActivity github={github} />
                 <AboutFacts congratulations={congratulations} />
             </PublicShell>
         </>

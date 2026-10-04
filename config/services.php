@@ -39,6 +39,14 @@ return [
      * Base GeoLite2 (MaxMind) qui situe un téléchargement du CV (pays, ville).
      * La commande `geoip:update` la télécharge avec ces identifiants.
      */
+    /*
+     * Jeton GitHub facultatif pour `github:sync` : sans lui, l'API limite à 60 appels
+     * par heure, largement assez pour une synchronisation horaire.
+     */
+    'github' => [
+        'token' => env('GITHUB_TOKEN'),
+    ],
+
     'maxmind' => [
         'account_id' => env('MAXMIND_ACCOUNT_ID'),
         'license_key' => env('MAXMIND_LICENSE_KEY'),

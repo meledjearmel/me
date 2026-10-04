@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\AppointmentType;
+use App\Models\Certification;
 use App\Models\Contact;
 use App\Models\Domain;
 use App\Models\Education;
@@ -38,6 +39,7 @@ class TrashController extends Controller
         'music-genres' => ['model' => MusicGenre::class, 'label' => 'Registre musical'],
         'tracks' => ['model' => Track::class, 'label' => 'Piste audio'],
         'uses-items' => ['model' => UsesItem::class, 'label' => 'Élément « Uses »'],
+        'certifications' => ['model' => Certification::class, 'label' => 'Certification'],
         'technology-categories' => ['model' => TechnologyCategory::class, 'label' => 'Catégorie de technologie'],
         'technologies' => ['model' => Technology::class, 'label' => 'Technologie'],
         'job-profiles' => ['model' => JobProfile::class, 'label' => 'Profil métier'],
@@ -135,7 +137,7 @@ class TrashController extends Controller
     {
         return match ($type) {
             'domains', 'music-genres', 'job-profiles', 'technology-categories' => (string) $model->label,
-            'technologies', 'skills', 'professional-references', 'uses-items' => (string) $model->name,
+            'technologies', 'skills', 'professional-references', 'uses-items', 'certifications' => (string) $model->name,
             'tracks' => trim("{$model->title} — {$model->artist}"),
             'educations' => trim("{$model->degree} · {$model->institution}"),
             'experiences' => trim("{$model->role} · {$model->company}"),

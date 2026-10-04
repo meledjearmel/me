@@ -41,12 +41,71 @@ function useActiveHeading(ids: string[]): string | null {
     return active;
 }
 
+type PostSeries = {
+    name: string;
+    parts: {
+        slug: string;
+        title: string;
+        position: number | null;
+        current: boolean;
+    }[];
+};
+
+/** Encadré d'une série : toutes ses parties publiées, puis précédente / suivante. */
+function SeriesBox({ series }: { series: PostSeries }) {
+    const t = useTranslations();
+    const path = useLocalizedPath();
+    const index = series.parts.findIndex((part) => part.current);
+    const previous = index > 0 ? series.parts[index - 1] : null;
+    const next = series.parts[index + 1] ?? null;
+
+    return (
+        <nav className="pub-series" aria-label={t.blog.seriesLabel}>
+            <p className="pub-series__eyebrow">
+                {t.blog.seriesPart(index + 1, series.parts.length)}
+            </p>
+            <p className="pub-series__name">{series.name}</p>
+            <ol>
+                {series.parts.map((part) => (
+                    <li key={part.slug}>
+                        {part.current ? (
+                            <span aria-current="page">{part.title}</span>
+                        ) : (
+                            <Link href={path(`blog/${part.slug}`)}>
+                                {part.title}
+                            </Link>
+                        )}
+                    </li>
+                ))}
+            </ol>
+            {(previous || next) && (
+                <div className="pub-series__pager">
+                    {previous ? (
+                        <Link href={path(`blog/${previous.slug}`)}>
+                            {t.blog.seriesPrevious}
+                        </Link>
+                    ) : (
+                        <span />
+                    )}
+                    {next && (
+                        <Link href={path(`blog/${next.slug}`)}>
+                            {t.blog.seriesNext}
+                        </Link>
+                    )}
+                </div>
+            )}
+        </nav>
+    );
+}
+
 export default function BlogShow({
     post,
     relatedPosts,
+    series,
 }: {
     post: PublicPost;
     relatedPosts: PublicPost[];
+    series: PostSeries | null;
 }) {
     const t = useTranslations();
     const locale = useLocale();
@@ -56,13 +115,17 @@ export default function BlogShow({
     const active = useActiveHeading(toc.map((item) => item.id));
     const untranslated = post.content_locale !== locale;
     const description = post.excerpt ?? t.seo.blog;
+    // Sans couverture, une image générée avec le titre de l'article.
+    const shareImage =
+        post.cover_url ??
+        `${props.siteUrl.replace(/\/$/, '')}/${locale}/blog/${post.slug}/share.png`;
 
     return (
         <>
             <Seo
                 title={post.title}
                 description={description}
-                image={post.cover_url}
+                image={shareImage}
                 type="article"
                 breadcrumbs={[
                     [t.nav.blog, `/${locale}/blog`],
@@ -72,7 +135,7 @@ export default function BlogShow({
                     '@type': 'BlogPosting',
                     headline: post.title,
                     description,
-                    image: post.cover_url ?? undefined,
+                    image: shareImage,
                     datePublished: post.published_at,
                     dateModified: post.updated_at,
                     inLanguage: post.content_locale,
@@ -194,6 +257,7 @@ export default function BlogShow({
                                         {t.blog.onlyFrench}
                                     </p>
                                 )}
+                                {series && <SeriesBox series={series} />}
                                 <article
                                     className="post-content"
                                     lang={post.content_locale}

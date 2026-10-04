@@ -230,6 +230,21 @@ export type CvDownload = {
     created_at: string;
 };
 
+export type Certification = {
+    id: number;
+    kind: 'certification' | 'course';
+    name: Translatable;
+    issuer: string;
+    /** AAAA-MM-JJ. */
+    issued_on: string;
+    expires_on: string | null;
+    credential_id: string | null;
+    credential_url: string | null;
+    status: 'published' | 'draft';
+    sort_order: number;
+    badge_url?: string | null;
+};
+
 export type UsesItem = {
     id: number;
     category: 'hardware' | 'development' | 'apps' | 'services';
@@ -400,7 +415,17 @@ export type Post = {
     created_at: string;
     updated_at: string;
     tags: string[] | { id: number; name: Translatable; slug: string }[];
+    /** Nom français de la série, `null` hors série. */
+    series?: string | null;
+    series_position?: number | null;
     cover_url?: string | null;
+};
+
+export type PostSeries = {
+    id: number;
+    slug: string;
+    name: Translatable;
+    posts_count: number;
 };
 
 export type PostTag = {

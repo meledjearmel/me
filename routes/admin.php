@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AppointmentController;
 use App\Http\Controllers\Admin\AppointmentTypeController;
 use App\Http\Controllers\Admin\AvailabilityController;
 use App\Http\Controllers\Admin\CelebrationController;
+use App\Http\Controllers\Admin\CertificationController;
 use App\Http\Controllers\Admin\CongratulationController;
 use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\CvDownloadController;
@@ -14,7 +15,9 @@ use App\Http\Controllers\Admin\EngagementController;
 use App\Http\Controllers\Admin\ExperienceController;
 use App\Http\Controllers\Admin\JobProfileController;
 use App\Http\Controllers\Admin\MusicGenreController;
+use App\Http\Controllers\Admin\NowPageController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\PostSeriesController;
 use App\Http\Controllers\Admin\PostTagController;
 use App\Http\Controllers\Admin\ProfessionalReferenceController;
 use App\Http\Controllers\Admin\ProfileController;
@@ -38,6 +41,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::delete('profile/music', [ProfileController::class, 'destroyMusic'])->name('profile.music.destroy');
     Route::get('site-settings', [SiteSettingController::class, 'edit'])->name('site-settings.edit');
     Route::patch('site-settings', [SiteSettingController::class, 'update'])->name('site-settings.update');
+    Route::get('now-page', [NowPageController::class, 'edit'])->name('now-page.edit');
+    Route::put('now-page', [NowPageController::class, 'update'])->name('now-page.update');
 
     Route::prefix('ai')->name('ai.')->middleware('throttle:ai-assist')->group(function () {
         Route::post('translate', [AiAssistController::class, 'translate'])->name('translate');
@@ -56,6 +61,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('domains', DomainController::class);
     Route::resource('music-genres', MusicGenreController::class)->except('show');
     Route::resource('uses-items', UsesItemController::class)->except('show');
+    Route::resource('certifications', CertificationController::class)->except('show');
+    Route::delete('certifications/{certification}/badge', [CertificationController::class, 'destroyBadge'])->name('certifications.badge.destroy');
     Route::resource('tracks', TrackController::class)->except('show');
     Route::prefix('technology-icons')->name('technology-icons.')->group(function () {
         Route::get('search', [TechnologyIconController::class, 'search'])->name('search');
@@ -77,6 +84,9 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::post('posts/images', [PostController::class, 'storeImage'])->name('posts.images.store');
     Route::resource('posts', PostController::class)->except('show');
     Route::resource('post-tags', PostTagController::class)->only(['index', 'edit', 'update', 'destroy']);
+    Route::resource('post-series', PostSeriesController::class)
+        ->only(['index', 'edit', 'update', 'destroy'])
+        ->parameters(['post-series' => 'postSeries']);
     Route::delete('posts/{post}/cover', [PostController::class, 'destroyCover'])->name('posts.cover.destroy');
     Route::delete('projects/{project}/cover', [ProjectController::class, 'destroyCover'])->name('projects.cover.destroy');
     Route::delete('projects/{project}/gallery/{media}', [ProjectController::class, 'destroyGalleryImage'])->name('projects.gallery.destroy');

@@ -5,6 +5,11 @@ export const PROJECT_STATUSES = [
     { value: 'archived', label: 'Archivé' },
 ] as const;
 
+export const CERTIFICATION_KINDS = [
+    { value: 'certification', label: 'Certification' },
+    { value: 'course', label: 'Formation courte' },
+] as const;
+
 export const USES_CATEGORIES = [
     { value: 'hardware', label: 'Matériel' },
     { value: 'development', label: 'Développement' },

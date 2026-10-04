@@ -30,6 +30,9 @@ class PostRequest extends FormRequest
             'cover' => ['nullable', 'image', 'max:5120'],
             'tags' => ['array', 'max:8'],
             'tags.*' => ['string', 'max:40'],
+            // Série : son nom (créée si elle n'existe pas) et la place de l'article dedans.
+            'series' => ['nullable', 'string', 'max:80'],
+            'series_position' => ['nullable', 'integer', 'min:1', 'max:99', 'required_with:series'],
         ];
     }
 }
