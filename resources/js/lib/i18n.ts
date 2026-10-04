@@ -156,7 +156,9 @@ const dictionaries = {
                 title: 'Sur GitHub',
                 repos: 'Dépôts publics',
                 followers: 'Abonnés',
-                pushes: 'Pushs sur 30 jours',
+                contributions: 'Contributions sur 30 jours',
+                private: 'Privé',
+                contribution: 'Contribution',
                 stars: (count: number) =>
                     `${count} étoile${count > 1 ? 's' : ''}`,
                 updated: 'Mis à jour le',
@@ -685,7 +687,9 @@ const dictionaries = {
                 title: 'On GitHub',
                 repos: 'Public repositories',
                 followers: 'Followers',
-                pushes: 'Pushes in 30 days',
+                contributions: 'Contributions in 30 days',
+                private: 'Private',
+                contribution: 'Contribution',
                 stars: (count: number) =>
                     `${count} star${count > 1 ? 's' : ''}`,
                 updated: 'Updated',

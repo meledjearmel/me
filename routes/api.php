@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\V1\DomainController;
 use App\Http\Controllers\Api\V1\EducationController;
 use App\Http\Controllers\Api\V1\EngagementController;
 use App\Http\Controllers\Api\V1\ExperienceController;
+use App\Http\Controllers\Api\V1\GitHubController;
 use App\Http\Controllers\Api\V1\JobProfileController;
 use App\Http\Controllers\Api\V1\MusicGenreController;
 use App\Http\Controllers\Api\V1\PostController;
@@ -119,6 +120,9 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('subscribers', SubscriberController::class)->only(['index', 'destroy']);
         Route::apiResource('uses-items', UsesItemController::class);
         Route::apiResource('certifications', CertificationController::class);
+        Route::get('github', [GitHubController::class, 'show'])->name('github.show');
+        Route::put('github', [GitHubController::class, 'update'])->name('github.update');
+        Route::post('github/sync', [GitHubController::class, 'sync'])->middleware('throttle:6,1')->name('github.sync');
         Route::delete('certifications/{certification}/badge', [CertificationController::class, 'destroyBadge'])->name('certifications.badge.destroy');
         Route::delete('posts/{post}/cover', [PostController::class, 'destroyCover'])->name('posts.cover.destroy');
         Route::delete('projects/{project}/cover', [ProjectController::class, 'destroyCover'])->name('projects.cover.destroy');

@@ -5,14 +5,18 @@ export type GitHubActivityData = {
     profile_url: string;
     public_repos: number;
     followers: number;
-    pushes_last_30_days: number;
+    contributions_last_30_days: number;
     repositories: {
+        full_name: string;
         name: string;
         description: string | null;
         language: string | null;
         stars: number;
-        url: string;
-        pushed_at: string;
+        /** `null` pour un dépôt privé. */
+        url: string | null;
+        pushed_at: string | null;
+        private: boolean;
+        contribution: boolean;
     }[];
     synced_at: string;
 };
@@ -51,7 +55,7 @@ export default function GitHubActivity({
                     {[
                         [t.about.github.repos, github.public_repos],
                         [t.about.github.followers, github.followers],
-                        [t.about.github.pushes, github.pushes_last_30_days],
+                        [t.about.github.contributions, github.contributions_last_30_days],
                     ].map(([label, value]) => (
                         <div key={label}>
                             <dt>{label}</dt>
@@ -61,14 +65,23 @@ export default function GitHubActivity({
                 </dl>
 
                 <ul className="pub-github__repos">
-                    {github.repositories.map((repository) => (
-                        <li key={repository.url}>
-                            <a
-                                href={repository.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
+                    {github.repositories.map((repository) => {
+                        const content = (
+                            <>
                                 <strong>{repository.name}</strong>
+                                {(repository.private ||
+                                    repository.contribution) && (
+                                    <span className="pub-github__badges">
+                                        {repository.private && (
+                                            <span>{t.about.github.private}</span>
+                                        )}
+                                        {repository.contribution && (
+                                            <span>
+                                                {t.about.github.contribution}
+                                            </span>
+                                        )}
+                                    </span>
+                                )}
                                 {repository.description && (
                                     <p>{repository.description}</p>
                                 )}
@@ -78,14 +91,35 @@ export default function GitHubActivity({
                                         repository.stars > 0
                                             ? `★ ${t.about.github.stars(repository.stars)}`
                                             : null,
-                                        `${t.about.github.updated} ${date(repository.pushed_at)}`,
+                                        repository.pushed_at
+                                            ? `${t.about.github.updated} ${date(repository.pushed_at)}`
+                                            : null,
                                     ]
                                         .filter(Boolean)
                                         .join(' · ')}
                                 </span>
-                            </a>
-                        </li>
-                    ))}
+                            </>
+                        );
+
+                        return (
+                            <li key={repository.full_name}>
+                                {/* Dépôt privé : pas de lien, les visiteurs tomberaient sur une 404. */}
+                                {repository.url ? (
+                                    <a
+                                        href={repository.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        {content}
+                                    </a>
+                                ) : (
+                                    <div className="pub-github__card">
+                                        {content}
+                                    </div>
+                                )}
+                            </li>
+                        );
+                    })}
                 </ul>
 
                 <a

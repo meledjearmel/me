@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\DomainController;
 use App\Http\Controllers\Admin\EducationController;
 use App\Http\Controllers\Admin\EngagementController;
 use App\Http\Controllers\Admin\ExperienceController;
+use App\Http\Controllers\Admin\GitHubController;
 use App\Http\Controllers\Admin\JobProfileController;
 use App\Http\Controllers\Admin\MusicGenreController;
 use App\Http\Controllers\Admin\NowPageController;
@@ -41,6 +42,9 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::delete('profile/music', [ProfileController::class, 'destroyMusic'])->name('profile.music.destroy');
     Route::get('site-settings', [SiteSettingController::class, 'edit'])->name('site-settings.edit');
     Route::patch('site-settings', [SiteSettingController::class, 'update'])->name('site-settings.update');
+    Route::get('github', [GitHubController::class, 'edit'])->name('github.edit');
+    Route::put('github', [GitHubController::class, 'update'])->name('github.update');
+    Route::post('github/sync', [GitHubController::class, 'sync'])->middleware('throttle:6,1')->name('github.sync');
     Route::get('now-page', [NowPageController::class, 'edit'])->name('now-page.edit');
     Route::put('now-page', [NowPageController::class, 'update'])->name('now-page.update');
 

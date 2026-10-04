@@ -17,8 +17,8 @@ class SyncGitHubActivity extends Command
 {
     public function handle(GitHubActivity $activity): int
     {
-        if ($activity->username() === null) {
-            $this->warn('Aucun lien GitHub sur le profil : rien à synchroniser.');
+        if (! $activity->hasToken() && $activity->username() === null) {
+            $this->warn('Ni jeton GitHub ni lien GitHub sur le profil : rien à synchroniser.');
 
             return self::SUCCESS;
         }

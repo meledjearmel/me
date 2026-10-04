@@ -28,7 +28,7 @@ class AboutController extends Controller
             'congratulations' => Counter::total(Counter::CONGRATULATIONS),
             'yearsOfExperience' => $this->yearsOfExperience(),
             // Lu dans le cache tenu par `github:sync` : null tant qu'aucune synchronisation n'a réussi.
-            'github' => $this->github->cached(),
+            'github' => $this->github->forDisplay(),
         ]);
     }
 

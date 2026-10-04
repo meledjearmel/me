@@ -8254,7 +8254,8 @@ html.pub-scroll {
     list-style: none;
 }
 
-.pub-github__repos a {
+.pub-github__repos a,
+.pub-github__card {
     display: grid;
     align-content: start;
     gap: 0.5rem;
@@ -8424,4 +8425,20 @@ html.pub-scroll {
 
 .pub-now li + li {
     margin-top: 0.35rem;
+}
+
+.pub-github__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.pub-github__badges span {
+    padding: 0.15rem 0.55rem;
+    border: 1px solid color-mix(in oklab, var(--pub-text) 25%, transparent);
+    border-radius: 999px;
+    font-family: var(--pub-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }

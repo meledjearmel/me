@@ -8,6 +8,7 @@ import {
     Laptop,
     BadgeCheck,
     Clock,
+    FolderGit,
     FolderGit2,
     GraduationCap,
     FileDown,
@@ -68,6 +69,7 @@ import { index as musicGenresIndex } from "@/routes/admin/music-genres";
 import { index as usesItemsIndex } from "@/routes/admin/uses-items";
 import { index as certificationsIndex } from "@/routes/admin/certifications";
 import { edit as nowPageEdit } from "@/routes/admin/now-page";
+import { edit as githubEdit } from "@/routes/admin/github";
 import { index as testimonialsIndex } from "@/routes/admin/testimonials";
 import { index as tracksIndex } from "@/routes/admin/tracks";
 import type { NavItem } from "@/types";
@@ -97,6 +99,7 @@ const portfolioNavItems: NavItem[] = [
     { title: "Uses", href: usesItemsIndex(), icon: Laptop },
     { title: "Certifications", href: certificationsIndex(), icon: BadgeCheck },
     { title: "Page « Now »", href: nowPageEdit(), icon: Clock },
+    { title: "Dépôts GitHub", href: githubEdit(), icon: FolderGit },
     { title: "Surprises", href: celebrationsIndex(), icon: PartyPopper },
 ];
 

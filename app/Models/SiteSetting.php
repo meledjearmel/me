@@ -38,6 +38,7 @@ class SiteSetting extends Model
         'available_from',
         'now_content',
         'now_updated_at',
+        'github_repositories',
     ];
 
     /** @var array<string, string> */
@@ -55,6 +56,7 @@ class SiteSetting extends Model
         'available_from' => 'date:Y-m-d',
         'now_content' => 'array',
         'now_updated_at' => 'datetime',
+        'github_repositories' => 'array',
     ];
 
     /**
