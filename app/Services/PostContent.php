@@ -5,6 +5,7 @@ namespace App\Services;
 use DOMDocument;
 use DOMXPath;
 use Illuminate\Support\Str;
+use Tempest\Highlight\Highlighter;
 use Tiptap\Editor;
 use Tiptap\Extensions\StarterKit;
 use Tiptap\Extensions\TextAlign;
@@ -48,11 +49,12 @@ class PostContent
     }
 
     /**
-     * Ajoute une ancre (id) aux titres h2 et h3 pour le sommaire de la page publique.
+     * Prépare le contenu pour la lecture : ancre (id) sur les titres h2 et h3 pour le sommaire,
+     * coloration des blocs de code dont le langage est connu (`language-php`…).
      *
      * @return array{html: string, toc: list<array{id: string, text: string, level: int}>}
      */
-    public function withAnchors(string $html): array
+    public function forReading(string $html): array
     {
         if (blank($html)) {
             return ['html' => '', 'toc' => []];
@@ -66,7 +68,9 @@ class PostContent
         $toc = [];
         $used = [];
 
-        foreach ((new DOMXPath($document))->query('//h2 | //h3') as $heading) {
+        $xpath = new DOMXPath($document);
+
+        foreach ($xpath->query('//h2 | //h3') as $heading) {
             $text = trim($heading->textContent);
             $base = Str::slug($text) ?: 'section';
             $id = $base;
@@ -80,6 +84,8 @@ class PostContent
             $toc[] = ['id' => $id, 'text' => $text, 'level' => (int) substr($heading->nodeName, 1)];
         }
 
+        $this->highlightCode($document, $xpath);
+
         $output = '';
 
         foreach ($root->childNodes as $child) {
@@ -87,6 +93,37 @@ class PostContent
         }
 
         return ['html' => $output, 'toc' => $toc];
+    }
+
+    /**
+     * Remplace le texte des blocs de code par sa version colorée (spans `hl-*`) et note le
+     * langage sur le `<pre>` pour l'étiquette affichée au lecteur.
+     */
+    private function highlightCode(DOMDocument $document, DOMXPath $xpath): void
+    {
+        $highlighter = new Highlighter;
+        $supported = $highlighter->getSupportedLanguageNames();
+
+        foreach ($xpath->query('//pre/code[starts-with(@class, "language-")]') as $code) {
+            $language = Str::after($code->getAttribute('class'), 'language-');
+
+            if (! in_array($language, $supported, true)) {
+                continue;
+            }
+
+            $fragment = $document->createDocumentFragment();
+
+            if (! @$fragment->appendXML($highlighter->parse($code->textContent, $language))) {
+                continue;
+            }
+
+            while ($code->firstChild !== null) {
+                $code->removeChild($code->firstChild);
+            }
+
+            $code->appendChild($fragment);
+            $code->parentNode->setAttribute('data-language', $language);
+        }
     }
 
     private function editor(): Editor

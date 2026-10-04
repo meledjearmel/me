@@ -5095,7 +5095,8 @@ html.pub-scroll {
     width: 100%;
     padding: 0.7rem 0;
     border: 0;
-    border-bottom: 1px solid color-mix(in oklab, var(--pub-text) 35%, transparent);
+    border-bottom: 1px solid
+        color-mix(in oklab, var(--pub-text) 35%, transparent);
     background: transparent;
     color: inherit;
     font: inherit;
@@ -5417,7 +5418,9 @@ html.pub-scroll {
 }
 
 .pub-vfield__tile:hover,
-.pub-vfield__input:focus-visible + .pub-vfield__choices .pub-vfield__tile:first-child {
+.pub-vfield__input:focus-visible
+    + .pub-vfield__choices
+    .pub-vfield__tile:first-child {
     border-color: var(--pub-gold);
     background: color-mix(in oklab, var(--pub-gold) 8%, transparent);
 }
@@ -6178,7 +6181,11 @@ html.pub-scroll {
 }
 
 .pub-testi-quote[data-clamped='true'] {
-    -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 2.4em), transparent);
+    -webkit-mask-image: linear-gradient(
+        180deg,
+        #000 calc(100% - 2.4em),
+        transparent
+    );
     mask-image: linear-gradient(180deg, #000 calc(100% - 2.4em), transparent);
 }
 
@@ -6571,7 +6578,8 @@ html.pub-scroll {
     gap: 0.55rem;
     width: min(340px, calc(100vw - 2 * var(--surprise-left) - 20px));
     padding: 1.25rem 1.3rem 1.15rem;
-    border: 1px solid color-mix(in oklab, var(--surprise-accent) 55%, transparent);
+    border: 1px solid
+        color-mix(in oklab, var(--surprise-accent) 55%, transparent);
     border-radius: 26px;
     background: var(--surprise-surface);
     -webkit-backdrop-filter: blur(18px) saturate(160%);
@@ -6646,7 +6654,8 @@ html.pub-scroll {
     mask-composite: exclude;
 }
 
-.pub-surprise > :not(.pub-surprise__glow, .pub-surprise__tail, .pub-surprise__close) {
+.pub-surprise
+    > :not(.pub-surprise__glow, .pub-surprise__tail, .pub-surprise__close) {
     position: relative;
     z-index: 1;
 }
@@ -6660,7 +6669,9 @@ html.pub-scroll {
     height: 12px;
     background: var(--surprise-surface);
     clip-path: polygon(0 0, 100% 0, 10% 100%);
-    filter: drop-shadow(0 1px 0 color-mix(in oklab, var(--surprise-accent) 55%, transparent));
+    filter: drop-shadow(
+        0 1px 0 color-mix(in oklab, var(--surprise-accent) 55%, transparent)
+    );
 }
 
 .dark .pub-surprise__tail {
@@ -6681,7 +6692,6 @@ html.pub-scroll {
     letter-spacing: -0.02em;
     line-height: 1.1;
 }
-
 
 .pub-surprise__title::before {
     content: '';
@@ -7667,6 +7677,65 @@ html.pub-scroll {
     gap: clamp(1.25rem, 3vw, 2.25rem);
 }
 
+.pub-blog__search {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    max-width: 32rem;
+    margin-bottom: 1.25rem;
+    padding: 0 0.6rem 0 1.1rem;
+    border: 1px solid color-mix(in oklab, var(--pub-text) 22%, transparent);
+    border-radius: 999px;
+    transition: border-color 0.25s ease;
+}
+
+.pub-blog__search:focus-within {
+    border-color: var(--pub-text);
+}
+
+.pub-blog__search > svg {
+    flex: none;
+    width: 1.1rem;
+    height: 1.1rem;
+    opacity: 0.6;
+}
+
+.pub-blog__search input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.75rem 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    outline: none;
+}
+
+.pub-blog__search input::-webkit-search-cancel-button {
+    display: none;
+}
+
+.pub-blog__search button {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+.pub-blog__search button:hover {
+    background: color-mix(in oklab, var(--pub-text) 10%, transparent);
+}
+
+.pub-blog__search button svg {
+    width: 1rem;
+    height: 1rem;
+}
+
 .pub-blog__empty {
     padding: 3rem 0;
     font-size: 1.1rem;
@@ -7703,7 +7772,11 @@ html.pub-scroll {
     place-items: center;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, var(--pub-hero-from), var(--pub-hero-to));
+    background: linear-gradient(
+        135deg,
+        var(--pub-hero-from),
+        var(--pub-hero-to)
+    );
     color: rgb(255 255 255 / 0.9);
     font-family: var(--pub-font-display);
     font-size: clamp(3.5rem, 8vw, 6rem);
@@ -7738,7 +7811,8 @@ html.pub-scroll {
 .pub-post-card__title a {
     color: inherit;
     text-decoration: none;
-    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px
+        no-repeat;
     transition: background-size 0.4s var(--pub-ease-smooth);
 }
 
@@ -7872,7 +7946,9 @@ html.pub-scroll {
     line-height: 1.35;
     text-decoration: none;
     opacity: 0.65;
-    transition: opacity 0.2s ease, border-color 0.2s ease;
+    transition:
+        opacity 0.2s ease,
+        border-color 0.2s ease;
 }
 
 .pub-post__toc a:hover,
@@ -8000,7 +8076,8 @@ html.pub-scroll {
     width: 100%;
     padding: 0.4rem 0 0.9rem;
     border: 0;
-    border-bottom: 1px solid color-mix(in oklab, var(--pub-text) 25%, transparent);
+    border-bottom: 1px solid
+        color-mix(in oklab, var(--pub-text) 25%, transparent);
     background: transparent;
     color: inherit;
     font-size: 1.25rem;
@@ -8265,7 +8342,9 @@ html.pub-scroll {
     border-radius: 16px;
     color: inherit;
     text-decoration: none;
-    transition: border-color 0.2s ease, transform 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease;
 }
 
 .pub-github__repos a:hover,
@@ -8409,7 +8488,8 @@ html.pub-scroll {
 /* Page « Now » */
 .pub-now {
     max-width: 760px;
-    padding-block: clamp(3rem, 7vw, 5rem) calc(clamp(96px, 16vw, 240px) + clamp(3rem, 7vw, 6rem));
+    padding-block: clamp(3rem, 7vw, 5rem)
+        calc(clamp(96px, 16vw, 240px) + clamp(3rem, 7vw, 6rem));
     font-size: clamp(1.1rem, 1.4vw, 1.25rem);
     line-height: 1.7;
 }

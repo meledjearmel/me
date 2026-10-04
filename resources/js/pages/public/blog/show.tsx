@@ -1,5 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type { RefObject } from 'react';
 import NewsletterSignup from '@/components/public/newsletter-signup';
 import PageHero from '@/components/public/page-hero';
 import PostCard, { formatPostDate } from '@/components/public/post-card';
@@ -39,6 +40,39 @@ function useActiveHeading(ids: string[]): string | null {
     }, [ids]);
 
     return active;
+}
+
+/** Ajoute un bouton « copier » à chaque bloc de code de l'article. */
+function useCopyButtons(
+    article: RefObject<HTMLElement | null>,
+    labels: { copy: string; copied: string },
+    html: string,
+): void {
+    useEffect(() => {
+        const blocks = article.current?.querySelectorAll('pre') ?? [];
+        const buttons: HTMLButtonElement[] = [];
+
+        blocks.forEach((block) => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'post-content__copy';
+            button.textContent = labels.copy;
+            button.addEventListener('click', () => {
+                void navigator.clipboard
+                    ?.writeText(block.querySelector('code')?.innerText ?? '')
+                    .then(() => {
+                        button.textContent = labels.copied;
+                        window.setTimeout(() => {
+                            button.textContent = labels.copy;
+                        }, 1600);
+                    });
+            });
+            block.appendChild(button);
+            buttons.push(button);
+        });
+
+        return () => buttons.forEach((button) => button.remove());
+    }, [article, labels.copy, labels.copied, html]);
 }
 
 type PostSeries = {
@@ -102,12 +136,21 @@ export default function BlogShow({
     post,
     relatedPosts,
     series,
+    preview = false,
 }: {
     post: PublicPost;
     relatedPosts: PublicPost[];
     series: PostSeries | null;
+    /** Brouillon ou article programmé, ouvert depuis un lien d'aperçu signé. */
+    preview?: boolean;
 }) {
     const t = useTranslations();
+    const articleRef = useRef<HTMLElement>(null);
+    useCopyButtons(
+        articleRef,
+        { copy: t.blog.copyCode, copied: t.blog.codeCopied },
+        post.body ?? '',
+    );
     const locale = useLocale();
     const path = useLocalizedPath();
     const { props } = usePage<{ siteUrl: string; profile: PublicProfile }>();
@@ -157,6 +200,7 @@ export default function BlogShow({
                     property="article:modified_time"
                     content={post.updated_at}
                 />
+                {preview && <meta name="robots" content="noindex, nofollow" />}
                 {post.tags.map((tag) => (
                     <meta
                         key={tag.slug}
@@ -252,6 +296,14 @@ export default function BlogShow({
                             )}
 
                             <div className="pub-post__article">
+                                {preview && (
+                                    <p
+                                        className="pub-post__notice"
+                                        role="status"
+                                    >
+                                        {t.blog.previewNotice}
+                                    </p>
+                                )}
                                 {untranslated && t.blog.onlyFrench && (
                                     <p className="pub-post__notice">
                                         {t.blog.onlyFrench}
@@ -259,6 +311,7 @@ export default function BlogShow({
                                 )}
                                 {series && <SeriesBox series={series} />}
                                 <article
+                                    ref={articleRef}
                                     className="post-content"
                                     lang={post.content_locale}
                                     dangerouslySetInnerHTML={{

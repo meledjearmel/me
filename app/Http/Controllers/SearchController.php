@@ -7,11 +7,11 @@ use App\Models\Post;
 use App\Models\Project;
 use App\Models\SiteSetting;
 use App\Models\Skill;
+use App\Services\TextSearch;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
 /**
  * Recherche globale du site public (fenêtre Ctrl+K) : articles, projets et compétences.
@@ -21,13 +21,13 @@ use Illuminate\Support\Str;
  */
 class SearchController extends Controller
 {
-    private const int MIN_LENGTH = 2;
-
     private const int LIMIT_PER_TYPE = 5;
+
+    public function __construct(private TextSearch $search) {}
 
     public function __invoke(Request $request, string $locale): JsonResponse
     {
-        $terms = $this->terms((string) $request->query('q', ''));
+        $terms = $this->search->terms((string) $request->query('q', ''));
 
         if ($terms === []) {
             return response()->json(['results' => []]);
@@ -129,31 +129,10 @@ class SearchController extends Controller
     private function match(Collection $items, array $terms, callable $haystack, callable $present): array
     {
         return $items
-            ->filter(function ($item) use ($terms, $haystack): bool {
-                $text = $this->normalize(implode(' ', array_filter([...$haystack($item)])));
-
-                return collect($terms)->every(fn (string $term): bool => str_contains($text, $term));
-            })
+            ->filter(fn ($item): bool => $this->search->matches($terms, $haystack($item)))
             ->take(self::LIMIT_PER_TYPE)
             ->map($present)
             ->values()
             ->all();
-    }
-
-    /** @return list<string> */
-    private function terms(string $query): array
-    {
-        $normalized = $this->normalize($query);
-
-        if (mb_strlen($normalized) < self::MIN_LENGTH) {
-            return [];
-        }
-
-        return array_values(array_filter(explode(' ', $normalized)));
-    }
-
-    private function normalize(string $text): string
-    {
-        return Str::of($text)->stripTags()->ascii()->lower()->squish()->toString();
     }
 }

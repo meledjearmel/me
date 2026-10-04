@@ -94,6 +94,104 @@
         font-size: inherit;
     }
 
+    /* Bloc de code coloré côté serveur : étiquette du langage et bouton « copier » en haut. */
+    .post-content pre[data-language] {
+        position: relative;
+        padding-top: 2.4em;
+    }
+
+    .post-content pre[data-language]::before {
+        position: absolute;
+        top: 0.7em;
+        left: 1.35em;
+        content: attr(data-language);
+        color: oklch(0.65 0.01 260);
+        font-size: 0.75rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .post-content__copy {
+        position: absolute;
+        top: 0.5em;
+        right: 0.6em;
+        border-radius: 0.4rem;
+        background: oklch(0.3 0.01 260);
+        padding: 0.2em 0.6em;
+        color: oklch(0.85 0.01 260);
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: background-color 150ms ease;
+    }
+
+    .post-content__copy:hover {
+        background: oklch(0.36 0.01 260);
+    }
+
+    .post-content__copy:focus-visible {
+        outline: 2px solid oklch(0.7 0.12 250);
+        outline-offset: 2px;
+    }
+
+    .post-content .hl-keyword {
+        color: oklch(0.74 0.15 310);
+    }
+
+    .post-content .hl-property {
+        color: oklch(0.75 0.12 245);
+    }
+
+    .post-content .hl-type {
+        color: oklch(0.83 0.11 85);
+    }
+
+    .post-content .hl-generic {
+        color: oklch(0.7 0.15 300);
+    }
+
+    .post-content .hl-value,
+    .post-content .hl-literal {
+        color: oklch(0.8 0.13 140);
+    }
+
+    .post-content .hl-number {
+        color: oklch(0.78 0.12 55);
+    }
+
+    .post-content .hl-variable {
+        color: oklch(0.72 0.14 20);
+    }
+
+    .post-content .hl-comment {
+        color: oklch(0.6 0.01 260);
+        font-style: italic;
+    }
+
+    .post-content .hl-attribute,
+    .post-content .hl-em {
+        font-style: italic;
+    }
+
+    .post-content .hl-strong {
+        font-weight: 700;
+    }
+
+    .post-content .hl-blur {
+        filter: blur(2px);
+    }
+
+    .post-content .hl-addition {
+        display: inline-block;
+        min-width: 100%;
+        background: oklch(0.6 0.15 145 / 0.18);
+    }
+
+    .post-content .hl-deletion {
+        display: inline-block;
+        min-width: 100%;
+        background: oklch(0.6 0.18 25 / 0.15);
+    }
+
     .post-content mark {
         border-radius: 0.2rem;
         background: oklch(0.92 0.12 95);

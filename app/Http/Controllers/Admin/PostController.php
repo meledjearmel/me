@@ -60,6 +60,7 @@ class PostController extends Controller
     {
         return Inertia::render('admin/posts/edit', [
             'post' => $this->postForEditing($post->load('tags')),
+            'previewUrl' => $post->previewUrl(),
             ...$this->formOptions(),
         ]);
     }

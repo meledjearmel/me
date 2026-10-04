@@ -1,20 +1,23 @@
-import { Form, Head, router } from "@inertiajs/react";
-import { ImageOff } from "lucide-react";
-import PostController from "@/actions/App/Http/Controllers/Admin/PostController";
-import FormPageHeader from "@/components/admin/form-page-header";
-import PostForm from "@/components/admin/post-form";
-import { Button } from "@/components/ui/button";
-import { index as postsIndex } from "@/routes/admin/posts";
-import type { Post } from "@/types";
+import { Form, Head, router } from '@inertiajs/react';
+import { Eye, ImageOff } from 'lucide-react';
+import PostController from '@/actions/App/Http/Controllers/Admin/PostController';
+import FormPageHeader from '@/components/admin/form-page-header';
+import PostForm from '@/components/admin/post-form';
+import { Button } from '@/components/ui/button';
+import { index as postsIndex } from '@/routes/admin/posts';
+import type { Post } from '@/types';
 
 export default function PostEdit({
     post,
     tags,
     seriesNames,
+    previewUrl,
 }: {
     post: Post;
     tags: string[];
     seriesNames: string[];
+    /** Lien signé (72 h) vers l'article tel qu'il apparaîtra sur le site. */
+    previewUrl: string;
 }) {
     return (
         <>
@@ -28,21 +31,39 @@ export default function PostEdit({
                         backHref={postsIndex()}
                         backLabel="Blog"
                     />
-                    {post.cover_url && (
+                    <div className="flex flex-wrap gap-2">
                         <Button
                             type="button"
                             variant="outline"
                             size="sm"
-                            onClick={() =>
-                                router.delete(
-                                    PostController.destroyCover.url(post.id),
-                                    { preserveScroll: true },
-                                )
-                            }
+                            asChild
                         >
-                            <ImageOff /> Retirer la couverture
+                            <a
+                                href={previewUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                <Eye /> Aperçu
+                            </a>
                         </Button>
-                    )}
+                        {post.cover_url && (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                    router.delete(
+                                        PostController.destroyCover.url(
+                                            post.id,
+                                        ),
+                                        { preserveScroll: true },
+                                    )
+                                }
+                            >
+                                <ImageOff /> Retirer la couverture
+                            </Button>
+                        )}
+                    </div>
                 </div>
 
                 <Form
@@ -67,7 +88,7 @@ export default function PostEdit({
 
 PostEdit.layout = {
     breadcrumbs: [
-        { title: "Blog", href: postsIndex() },
-        { title: "Modifier", href: "" },
+        { title: 'Blog', href: postsIndex() },
+        { title: 'Modifier', href: '' },
     ],
 };

@@ -1,5 +1,5 @@
-import type { Editor } from "@tiptap/core";
-import { useEditorState } from "@tiptap/react";
+import type { Editor } from '@tiptap/core';
+import { useEditorState } from '@tiptap/react';
 import {
     AlignCenter,
     AlignJustify,
@@ -23,21 +23,46 @@ import {
     Trash2,
     Underline,
     Undo2,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
-import type { EditorActions } from "./block-commands";
-import LinkPopover from "./link-popover";
-import ToolbarButton from "./toolbar-button";
+} from '@/components/ui/dropdown-menu';
+import { Separator } from '@/components/ui/separator';
+import type { EditorActions } from './block-commands';
+import LinkPopover from './link-popover';
+import ToolbarButton from './toolbar-button';
 
 const HEADING_LEVELS = [2, 3, 4] as const;
+
+/** Langages colorés à l'affichage par le serveur (tempest/highlight). */
+const CODE_LANGUAGES = [
+    { value: 'php', label: 'PHP' },
+    { value: 'blade', label: 'Blade' },
+    { value: 'js', label: 'JavaScript' },
+    { value: 'ts', label: 'TypeScript' },
+    { value: 'html', label: 'HTML' },
+    { value: 'css', label: 'CSS' },
+    { value: 'scss', label: 'SCSS' },
+    { value: 'json', label: 'JSON' },
+    { value: 'yaml', label: 'YAML' },
+    { value: 'sql', label: 'SQL' },
+    { value: 'bash', label: 'Bash' },
+    { value: 'terminal', label: 'Terminal' },
+    { value: 'python', label: 'Python' },
+    { value: 'dockerfile', label: 'Dockerfile' },
+    { value: 'nginx', label: 'Nginx' },
+    { value: 'env', label: '.env' },
+    { value: 'diff', label: 'Diff' },
+    { value: 'graphql', label: 'GraphQL' },
+    { value: 'vue', label: 'Vue' },
+    { value: 'xml', label: 'XML' },
+    { value: 'text', label: 'Texte brut' },
+] as const;
 
 function Divider() {
     return <Separator orientation="vertical" className="mx-1 h-5!" />;
@@ -58,23 +83,27 @@ export default function Toolbar({
             canRedo: current.can().redo(),
             heading:
                 HEADING_LEVELS.find((level) =>
-                    current.isActive("heading", { level }),
+                    current.isActive('heading', { level }),
                 ) ?? null,
-            bold: current.isActive("bold"),
-            italic: current.isActive("italic"),
-            underline: current.isActive("underline"),
-            strike: current.isActive("strike"),
-            code: current.isActive("code"),
-            highlight: current.isActive("highlight"),
-            link: current.isActive("link"),
-            superscript: current.isActive("superscript"),
-            subscript: current.isActive("subscript"),
-            bulletList: current.isActive("bulletList"),
-            orderedList: current.isActive("orderedList"),
-            blockquote: current.isActive("blockquote"),
-            codeBlock: current.isActive("codeBlock"),
-            table: current.isActive("table"),
-            align: (["left", "center", "right", "justify"] as const).find(
+            bold: current.isActive('bold'),
+            italic: current.isActive('italic'),
+            underline: current.isActive('underline'),
+            strike: current.isActive('strike'),
+            code: current.isActive('code'),
+            highlight: current.isActive('highlight'),
+            link: current.isActive('link'),
+            superscript: current.isActive('superscript'),
+            subscript: current.isActive('subscript'),
+            bulletList: current.isActive('bulletList'),
+            orderedList: current.isActive('orderedList'),
+            blockquote: current.isActive('blockquote'),
+            codeBlock: current.isActive('codeBlock'),
+            codeLanguage:
+                (current.getAttributes('codeBlock').language as
+                    | string
+                    | null) ?? null,
+            table: current.isActive('table'),
+            align: (['left', 'center', 'right', 'justify'] as const).find(
                 (align) => current.isActive({ textAlign: align }),
             ),
         }),
@@ -109,7 +138,7 @@ export default function Toolbar({
                         className="h-8 gap-1 px-2 text-muted-foreground"
                         aria-label="Style du paragraphe"
                     >
-                        {state.heading ? `Titre ${state.heading}` : "Texte"}
+                        {state.heading ? `Titre ${state.heading}` : 'Texte'}
                         <ChevronDown className="size-3" />
                     </Button>
                 </DropdownMenuTrigger>
@@ -155,6 +184,43 @@ export default function Toolbar({
                 active={state.codeBlock}
                 onClick={() => chain().toggleCodeBlock().run()}
             />
+            {state.codeBlock && (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 gap-1 px-2 text-muted-foreground"
+                            aria-label="Langage du bloc de code"
+                        >
+                            {CODE_LANGUAGES.find(
+                                ({ value }) => value === state.codeLanguage,
+                            )?.label ?? 'Langage'}
+                            <ChevronDown className="size-3" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                        align="start"
+                        className="max-h-72 overflow-y-auto"
+                    >
+                        {CODE_LANGUAGES.map(({ value, label }) => (
+                            <DropdownMenuItem
+                                key={value}
+                                onSelect={() =>
+                                    chain()
+                                        .updateAttributes('codeBlock', {
+                                            language: value,
+                                        })
+                                        .run()
+                                }
+                            >
+                                {label}
+                            </DropdownMenuItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            )}
             <Divider />
 
             <ToolbarButton
@@ -217,26 +283,26 @@ export default function Toolbar({
             <ToolbarButton
                 icon={AlignLeft}
                 label="Aligner à gauche"
-                active={state.align === "left"}
-                onClick={() => chain().setTextAlign("left").run()}
+                active={state.align === 'left'}
+                onClick={() => chain().setTextAlign('left').run()}
             />
             <ToolbarButton
                 icon={AlignCenter}
                 label="Centrer"
-                active={state.align === "center"}
-                onClick={() => chain().setTextAlign("center").run()}
+                active={state.align === 'center'}
+                onClick={() => chain().setTextAlign('center').run()}
             />
             <ToolbarButton
                 icon={AlignRight}
                 label="Aligner à droite"
-                active={state.align === "right"}
-                onClick={() => chain().setTextAlign("right").run()}
+                active={state.align === 'right'}
+                onClick={() => chain().setTextAlign('right').run()}
             />
             <ToolbarButton
                 icon={AlignJustify}
                 label="Justifier"
-                active={state.align === "justify"}
-                onClick={() => chain().setTextAlign("justify").run()}
+                active={state.align === 'justify'}
+                onClick={() => chain().setTextAlign('justify').run()}
             />
             <Divider />
 

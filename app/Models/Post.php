@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\URL;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Translatable\HasTranslations;
@@ -106,6 +107,19 @@ class Post extends Model implements HasMedia
         return $this->status === PublicationStatus::Published
             && $this->published_at !== null
             && $this->published_at->isPast();
+    }
+
+    /** Durée de validité d'un lien d'aperçu, en heures. */
+    public const int PREVIEW_HOURS = 72;
+
+    /** Lien signé pour relire l'article tel qu'il apparaîtra sur le site, même non publié. */
+    public function previewUrl(string $locale = 'fr'): string
+    {
+        return URL::temporarySignedRoute(
+            'blog.preview',
+            now()->addHours(self::PREVIEW_HOURS),
+            ['locale' => $locale, 'post' => $this->slug],
+        );
     }
 
     /** Temps de lecture estimé sur la version la plus longue du contenu. */

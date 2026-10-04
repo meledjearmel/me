@@ -51,7 +51,7 @@ class PostResource extends JsonResource
         ];
 
         if ($this->withBody) {
-            ['html' => $html, 'toc' => $toc] = app(PostContent::class)->withAnchors((string) $this->getTranslation('body', $locale));
+            ['html' => $html, 'toc' => $toc] = app(PostContent::class)->forReading((string) $this->getTranslation('body', $locale));
             $data['body'] = $html;
             $data['toc'] = $toc;
         }

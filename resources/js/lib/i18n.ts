@@ -295,6 +295,11 @@ const dictionaries = {
             all: 'Tous',
             empty: 'Pas encore d’article. Revenez bientôt !',
             emptyTag: 'Pas encore d’article sur ce sujet.',
+            searchLabel: 'Rechercher un article',
+            searchPlaceholder: 'Rechercher dans les articles…',
+            emptySearch: (query: string) =>
+                `Aucun article ne parle de « ${query} ».`,
+            clearSearch: 'Effacer la recherche',
             minutes: (count: number) => `${count} min de lecture`,
             publishedLabel: 'Publié le',
             readingLabel: 'Lecture',
@@ -302,6 +307,10 @@ const dictionaries = {
             toc: 'Dans cet article',
             onlyFrench: '',
             relatedTitle: 'À lire aussi',
+            copyCode: 'Copier',
+            codeCopied: 'Copié',
+            previewNotice:
+                'Aperçu : cet article n’est pas encore visible sur le site.',
             seriesLabel: 'Série d’articles',
             seriesPart: (part: number, total: number) =>
                 `Série · partie ${part} sur ${total}`,
@@ -800,8 +809,7 @@ const dictionaries = {
             periodLabel: 'Period',
             ongoing: 'ongoing',
             teamLabel: 'Team',
-            team: (size: number) =>
-                size === 1 ? 'Solo' : `${size} people`,
+            team: (size: number) => (size === 1 ? 'Solo' : `${size} people`),
             testimonialLabel: 'What the client says',
             code: 'View code',
             demo: 'View demo',
@@ -827,6 +835,10 @@ const dictionaries = {
             all: 'All',
             empty: 'No articles yet. Come back soon!',
             emptyTag: 'No article on this topic yet.',
+            searchLabel: 'Search the blog',
+            searchPlaceholder: 'Search articles…',
+            emptySearch: (query: string) => `No article mentions “${query}”.`,
+            clearSearch: 'Clear search',
             minutes: (count: number) => `${count} min read`,
             publishedLabel: 'Published',
             readingLabel: 'Reading time',
@@ -835,6 +847,9 @@ const dictionaries = {
             onlyFrench:
                 'This article is not translated yet: here is the French version.',
             relatedTitle: 'Keep reading',
+            copyCode: 'Copy',
+            codeCopied: 'Copied',
+            previewNotice: 'Preview: this post is not visible on the site yet.',
             seriesLabel: 'Article series',
             seriesPart: (part: number, total: number) =>
                 `Series · part ${part} of ${total}`,

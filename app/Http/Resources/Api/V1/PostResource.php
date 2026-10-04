@@ -43,6 +43,11 @@ class PostResource extends JsonResource
             'published_at' => $this->published_at,
             /** L'article est visible sur le site (publié et date passée). */
             'is_live' => $this->isPublished(),
+            /**
+             * Lien signé vers l'aperçu de l'article sur le site (version française), valable
+             * 72 heures : il s'ouvre sans compte, même pour un brouillon ou un article programmé.
+             */
+            'preview_url' => $this->previewUrl(),
             'cover_url' => $this->getFirstMediaUrl('cover') ?: null,
             /** @var list<string> */
             'tags' => $this->whenLoaded('tags', fn () => $this->tags

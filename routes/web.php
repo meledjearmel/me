@@ -55,6 +55,11 @@ Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, Lo
     Route::get('blog', [BlogController::class, 'index'])->name('blog.index');
     Route::get('blog/feed', BlogFeedController::class)->name('blog.feed');
     Route::get('blog/{post:slug}', [BlogController::class, 'show'])->name('blog.show');
+    // Relecture d'un article non publié : ni visite comptée, ni accès sans signature.
+    Route::get('blog/{post:slug}/preview', [BlogController::class, 'preview'])
+        ->middleware('signed')
+        ->withoutMiddleware(LogPageVisit::class)
+        ->name('blog.preview');
     // Image lue par les réseaux sociaux, pas une page : elle ne compte pas dans l'audience.
     Route::get('blog/{post:slug}/share.png', PostShareImageController::class)
         ->middleware('throttle:60,1')

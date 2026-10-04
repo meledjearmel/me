@@ -3,6 +3,7 @@
 use App\Ai\Agents\PostWriter;
 use App\Jobs\TranslatePostTag;
 use App\Models\Post;
+use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Queue;
@@ -18,7 +19,7 @@ test('guests cannot read the posts', function () {
 });
 
 test('posts can be created, listed, updated and trashed through the API', function () {
-    Sanctum::actingAs(User::factory()->create());
+    Sanctum::actingAs($user = User::factory()->create());
 
     $id = $this->postJson(route('api.v1.posts.store'), [
         'title' => ['fr' => 'Depuis le mobile'],
@@ -44,6 +45,12 @@ test('posts can be created, listed, updated and trashed through the API', functi
         ->assertJsonPath('title.en', 'From mobile')
         ->assertJsonPath('is_live', false)
         ->assertJsonPath('tags', []);
+
+    $previewUrl = $this->getJson(route('api.v1.posts.show', $id))->json('preview_url');
+    Profile::factory()->create();
+    auth()->forgetGuards();
+    $this->get($previewUrl)->assertOk();
+    Sanctum::actingAs($user);
 
     $this->deleteJson(route('api.v1.posts.destroy', $id))->assertNoContent();
 

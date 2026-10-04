@@ -68,6 +68,50 @@ test('drafts, scheduled and trashed posts are not reachable', function () {
     $this->get("/fr/blog/{$trashed->slug}")->assertNotFound();
 });
 
+test('the blog can be searched in titles, tags and content, ignoring accents', function () {
+    $tag = PostTag::factory()->create(['name' => ['fr' => 'Déploiement']]);
+    $byContent = Post::factory()->create(['body' => ['fr' => '<p>Configurer une <strong>file d’attente</strong> Horizon</p>']]);
+    $byTag = Post::factory()->hasAttached($tag, [], 'tags')->create();
+    Post::factory()->create(['title' => ['fr' => 'Sans rapport']]);
+    Post::factory()->draft()->create(['body' => ['fr' => '<p>Horizon en brouillon</p>']]);
+
+    $this->get('/fr/blog?q=HORIZON')->assertOk()->assertInertia(fn ($page) => $page
+        ->where('search', 'HORIZON')
+        ->has('posts.data', 1)
+        ->where('posts.data.0.id', $byContent->id));
+
+    $this->get('/fr/blog?q=deploiement')->assertInertia(fn ($page) => $page
+        ->has('posts.data', 1)
+        ->where('posts.data.0.id', $byTag->id));
+
+    $this->get("/fr/blog?q=horizon&tag={$tag->slug}")->assertInertia(fn ($page) => $page->has('posts.data', 0));
+});
+
+test('code blocks with a known language are highlighted', function () {
+    $post = Post::factory()->create([
+        'body' => ['fr' => '<pre><code class="language-php">$total = 1; // &lt;b&gt;x&lt;/b&gt;</code></pre><pre><code>brut</code></pre>'],
+    ]);
+
+    $this->get("/fr/blog/{$post->slug}")->assertOk()->assertInertia(fn ($page) => $page
+        ->where('post.body', fn (string $body) => str_contains($body, '<pre data-language="php"><code class="language-php"><span class="hl-variable">$total</span>')
+            && str_contains($body, '<span class="hl-comment">// &lt;b&gt;x&lt;/b&gt;</span>')
+            && str_contains($body, '<pre><code>brut</code></pre>')));
+});
+
+test('a draft or scheduled post can be previewed through its signed link only', function () {
+    $draft = Post::factory()->draft()->create();
+    $scheduled = Post::factory()->scheduled()->create();
+
+    $this->get($draft->previewUrl())->assertOk()->assertInertia(fn ($page) => $page
+        ->component('public/blog/show')
+        ->where('post.id', $draft->id)
+        ->where('preview', true));
+    $this->get($scheduled->previewUrl('en'))->assertOk();
+
+    $this->get("/fr/blog/{$draft->slug}/preview")->assertForbidden();
+    $this->get(str_replace('/fr/', '/en/', $draft->previewUrl()))->assertForbidden();
+});
+
 test('related posts favour shared tags', function () {
     $tag = PostTag::factory()->create();
     $post = Post::factory()->hasAttached($tag, [], 'tags')->create();

@@ -6,9 +6,11 @@ use App\Http\Resources\Public\PostResource;
 use App\Models\Post;
 use App\Models\PostTag;
 use App\Models\SiteSetting;
+use App\Services\TextSearch;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
@@ -19,9 +21,14 @@ class BlogController extends Controller
 
     private const int RELATED_COUNT = 3;
 
+    public function __construct(private TextSearch $search) {}
+
     public function index(Request $request): Response
     {
         $this->ensureBlogIsEnabled();
+
+        $query = Str::limit(trim((string) $request->query('q', '')), 100, '');
+        $terms = $this->search->terms($query);
 
         $tags = PostTag::query()
             ->whereHas('posts', fn (Builder $query) => $query->published())
@@ -34,6 +41,7 @@ class BlogController extends Controller
         $posts = Post::query()
             ->published()
             ->when($activeTag, fn (Builder $query) => $query->whereHas('tags', fn (Builder $tags) => $tags->whereKey($activeTag->id)))
+            ->when($terms !== [], fn (Builder $query) => $query->whereKey($this->matchingPostIds($terms)))
             ->with(['tags', 'media'])
             ->orderByDesc('is_featured')
             ->latest('published_at')
@@ -48,6 +56,7 @@ class BlogController extends Controller
                 'count' => $tag->posts_count,
             ])->values(),
             'activeTag' => $activeTag?->slug,
+            'search' => $query,
             'total' => Post::query()->published()->count(),
         ]);
     }
@@ -57,12 +66,27 @@ class BlogController extends Controller
         $this->ensureBlogIsEnabled();
         abort_unless($post->isPublished(), HttpResponse::HTTP_NOT_FOUND);
 
+        return $this->renderPost($post, $locale);
+    }
+
+    /**
+     * Aperçu d'un brouillon ou d'un article programmé, par un lien signé et temporaire
+     * (Post::previewUrl) : il s'ouvre sans compte, même quand le blog est désactivé.
+     */
+    public function preview(string $locale, Post $post): Response
+    {
+        return $this->renderPost($post, $locale, preview: true);
+    }
+
+    private function renderPost(Post $post, string $locale, bool $preview = false): Response
+    {
         $post->load(['tags', 'media']);
 
         return Inertia::render('public/blog/show', [
             'post' => (new PostResource($post))->withBody(),
             'relatedPosts' => PostResource::collection($this->relatedPosts($post)),
             'series' => $this->series($post, $locale),
+            'preview' => $preview,
         ]);
     }
 
@@ -94,6 +118,28 @@ class BlogController extends Controller
                 ->values()
                 ->all(),
         ];
+    }
+
+    /**
+     * Articles publiés dont le titre, l'extrait, les tags ou le contenu contiennent tous les
+     * termes, dans l'une ou l'autre langue.
+     *
+     * @param  list<string>  $terms
+     * @return list<int>
+     */
+    private function matchingPostIds(array $terms): array
+    {
+        return Post::query()
+            ->published()
+            ->with('tags')
+            ->get(['id', 'title', 'excerpt', 'body'])
+            ->filter(fn (Post $post): bool => $this->search->matches($terms, [
+                ...array_values($post->getTranslations('title')),
+                ...array_values($post->getTranslations('excerpt')),
+                ...array_values($post->getTranslations('body')),
+                ...$post->tags->flatMap(fn (PostTag $tag): array => array_values($tag->getTranslations('name'))),
+            ]))
+            ->modelKeys();
     }
 
     private function ensureBlogIsEnabled(): void
