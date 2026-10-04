@@ -35,7 +35,7 @@ class SiteSettingController extends Controller
     }
 
     /**
-     * @return array{contact_opens_drawer: bool, testimonial_video_enabled: bool, cv_job_profile_id: int|null, cv_source: string, congratulation_notify_minutes: int, booking_enabled: bool, booking_min_notice_hours: int, booking_horizon_days: int, booking_buffer_minutes: int, booking_video_link: string|null}
+     * @return array{contact_opens_drawer: bool, testimonial_video_enabled: bool, blog_enabled: bool, cv_job_profile_id: int|null, cv_source: string, congratulation_notify_minutes: int, booking_enabled: bool, booking_min_notice_hours: int, booking_horizon_days: int, booking_buffer_minutes: int, booking_video_link: string|null}
      */
     private function payload(): array
     {
@@ -46,6 +46,8 @@ class SiteSettingController extends Controller
             'contact_opens_drawer' => $settings->contact_opens_drawer,
             /** Les visiteurs peuvent joindre ou filmer une vidéo avec leur avis. */
             'testimonial_video_enabled' => $settings->testimonial_video_enabled,
+            /** Le blog est affiché sur le site public (pages, navigation, plan du site). */
+            'blog_enabled' => $settings->blog_enabled,
             /** Profil métier dont le CV est téléchargeable sur le site (`null` : le premier publié). */
             'cv_job_profile_id' => $settings->cv_job_profile_id,
             /** Source prioritaire du CV : `uploaded` (PDF importé) ou `generated`, l'autre en repli. */

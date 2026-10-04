@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Zap\Models\Concerns\HasSchedules;
 
 /**
- * Réglages de gestion du site, sur une seule ligne : site, avis, CV,
+ * Réglages de gestion du site, sur une seule ligne : site, avis, blog, CV,
  * notifications et rendez-vous. Porte aussi mon agenda (disponibilités, périodes
  * bloquées et créneaux des rendez-vous, via Zap).
  */
@@ -23,6 +23,7 @@ class SiteSetting extends Model
     protected $fillable = [
         'contact_opens_drawer',
         'testimonial_video_enabled',
+        'blog_enabled',
         'cv_job_profile_id',
         'cv_source',
         'congratulation_notify_minutes',
@@ -37,6 +38,7 @@ class SiteSetting extends Model
     protected $casts = [
         'contact_opens_drawer' => 'boolean',
         'testimonial_video_enabled' => 'boolean',
+        'blog_enabled' => 'boolean',
         'cv_source' => CvSource::class,
         'congratulation_notify_minutes' => 'integer',
         'booking_enabled' => 'boolean',

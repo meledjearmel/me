@@ -40,3 +40,17 @@ test('the site settings can be read and changed through the API', function () {
 test('guests cannot change the site settings', function () {
     $this->get(route('admin.site-settings.edit'))->assertRedirect(route('login'));
 });
+
+test('the blog is shown by default and can be hidden from the admin', function () {
+    Profile::factory()->create();
+
+    $this->get('/fr')->assertInertia(fn ($page) => $page->where('blogEnabled', true));
+
+    $this->actingAs(User::factory()->create())
+        ->patch(route('admin.site-settings.update'), ['blog_enabled' => '0'])
+        ->assertSessionHasNoErrors();
+
+    expect(SiteSetting::current()->blog_enabled)->toBeFalse();
+
+    $this->get('/fr')->assertInertia(fn ($page) => $page->where('blogEnabled', false));
+});

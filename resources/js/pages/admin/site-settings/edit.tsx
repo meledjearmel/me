@@ -1,46 +1,48 @@
-import { Form, Head, Link } from '@inertiajs/react';
-import { useState } from 'react';
-import type { ReactNode } from 'react';
-import SiteSettingController from '@/actions/App/Http/Controllers/Admin/SiteSettingController';
-import FormSelect from '@/components/admin/form-select';
-import Heading from '@/components/heading';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Form, Head, Link } from "@inertiajs/react";
+import { useState } from "react";
+import type { ReactNode } from "react";
+import SiteSettingController from "@/actions/App/Http/Controllers/Admin/SiteSettingController";
+import FormSelect from "@/components/admin/form-select";
+import Heading from "@/components/heading";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
     Field,
     FieldDescription,
     FieldError,
     FieldGroup,
     FieldLabel,
-} from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { index as availabilityIndex } from '@/routes/admin/availability';
-import { edit as pageEdit } from '@/routes/admin/site-settings';
-import type { JobProfile, SiteSettings } from '@/types';
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { index as availabilityIndex } from "@/routes/admin/availability";
+import { edit as pageEdit } from "@/routes/admin/site-settings";
+import type { JobProfile, SiteSettings } from "@/types";
 
 const TABS = [
-    { value: 'site', label: 'Site' },
-    { value: 'reviews', label: 'Avis' },
-    { value: 'cv', label: 'CV' },
-    { value: 'notifications', label: 'Notifications' },
-    { value: 'booking', label: 'Rendez-vous' },
+    { value: "site", label: "Site" },
+    { value: "reviews", label: "Avis" },
+    { value: "blog", label: "Blog" },
+    { value: "cv", label: "CV" },
+    { value: "notifications", label: "Notifications" },
+    { value: "booking", label: "Rendez-vous" },
 ] as const;
 
-type Tab = (typeof TABS)[number]['value'];
+type Tab = (typeof TABS)[number]["value"];
 
 /** L'onglet de chaque réglage : en cas d'erreur, la page bascule sur le premier concerné. */
 const FIELD_TAB: Record<string, Tab> = {
-    contact_opens_drawer: 'site',
-    testimonial_video_enabled: 'reviews',
-    cv_job_profile_id: 'cv',
-    cv_source: 'cv',
-    congratulation_notify_minutes: 'notifications',
-    booking_enabled: 'booking',
-    booking_min_notice_hours: 'booking',
-    booking_horizon_days: 'booking',
-    booking_buffer_minutes: 'booking',
-    booking_video_link: 'booking',
+    contact_opens_drawer: "site",
+    testimonial_video_enabled: "reviews",
+    blog_enabled: "blog",
+    cv_job_profile_id: "cv",
+    cv_source: "cv",
+    congratulation_notify_minutes: "notifications",
+    booking_enabled: "booking",
+    booking_min_notice_hours: "booking",
+    booking_horizon_days: "booking",
+    booking_buffer_minutes: "booking",
+    booking_video_link: "booking",
 };
 
 /**
@@ -99,9 +101,9 @@ export default function SiteSettingsEdit({
     jobProfiles,
 }: {
     settings: SiteSettings;
-    jobProfiles: Pick<JobProfile, 'id' | 'label'>[];
+    jobProfiles: Pick<JobProfile, "id" | "label">[];
 }) {
-    const [tab, setTab] = useState<Tab>('site');
+    const [tab, setTab] = useState<Tab>("site");
 
     return (
         <>
@@ -158,8 +160,8 @@ export default function SiteSettingsEdit({
                                             name="contact_opens_drawer"
                                             defaultValue={
                                                 settings.contact_opens_drawer
-                                                    ? '1'
-                                                    : '0'
+                                                    ? "1"
+                                                    : "0"
                                             }
                                         >
                                             <option value="1">
@@ -200,6 +202,23 @@ export default function SiteSettingsEdit({
                                     </FieldError>
                                 </Section>
 
+                                <Section value="blog">
+                                    <Toggle
+                                        name="blog_enabled"
+                                        label="Afficher le blog sur le site"
+                                        defaultChecked={settings.blog_enabled}
+                                    />
+                                    <FieldDescription>
+                                        Désactivé, les pages du blog renvoient
+                                        une erreur 404 et le lien disparaît de
+                                        la navigation et du plan du site. Les
+                                        articles restent modifiables ici.
+                                    </FieldDescription>
+                                    <FieldError>
+                                        {errors.blog_enabled}
+                                    </FieldError>
+                                </Section>
+
                                 <Section value="cv">
                                     <div className="grid gap-4 sm:grid-cols-2">
                                         <Field
@@ -215,7 +234,7 @@ export default function SiteSettingsEdit({
                                                 name="cv_job_profile_id"
                                                 defaultValue={
                                                     settings.cv_job_profile_id ??
-                                                    ''
+                                                    ""
                                                 }
                                             >
                                                 <option value="">
@@ -321,7 +340,7 @@ export default function SiteSettingsEdit({
                                     description={
                                         <>
                                             Les plages horaires et les jours
-                                            bloqués se gèrent dans{' '}
+                                            bloqués se gèrent dans{" "}
                                             <Link
                                                 href={availabilityIndex()}
                                                 className="underline"
@@ -431,7 +450,7 @@ export default function SiteSettingsEdit({
                                             placeholder="https://meet.google.com/…"
                                             defaultValue={
                                                 settings.booking_video_link ??
-                                                ''
+                                                ""
                                             }
                                         />
                                         <FieldDescription>
@@ -457,5 +476,5 @@ export default function SiteSettingsEdit({
 }
 
 SiteSettingsEdit.layout = {
-    breadcrumbs: [{ title: 'Réglages du site', href: pageEdit() }],
+    breadcrumbs: [{ title: "Réglages du site", href: pageEdit() }],
 };

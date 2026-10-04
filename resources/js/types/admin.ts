@@ -331,6 +331,7 @@ export type Appointment = {
 export type SiteSettings = {
     contact_opens_drawer: boolean;
     testimonial_video_enabled: boolean;
+    blog_enabled: boolean;
     cv_job_profile_id: number | null;
     cv_source: 'uploaded' | 'generated';
     congratulation_notify_minutes: number;

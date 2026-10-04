@@ -53,6 +53,8 @@ class ShareSitePublicData
             'contactOpensDrawer' => fn () => SiteSetting::current()->contact_opens_drawer,
             // Les visiteurs peuvent joindre ou filmer une vidéo avec leur avis.
             'testimonialVideoEnabled' => fn () => SiteSetting::current()->testimonial_video_enabled,
+            // Le blog est affiché (navigation, pages).
+            'blogEnabled' => fn () => SiteSetting::current()->blog_enabled,
             'bookingOpen' => fn () => app(BookingCalendar::class)->isOpen(),
             // Profils proposés dans la fenêtre « Embauche » : chacun a son CV.
             'cvProfiles' => fn () => JobProfile::query()

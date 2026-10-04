@@ -21,6 +21,8 @@ class SiteSettingRequest extends FormRequest
             'contact_opens_drawer' => ['sometimes', 'boolean'],
             // Avis : les visiteurs peuvent joindre ou filmer une vidéo.
             'testimonial_video_enabled' => ['sometimes', 'boolean'],
+            // Blog : affiché sur le site public.
+            'blog_enabled' => ['sometimes', 'boolean'],
             // CV : profil métier proposé au téléchargement (`null` : le premier publié) et source prioritaire.
             'cv_job_profile_id' => ['sometimes', 'nullable', 'integer', 'exists:job_profiles,id'],
             'cv_source' => ['sometimes', Rule::enum(CvSource::class)],
