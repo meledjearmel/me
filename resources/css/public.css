@@ -6704,6 +6704,11 @@ html.pub-scroll {
 }
 
 /* Armi écrit… : la bulle ne contient que les trois points. */
+/* Bulle de réflexion au survol d'Armi : décorative, elle ne capte pas la souris. */
+.pub-surprise--thinking {
+    pointer-events: none;
+}
+
 .pub-surprise.is-typing {
     width: auto;
     padding: 0.9rem 1.15rem;

@@ -324,6 +324,44 @@ export default function ChatAssistant() {
                 )}
             </AnimatePresence>
 
+            {/* Survolé, Armi réfléchit dans la même bulle que celle de la surprise. */}
+            <AnimatePresence>
+                {hovered && !open && !surprise.visible && (
+                    <motion.div
+                        className="pub-surprise pub-surprise--thinking is-typing"
+                        aria-hidden="true"
+                        style={{ transformOrigin: 'bottom left' }}
+                        initial={
+                            reduceMotion
+                                ? { opacity: 0 }
+                                : { opacity: 0, x: -12, y: 24, scale: 0.2 }
+                        }
+                        animate={
+                            reduceMotion
+                                ? { opacity: 1 }
+                                : { opacity: 1, x: 0, y: 0, scale: 1 }
+                        }
+                        exit={
+                            reduceMotion
+                                ? { opacity: 0 }
+                                : { opacity: 0, x: -8, y: 16, scale: 0.4 }
+                        }
+                        transition={{
+                            type: 'spring',
+                            stiffness: 420,
+                            damping: 24,
+                        }}
+                    >
+                        <span className="pub-surprise__tail" />
+                        <p className="pub-surprise__typing">
+                            <span />
+                            <span />
+                            <span />
+                        </p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <button
                 ref={launcher}
                 type="button"
