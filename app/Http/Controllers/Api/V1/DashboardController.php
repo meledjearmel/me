@@ -18,6 +18,15 @@ class DashboardController extends Controller
      * sa santé, les derniers éléments reçus et les téléchargements du CV
      * (`cv_downloads` : volumes, et sur 30 jours les 5 premiers pays et les
      * 5 premières provenances, sous la forme `{label, count}`).
+     *
+     * Dans `visits`, `visitors` compte les visiteurs uniques sur 30 jours (empreinte
+     * anonyme qui change chaque jour, sans cookie) ; `by_source` et `by_device` les
+     * répartissent par provenance (campagne, sinon site d'origine, sinon `direct`) et
+     * par appareil (`desktop`, `mobile`, `tablet`), sous la forme `{label, count}`.
+     *
+     * `conversions` rapporte aux visiteurs uniques les objectifs atteints sur 30 jours :
+     * `goals` liste `{key, count, rate}` pour `cv_downloads`, `contacts`, `engagements`
+     * et `appointments`, `rate` étant un pourcentage à une décimale.
      */
     public function __invoke(DashboardReport $report): JsonResponse
     {
