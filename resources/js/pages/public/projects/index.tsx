@@ -1,23 +1,23 @@
-import { router, usePage } from '@inertiajs/react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useMemo, useState } from 'react';
-import type { CSSProperties } from 'react';
-import Seo from '@/components/public/seo';
-import PageHero from '@/components/public/page-hero';
-import ProjectCard from '@/components/public/project-card';
-import PublicShell from '@/components/public/public-shell';
-import { useLocale, useTranslations } from '@/lib/i18n';
-import type { PublicDomain, PublicProject } from '@/types';
+import { router, usePage } from "@inertiajs/react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useMemo, useState } from "react";
+import type { CSSProperties } from "react";
+import Seo from "@/components/public/seo";
+import PageHero from "@/components/public/page-hero";
+import ProjectCard from "@/components/public/project-card";
+import PublicShell from "@/components/public/public-shell";
+import { useLocale, useTranslations } from "@/lib/i18n";
+import type { PublicDomain, PublicProject } from "@/types";
 
 /** Comme sur l'accueil : rangées alternées large / étroit, la dernière seule prend toute la largeur. */
 const spanFor = (index: number, total: number) => {
     if (index === total - 1 && index % 2 === 0) {
-        return 'pub-card--full';
+        return "pub-card--full";
     }
 
     return (index + Math.floor(index / 2)) % 2 === 0
-        ? 'pub-card--wide'
-        : 'pub-card--narrow';
+        ? "pub-card--wide"
+        : "pub-card--narrow";
 };
 
 export default function ProjectsIndex({
@@ -33,32 +33,32 @@ export default function ProjectsIndex({
     // Un domaine (son id), les projets open source, ou tous les projets (null).
     // Le filtre vit dans l'URL (?filtre=<clé du domaine>|open-source) pour être partagé et retrouvé.
     const [activeFilter, setActiveFilterState] = useState<
-        number | 'open-source' | null
+        number | "open-source" | null
     >(() => {
-        const filter = new URL(url, 'http://localhost').searchParams.get(
-            'filtre',
+        const filter = new URL(url, "http://localhost").searchParams.get(
+            "filtre",
         );
 
-        if (filter === 'open-source') {
-            return 'open-source';
+        if (filter === "open-source") {
+            return "open-source";
         }
 
         return domains.find((domain) => domain.key === filter)?.id ?? null;
     });
 
-    const setActiveFilter = (filter: number | 'open-source' | null) => {
+    const setActiveFilter = (filter: number | "open-source" | null) => {
         setActiveFilterState(filter);
 
         const key =
-            filter === 'open-source'
+            filter === "open-source"
                 ? filter
                 : domains.find((domain) => domain.id === filter)?.key;
         const nextUrl = new URL(window.location.href);
 
         if (key) {
-            nextUrl.searchParams.set('filtre', key);
+            nextUrl.searchParams.set("filtre", key);
         } else {
-            nextUrl.searchParams.delete('filtre');
+            nextUrl.searchParams.delete("filtre");
         }
 
         router.replace({
@@ -96,7 +96,7 @@ export default function ProjectsIndex({
     ).length;
 
     const visibleProjects =
-        activeFilter === 'open-source'
+        activeFilter === "open-source"
             ? projects.filter((project) => project.is_open_source)
             : activeFilter
               ? projects.filter((project) =>
@@ -163,7 +163,7 @@ export default function ProjectsIndex({
                                     className="pub-filter"
                                     style={
                                         {
-                                            '--domain': domain.color,
+                                            "--domain": domain.color,
                                         } as CSSProperties
                                     }
                                     onClick={() => setActiveFilter(domain.id)}
@@ -180,10 +180,10 @@ export default function ProjectsIndex({
                                     type="button"
                                     className="pub-filter"
                                     onClick={() =>
-                                        setActiveFilter('open-source')
+                                        setActiveFilter("open-source")
                                     }
                                     aria-pressed={
-                                        activeFilter === 'open-source'
+                                        activeFilter === "open-source"
                                     }
                                 >
                                     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -198,6 +198,7 @@ export default function ProjectsIndex({
                             )}
                         </div>
 
+                        <h2 className="sr-only">{t.nav.projects}</h2>
                         <div className="pub-featured__grid pub-projects__grid">
                             <AnimatePresence mode="popLayout">
                                 {visibleProjects.map((project, index) => (

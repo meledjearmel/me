@@ -51,7 +51,6 @@ export default function ExperienceList({
                                     className="pub-exp__head"
                                     aria-expanded={isOpen}
                                     aria-controls={panelId}
-                                    aria-label={`${experience.company}, ${experience.role} — ${t.about.expand}`}
                                     onClick={() =>
                                         setOpenId(isOpen ? null : experience.id)
                                     }

@@ -1,10 +1,10 @@
-import { Link } from '@inertiajs/react';
-import PageHero from '@/components/public/page-hero';
-import PostCard from '@/components/public/post-card';
-import PublicShell from '@/components/public/public-shell';
-import Seo from '@/components/public/seo';
-import { useLocale, useLocalizedPath, useTranslations } from '@/lib/i18n';
-import type { PublicPost } from '@/types';
+import { Link } from "@inertiajs/react";
+import PageHero from "@/components/public/page-hero";
+import PostCard from "@/components/public/post-card";
+import PublicShell from "@/components/public/public-shell";
+import Seo from "@/components/public/seo";
+import { useLocale, useLocalizedPath, useTranslations } from "@/lib/i18n";
+import type { PublicPost } from "@/types";
 
 type PaginatedPosts = {
     data: PublicPost[];
@@ -77,10 +77,10 @@ export default function BlogIndex({
                                 aria-label={t.blog.filterLabel}
                             >
                                 <Link
-                                    href={path('blog')}
+                                    href={path("blog")}
                                     className="pub-filter"
                                     aria-current={
-                                        activeTag === null ? 'page' : undefined
+                                        activeTag === null ? "page" : undefined
                                     }
                                     preserveScroll
                                 >
@@ -90,11 +90,11 @@ export default function BlogIndex({
                                 {tags.map((tag) => (
                                     <Link
                                         key={tag.slug}
-                                        href={`${path('blog')}?tag=${tag.slug}`}
+                                        href={`${path("blog")}?tag=${tag.slug}`}
                                         className="pub-filter"
                                         aria-current={
                                             activeTag === tag.slug
-                                                ? 'page'
+                                                ? "page"
                                                 : undefined
                                         }
                                         preserveScroll
@@ -111,15 +111,18 @@ export default function BlogIndex({
                                 {activeTag ? t.blog.emptyTag : t.blog.empty}
                             </p>
                         ) : (
-                            <div className="pub-blog__grid">
-                                {posts.data.map((post, index) => (
-                                    <PostCard
-                                        key={post.id}
-                                        post={post}
-                                        large={leadFirst && index === 0}
-                                    />
-                                ))}
-                            </div>
+                            <>
+                                <h2 className="sr-only">{t.nav.blog}</h2>
+                                <div className="pub-blog__grid">
+                                    {posts.data.map((post, index) => (
+                                        <PostCard
+                                            key={post.id}
+                                            post={post}
+                                            large={leadFirst && index === 0}
+                                        />
+                                    ))}
+                                </div>
+                            </>
                         )}
 
                         {lastPage > 1 && (

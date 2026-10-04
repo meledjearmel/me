@@ -259,3 +259,12 @@ test('the reviews page shows the highlight and the video of a review in the visi
         ->missing('testimonials.0.author_email')
     );
 });
+
+test('the public site serves a light WebP version of the profile photo', function () {
+    Storage::fake('public');
+    Profile::query()->sole()->addMedia(UploadedFile::fake()->image('photo.png', 1600, 1600))->toMediaCollection('photo');
+
+    $this->get('/fr')->assertInertia(fn ($page) => $page
+        ->where('profile.photo_url', fn (string $url) => str_ends_with($url, '-web.webp'))
+    );
+});

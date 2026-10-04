@@ -127,7 +127,7 @@ export default function SiteHeader({
                     {profile.photo_url ? (
                         <img src={profile.photo_url} alt="" />
                     ) : (
-                        <span>{initials}</span>
+                        <span aria-hidden="true">{initials}</span>
                     )}
                 </Link>
 

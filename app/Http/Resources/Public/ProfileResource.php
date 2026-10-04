@@ -25,7 +25,7 @@ class ProfileResource extends JsonResource
             'phone' => $this->phone,
             'location' => $this->location,
             'social_links' => $this->social_links,
-            'photo_url' => $this->getFirstMediaUrl('photo') ?: null,
+            'photo_url' => $this->photoUrl(),
         ];
     }
 }
