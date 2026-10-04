@@ -160,3 +160,48 @@ test('the API gives the reaction counts of a post', function () {
     $this->getJson(route('api.v1.posts.show', $post))
         ->assertJsonPath('reactions', ['like' => 0, 'love' => 0, 'fire' => 2, 'idea' => 0, 'think' => 0]);
 });
+
+test('the admin page of a post shows its reads, reactions and comments', function () {
+    $post = Post::factory()->draft()->create(['views_count' => 12]);
+    PostReaction::factory()->for($post)->count(3)->create(['type' => 'love']);
+    PostComment::factory()->for($post)->pending()->create(['author_name' => 'Awa']);
+
+    $this->actingAs(User::factory()->create())
+        ->get(route('admin.posts.show', $post))
+        ->assertInertia(fn ($page) => $page
+            ->component('admin/posts/show')
+            ->where('post.views_count', 12)
+            ->where('post.is_live', false)
+            ->where('reactions.love', 3)
+            ->where('comments.0.author_name', 'Awa')
+            ->has('previewUrl'));
+});
+
+test('the dashboard reports the blog engagement and the comments to moderate', function () {
+    $post = Post::factory()->create(['views_count' => 40]);
+    PostReaction::factory()->for($post)->count(2)->create(['type' => 'fire']);
+    PostReaction::factory()->for($post)->create(['type' => 'like', 'created_at' => now()->subDays(60)]);
+    PostComment::factory()->for($post)->pending()->create();
+    PostComment::factory()->for($post)->create();
+
+    Sanctum::actingAs(User::factory()->create());
+
+    $this->getJson(route('api.v1.dashboard'))
+        ->assertJsonPath('todo.comments', 1)
+        ->assertJsonPath('blog.views_total', 40)
+        ->assertJsonPath('blog.reactions.total', 3)
+        ->assertJsonPath('blog.reactions.period', 2)
+        ->assertJsonPath('blog.reactions.by_type.2', ['label' => 'fire', 'count' => 2])
+        ->assertJsonPath('blog.comments.pending', 1)
+        ->assertJsonPath('blog.comments.approved', 1)
+        ->assertJsonPath('blog.top_posts.0', [
+            'id' => $post->id,
+            'title' => $post->getTranslation('title', 'fr'),
+            'url' => "/fr/blog/{$post->slug}",
+            'views' => 40,
+            'reactions' => 2,
+            'comments' => 2,
+        ]);
+
+    $this->get(route('dashboard'))->assertInertia(fn ($page) => $page->where('blog.reactions.period', 2));
+});

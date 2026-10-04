@@ -303,6 +303,9 @@ const dictionaries = {
             minutes: (count: number) => `${count} min de lecture`,
             publishedLabel: 'Publié le',
             readingLabel: 'Lecture',
+            viewsLabel: 'Lectures',
+            views: (count: number, locale: string) =>
+                `${count.toLocaleString(locale)} lecture${count > 1 ? 's' : ''}`,
             back: '← Tous les articles',
             toc: 'Dans cet article',
             onlyFrench: '',
@@ -866,6 +869,9 @@ const dictionaries = {
             minutes: (count: number) => `${count} min read`,
             publishedLabel: 'Published',
             readingLabel: 'Reading time',
+            viewsLabel: 'Reads',
+            views: (count: number, locale: string) =>
+                `${count.toLocaleString(locale)} read${count > 1 ? 's' : ''}`,
             back: '← All articles',
             toc: 'On this page',
             onlyFrench:

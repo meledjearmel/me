@@ -101,6 +101,8 @@ export type PublicPost = {
     title: string;
     excerpt: string | null;
     reading_minutes: number;
+    /** Lectures : une par session toutes les 30 minutes, robots exclus. */
+    views_count: number;
     is_featured: boolean;
     published_at: string;
     updated_at: string;

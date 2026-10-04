@@ -449,6 +449,8 @@ export type Post = {
     series?: string | null;
     series_position?: number | null;
     cover_url?: string | null;
+    /** Lectures sur le site : une par session toutes les 30 minutes, robots exclus. */
+    views_count?: number;
 };
 
 export type PostSeries = {

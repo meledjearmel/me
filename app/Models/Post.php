@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\PostReactionType;
 use App\Enums\PublicationStatus;
 use App\Services\PostContent;
+use App\Services\VisitorContext;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\URL;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -54,6 +57,7 @@ class Post extends Model implements HasMedia
         'published_at' => 'datetime',
         'newsletter_sent_at' => 'datetime',
         'reading_minutes' => 'integer',
+        'views_count' => 'integer',
         'series_position' => 'integer',
     ];
 
@@ -139,6 +143,27 @@ class Post extends Model implements HasMedia
         return $this->status === PublicationStatus::Published
             && $this->published_at !== null
             && $this->published_at->isPast();
+    }
+
+    /** Une même session ne compte qu'une lecture par article sur ce délai, en minutes. */
+    private const int VIEW_DEDUPE_MINUTES = 30;
+
+    /**
+     * Compte une lecture, sauf pour un robot ou une session qui vient déjà de lire l'article.
+     * La date de modification de l'article n'est pas touchée.
+     */
+    public function recordView(Request $request): void
+    {
+        if (app(VisitorContext::class)->isBot($request)) {
+            return;
+        }
+
+        $key = "post-view:{$this->id}:{$request->session()->getId()}";
+
+        if (Cache::add($key, true, now()->addMinutes(self::VIEW_DEDUPE_MINUTES))) {
+            static::query()->whereKey($this->id)->toBase()->increment('views_count');
+            $this->views_count++;
+        }
     }
 
     /** Durée de validité d'un lien d'aperçu, en heures. */

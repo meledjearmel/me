@@ -7,6 +7,8 @@ import {
     Handshake,
     Mail,
     MessageSquareQuote,
+    MessagesSquare,
+    SmilePlus,
     PartyPopper,
     Sparkles,
 } from 'lucide-react';
@@ -38,6 +40,8 @@ import {
 import { Empty, EmptyDescription, EmptyHeader } from '@/components/ui/empty';
 import { dashboard } from '@/routes';
 import { index as contactsIndex } from '@/routes/admin/contacts';
+import { index as postCommentsIndex } from '@/routes/admin/post-comments';
+import { show as postShow } from '@/routes/admin/posts';
 import { index as cvDownloadsIndex } from '@/routes/admin/cv-downloads';
 import { index as engagementsIndex } from '@/routes/admin/engagements';
 import { index as referencesIndex } from '@/routes/admin/professional-references';
@@ -48,7 +52,32 @@ import { index as testimonialsIndex } from '@/routes/admin/testimonials';
 type Bar = { label: string; color?: string; count: number };
 
 type DashboardProps = {
-    todo: { contacts: number; engagements: number; testimonials: number };
+    todo: {
+        contacts: number;
+        engagements: number;
+        testimonials: number;
+        comments: number;
+    };
+    blog: {
+        period_days: number | null;
+        views_total: number;
+        reactions: { total: number; period: number; by_type: Bar[] };
+        comments: {
+            total: number;
+            period: number;
+            pending: number;
+            approved: number;
+            rejected: number;
+        };
+        top_posts: {
+            id: number;
+            title: string;
+            url: string;
+            views: number;
+            reactions: number;
+            comments: number;
+        }[];
+    };
     visits: {
         total: number;
         period_days: number;
@@ -158,6 +187,15 @@ const GOALS = {
     engagements: 'Demandes de collaboration',
     appointments: 'Rendez-vous pris',
 } as const;
+
+/** Libellés des réactions du blog. */
+const REACTIONS: Record<string, string> = {
+    like: 'J’aime',
+    love: 'J’adore',
+    fire: 'Impressionnant',
+    idea: 'Instructif',
+    think: 'Ça fait réfléchir',
+};
 
 /** Libellés des types d'appareil. */
 const DEVICES: Record<string, string> = {
@@ -481,6 +519,7 @@ export default function Dashboard({
     recent,
     cv_downloads: cvDownloads,
     conversions,
+    blog,
 }: DashboardProps) {
     const { auth } = usePage().props;
     const firstName = auth.user.name.split(' ')[0];
@@ -508,7 +547,7 @@ export default function Dashboard({
                 </div>
 
                 {/* À traiter */}
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                     <TodoCard
                         title="Messages non lus"
                         count={todo.contacts}
@@ -529,6 +568,15 @@ export default function Dashboard({
                         href={testimonialsIndex()}
                         icon={MessageSquareQuote}
                         done="Aucun avis en attente"
+                    />
+                    <TodoCard
+                        title="Commentaires à modérer"
+                        count={todo.comments}
+                        href={postCommentsIndex({
+                            query: { status: 'pending' },
+                        })}
+                        icon={MessagesSquare}
+                        done="Aucun commentaire en attente"
                     />
                 </div>
 
@@ -636,10 +684,7 @@ export default function Dashboard({
                                 </thead>
                                 <tbody>
                                     {visits.top_content.map((row) => (
-                                        <tr
-                                            key={row.url}
-                                            className="border-t"
-                                        >
+                                        <tr key={row.url} className="border-t">
                                             <td className="py-2 pr-3">
                                                 <span className="mr-2 text-xs text-muted-foreground">
                                                     {row.type === 'post'
@@ -671,6 +716,83 @@ export default function Dashboard({
                         </div>
                     )}
                 </Section>
+
+                {/* Engagement des lecteurs du blog */}
+                <div className="grid gap-4 lg:grid-cols-3">
+                    <div className="grid gap-4">
+                        <StatCard
+                            title={`Réactions sur ${blog.period_days ?? 'toute la'} ${blog.period_days ? 'jours' : 'période'}`}
+                            value={number.format(blog.reactions.period)}
+                            hint={`${number.format(blog.reactions.total)} au total · ${number.format(blog.views_total)} lectures d’articles`}
+                            icon={SmilePlus}
+                        />
+                        <Link href={postCommentsIndex()} className="block">
+                            <StatCard
+                                title={`Commentaires sur ${blog.period_days ?? 'toute la'} ${blog.period_days ? 'jours' : 'période'}`}
+                                value={number.format(blog.comments.period)}
+                                hint={`${number.format(blog.comments.approved)} publiés · ${number.format(blog.comments.pending)} en attente · ${number.format(blog.comments.rejected)} refusés`}
+                                icon={MessagesSquare}
+                            />
+                        </Link>
+                    </div>
+                    <Section
+                        title="Réactions par type"
+                        description="Sur la période"
+                    >
+                        <Bars
+                            rows={
+                                blog.reactions.period === 0
+                                    ? []
+                                    : blog.reactions.by_type.map((row) => ({
+                                          ...row,
+                                          label:
+                                              REACTIONS[row.label] ?? row.label,
+                                      }))
+                            }
+                            empty="Aucune réaction sur la période."
+                        />
+                    </Section>
+                    <Section
+                        title="Articles qui font réagir"
+                        description="Réactions et commentaires sur la période"
+                    >
+                        {blog.top_posts.length === 0 ? (
+                            <Empty className="border py-6">
+                                <EmptyHeader>
+                                    <EmptyDescription>
+                                        Aucune réaction ni commentaire.
+                                    </EmptyDescription>
+                                </EmptyHeader>
+                            </Empty>
+                        ) : (
+                            <ul className="space-y-2.5 text-sm">
+                                {blog.top_posts.map((row) => (
+                                    <li
+                                        key={row.id}
+                                        className="flex items-center justify-between gap-3"
+                                    >
+                                        <Link
+                                            href={postShow(row.id)}
+                                            className="truncate hover:underline"
+                                        >
+                                            {row.title}
+                                        </Link>
+                                        <span className="flex shrink-0 gap-3 text-xs text-muted-foreground tabular-nums">
+                                            <span title="Réactions">
+                                                {number.format(row.reactions)}{' '}
+                                                réac.
+                                            </span>
+                                            <span title="Commentaires">
+                                                {number.format(row.comments)}{' '}
+                                                com.
+                                            </span>
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </Section>
+                </div>
 
                 {/* Provenance, appareils et conversions */}
                 <div className="grid gap-4 lg:grid-cols-3">
@@ -713,7 +835,8 @@ export default function Dashboard({
                                             {number.format(goal.count)}
                                         </span>
                                         <span className="w-14 text-right text-xs text-muted-foreground">
-                                            {goal.rate.toLocaleString('fr-FR')} %
+                                            {goal.rate.toLocaleString('fr-FR')}{' '}
+                                            %
                                         </span>
                                     </span>
                                 </li>

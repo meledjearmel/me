@@ -4,6 +4,7 @@ use App\Models\Post;
 use App\Models\PostTag;
 use App\Models\Profile;
 use App\Models\SiteSetting;
+use Illuminate\Http\Request;
 
 beforeEach(function () {
     Profile::factory()->create();
@@ -85,6 +86,34 @@ test('the blog can be searched in titles, tags and content, ignoring accents', f
         ->where('posts.data.0.id', $byTag->id));
 
     $this->get("/fr/blog?q=horizon&tag={$tag->slug}")->assertInertia(fn ($page) => $page->has('posts.data', 0));
+});
+
+test('reading an article counts a view, ignoring bots and previews', function () {
+    $post = Post::factory()->create(['views_count' => 4]);
+    $updatedAt = $post->updated_at;
+
+    $this->get("/fr/blog/{$post->slug}")->assertInertia(fn ($page) => $page->where('post.views_count', 5));
+    $this->withHeader('User-Agent', 'Googlebot/2.1')->get("/fr/blog/{$post->slug}");
+    $this->withHeader('User-Agent', 'Mozilla/5.0')->get($post->previewUrl());
+
+    expect($post->refresh())
+        ->views_count->toBe(5)
+        ->updated_at->toEqual($updatedAt);
+
+    $this->get('/fr/blog')->assertInertia(fn ($page) => $page->where('posts.data.0.views_count', 5));
+});
+
+test('a session counts only one view of an article within half an hour', function () {
+    $post = Post::factory()->create();
+    $request = Request::create("/fr/blog/{$post->slug}", server: ['HTTP_USER_AGENT' => 'Mozilla/5.0']);
+    $request->setLaravelSession(app('session.store'));
+
+    $post->recordView($request);
+    $post->recordView($request);
+    $this->travel(31)->minutes();
+    $post->recordView($request);
+
+    expect($post->refresh()->views_count)->toBe(2);
 });
 
 test('code blocks with a known language are highlighted', function () {

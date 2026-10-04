@@ -67,6 +67,7 @@ class BlogController extends Controller
     {
         $this->ensureBlogIsEnabled();
         abort_unless($post->isPublished(), HttpResponse::HTTP_NOT_FOUND);
+        $post->recordView($request);
 
         return $this->renderPost($post, $locale, $this->reactions->readerHash($request));
     }

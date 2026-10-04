@@ -311,6 +311,16 @@ export default function BlogShow({
                                         {t.blog.minutes(post.reading_minutes)}
                                     </dd>
                                 </div>
+                                {post.views_count > 0 && (
+                                    <div>
+                                        <dt>{t.blog.viewsLabel}</dt>
+                                        <dd>
+                                            {post.views_count.toLocaleString(
+                                                locale,
+                                            )}
+                                        </dd>
+                                    </div>
+                                )}
                             </dl>
                         }
                         lead={

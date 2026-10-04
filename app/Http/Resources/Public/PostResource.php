@@ -38,6 +38,8 @@ class PostResource extends JsonResource
             'title' => $this->getTranslation('title', $locale),
             'excerpt' => $this->getTranslation('excerpt', $locale) ?: null,
             'reading_minutes' => $this->reading_minutes,
+            /** Lectures : une par session toutes les 30 minutes, robots exclus. */
+            'views_count' => $this->views_count,
             'is_featured' => $this->is_featured,
             'published_at' => $this->published_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),

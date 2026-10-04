@@ -56,6 +56,21 @@ class PostController extends Controller
         return to_route('admin.posts.edit', $post);
     }
 
+    /** Consultation d'un article : contenu, lectures, réactions et commentaires reçus. */
+    public function show(Post $post): Response
+    {
+        return Inertia::render('admin/posts/show', [
+            'post' => [
+                ...$this->postForEditing($post->load(['tags', 'series'])),
+                'published_at' => $post->published_at?->toIso8601String(),
+                'is_live' => $post->isPublished(),
+            ],
+            'reactions' => $post->reactionCounts(),
+            'comments' => $post->comments()->latest()->get(['id', 'author_name', 'author_email', 'body', 'locale', 'status', 'created_at']),
+            'previewUrl' => $post->previewUrl(),
+        ]);
+    }
+
     public function edit(Post $post): Response
     {
         return Inertia::render('admin/posts/edit', [

@@ -9,7 +9,7 @@ export function formatPostDate(iso: string, locale: string): string {
     );
 }
 
-/** Carte d'un article : couverture, date, temps de lecture, titre et résumé. */
+/** Carte d'un article : couverture, date, temps de lecture, lectures, titre et résumé. */
 export default function PostCard({
     post,
     large = false,
@@ -49,6 +49,12 @@ export default function PostCard({
                     </time>
                     <span aria-hidden="true">·</span>
                     {t.blog.minutes(post.reading_minutes)}
+                    {post.views_count > 0 && (
+                        <>
+                            <span aria-hidden="true">·</span>
+                            {t.blog.views(post.views_count, locale)}
+                        </>
+                    )}
                 </p>
                 <h3 className="pub-post-card__title">
                     <Link href={href} prefetch>

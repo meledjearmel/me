@@ -36,6 +36,8 @@ class PostResource extends JsonResource
             'body' => $this->getTranslations('body'),
             /** Temps de lecture estimé, en minutes. */
             'reading_minutes' => $this->reading_minutes,
+            /** Lectures affichées sur le site : une par session toutes les 30 minutes, robots et aperçus exclus. */
+            'views_count' => $this->views_count,
             'is_featured' => $this->is_featured,
             /** `draft` ou `published`. */
             'status' => $this->status,

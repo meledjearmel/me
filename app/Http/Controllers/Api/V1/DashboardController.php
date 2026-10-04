@@ -44,9 +44,18 @@ class DashboardController extends Controller
      * `goals` liste `{key, count, rate}` pour `cv_downloads`, `contacts`, `engagements`
      * et `appointments`, `rate` étant un pourcentage à une décimale.
      *
-     * `todo.appointments` compte les demandes de rendez-vous en attente.
+     * `todo.appointments` compte les demandes de rendez-vous en attente, `todo.comments`
+     * les commentaires du blog à modérer.
+     *
+     * `blog` mesure l'engagement des lecteurs : `views_total` (lectures de tous les articles,
+     * depuis le début), `reactions` (`total`, `period`, et `by_type` : `{label, count}` sur la
+     * période pour `like`, `love`, `fire`, `idea` et `think`), `comments` (`total`, `period`,
+     * et par statut `pending`, `approved`, `rejected`) et `top_posts`, les 5 articles qui ont
+     * reçu le plus de réactions et de commentaires sur la période (un commentaire pèse comme
+     * trois réactions) : `{id, title, url, views, reactions, comments}`, `views` étant le total
+     * des lectures depuis le début.
      */
-    #[QueryParameter('days', description: 'Période : `7`, `30`, `90`, `365` ou `all` (depuis la toute première donnée). Ne dépendent pas de la période : `visits.total`, `visits.today`, `cv_downloads.total`, `cv_downloads.with_email`, `todo`, `content`, `distribution`, `health` et `recent`.', type: 'string', default: '30')]
+    #[QueryParameter('days', description: 'Période : `7`, `30`, `90`, `365` ou `all` (depuis la toute première donnée). Ne dépendent pas de la période : `visits.total`, `visits.today`, `cv_downloads.total`, `cv_downloads.with_email`, `blog.views_total`, `blog.reactions.total`, `blog.comments.total` et ses statuts, `todo`, `content`, `distribution`, `health` et `recent`.', type: 'string', default: '30')]
     #[QueryParameter('type', description: 'Ne garde dans `visits.top_content` que les articles (`post`) ou que les projets (`project`), le top 8 étant calculé après le filtre. Absent : les deux mélangés.', type: 'string')]
     public function __invoke(Request $request, DashboardReport $report): JsonResponse
     {

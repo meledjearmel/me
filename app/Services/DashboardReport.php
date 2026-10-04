@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Enums\AppointmentStatus;
+use App\Enums\CommentStatus;
 use App\Enums\ContactStatus;
 use App\Enums\EngagementStatus;
 use App\Enums\EngagementType;
+use App\Enums\PostReactionType;
 use App\Enums\ProjectStatus;
 use App\Enums\TestimonialStatus;
 use App\Models\Appointment;
@@ -18,6 +20,8 @@ use App\Models\Engagement;
 use App\Models\Experience;
 use App\Models\PageVisit;
 use App\Models\Post;
+use App\Models\PostComment;
+use App\Models\PostReaction;
 use App\Models\ProfessionalReference;
 use App\Models\Profile;
 use App\Models\Project;
@@ -67,6 +71,7 @@ class DashboardReport
             'recent' => $this->recent(),
             'cv_downloads' => $this->cvDownloads(),
             'conversions' => $this->conversions(),
+            'blog' => $this->blog(),
         ];
     }
 
@@ -162,6 +167,7 @@ class DashboardReport
             'engagements' => Engagement::query()->where('status', EngagementStatus::New)->count(),
             'testimonials' => Testimonial::query()->where('status', TestimonialStatus::Pending)->count(),
             'appointments' => Appointment::query()->where('status', AppointmentStatus::Pending)->count(),
+            'comments' => PostComment::query()->where('status', CommentStatus::Pending)->count(),
         ];
     }
 
@@ -362,6 +368,79 @@ class DashboardReport
                 ])
                 ->values()
                 ->all(),
+        ];
+    }
+
+    /**
+     * Engagement des lecteurs du blog : lectures, réactions et commentaires, et les articles
+     * qui en suscitent le plus sur la période.
+     *
+     * @return array{
+     *     period_days: int|null,
+     *     since: string|null,
+     *     views_total: int,
+     *     reactions: array{total: int, period: int, by_type: list<array{label: string, count: int}>},
+     *     comments: array{total: int, period: int, pending: int, approved: int, rejected: int},
+     *     top_posts: list<array{id: int, title: string, url: string, views: int, reactions: int, comments: int}>,
+     * }
+     */
+    private function blog(): array
+    {
+        $since = $this->visitsSince();
+        $start = $since ?? $this->dayOf(PostReaction::query()->min('created_at') ?? PostComment::query()->min('created_at'));
+
+        $reactionsByType = $this->inPeriod(PostReaction::query(), $since)
+            ->toBase()
+            ->selectRaw('type, count(*) as total')
+            ->groupBy('type')
+            ->pluck('total', 'type');
+
+        $reactionsByPost = $this->inPeriod(PostReaction::query(), $since)->toBase()
+            ->selectRaw('post_id, count(*) as total')->groupBy('post_id')->pluck('total', 'post_id');
+        $commentsByPost = $this->inPeriod(PostComment::query(), $since)->toBase()
+            ->selectRaw('post_id, count(*) as total')->groupBy('post_id')->pluck('total', 'post_id');
+
+        $topPosts = Post::query()
+            ->whereKey($reactionsByPost->keys()->merge($commentsByPost->keys())->unique()->all())
+            ->get(['id', 'slug', 'title', 'views_count'])
+            ->map(fn (Post $post): array => [
+                'id' => $post->id,
+                'title' => $post->getTranslation('title', 'fr'),
+                'url' => "/fr/blog/{$post->slug}",
+                'views' => $post->views_count,
+                'reactions' => (int) ($reactionsByPost[$post->id] ?? 0),
+                'comments' => (int) ($commentsByPost[$post->id] ?? 0),
+            ])
+            ->sortByDesc(fn (array $row): int => $row['reactions'] + $row['comments'] * 3)
+            ->take(5)
+            ->values()
+            ->all();
+
+        $commentStatuses = PostComment::query()->toBase()
+            ->selectRaw('status, count(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
+        return [
+            'period_days' => $this->days,
+            'since' => $start?->toDateString(),
+            'views_total' => (int) Post::query()->sum('views_count'),
+            'reactions' => [
+                'total' => PostReaction::query()->count(),
+                'period' => (int) $reactionsByType->sum(),
+                /** Sur la période, dans l'ordre des réactions du site. */
+                'by_type' => collect(PostReactionType::cases())
+                    ->map(fn (PostReactionType $type): array => ['label' => $type->value, 'count' => (int) ($reactionsByType[$type->value] ?? 0)])
+                    ->all(),
+            ],
+            'comments' => [
+                'total' => PostComment::query()->count(),
+                'period' => $this->inPeriod(PostComment::query(), $since)->count(),
+                'pending' => (int) ($commentStatuses[CommentStatus::Pending->value] ?? 0),
+                'approved' => (int) ($commentStatuses[CommentStatus::Approved->value] ?? 0),
+                'rejected' => (int) ($commentStatuses[CommentStatus::Rejected->value] ?? 0),
+            ],
+            'top_posts' => $topPosts,
         ];
     }
 

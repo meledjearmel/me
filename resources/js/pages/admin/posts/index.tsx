@@ -1,5 +1,5 @@
 import { Head, Link } from "@inertiajs/react";
-import { Plus, SquarePen } from "lucide-react";
+import { Eye, Plus, SquarePen } from "lucide-react";
 import PostController from "@/actions/App/Http/Controllers/Admin/PostController";
 import { FilterSelect, ResourceList } from "@/components/admin/data-list";
 import DeleteButton from "@/components/admin/delete-button";
@@ -119,6 +119,14 @@ export default function PostsIndex({
                     )}
                     actions={(row) => (
                         <>
+                            <Button variant="ghost" size="icon" asChild>
+                                <Link
+                                    href={PostController.show(row.id)}
+                                    aria-label="Voir"
+                                >
+                                    <Eye />
+                                </Link>
+                            </Button>
                             <Button variant="ghost" size="icon" asChild>
                                 <Link
                                     href={PostController.edit(row.id)}
