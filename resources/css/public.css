@@ -8140,3 +8140,68 @@ html.pub-scroll {
     font-size: 0.95rem;
     opacity: 0.7;
 }
+
+/* Page « Uses » */
+.pub-uses {
+    display: grid;
+    gap: clamp(3rem, 7vw, 5rem);
+    padding-block: clamp(3rem, 7vw, 5rem);
+}
+
+.pub-uses__group {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr);
+    gap: clamp(1rem, 4vw, 3rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid color-mix(in oklab, var(--pub-text) 18%, transparent);
+}
+
+.pub-uses__title {
+    margin: 0;
+    font-family: var(--pub-font-mono);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.pub-uses__list {
+    display: grid;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pub-uses__list h3 {
+    margin: 0;
+    font-family: var(--pub-font-display);
+    font-size: clamp(1.3rem, 2.2vw, 1.7rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+}
+
+.pub-uses__list a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.pub-uses__list a:hover,
+.pub-uses__list a:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+}
+
+.pub-uses__list p {
+    margin: 0.35rem 0 0;
+    max-width: 60ch;
+    line-height: 1.6;
+    opacity: 0.75;
+}
+
+@media (max-width: 760px) {
+    .pub-uses__group {
+        grid-template-columns: 1fr;
+    }
+}

@@ -23,6 +23,7 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SkillController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\TestimonialSubmissionController;
+use App\Http\Controllers\UsesController;
 use App\Http\Middleware\CaptureTrafficSource;
 use App\Http\Middleware\LogPageVisit;
 use App\Http\Middleware\SetLocale;
@@ -68,6 +69,7 @@ Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, Lo
     Route::post('newsletter/{token}/unsubscribe', [NewsletterController::class, 'destroy'])
         ->middleware('throttle:10,1')
         ->name('newsletter.unsubscribe.store');
+    Route::get('uses', [UsesController::class, 'index'])->name('uses');
     Route::get('contact', [ContactController::class, 'index'])->name('contact.index');
     Route::post('contact', [ContactController::class, 'store'])
         ->middleware('throttle:5,1')

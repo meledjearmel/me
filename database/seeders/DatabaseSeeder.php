@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             ProjectSeeder::class,
             ProfessionalReferenceSeeder::class,
             MusicGenreSeeder::class,
+            UsesItemSeeder::class,
         ]);
 
         // Données générées (avis fictifs) :

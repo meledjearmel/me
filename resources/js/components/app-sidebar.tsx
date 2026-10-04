@@ -5,6 +5,7 @@ import {
     CalendarCog,
     CalendarDays,
     Disc3,
+    Laptop,
     FolderGit2,
     GraduationCap,
     FileDown,
@@ -60,6 +61,7 @@ import { index as skillsIndex } from "@/routes/admin/skills";
 import { index as technologiesIndex } from "@/routes/admin/technologies";
 import { index as technologyCategoriesIndex } from "@/routes/admin/technology-categories";
 import { index as musicGenresIndex } from "@/routes/admin/music-genres";
+import { index as usesItemsIndex } from "@/routes/admin/uses-items";
 import { index as testimonialsIndex } from "@/routes/admin/testimonials";
 import { index as tracksIndex } from "@/routes/admin/tracks";
 import type { NavItem } from "@/types";
@@ -85,6 +87,7 @@ const portfolioNavItems: NavItem[] = [
     { title: "Tags du blog", href: postTagsIndex(), icon: Tags },
     { title: "Avis", href: testimonialsIndex(), icon: MessageSquareQuote },
     { title: "Références", href: referencesIndex(), icon: UserCheck },
+    { title: "Uses", href: usesItemsIndex(), icon: Laptop },
     { title: "Surprises", href: celebrationsIndex(), icon: PartyPopper },
 ];
 

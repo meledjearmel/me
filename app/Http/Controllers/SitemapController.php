@@ -7,6 +7,7 @@ use App\Http\Middleware\SetLocale;
 use App\Models\Post;
 use App\Models\Project;
 use App\Models\SiteSetting;
+use App\Models\UsesItem;
 use Illuminate\Http\Response;
 
 class SitemapController extends Controller
@@ -19,6 +20,8 @@ class SitemapController extends Controller
         $baseUrl = rtrim((string) config('app.url'), '/');
 
         $entries = collect(self::STATIC_PATHS)
+            // Page « Uses » vide : elle renvoie une 404.
+            ->when(UsesItem::query()->exists(), fn ($paths) => $paths->push('/uses'))
             ->map(fn (string $path): array => ['path' => $path, 'lastmod' => null]);
 
         $projects = Project::query()

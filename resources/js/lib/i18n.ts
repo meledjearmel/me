@@ -198,6 +198,18 @@ const dictionaries = {
             close: 'Fermer',
             tools: 'Technologies concernées',
         },
+        uses: {
+            title: 'Uses',
+            heading: 'Mes outils de travail.',
+            hook: 'Le matériel, les logiciels et les services que j’utilise au quotidien pour concevoir et livrer.',
+            seo: 'Le matériel, les éditeurs, les applications et les services que j’utilise au quotidien pour développer.',
+            categories: {
+                hardware: 'Matériel',
+                development: 'Développement',
+                apps: 'Applications',
+                services: 'Services',
+            },
+        },
         projects: {
             kicker: 'Réalisations',
             title: 'Projets',
@@ -671,6 +683,18 @@ const dictionaries = {
             open: 'Open',
             close: 'Close',
             tools: 'Related technologies',
+        },
+        uses: {
+            title: 'Uses',
+            heading: 'The tools I work with.',
+            hook: 'The hardware, software and services I use every day to design and ship.',
+            seo: 'The hardware, editors, apps and services I use every day to build software.',
+            categories: {
+                hardware: 'Hardware',
+                development: 'Development',
+                apps: 'Apps',
+                services: 'Services',
+            },
         },
         projects: {
             kicker: 'Work',

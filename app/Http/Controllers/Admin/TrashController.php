@@ -20,6 +20,7 @@ use App\Models\Technology;
 use App\Models\TechnologyCategory;
 use App\Models\Testimonial;
 use App\Models\Track;
+use App\Models\UsesItem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -36,6 +37,7 @@ class TrashController extends Controller
         'domains' => ['model' => Domain::class, 'label' => 'Domaine'],
         'music-genres' => ['model' => MusicGenre::class, 'label' => 'Registre musical'],
         'tracks' => ['model' => Track::class, 'label' => 'Piste audio'],
+        'uses-items' => ['model' => UsesItem::class, 'label' => 'Élément « Uses »'],
         'technology-categories' => ['model' => TechnologyCategory::class, 'label' => 'Catégorie de technologie'],
         'technologies' => ['model' => Technology::class, 'label' => 'Technologie'],
         'job-profiles' => ['model' => JobProfile::class, 'label' => 'Profil métier'],
@@ -133,7 +135,7 @@ class TrashController extends Controller
     {
         return match ($type) {
             'domains', 'music-genres', 'job-profiles', 'technology-categories' => (string) $model->label,
-            'technologies', 'skills', 'professional-references' => (string) $model->name,
+            'technologies', 'skills', 'professional-references', 'uses-items' => (string) $model->name,
             'tracks' => trim("{$model->title} — {$model->artist}"),
             'educations' => trim("{$model->degree} · {$model->institution}"),
             'experiences' => trim("{$model->role} · {$model->company}"),

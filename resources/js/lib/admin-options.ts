@@ -5,6 +5,13 @@ export const PROJECT_STATUSES = [
     { value: 'archived', label: 'Archivé' },
 ] as const;
 
+export const USES_CATEGORIES = [
+    { value: 'hardware', label: 'Matériel' },
+    { value: 'development', label: 'Développement' },
+    { value: 'apps', label: 'Applications' },
+    { value: 'services', label: 'Services' },
+] as const;
+
 export const TESTIMONIAL_STATUSES = [
     { value: 'pending', label: 'En attente' },
     { value: 'approved', label: 'Approuvé' },

@@ -230,6 +230,15 @@ export type CvDownload = {
     created_at: string;
 };
 
+export type UsesItem = {
+    id: number;
+    category: 'hardware' | 'development' | 'apps' | 'services';
+    name: string;
+    description: Translatable | null;
+    url: string | null;
+    sort_order: number;
+};
+
 export type Subscriber = {
     id: number;
     email: string;

@@ -8,6 +8,7 @@ use App\Models\JobProfile;
 use App\Models\PageVisit;
 use App\Models\Profile;
 use App\Models\SiteSetting;
+use App\Models\UsesItem;
 use App\Services\BookingCalendar;
 use Closure;
 use Illuminate\Http\Request;
@@ -55,6 +56,8 @@ class ShareSitePublicData
             'testimonialVideoEnabled' => fn () => SiteSetting::current()->testimonial_video_enabled,
             // Le blog est affiché (navigation, pages).
             'blogEnabled' => fn () => SiteSetting::current()->blog_enabled,
+            // La page « Uses » n'est proposée que si elle a du contenu.
+            'usesEnabled' => fn () => UsesItem::query()->exists(),
             'bookingOpen' => fn () => app(BookingCalendar::class)->isOpen(),
             // Profils proposés dans la fenêtre « Embauche » : chacun a son CV.
             'cvProfiles' => fn () => JobProfile::query()
