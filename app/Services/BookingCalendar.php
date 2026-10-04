@@ -10,6 +10,7 @@ use App\Models\AppointmentType;
 use App\Models\SiteSetting;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Zap\Enums\ScheduleTypes;
 use Zap\Facades\Zap;
 use Zap\Models\Schedule;
@@ -25,6 +26,9 @@ class BookingCalendar
 {
     /** Jours de la semaine, dans l'ordre et au format attendu par Zap. */
     public const array DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+    /** Début du nom des salles Jitsi : https://meet.jit.si/armel-dev-… */
+    public const string JITSI_ROOM_PREFIX = 'armel-dev';
 
     public function settings(): SiteSetting
     {
@@ -193,15 +197,18 @@ class BookingCalendar
     }
 
     /**
-     * Confirme une demande en attente. Pour une visio sans détails précisés, mon
-     * lien visio par défaut est repris.
+     * Confirme une demande en attente. Pour une visio sans détails précisés : un
+     * lien Jitsi unique est créé, ou mon lien fixe est repris (selon les réglages).
      */
     public function confirm(Appointment $appointment, ?string $meetingDetails = null): void
     {
         abort_unless($appointment->status === AppointmentStatus::Pending, 409, __('Ce rendez-vous n’est plus en attente.'));
 
         if (blank($meetingDetails) && $appointment->location === AppointmentLocation::Video) {
-            $meetingDetails = $this->settings()->booking_video_link;
+            $settings = $this->settings();
+            $meetingDetails = $settings->booking_video_provider === 'jitsi'
+                ? $this->jitsiRoomUrl($appointment)
+                : $settings->booking_video_link;
         }
 
         $appointment->update([
@@ -211,6 +218,17 @@ class BookingCalendar
         ]);
 
         SendAppointmentMails::dispatch($appointment->id, 'confirmed');
+    }
+
+    /**
+     * Une salle Jitsi (meet.jit.si, gratuit, sans compte pour les invités) propre à
+     * ce rendez-vous : un nom lisible suivi d'une partie aléatoire, impossible à deviner.
+     */
+    public function jitsiRoomUrl(Appointment $appointment): string
+    {
+        $type = Str::slug((string) $appointment->appointmentType?->getTranslation('name', 'fr'));
+
+        return 'https://meet.jit.si/'.collect([self::JITSI_ROOM_PREFIX, $type, Str::lower(Str::random(12))])->filter()->implode('-');
     }
 
     /** Refuse une demande (en attente ou déjà confirmée) et libère son créneau. */

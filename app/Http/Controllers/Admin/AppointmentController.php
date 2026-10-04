@@ -30,7 +30,11 @@ class AppointmentController extends Controller
     {
         return Inertia::render('admin/appointments/show', [
             'appointment' => $appointment->load('appointmentType'),
-            'defaultVideoLink' => $this->calendar->settings()->booking_video_link,
+            // Visio : lien Jitsi créé à la confirmation, ou mon lien fixe pré-rempli.
+            'defaultVideoLink' => $this->calendar->settings()->booking_video_provider === 'link'
+                ? $this->calendar->settings()->booking_video_link
+                : null,
+            'videoProvider' => $this->calendar->settings()->booking_video_provider,
         ]);
     }
 

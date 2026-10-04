@@ -336,6 +336,7 @@ export type SiteSettings = {
     booking_min_notice_hours: number;
     booking_horizon_days: number;
     booking_buffer_minutes: number;
+    booking_video_provider: 'jitsi' | 'link';
     booking_video_link: string | null;
 };
 
