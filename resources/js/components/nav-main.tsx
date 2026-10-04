@@ -16,6 +16,14 @@ import {
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import type { NavItem } from '@/types';
 
+function readStoredOpen(key: string): boolean {
+    try {
+        return localStorage.getItem(key) === 'open';
+    } catch {
+        return false;
+    }
+}
+
 export function NavMain({
     items,
     label = 'Plateforme',
@@ -27,13 +35,26 @@ export function NavMain({
 }) {
     const { isCurrentUrl } = useCurrentUrl();
     const hasActiveItem = items.some((item) => isCurrentUrl(item.href));
-    const [open, setOpen] = useState(hasActiveItem);
+    const storageKey = `admin-nav:${label}`;
+    const [open, setOpen] = useState(
+        () => hasActiveItem || readStoredOpen(storageKey),
+    );
 
     useEffect(() => {
         if (hasActiveItem) {
             setOpen(true);
         }
     }, [hasActiveItem]);
+
+    const handleOpenChange = (value: boolean) => {
+        setOpen(value);
+
+        try {
+            localStorage.setItem(storageKey, value ? 'open' : 'closed');
+        } catch {
+            // Stockage indisponible : l'état reste valable pour la session.
+        }
+    };
 
     const menu = (
         <SidebarMenu>
@@ -64,7 +85,7 @@ export function NavMain({
     }
 
     return (
-        <Collapsible open={open} onOpenChange={setOpen} className="group/collapsible">
+        <Collapsible open={open} onOpenChange={handleOpenChange} className="group/collapsible">
             <SidebarGroup className="px-2 py-0">
                 <SidebarGroupLabel asChild>
                     <CollapsibleTrigger className="cursor-pointer hover:text-sidebar-foreground">
