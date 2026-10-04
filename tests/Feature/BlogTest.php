@@ -112,6 +112,21 @@ test('a draft or scheduled post can be previewed through its signed link only', 
     $this->get(str_replace('/fr/', '/en/', $draft->previewUrl()))->assertForbidden();
 });
 
+test('an article links to the published posts just before and after it', function () {
+    $older = Post::factory()->create(['published_at' => now()->subDays(3)]);
+    $post = Post::factory()->create(['published_at' => now()->subDays(2)]);
+    $newer = Post::factory()->create(['published_at' => now()->subDay()]);
+    Post::factory()->draft()->create(['published_at' => now()->subDays(2)->addHour()]);
+
+    $this->get("/fr/blog/{$post->slug}")->assertInertia(fn ($page) => $page
+        ->where('adjacent.previous.slug', $older->slug)
+        ->where('adjacent.next.slug', $newer->slug));
+
+    $this->get("/fr/blog/{$newer->slug}")->assertInertia(fn ($page) => $page
+        ->where('adjacent.previous.slug', $post->slug)
+        ->where('adjacent.next', null));
+});
+
 test('related posts favour shared tags', function () {
     $tag = PostTag::factory()->create();
     $post = Post::factory()->hasAttached($tag, [], 'tags')->create();

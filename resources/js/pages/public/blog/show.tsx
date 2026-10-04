@@ -75,6 +75,55 @@ function useCopyButtons(
     }, [article, labels.copy, labels.copied, html]);
 }
 
+/** Part de l'article déjà lue, de 0 à 1. */
+function useReadingProgress(article: RefObject<HTMLElement | null>): number {
+    const [progress, setProgress] = useState(0);
+
+    useEffect(() => {
+        let frame = 0;
+
+        const measure = () => {
+            frame = 0;
+            const element = article.current;
+
+            if (!element) {
+                return;
+            }
+
+            const { top, height } = element.getBoundingClientRect();
+            const readable = height - window.innerHeight;
+
+            if (readable <= 0) {
+                setProgress(top <= 0 ? 1 : 0);
+
+                return;
+            }
+
+            setProgress(Math.min(1, Math.max(0, -top / readable)));
+        };
+
+        const onScroll = () => {
+            if (frame === 0) {
+                frame = window.requestAnimationFrame(measure);
+            }
+        };
+
+        measure();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll);
+
+        return () => {
+            window.cancelAnimationFrame(frame);
+            window.removeEventListener('scroll', onScroll);
+            window.removeEventListener('resize', onScroll);
+        };
+    }, [article]);
+
+    return progress;
+}
+
+type AdjacentPost = { slug: string; title: string } | null;
+
 type PostSeries = {
     name: string;
     parts: {
@@ -136,11 +185,14 @@ export default function BlogShow({
     post,
     relatedPosts,
     series,
+    adjacent,
     preview = false,
 }: {
     post: PublicPost;
     relatedPosts: PublicPost[];
     series: PostSeries | null;
+    /** Articles publiés juste avant et juste après, par date. */
+    adjacent: { previous: AdjacentPost; next: AdjacentPost };
     /** Brouillon ou article programmé, ouvert depuis un lien d'aperçu signé. */
     preview?: boolean;
 }) {
@@ -151,6 +203,7 @@ export default function BlogShow({
         { copy: t.blog.copyCode, copied: t.blog.codeCopied },
         post.body ?? '',
     );
+    const progress = useReadingProgress(articleRef);
     const locale = useLocale();
     const path = useLocalizedPath();
     const { props } = usePage<{ siteUrl: string; profile: PublicProfile }>();
@@ -211,6 +264,16 @@ export default function BlogShow({
             </Seo>
 
             <PublicShell overHero>
+                <div
+                    className="pub-post__progress"
+                    role="progressbar"
+                    aria-label={t.blog.readingProgress}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={Math.round(progress * 100)}
+                >
+                    <span style={{ transform: `scaleX(${progress})` }} />
+                </div>
                 <div className="pub-project pub-post">
                     <PageHero
                         id="pub-post-title"
@@ -318,6 +381,38 @@ export default function BlogShow({
                                         __html: post.body ?? '',
                                     }}
                                 />
+                                {(adjacent.previous || adjacent.next) && (
+                                    <nav
+                                        className="pub-post__adjacent"
+                                        aria-label={t.blog.adjacentLabel}
+                                    >
+                                        {adjacent.previous && (
+                                            <Link
+                                                href={path(
+                                                    `blog/${adjacent.previous.slug}`,
+                                                )}
+                                                rel="prev"
+                                            >
+                                                <span>
+                                                    {t.blog.previousPost}
+                                                </span>
+                                                {adjacent.previous.title}
+                                            </Link>
+                                        )}
+                                        {adjacent.next && (
+                                            <Link
+                                                href={path(
+                                                    `blog/${adjacent.next.slug}`,
+                                                )}
+                                                rel="next"
+                                                className="pub-post__adjacent-next"
+                                            >
+                                                <span>{t.blog.nextPost}</span>
+                                                {adjacent.next.title}
+                                            </Link>
+                                        )}
+                                    </nav>
+                                )}
                             </div>
                         </div>
                     </section>

@@ -86,6 +86,7 @@ class BlogController extends Controller
             'post' => (new PostResource($post))->withBody(),
             'relatedPosts' => PostResource::collection($this->relatedPosts($post)),
             'series' => $this->series($post, $locale),
+            'adjacent' => $this->adjacentPosts($post, $locale),
             'preview' => $preview,
         ]);
     }
@@ -117,6 +118,32 @@ class BlogController extends Controller
                 ])
                 ->values()
                 ->all(),
+        ];
+    }
+
+    /**
+     * Article publié juste avant et juste après, par date de publication. Un aperçu sans date
+     * n'a que le dernier article publié avant lui.
+     *
+     * @return array{previous: array{slug: string, title: string}|null, next: array{slug: string, title: string}|null}
+     */
+    private function adjacentPosts(Post $post, string $locale): array
+    {
+        $date = $post->published_at ?? now();
+        $present = fn (?Post $adjacent): ?array => $adjacent === null ? null : [
+            'slug' => $adjacent->slug,
+            'title' => $adjacent->getTranslation('title', $locale),
+        ];
+
+        return [
+            'previous' => $present(Post::query()->published()->whereKeyNot($post->id)
+                ->where('published_at', '<=', $date)
+                ->orderByDesc('published_at')->orderByDesc('id')
+                ->first(['id', 'slug', 'title'])),
+            'next' => $present($post->published_at === null ? null : Post::query()->published()->whereKeyNot($post->id)
+                ->where('published_at', '>', $date)
+                ->orderBy('published_at')->orderBy('id')
+                ->first(['id', 'slug', 'title'])),
         ];
     }
 
