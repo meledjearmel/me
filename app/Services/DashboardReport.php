@@ -169,8 +169,6 @@ class DashboardReport
             /**
              * Articles et projets les plus vus, toutes langues réunies, avec leur titre, leurs
              * visiteurs uniques et leur principale provenance.
-             *
-             * @var list<array{type: string, title: string, url: string, visits: int, visitors: int, top_source: string}>
              */
             'top_content' => $this->topContent($since),
         ];
