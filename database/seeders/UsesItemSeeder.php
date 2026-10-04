@@ -3,24 +3,64 @@
 namespace Database\Seeders;
 
 use App\Enums\UsesCategory;
+use App\Models\Technology;
 use App\Models\UsesItem;
 use Illuminate\Database\Seeder;
 
 /**
- * Premier contenu de la page « Uses », à compléter et corriger depuis l'administration.
- * N'écrit rien si la page a déjà du contenu : un re-seed n'écrase jamais mes modifications.
+ * Contenu de la page « Uses », à compléter et corriger depuis l'administration : mes
+ * outils décrits à la main, puis les technologies du site, rangées dans les rubriques.
+ *
+ * N'ajoute que les éléments absents (par nom) : un re-seed n'écrase jamais une
+ * modification et ne recrée pas un élément supprimé (il reste dans la corbeille).
  */
 class UsesItemSeeder extends Seeder
 {
+    /**
+     * Rubrique « Uses » de chaque catégorie de technologie.
+     *
+     * @var array<string, UsesCategory>
+     */
+    private const array TECHNOLOGY_CATEGORIES = [
+        'langages' => UsesCategory::Development,
+        'frameworks' => UsesCategory::Development,
+        'donnees' => UsesCategory::Development,
+        'qualite' => UsesCategory::Development,
+        'securite' => UsesCategory::Development,
+        'cms' => UsesCategory::Development,
+        'design' => UsesCategory::Apps,
+        'infra' => UsesCategory::Services,
+        'ia' => UsesCategory::Services,
+    ];
+
+    /**
+     * Technologies rangées ailleurs que leur catégorie ne l'indique.
+     *
+     * @var array<string, UsesCategory>
+     */
+    private const array TECHNOLOGY_EXCEPTIONS = [
+        'Cursor' => UsesCategory::Development,
+        'Ollama' => UsesCategory::Development,
+        'MikroTik' => UsesCategory::Hardware,
+    ];
+
+    /** Les technologies passent après les outils décrits à la main dans chaque rubrique. */
+    private const int TECHNOLOGY_SORT_OFFSET = 100;
+
     public function run(): void
     {
-        if (UsesItem::withTrashed()->exists()) {
-            return;
-        }
+        $existing = UsesItem::withTrashed()->pluck('name')->map(fn (string $name): string => mb_strtolower($name))->flip();
+
+        $add = function (array $attributes) use ($existing): void {
+            if (! $existing->has(mb_strtolower($attributes['name']))) {
+                UsesItem::query()->create($attributes);
+                $existing->put(mb_strtolower($attributes['name']), true);
+            }
+        };
 
         foreach ($this->items() as $category => $items) {
             foreach ($items as $order => [$name, $url, $fr, $en]) {
-                UsesItem::query()->create([
+                $add([
                     'category' => UsesCategory::from($category),
                     'name' => $name,
                     'url' => $url,
@@ -28,6 +68,22 @@ class UsesItemSeeder extends Seeder
                     'sort_order' => $order,
                 ]);
             }
+        }
+
+        $technologies = Technology::query()->with('category')->orderBy('name')->get();
+
+        foreach ($technologies->values() as $order => $technology) {
+            $category = self::TECHNOLOGY_EXCEPTIONS[$technology->name]
+                ?? self::TECHNOLOGY_CATEGORIES[$technology->category?->key ?? '']
+                ?? UsesCategory::Development;
+
+            $add([
+                'category' => $category,
+                'name' => $technology->name,
+                'url' => null,
+                'description' => $technology->getTranslations('description') ?: null,
+                'sort_order' => self::TECHNOLOGY_SORT_OFFSET + $order,
+            ]);
         }
     }
 
@@ -44,7 +100,6 @@ class UsesItemSeeder extends Seeder
             'development' => [
                 ['PhpStorm', 'https://www.jetbrains.com/phpstorm/', 'Mon éditeur principal pour PHP et Laravel : refactorisation, débogage et navigation dans le code.', 'My main editor for PHP and Laravel: refactoring, debugging and code navigation.'],
                 ['Visual Studio Code', 'https://code.visualstudio.com/', 'Pour le front React et TypeScript, et les modifications rapides.', 'For the React and TypeScript front end, and quick edits.'],
-                ['Claude Code', 'https://claude.com/claude-code', 'Mon assistant de développement : il lit le projet, écrit le code et lance les tests avec moi.', 'My development assistant: it reads the project, writes code and runs the tests with me.'],
                 ['Laravel Herd', 'https://herd.laravel.com/', 'PHP, sites locaux et services sans configuration.', 'PHP, local sites and services with zero configuration.'],
                 ['Pest', 'https://pestphp.com/', 'Les tests de chaque fonctionnalité, lancés avant chaque livraison.', 'Tests for every feature, run before each release.'],
                 ['Bun', 'https://bun.sh/', 'Installation des dépendances JavaScript et build du front.', 'JavaScript dependency installs and front-end builds.'],

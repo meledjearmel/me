@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\HasPublicationStatus;
 use App\Enums\UsesCategory;
 use Database\Factories\UsesItemFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +14,7 @@ use Spatie\Translatable\HasTranslations;
 class UsesItem extends Model
 {
     /** @use HasFactory<UsesItemFactory> */
-    use HasFactory, HasTranslations, SoftDeletes;
+    use HasFactory, HasPublicationStatus, HasTranslations, SoftDeletes;
 
     /** @var array<int, string> */
     protected $translatable = ['description'];

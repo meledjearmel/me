@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublicationStatus;
 use App\Enums\UsesCategory;
 use App\Models\User;
 use App\Models\UsesItem;
@@ -23,14 +24,18 @@ test('authenticated users can create, update and delete an item', function () {
     expect($item->category)->toBe(UsesCategory::Hardware)
         ->and($item->getTranslation('description', 'en'))->toBe('My computer');
 
+    expect($item->status)->toBe(PublicationStatus::Published);
+
     $this->actingAs($user)->put(route('admin.uses-items.update', $item), [
         'category' => 'development',
         'name' => 'PhpStorm',
+        'status' => 'draft',
         'sort_order' => 0,
     ])->assertRedirect(route('admin.uses-items.index'));
 
     expect($item->refresh()->name)->toBe('PhpStorm')
-        ->and($item->category)->toBe(UsesCategory::Development);
+        ->and($item->category)->toBe(UsesCategory::Development)
+        ->and($item->status)->toBe(PublicationStatus::Draft);
 
     $this->actingAs($user)->delete(route('admin.uses-items.destroy', $item))->assertRedirect();
 
@@ -41,5 +46,6 @@ test('an item needs a known category, a name and a valid link', function () {
     $this->actingAs(User::factory()->create())->post(route('admin.uses-items.store'), [
         'category' => 'kitchen',
         'url' => 'not-a-link',
-    ])->assertSessionHasErrors(['category', 'name', 'url']);
+        'status' => 'hidden',
+    ])->assertSessionHasErrors(['category', 'name', 'url', 'status']);
 });

@@ -21,6 +21,7 @@ use App\Models\Technology;
 use App\Models\TechnologyCategory;
 use App\Models\Testimonial;
 use App\Models\Track;
+use App\Models\UsesItem;
 use Dedoc\Scramble\Attributes\QueryParameter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -40,6 +41,7 @@ class TrashController extends Controller
         'domains' => ['model' => Domain::class, 'label' => 'Domaine'],
         'music-genres' => ['model' => MusicGenre::class, 'label' => 'Registre musical'],
         'tracks' => ['model' => Track::class, 'label' => 'Piste audio'],
+        'uses-items' => ['model' => UsesItem::class, 'label' => 'Élément « Uses »'],
         'technology-categories' => ['model' => TechnologyCategory::class, 'label' => 'Catégorie de technologie'],
         'technologies' => ['model' => Technology::class, 'label' => 'Technologie'],
         'job-profiles' => ['model' => JobProfile::class, 'label' => 'Profil métier'],
@@ -63,7 +65,7 @@ class TrashController extends Controller
      * triée par date de suppression décroissante.
      */
     #[QueryParameter('search', description: 'Recherche dans le titre affiché de l’élément.', type: 'string')]
-    #[QueryParameter('type', description: 'Type d’élément : `domains`, `music-genres`, `tracks`, `technology-categories`, `technologies`, `job-profiles`, `skills`, `educations`, `experiences`, `projects`, `professional-references`, `testimonials`, `contacts` ou `engagements`.', type: 'string')]
+    #[QueryParameter('type', description: 'Type d’élément : `domains`, `music-genres`, `tracks`, `uses-items`, `technology-categories`, `technologies`, `job-profiles`, `skills`, `educations`, `experiences`, `projects`, `posts`, `professional-references`, `testimonials`, `contacts`, `engagements`, `appointments` ou `appointment-types`.', type: 'string')]
     #[QueryParameter('page', description: 'Numéro de page.', type: 'integer', default: 1)]
     #[QueryParameter('per_page', description: 'Éléments par page : `10`, `25` ou `50`.', type: 'integer', default: 10)]
     public function index(Request $request): AnonymousResourceCollection
@@ -137,7 +139,7 @@ class TrashController extends Controller
     {
         return match ($type) {
             'domains', 'music-genres', 'job-profiles', 'technology-categories' => (string) $model->label,
-            'technologies', 'skills', 'professional-references' => (string) $model->name,
+            'technologies', 'skills', 'professional-references', 'uses-items' => (string) $model->name,
             'tracks' => trim("{$model->title} — {$model->artist}"),
             'educations' => trim("{$model->degree} · {$model->institution}"),
             'experiences' => trim("{$model->role} · {$model->company}"),

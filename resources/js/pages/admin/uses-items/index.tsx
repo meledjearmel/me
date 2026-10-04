@@ -4,8 +4,9 @@ import UsesItemController from '@/actions/App/Http/Controllers/Admin/UsesItemCon
 import DeleteButton from '@/components/admin/delete-button';
 import { FilterSelect, ResourceList } from '@/components/admin/data-list';
 import Heading from '@/components/heading';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { USES_CATEGORIES } from '@/lib/admin-options';
+import { PUBLICATION_STATUSES, USES_CATEGORIES } from '@/lib/admin-options';
 import { index as pageIndex } from '@/routes/admin/uses-items';
 import type { ListFilters, Paginated, UsesItem } from '@/types';
 
@@ -28,7 +29,7 @@ export default function UsesItemsIndex({
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <Heading
                         title="Uses"
-                        description="Le matériel et les outils de la page publique « Uses » (masquée tant qu’elle est vide)"
+                        description="Le matériel et les outils de la page publique « Uses » (seuls les éléments publiés s’affichent ; sans aucun, la page est masquée)"
                     />
                     <Button asChild>
                         <Link href={UsesItemController.create()}>
@@ -52,15 +53,40 @@ export default function UsesItemsIndex({
                             cell: (row) => row.description?.fr ?? '—',
                         },
                         { header: 'Ordre', cell: (row) => row.sort_order },
+                        {
+                            header: 'Statut',
+                            cell: (row) => (
+                                <Badge
+                                    variant={
+                                        row.status === 'published'
+                                            ? 'default'
+                                            : 'secondary'
+                                    }
+                                >
+                                    {row.status === 'published'
+                                        ? 'Publié'
+                                        : 'Brouillon'}
+                                </Badge>
+                            ),
+                        },
                     ]}
                     filterControls={(state) => (
-                        <FilterSelect
-                            state={state}
-                            name="category"
-                            value={filters.category}
-                            label="Rubrique"
-                            options={[...USES_CATEGORIES]}
-                        />
+                        <>
+                            <FilterSelect
+                                state={state}
+                                name="category"
+                                value={filters.category}
+                                label="Rubrique"
+                                options={[...USES_CATEGORIES]}
+                            />
+                            <FilterSelect
+                                state={state}
+                                name="status"
+                                value={filters.status}
+                                label="Statut"
+                                options={[...PUBLICATION_STATUSES]}
+                            />
+                        </>
                     )}
                     actions={(row) => (
                         <>

@@ -2,7 +2,7 @@ import FormSelect from '@/components/admin/form-select';
 import TranslatableField from '@/components/translatable-field';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { USES_CATEGORIES } from '@/lib/admin-options';
+import { PUBLICATION_STATUSES, USES_CATEGORIES } from '@/lib/admin-options';
 import type { UsesItem } from '@/types';
 
 /** Champs d'un élément de la page « Uses », partagés par la création et la modification. */
@@ -60,6 +60,23 @@ export default function UsesItemFields({
                     en: errors['description.en'],
                 }}
             />
+
+            <Field data-invalid={!!errors.status}>
+                <FieldLabel htmlFor="status">Statut *</FieldLabel>
+                <FormSelect
+                    id="status"
+                    name="status"
+                    required
+                    defaultValue={item?.status ?? 'published'}
+                >
+                    {PUBLICATION_STATUSES.map((status) => (
+                        <option key={status.value} value={status.value}>
+                            {status.label}
+                        </option>
+                    ))}
+                </FormSelect>
+                <FieldError>{errors.status}</FieldError>
+            </Field>
 
             <div className="grid gap-4 sm:grid-cols-[1fr_8rem]">
                 <Field data-invalid={!!errors.url}>

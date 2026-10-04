@@ -19,7 +19,7 @@ class UsesItemController extends Controller
     use PaginatesAdminLists;
 
     /** @var list<string> */
-    private const array FILTERABLE = ['category'];
+    private const array FILTERABLE = ['category', 'status'];
 
     public function index(Request $request): Response
     {

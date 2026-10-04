@@ -56,8 +56,8 @@ class ShareSitePublicData
             'testimonialVideoEnabled' => fn () => SiteSetting::current()->testimonial_video_enabled,
             // Le blog est affiché (navigation, pages).
             'blogEnabled' => fn () => SiteSetting::current()->blog_enabled,
-            // La page « Uses » n'est proposée que si elle a du contenu.
-            'usesEnabled' => fn () => UsesItem::query()->exists(),
+            // La page « Uses » n'est proposée que si elle a du contenu publié.
+            'usesEnabled' => fn () => UsesItem::query()->published()->exists(),
             'bookingOpen' => fn () => app(BookingCalendar::class)->isOpen(),
             // Profils proposés dans la fenêtre « Embauche » : chacun a son CV.
             'cvProfiles' => fn () => JobProfile::query()

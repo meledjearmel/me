@@ -10,13 +10,13 @@ use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 /**
  * Page « Uses » : le matériel et les outils du quotidien, par rubrique.
- * Tant qu'elle est vide, elle n'existe pas (404).
+ * Seuls les éléments publiés s'affichent ; sans aucun, la page n'existe pas (404).
  */
 class UsesController extends Controller
 {
     public function index(string $locale): Response
     {
-        $items = UsesItem::query()->orderBy('sort_order')->orderBy('name')->get();
+        $items = UsesItem::query()->published()->orderBy('sort_order')->orderBy('name')->get();
 
         abort_if($items->isEmpty(), HttpResponse::HTTP_NOT_FOUND);
 

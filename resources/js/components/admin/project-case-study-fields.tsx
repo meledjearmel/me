@@ -39,7 +39,8 @@ export default function ProjectCaseStudyFields({
                 errors={translatableErrors('tagline')}
             />
 
-            <div className="grid gap-2 sm:grid-cols-3">
+            {/* Un champ par ligne : chacun a déjà ses colonnes français et anglais. */}
+            <div className="grid gap-4">
                 <TranslatableField
                     name="role"
                     label="Rôle"

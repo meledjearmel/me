@@ -236,6 +236,7 @@ export type UsesItem = {
     name: string;
     description: Translatable | null;
     url: string | null;
+    status: 'published' | 'draft';
     sort_order: number;
 };
 

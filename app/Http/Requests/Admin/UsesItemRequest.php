@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Enums\PublicationStatus;
 use App\Enums\UsesCategory;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -21,6 +22,7 @@ class UsesItemRequest extends FormRequest
             'description.fr' => ['nullable', 'string', 'max:300'],
             'description.en' => ['nullable', 'string', 'max:300'],
             'url' => ['nullable', 'url', 'max:255'],
+            'status' => ['sometimes', Rule::enum(PublicationStatus::class)],
             'sort_order' => ['integer', 'min:0'],
         ];
     }

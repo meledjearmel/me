@@ -2476,13 +2476,17 @@ html.pub-scroll {
     position: relative;
     z-index: 3;
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem 2rem;
-    padding: 1.25rem clamp(1rem, 3vw, 2rem);
+    gap: 0.75rem;
+    /*
+     * Colonne centrée, et le bas laisse la place aux boutons flottants (Lumi,
+     * « Passer à l'action ») : en ligne, ils recouvraient les liens des bords.
+     */
+    padding: 1.25rem clamp(1rem, 3vw, 2rem) clamp(6rem, 10vw, 9rem);
     color: #fff9e9;
     font-size: 15px;
+    text-align: center;
 }
 
 .pub-footer__bar p {
@@ -2492,6 +2496,7 @@ html.pub-scroll {
 .pub-footer__bar nav {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 0.25rem 1.25rem;
 }
 
@@ -2509,25 +2514,9 @@ html.pub-scroll {
     text-decoration-color: currentColor;
 }
 
-/* mobile : texte centré, avec de la place sous lui pour le bouton flottant */
-@media (max-width: 707px) {
-    .pub-footer__bar {
-        flex-direction: column;
-        justify-content: center;
-        padding-bottom: 5.5rem;
-        text-align: center;
-    }
-
-    .pub-footer__bar nav {
-        justify-content: center;
-    }
-}
-
-/* mobile, thème jour : la barre remonte sur les collines claires, où le texte blanc disparaît */
-@media (max-width: 707px) {
-    :root:not(.dark) .pub-footer__bar {
-        color: var(--pub-ink);
-    }
+/* thème jour : la barre passe sur le fond et les collines claires, où le texte blanc disparaît */
+:root:not(.dark) .pub-footer__bar {
+    color: var(--pub-ink);
 }
 
 /* =====================================================================
@@ -8145,7 +8134,9 @@ html.pub-scroll {
 .pub-uses {
     display: grid;
     gap: clamp(3rem, 7vw, 5rem);
-    padding-block: clamp(3rem, 7vw, 5rem);
+    /* Le bas réserve la hauteur de la silhouette de ville du pied de page. */
+    padding: clamp(3rem, 7vw, 5rem) 0
+        calc(clamp(96px, 16vw, 240px) + clamp(3rem, 7vw, 6rem));
 }
 
 .pub-uses__group {
