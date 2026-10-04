@@ -35,7 +35,7 @@ class SiteSettingController extends Controller
     }
 
     /**
-     * @return array{contact_opens_drawer: bool, testimonial_video_enabled: bool, cv_job_profile_id: int|null, cv_source: string, congratulation_notify_minutes: int, booking_enabled: bool, booking_min_notice_hours: int, booking_horizon_days: int, booking_buffer_minutes: int, booking_video_link: string|null}
+     * @return array{contact_opens_drawer: bool, testimonial_video_enabled: bool, cv_job_profile_id: int|null, cv_source: string, congratulation_notify_minutes: int, booking_enabled: bool, booking_min_notice_hours: int, booking_horizon_days: int, booking_buffer_minutes: int, booking_video_provider: string, booking_video_link: string|null}
      */
     private function payload(): array
     {
@@ -57,6 +57,8 @@ class SiteSettingController extends Controller
             'booking_min_notice_hours' => $settings->booking_min_notice_hours,
             'booking_horizon_days' => $settings->booking_horizon_days,
             'booking_buffer_minutes' => $settings->booking_buffer_minutes,
+            /** Visio : `jitsi` (un lien Jitsi unique créé à la confirmation) ou `link` (le lien fixe `booking_video_link`). */
+            'booking_video_provider' => $settings->booking_video_provider,
             'booking_video_link' => $settings->booking_video_link,
         ];
     }

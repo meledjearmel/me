@@ -3,6 +3,8 @@
     $locationLabel = $isEnglish
         ? ['video' => 'Video call', 'phone' => 'Phone call', 'whatsapp' => 'WhatsApp call', 'in_person' => 'In person'][$location]
         : ['video' => 'Visio', 'phone' => 'Appel téléphonique', 'whatsapp' => 'Appel WhatsApp', 'in_person' => 'En présentiel'][$location];
+    // Un lien (visio Jitsi ou autre) devient un bouton ; une adresse ou une note reste du texte.
+    $meetingUrl = filter_var($appointment->meeting_details, FILTER_VALIDATE_URL) ? $appointment->meeting_details : null;
 @endphp
 <x-mail::message>
 @if ($isEnglish)
@@ -36,7 +38,15 @@ Thank you for your request. I have received it and will confirm it as soon as po
 </x-mail::table>
 
 @if (in_array($kind, ['confirmed', 'reminder'], true) && $appointment->meeting_details)
+@if ($meetingUrl)
+<x-mail::button :url="$meetingUrl">
+Join the video call
+</x-mail::button>
+
+<small>Or open this link: {{ $meetingUrl }}</small>
+@else
 **Details:** {{ $appointment->meeting_details }}
+@endif
 @endif
 @if ($kind === 'declined' && $appointment->decline_reason)
 > {{ $appointment->decline_reason }}
@@ -88,7 +98,15 @@ Merci pour votre demande. Je l'ai bien reçue et je la confirme au plus vite : v
 </x-mail::table>
 
 @if (in_array($kind, ['confirmed', 'reminder'], true) && $appointment->meeting_details)
+@if ($meetingUrl)
+<x-mail::button :url="$meetingUrl">
+Rejoindre la visio
+</x-mail::button>
+
+<small>Ou ouvrez ce lien : {{ $meetingUrl }}</small>
+@else
 **Détails :** {{ $appointment->meeting_details }}
+@endif
 @endif
 @if ($kind === 'declined' && $appointment->decline_reason)
 > {{ $appointment->decline_reason }}

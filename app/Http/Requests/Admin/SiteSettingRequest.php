@@ -31,7 +31,9 @@ class SiteSettingRequest extends FormRequest
             'booking_min_notice_hours' => ['sometimes', 'integer', 'min:0', 'max:720'],
             'booking_horizon_days' => ['sometimes', 'integer', 'min:1', 'max:365'],
             'booking_buffer_minutes' => ['sometimes', 'integer', 'min:0', 'max:240'],
-            'booking_video_link' => ['sometimes', 'nullable', 'url', 'max:255'],
+            // Visio : un lien Jitsi unique par rendez-vous (`jitsi`), ou le lien fixe ci-dessous (`link`).
+            'booking_video_provider' => ['sometimes', Rule::in(['jitsi', 'link'])],
+            'booking_video_link' => ['sometimes', 'nullable', 'url', 'max:255', 'required_if:booking_video_provider,link'],
         ];
     }
 }

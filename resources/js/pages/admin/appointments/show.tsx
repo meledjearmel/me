@@ -23,11 +23,16 @@ import type { Appointment } from '@/types';
 export default function AppointmentShow({
     appointment: row,
     defaultVideoLink,
+    videoProvider,
 }: {
     appointment: Appointment;
     defaultVideoLink: string | null;
+    videoProvider: 'jitsi' | 'link';
 }) {
     const isOpen = row.status === 'pending' || row.status === 'confirmed';
+    const meetingUrl = /^https?:\/\//.test(row.meeting_details ?? '')
+        ? row.meeting_details
+        : null;
 
     return (
         <ShowPage
@@ -67,7 +72,24 @@ export default function AppointmentShow({
                         },
                         {
                             label: 'Détails envoyés',
-                            value: row.meeting_details,
+                            value: meetingUrl ? (
+                                <span className="flex flex-wrap items-center gap-3">
+                                    <span className="break-all">
+                                        {meetingUrl}
+                                    </span>
+                                    <Button size="sm" asChild>
+                                        <a
+                                            href={meetingUrl}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                        >
+                                            Rejoindre la visio
+                                        </a>
+                                    </Button>
+                                </span>
+                            ) : (
+                                row.meeting_details
+                            ),
                             wide: true,
                         },
                         {
@@ -156,6 +178,11 @@ export default function AppointmentShow({
                                                               Envoyé au visiteur
                                                               avec la
                                                               confirmation.
+                                                              {row.location ===
+                                                                  'video' &&
+                                                                  videoProvider ===
+                                                                      'jitsi' &&
+                                                                  ' Laissé vide, un lien Jitsi unique est créé pour ce rendez-vous.'}
                                                           </FieldDescription>
                                                           <FieldError>
                                                               {

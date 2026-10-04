@@ -40,6 +40,7 @@ const FIELD_TAB: Record<string, Tab> = {
     booking_min_notice_hours: 'booking',
     booking_horizon_days: 'booking',
     booking_buffer_minutes: 'booking',
+    booking_video_provider: 'booking',
     booking_video_link: 'booking',
 };
 
@@ -418,11 +419,46 @@ export default function SiteSettingsEdit({
 
                                     <Field
                                         data-invalid={
+                                            !!errors.booking_video_provider
+                                        }
+                                    >
+                                        <FieldLabel htmlFor="booking_video_provider">
+                                            Visio
+                                        </FieldLabel>
+                                        <FormSelect
+                                            id="booking_video_provider"
+                                            name="booking_video_provider"
+                                            defaultValue={
+                                                settings.booking_video_provider
+                                            }
+                                        >
+                                            <option value="jitsi">
+                                                Un lien Jitsi unique pour chaque
+                                                rendez-vous (gratuit)
+                                            </option>
+                                            <option value="link">
+                                                Mon lien fixe (ci-dessous)
+                                            </option>
+                                        </FormSelect>
+                                        <FieldDescription>
+                                            Jitsi : le lien est créé à la
+                                            confirmation et envoyé au visiteur,
+                                            qui rejoint sans compte. Pour lancer
+                                            la réunion, connectez-vous à Jitsi
+                                            (Google, GitHub ou Facebook).
+                                        </FieldDescription>
+                                        <FieldError>
+                                            {errors.booking_video_provider}
+                                        </FieldError>
+                                    </Field>
+
+                                    <Field
+                                        data-invalid={
                                             !!errors.booking_video_link
                                         }
                                     >
                                         <FieldLabel htmlFor="booking_video_link">
-                                            Lien visio par défaut
+                                            Lien visio fixe
                                         </FieldLabel>
                                         <Input
                                             id="booking_video_link"
@@ -435,8 +471,9 @@ export default function SiteSettingsEdit({
                                             }
                                         />
                                         <FieldDescription>
-                                            Repris à la confirmation d'une visio
-                                            si vous n'en précisez pas d'autre.
+                                            Avec « Mon lien fixe » : repris à la
+                                            confirmation d'une visio si vous
+                                            n'en précisez pas d'autre.
                                         </FieldDescription>
                                         <FieldError>
                                             {errors.booking_video_link}

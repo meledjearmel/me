@@ -30,6 +30,7 @@ class SiteSetting extends Model
         'booking_min_notice_hours',
         'booking_horizon_days',
         'booking_buffer_minutes',
+        'booking_video_provider',
         'booking_video_link',
     ];
 

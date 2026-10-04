@@ -27,15 +27,17 @@ class SiteSettingFactory extends Factory
             'booking_min_notice_hours' => 24,
             'booking_horizon_days' => 30,
             'booking_buffer_minutes' => 15,
+            'booking_video_provider' => 'jitsi',
         ];
     }
 
-    /** Réservation ouverte, sans pause entre deux rendez-vous (créneaux réguliers pour les tests). */
+    /** Réservation ouverte, sans pause entre deux rendez-vous (créneaux réguliers pour les tests), visio par lien fixe. */
     public function bookable(): static
     {
         return $this->state(fn (): array => [
             'booking_enabled' => true,
             'booking_buffer_minutes' => 0,
+            'booking_video_provider' => 'link',
             'booking_video_link' => 'https://meet.example.test/armel',
         ]);
     }
