@@ -19,6 +19,7 @@ import {
     LayoutGrid,
     Layers,
     Mail,
+    Link2,
     MessageSquareQuote,
     Newspaper,
     Music,
@@ -50,6 +51,7 @@ import { index as celebrationsIndex } from "@/routes/admin/celebrations";
 import { index as congratulationsIndex } from "@/routes/admin/congratulations";
 import { index as contactsIndex } from "@/routes/admin/contacts";
 import { index as cvDownloadsIndex } from "@/routes/admin/cv-downloads";
+import { index as reviewInvitationsIndex } from "@/routes/admin/review-invitations";
 import { index as subscribersIndex } from "@/routes/admin/subscribers";
 import { index as engagementsIndex } from "@/routes/admin/engagements";
 import { index as domainsIndex } from "@/routes/admin/domains";
@@ -99,6 +101,11 @@ const portfolioNavItems: NavItem[] = [
     { title: "Projets", href: projectsIndex(), icon: FolderGit2 },
     { title: "Certifications", href: certificationsIndex(), icon: BadgeCheck },
     { title: "Avis", href: testimonialsIndex(), icon: MessageSquareQuote },
+    {
+        title: "Demandes d’avis",
+        href: reviewInvitationsIndex(),
+        icon: Link2,
+    },
     { title: "Références", href: referencesIndex(), icon: UserCheck },
 ];
 

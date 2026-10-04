@@ -264,6 +264,23 @@ export type Subscriber = {
     created_at: string;
 };
 
+export type ReviewInvitation = {
+    id: number;
+    name: string | null;
+    email: string | null;
+    locale: "fr" | "en";
+    url: string;
+    status: "pending" | "used" | "expired";
+    note: string | null;
+    project: Pick<Project, "id" | "title"> | null;
+    experience: Pick<Experience, "id" | "role" | "company"> | null;
+    education: Pick<Education, "id" | "degree" | "institution"> | null;
+    testimonial_id: number | null;
+    expires_at: string | null;
+    used_at: string | null;
+    created_at: string;
+};
+
 export type Contact = {
     id: number;
     name: string;

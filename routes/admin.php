@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\PostTagController;
 use App\Http\Controllers\Admin\ProfessionalReferenceController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProjectController;
+use App\Http\Controllers\Admin\ReviewInvitationController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\SkillController;
 use App\Http\Controllers\Admin\SubscriberController;
@@ -97,6 +98,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('professional-references', ProfessionalReferenceController::class);
 
     Route::resource('testimonials', TestimonialController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
+    Route::resource('review-invitations', ReviewInvitationController::class)->only(['index', 'store', 'destroy']);
     Route::delete('testimonials/{testimonial}/video', [TestimonialController::class, 'destroyVideo'])->name('testimonials.video.destroy');
     Route::resource('contacts', ContactController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
     Route::resource('engagements', EngagementController::class)->only(['index', 'show', 'update', 'destroy']);

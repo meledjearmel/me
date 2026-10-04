@@ -13,7 +13,7 @@ import EngageDialog from '@/components/public/engage-dialog';
 import ReviewDialog from '@/components/public/review-dialog';
 import { useLocalizedPath, useTranslations } from '@/lib/i18n';
 import { OPEN_REVIEW_EVENT, REVIEW_QUERY_PARAM } from '@/lib/review';
-import type { ReviewContext } from '@/lib/review';
+import type { ReviewContext, ReviewInvitation } from '@/lib/review';
 
 /** Distance à partir de laquelle « Remonter » apparaît. */
 const SCROLL_THRESHOLD = 480;
@@ -35,7 +35,10 @@ type Action = {
 export default function ActionMenu() {
     const t = useTranslations();
     const path = useLocalizedPath();
-    const { bookingOpen } = usePage<{ bookingOpen?: boolean }>().props;
+    const { bookingOpen, reviewInvitation } = usePage<{
+        bookingOpen?: boolean;
+        reviewInvitation?: ReviewInvitation | null;
+    }>().props;
     const root = useRef<HTMLDivElement>(null);
     const [open, setOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
@@ -62,9 +65,9 @@ export default function ActionMenu() {
             setReviewOpen(true);
         };
 
-        if (
-            new URL(window.location.href).searchParams.has(REVIEW_QUERY_PARAM)
-        ) {
+        const params = new URL(window.location.href).searchParams;
+
+        if (params.has(REVIEW_QUERY_PARAM) || params.has('invitation')) {
             setReviewOpen(true);
         }
 
@@ -253,6 +256,7 @@ export default function ActionMenu() {
                 open={reviewOpen}
                 onOpenChange={setReviewOpen}
                 context={reviewContext}
+                invitation={reviewInvitation ?? undefined}
             />
             <EngageDialog open={engageOpen} onOpenChange={setEngageOpen} />
         </>

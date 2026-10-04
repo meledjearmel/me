@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\V1\ProfessionalReferenceController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\ProjectController;
 use App\Http\Controllers\Api\V1\PushTokenController;
+use App\Http\Controllers\Api\V1\ReviewInvitationController;
 use App\Http\Controllers\Api\V1\SiteSettingController;
 use App\Http\Controllers\Api\V1\SkillController;
 use App\Http\Controllers\Api\V1\SubscriberController;
@@ -118,6 +119,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             ->except('store')
             ->parameters(['post-series' => 'postSeries']);
         Route::apiResource('subscribers', SubscriberController::class)->only(['index', 'destroy']);
+        Route::apiResource('review-invitations', ReviewInvitationController::class)->only(['index', 'store', 'destroy']);
         Route::apiResource('uses-items', UsesItemController::class);
         Route::apiResource('certifications', CertificationController::class);
         Route::get('github', [GitHubController::class, 'show'])->name('github.show');

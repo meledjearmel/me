@@ -433,6 +433,8 @@ const dictionaries = {
             top: 'Remonter',
             reviewTitle: 'Laisser un avis',
             reviewAbout: 'Votre avis porte sur :',
+            reviewInvitationInvalid:
+                'Ce lien d’invitation n’est plus valable, mais vous pouvez tout de même laisser votre avis.',
             reviewInvite: 'Vous avez travaillé avec moi ?',
             reviewInviteCta: 'Laissez un avis',
             reviewProject: 'Vous étiez sur ce projet ?',
@@ -962,6 +964,8 @@ const dictionaries = {
             top: 'Back to top',
             reviewTitle: 'Leave a review',
             reviewAbout: 'Your review is about:',
+            reviewInvitationInvalid:
+                'This invitation link is no longer valid, but you can still leave your review.',
             reviewInvite: 'Have we worked together?',
             reviewInviteCta: 'Leave a review',
             reviewProject: 'Were you on this project?',

@@ -19,3 +19,14 @@ export function openReview(context?: ReviewContext): void {
         }),
     );
 }
+
+/** Lien d'invitation (?invitation=…) : ce que le formulaire préremplit, ou un lien qui n'est plus valable. */
+export type ReviewInvitation =
+    | { valid: false }
+    | {
+          valid: true;
+          token: string;
+          name: string | null;
+          email: string | null;
+          subject: string | null;
+      };

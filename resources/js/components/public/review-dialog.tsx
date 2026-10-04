@@ -4,20 +4,23 @@ import TestimonialSubmissionController from '@/actions/App/Http/Controllers/Test
 import PubDialog, { DialogDone } from '@/components/public/pub-dialog';
 import ReviewVideoField from '@/components/public/review-video-field';
 import { useLocale, useTranslations } from '@/lib/i18n';
-import type { ReviewContext } from '@/lib/review';
+import type { ReviewContext, ReviewInvitation } from '@/lib/review';
 
 /**
  * « Laisser un avis » : le visiteur écrit son avis, avec une vidéo s'il le
  * souhaite ; il part « en attente » et n'est publié qu'après relecture dans l'admin.
+ * Ouvert depuis un lien d'invitation, il est prérempli et rattaché à ce que j'ai choisi.
  */
 export default function ReviewDialog({
     open,
     onOpenChange,
     context,
+    invitation,
 }: {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     context?: ReviewContext;
+    invitation?: ReviewInvitation;
 }) {
     const t = useTranslations();
     const locale = useLocale();
@@ -26,6 +29,10 @@ export default function ReviewDialog({
     const videoEnabled =
         usePage<{ testimonialVideoEnabled?: boolean }>().props
             .testimonialVideoEnabled !== false;
+    // Une fois l'avis envoyé, le lien ne sert plus : les ouvertures suivantes sont ordinaires.
+    const [invitationUsed, setInvitationUsed] = useState(false);
+    const invite = invitation?.valid && !invitationUsed ? invitation : null;
+    const subject = invite ? invite.subject : context?.label;
     const change = (next: boolean) => {
         onOpenChange(next);
 
@@ -54,7 +61,10 @@ export default function ReviewDialog({
                     {...TestimonialSubmissionController.store.form(locale)}
                     className="pub-dialog__form"
                     resetOnSuccess
-                    onSuccess={() => setSent(true)}
+                    onSuccess={() => {
+                        setSent(true);
+                        setInvitationUsed(true);
+                    }}
                 >
                     {({ processing, progress, errors }) => (
                         <>
@@ -68,32 +78,46 @@ export default function ReviewDialog({
                                 aria-hidden="true"
                             />
 
-                            {context && (
+                            {invitation && !invitation.valid && (
                                 <p className="pub-review-context">
-                                    {t.fab.reviewAbout}{' '}
-                                    <strong>{context.label}</strong>
+                                    {t.fab.reviewInvitationInvalid}
                                 </p>
                             )}
-                            {context?.projectId && (
-                                <input
-                                    type="hidden"
-                                    name="project_id"
-                                    value={context.projectId}
-                                />
+                            {subject && (
+                                <p className="pub-review-context">
+                                    {t.fab.reviewAbout} <strong>{subject}</strong>
+                                </p>
                             )}
-                            {context?.educationId && (
+                            {invite ? (
                                 <input
                                     type="hidden"
-                                    name="education_id"
-                                    value={context.educationId}
+                                    name="invitation"
+                                    value={invite.token}
                                 />
-                            )}
-                            {context?.experienceId && (
-                                <input
-                                    type="hidden"
-                                    name="experience_id"
-                                    value={context.experienceId}
-                                />
+                            ) : (
+                                <>
+                                    {context?.projectId && (
+                                        <input
+                                            type="hidden"
+                                            name="project_id"
+                                            value={context.projectId}
+                                        />
+                                    )}
+                                    {context?.educationId && (
+                                        <input
+                                            type="hidden"
+                                            name="education_id"
+                                            value={context.educationId}
+                                        />
+                                    )}
+                                    {context?.experienceId && (
+                                        <input
+                                            type="hidden"
+                                            name="experience_id"
+                                            value={context.experienceId}
+                                        />
+                                    )}
+                                </>
                             )}
 
                             <div className="pub-drawer__fields">
@@ -101,6 +125,7 @@ export default function ReviewDialog({
                                     <span>{t.fab.yourName}</span>
                                     <input
                                         name="author_name"
+                                        defaultValue={invite?.name ?? undefined}
                                         autoComplete="name"
                                         required
                                     />
@@ -114,6 +139,7 @@ export default function ReviewDialog({
                                     <input
                                         type="email"
                                         name="author_email"
+                                        defaultValue={invite?.email ?? undefined}
                                         autoComplete="email"
                                         required
                                     />

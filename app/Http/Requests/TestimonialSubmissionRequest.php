@@ -29,6 +29,10 @@ class TestimonialSubmissionRequest extends FormRequest
             // formats que dans l'admin ; 95 Mo car Cloudflare refuse les corps de plus de
             // 100 Mo. La durée (3 min) est vérifiée dans le navigateur.
             'video' => [Rule::prohibitedIf(fn (): bool => ! SiteSetting::current()->testimonial_video_enabled), 'nullable', 'file', 'mimetypes:video/mp4,video/quicktime,video/webm,video/x-matroska,video/3gpp', 'max:97280'],
+            // Jeton d'un lien d'invitation : il doit être encore valable.
+            'invitation' => ['nullable', 'string', Rule::exists('review_invitations', 'token')
+                ->whereNull('used_at')
+                ->where(fn ($query) => $query->whereNull('expires_at')->orWhere('expires_at', '>', now()))],
             // Piège anti-spam : un humain ne le voit ni ne le remplit jamais.
             'website' => ['prohibited'],
         ];
