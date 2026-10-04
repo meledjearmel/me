@@ -89,15 +89,21 @@ const careerNavItems: NavItem[] = [
     { title: "Compétences", href: skillsIndex(), icon: Sparkles },
 ];
 
-const portfolioNavItems: NavItem[] = [
-    { title: "Projets", href: projectsIndex(), icon: FolderGit2 },
-    { title: "Blog", href: postsIndex(), icon: Newspaper },
+const blogNavItems: NavItem[] = [
+    { title: "Articles", href: postsIndex(), icon: Newspaper },
     { title: "Tags du blog", href: postTagsIndex(), icon: Tags },
     { title: "Séries du blog", href: postSeriesIndex(), icon: ListOrdered },
+];
+
+const portfolioNavItems: NavItem[] = [
+    { title: "Projets", href: projectsIndex(), icon: FolderGit2 },
+    { title: "Certifications", href: certificationsIndex(), icon: BadgeCheck },
     { title: "Avis", href: testimonialsIndex(), icon: MessageSquareQuote },
     { title: "Références", href: referencesIndex(), icon: UserCheck },
+];
+
+const publicPageNavItems: NavItem[] = [
     { title: "Uses", href: usesItemsIndex(), icon: Laptop },
-    { title: "Certifications", href: certificationsIndex(), icon: BadgeCheck },
     { title: "Page « Now »", href: nowPageEdit(), icon: Clock },
     { title: "Dépôts GitHub", href: githubEdit(), icon: FolderGit },
     { title: "Surprises", href: celebrationsIndex(), icon: PartyPopper },
@@ -154,12 +160,30 @@ export function AppSidebar() {
 
             <SidebarContent className="gap-3">
                 <NavMain items={mainNavItems} />
-                <NavMain items={careerNavItems} label="Parcours" />
-                <NavMain items={portfolioNavItems} label="Réalisations" />
-                <NavMain items={referenceNavItems} label="Référentiels" />
-                <NavMain items={musicNavItems} label="Musique" />
-                <NavMain items={inboxNavItems} label="Échanges" />
-                <NavMain items={bookingNavItems} label="Rendez-vous" />
+                <NavMain items={inboxNavItems} label="Échanges" collapsible />
+                <NavMain
+                    items={bookingNavItems}
+                    label="Rendez-vous"
+                    collapsible
+                />
+                <NavMain items={blogNavItems} label="Blog" collapsible />
+                <NavMain
+                    items={portfolioNavItems}
+                    label="Portfolio"
+                    collapsible
+                />
+                <NavMain items={careerNavItems} label="Parcours" collapsible />
+                <NavMain
+                    items={publicPageNavItems}
+                    label="Page publique"
+                    collapsible
+                />
+                <NavMain
+                    items={referenceNavItems}
+                    label="Référentiels"
+                    collapsible
+                />
+                <NavMain items={musicNavItems} label="Musique" collapsible />
             </SidebarContent>
 
             <SidebarFooter>
