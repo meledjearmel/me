@@ -7895,6 +7895,11 @@ html.pub-scroll {
     border-left-color: var(--pub-coral);
 }
 
+/* Sans article lié, l'appel au contact termine la page : il laisse la place à la ville du pied de page. */
+.pub-post > .pub-project-cta:last-child {
+    padding-bottom: calc(clamp(96px, 16vw, 240px) + clamp(4rem, 9vw, 7rem));
+}
+
 .pub-post__notice {
     margin: 0 0 2rem;
     padding: 0.9rem 1.1rem;
