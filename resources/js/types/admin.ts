@@ -378,3 +378,10 @@ export type Post = {
     tags: string[] | { id: number; name: Translatable; slug: string }[];
     cover_url?: string | null;
 };
+
+export type PostTag = {
+    id: number;
+    slug: string;
+    name: Translatable;
+    posts_count: number;
+};

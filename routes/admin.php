@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\ExperienceController;
 use App\Http\Controllers\Admin\JobProfileController;
 use App\Http\Controllers\Admin\MusicGenreController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\PostTagController;
 use App\Http\Controllers\Admin\ProfessionalReferenceController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProjectController;
@@ -73,6 +74,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('projects', ProjectController::class);
     Route::post('posts/images', [PostController::class, 'storeImage'])->name('posts.images.store');
     Route::resource('posts', PostController::class)->except('show');
+    Route::resource('post-tags', PostTagController::class)->only(['index', 'edit', 'update', 'destroy']);
     Route::delete('posts/{post}/cover', [PostController::class, 'destroyCover'])->name('posts.cover.destroy');
     Route::delete('projects/{project}/cover', [ProjectController::class, 'destroyCover'])->name('projects.cover.destroy');
     Route::delete('projects/{project}/gallery/{media}', [ProjectController::class, 'destroyGalleryImage'])->name('projects.gallery.destroy');

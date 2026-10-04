@@ -5,6 +5,7 @@ namespace App\Concerns;
 use App\Enums\PublicationStatus;
 use App\Http\Requests\Admin\PostImageRequest;
 use App\Http\Requests\Admin\PostRequest;
+use App\Jobs\TranslatePostTag;
 use App\Models\Post;
 use App\Models\PostTag;
 use Illuminate\Support\Facades\Storage;
@@ -33,17 +34,28 @@ trait SavesPosts
         return $attributes;
     }
 
-    /** Rattache les tags par leur nom, en créant ceux qui n'existent pas encore. */
+    /**
+     * Rattache les tags par leur nom, en créant ceux qui n'existent pas encore ;
+     * le nom anglais d'un nouveau tag est traduit en tâche de fond.
+     */
     private function syncTags(Post $post, PostRequest $request): void
     {
         $ids = collect($request->validated('tags', []))
             ->map(fn (string $name): string => trim($name))
             ->filter()
             ->unique(fn (string $name): string => str($name)->slug()->toString())
-            ->map(fn (string $name): int => PostTag::query()->firstOrCreate(
-                ['slug' => str($name)->slug()->toString()],
-                ['name' => ['fr' => $name, 'en' => $name]],
-            )->id);
+            ->map(function (string $name): int {
+                $tag = PostTag::query()->firstOrCreate(
+                    ['slug' => str($name)->slug()->toString()],
+                    ['name' => ['fr' => $name, 'en' => $name]],
+                );
+
+                if ($tag->wasRecentlyCreated) {
+                    TranslatePostTag::dispatch($tag);
+                }
+
+                return $tag->id;
+            });
 
         $post->tags()->sync($ids->all());
     }

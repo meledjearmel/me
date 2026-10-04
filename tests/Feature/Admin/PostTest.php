@@ -1,11 +1,17 @@
 <?php
 
 use App\Enums\PublicationStatus;
+use App\Jobs\TranslatePostTag;
 use App\Models\Post;
 use App\Models\PostTag;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
+
+beforeEach(function () {
+    Queue::fake([TranslatePostTag::class]);
+});
 
 test('guests are redirected to the login page', function () {
     $this->get(route('admin.posts.index'))->assertRedirect(route('login'));

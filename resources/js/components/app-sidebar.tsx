@@ -54,6 +54,7 @@ import { index as jobProfilesIndex } from "@/routes/admin/job-profiles";
 import { edit as profileEdit } from "@/routes/admin/profile";
 import { index as referencesIndex } from "@/routes/admin/professional-references";
 import { index as postsIndex } from "@/routes/admin/posts";
+import { index as postTagsIndex } from "@/routes/admin/post-tags";
 import { index as projectsIndex } from "@/routes/admin/projects";
 import { index as skillsIndex } from "@/routes/admin/skills";
 import { index as technologiesIndex } from "@/routes/admin/technologies";
@@ -81,6 +82,7 @@ const careerNavItems: NavItem[] = [
 const portfolioNavItems: NavItem[] = [
     { title: "Projets", href: projectsIndex(), icon: FolderGit2 },
     { title: "Blog", href: postsIndex(), icon: Newspaper },
+    { title: "Tags du blog", href: postTagsIndex(), icon: Tags },
     { title: "Avis", href: testimonialsIndex(), icon: MessageSquareQuote },
     { title: "Références", href: referencesIndex(), icon: UserCheck },
     { title: "Surprises", href: celebrationsIndex(), icon: PartyPopper },

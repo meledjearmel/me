@@ -1,11 +1,17 @@
 <?php
 
 use App\Ai\Agents\PostWriter;
+use App\Jobs\TranslatePostTag;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
+
+beforeEach(function () {
+    Queue::fake([TranslatePostTag::class]);
+});
 
 test('guests cannot read the posts', function () {
     $this->getJson(route('api.v1.posts.index'))->assertUnauthorized();
