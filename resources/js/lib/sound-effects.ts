@@ -3,6 +3,8 @@ const SOUNDS = {
     bubblePop: '/audio/sfx/bubble-pop.mp3',
     /** La surprise apparaît. */
     whoosh: '/audio/sfx/whoosh.mp3',
+    /** On survole Armi : il se met à réfléchir. */
+    muffledReaction: '/audio/sfx/muffled-reaction.mp3',
 } as const;
 
 export type SoundEffect = keyof typeof SOUNDS;

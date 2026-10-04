@@ -7,10 +7,15 @@ import type { ChatAvatarState } from '@/components/public/chat-avatar';
 import ChatRichText from '@/components/public/chat-rich-text';
 import { useAppearance } from '@/hooks/use-appearance';
 import { CHAT_MAX_LENGTH, useChat } from '@/hooks/use-chat';
-import { useMediaQuery, usePrefersReducedMotion } from '@/hooks/use-media-query';
+import {
+    useMediaQuery,
+    usePrefersReducedMotion,
+} from '@/hooks/use-media-query';
 import { useAudioPlayer } from '@/lib/audio';
 import { useCelebration } from '@/lib/celebration';
 import { useLocalizedPath, useTranslations } from '@/lib/i18n';
+import { playArmiSound } from '@/lib/armi-sounds';
+import { playSoundEffect } from '@/lib/sound-effects';
 
 /**
  * Le réveil s'arrête à la fin de son animation ; ce délai n'est qu'un filet de
@@ -57,6 +62,8 @@ export default function ChatAssistant() {
     const [focused, setFocused] = useState(false);
     const [waking, setWaking] = useState(false);
     const [happy, setHappy] = useState(false);
+    // Survolé à la souris (panneau fermé) : il réfléchit, avec son petit son.
+    const [hovered, setHovered] = useState(false);
     const launcher = useRef<HTMLButtonElement>(null);
     const input = useRef<HTMLInputElement>(null);
     const list = useRef<HTMLDivElement>(null);
@@ -110,6 +117,8 @@ export default function ChatAssistant() {
     if (!open && surprise.visible) {
         // Il annonce une bonne nouvelle : il sautille de joie.
         avatarState = 'happy';
+    } else if (!open && hovered) {
+        avatarState = 'thinking';
     } else if (!open) {
         // Panneau fermé : il dort, à moins que la musique du site ne joue.
         avatarState = musicPlaying ? 'grooving' : 'sleeping';
@@ -126,6 +135,7 @@ export default function ChatAssistant() {
     }
 
     const close = () => {
+        playArmiSound({ opening: false, night });
         setOpen(false);
         launcher.current?.focus();
     };
@@ -321,7 +331,25 @@ export default function ChatAssistant() {
                 aria-label={fill(t.chat.open)}
                 aria-expanded={open}
                 aria-controls="pub-chat-panel"
-                onClick={() => (open ? close() : setOpen(true))}
+                onClick={() => {
+                    if (open) {
+                        close();
+                    } else {
+                        playArmiSound({ opening: true, night });
+                        setHovered(false);
+                        setOpen(true);
+                    }
+                }}
+                onPointerEnter={(event) => {
+                    // Au doigt, pas de survol : le tap ouvre directement le chat.
+                    if (event.pointerType !== 'mouse' || open) {
+                        return;
+                    }
+
+                    setHovered(true);
+                    playSoundEffect('muffledReaction', 0.45);
+                }}
+                onPointerLeave={() => setHovered(false)}
             >
                 <ChatAvatar
                     state={avatarState}
