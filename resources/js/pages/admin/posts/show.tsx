@@ -298,20 +298,6 @@ export default function PostShow({
                         },
                     ],
                 },
-                {
-                    title: 'Contenu',
-                    description: post.body.en
-                        ? 'Version française (traduit en anglais)'
-                        : 'Version française (pas encore traduit)',
-                    content: (
-                        <div
-                            className="post-content max-w-3xl"
-                            dangerouslySetInnerHTML={{
-                                __html: post.body.fr ?? '',
-                            }}
-                        />
-                    ),
-                },
             ]}
         />
     );
