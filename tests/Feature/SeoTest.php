@@ -1,8 +1,10 @@
 <?php
 
 use App\Enums\ProjectStatus;
+use App\Models\Post;
 use App\Models\Profile;
 use App\Models\Project;
+use App\Models\SiteSetting;
 
 beforeEach(function () {
     Profile::factory()->create();
@@ -52,4 +54,34 @@ test('robots.txt points to the sitemap of the current domain', function () {
 
     $response->assertOk()->assertSee('Sitemap: https://armeldev.xyz/sitemap.xml', false);
     expect($response->headers->get('Content-Type'))->toContain('text/plain');
+});
+
+test('the published posts are in the sitemap, llms.txt and the rss feed', function () {
+    $published = Post::factory()->create(['slug' => 'article-visible', 'excerpt' => ['fr' => 'Le résumé', 'en' => 'The summary']]);
+    Post::factory()->draft()->create(['slug' => 'brouillon-cache']);
+
+    $this->get('/sitemap.xml')
+        ->assertSee('/fr/blog/article-visible')
+        ->assertSee('/en/blog')
+        ->assertDontSee('brouillon-cache');
+
+    $this->get('/llms.txt')
+        ->assertSee("/fr/blog/{$published->slug}) : Le résumé", false)
+        ->assertDontSee('brouillon-cache');
+
+    $this->get('/en/blog/feed')
+        ->assertOk()
+        ->assertHeader('Content-Type', 'application/rss+xml; charset=utf-8')
+        ->assertSee('<link>'.config('app.url').'/en/blog/article-visible</link>', false)
+        ->assertSee('The summary')
+        ->assertDontSee('brouillon-cache');
+});
+
+test('a disabled blog is left out of the sitemap, llms.txt and the rss feed', function () {
+    SiteSetting::current()->update(['blog_enabled' => false]);
+    Post::factory()->create(['slug' => 'article-visible']);
+
+    $this->get('/sitemap.xml')->assertDontSee('/blog');
+    $this->get('/llms.txt')->assertDontSee('/blog');
+    $this->get('/fr/blog/feed')->assertNotFound();
 });

@@ -4,6 +4,7 @@ use App\Http\Controllers\AboutController;
 use App\Http\Controllers\AppointmentBookingController;
 use App\Http\Controllers\AppointmentCancellationController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\BlogFeedController;
 use App\Http\Controllers\CelebrationCongratulationController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CongratulationController;
@@ -46,6 +47,7 @@ Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, Lo
     Route::get('projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::get('projects/{project:slug}', [ProjectController::class, 'show'])->name('projects.show');
     Route::get('blog', [BlogController::class, 'index'])->name('blog.index');
+    Route::get('blog/feed', BlogFeedController::class)->name('blog.feed');
     Route::get('blog/{post:slug}', [BlogController::class, 'show'])->name('blog.show');
     Route::get('contact', [ContactController::class, 'index'])->name('contact.index');
     Route::post('contact', [ContactController::class, 'store'])

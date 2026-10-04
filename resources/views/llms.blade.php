@@ -18,6 +18,9 @@
 - [À propos]({!! $baseUrl !!}/{!! $locale !!}/about) : parcours, expériences et formations
 - [Compétences]({!! $baseUrl !!}/{!! $locale !!}/skills) : domaines d'expertise et technologies
 - [Projets]({!! $baseUrl !!}/{!! $locale !!}/projects) : réalisations détaillées
+@if ($blogEnabled)
+- [Blog]({!! $baseUrl !!}/{!! $locale !!}/blog) : articles techniques et retours d'expérience
+@endif
 - [Témoignages]({!! $baseUrl !!}/{!! $locale !!}/testimonials) : avis de clients et collègues
 - [English version]({!! $baseUrl !!}/en) : the same content in English
 
@@ -26,5 +29,14 @@
 
 @foreach ($projects as $project)
 - [{!! $project->getTranslation('title', $locale) !!}]({!! $baseUrl !!}/{!! $locale !!}/projects/{!! $project->slug !!}) : {!! str($project->getTranslation('result', $locale))->squish()->limit(200) !!}
+@endforeach
+@endif
+@if ($posts->isNotEmpty())
+
+## Articles
+
+@foreach ($posts as $post)
+- [{!! $post->getTranslation('title', $locale) !!}]({!! $baseUrl !!}/{!! $locale !!}/blog/{!! $post->slug !!})@if ($post->getTranslation('excerpt', $locale)) : {!! str($post->getTranslation('excerpt', $locale))->squish()->limit(200) !!}@endif
+
 @endforeach
 @endif

@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Enums\ProjectStatus;
 use App\Http\Middleware\SetLocale;
+use App\Models\Post;
 use App\Models\Profile;
 use App\Models\Project;
+use App\Models\SiteSetting;
 use Illuminate\Http\Response;
 
 /**
@@ -26,6 +28,10 @@ class LlmsTxtController extends Controller
                     ->where('status', ProjectStatus::Published)
                     ->orderBy('sort_order')
                     ->get(['title', 'slug', 'result']),
+                'blogEnabled' => SiteSetting::current()->blog_enabled,
+                'posts' => SiteSetting::current()->blog_enabled
+                    ? Post::query()->published()->latest('published_at')->get(['title', 'slug', 'excerpt'])
+                    : collect(),
             ])
             ->header('Content-Type', 'text/plain; charset=utf-8');
     }

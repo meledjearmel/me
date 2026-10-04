@@ -18,7 +18,8 @@ class PostRequest extends FormRequest
         return [
             'title.fr' => ['required', 'string', 'max:255'],
             'title.en' => ['nullable', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255', 'alpha_dash', Rule::unique('posts', 'slug')->ignore($this->route('post'))],
+            // « feed » est pris par le flux RSS (/blog/feed).
+            'slug' => ['required', 'string', 'max:255', 'alpha_dash', 'not_in:feed', Rule::unique('posts', 'slug')->ignore($this->route('post'))],
             'excerpt.fr' => ['nullable', 'string', 'max:300'],
             'excerpt.en' => ['nullable', 'string', 'max:300'],
             'body.fr' => ['required', 'string'],
