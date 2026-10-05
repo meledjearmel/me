@@ -11,16 +11,22 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 /**
- * Éléments du site qu'un article peut mentionner avec « @ » (projets, articles, technologies,
+ * Éléments du site qu'on peut mentionner avec « @ » (projets, articles, technologies,
  * expériences).
  * Le contenu ne garde que le type et l'identifiant : le nom, le lien et la carte affichée au
  * survol sont lus à la lecture, et un élément retiré du site redevient du texte simple.
+ *
+ * Dans un article (HTML), la mention est un nœud de l'éditeur. Dans un texte brut (étude de
+ * cas, expérience, page « Now »), c'est un jeton `@[App Station](project:12)`.
  */
 class PostMentions
 {
     public const array KINDS = ['project', 'post', 'technology', 'experience'];
 
     private const int SEARCH_LIMIT = 8;
+
+    /** Jeton d'une mention dans un texte brut : libellé, type et identifiant. */
+    public const string TOKEN = '/@\[([^\]\n]{1,120})\]\((project|post|technology|experience):(\d+)\)/u';
 
     /**
      * Suggestions pour l'éditeur : éléments publics dont le nom contient la recherche.
@@ -59,9 +65,29 @@ class PostMentions
             ]),
         ])
             ->filter(fn (array $item): bool => $matches($item['label']))
+            // Les noms qui commencent par la recherche d'abord (tri stable : l'ordre de chaque type est gardé).
+            ->sortBy(fn (array $item): int => $query !== '' && str_starts_with(mb_strtolower($item['label']), $query) ? 0 : 1)
+            ->groupBy('kind')
+            ->pipe(fn (Collection $groups): Collection => $this->interleave($groups))
             ->take(self::SEARCH_LIMIT)
             ->values()
             ->all();
+    }
+
+    /**
+     * Alterne les types (un projet, un article, une technologie…) pour qu'un type nombreux ne
+     * cache pas les autres dans les suggestions.
+     *
+     * @param  Collection<string, Collection<int, array{kind: string, id: int, label: string, hint: string|null}>>  $groups
+     * @return Collection<int, array{kind: string, id: int, label: string, hint: string|null}>
+     */
+    private function interleave(Collection $groups): Collection
+    {
+        $groups = $groups->map(fn (Collection $group): array => $group->values()->all())->values();
+        $longest = $groups->map(fn (array $group): int => count($group))->max() ?? 0;
+
+        return collect(range(0, max(0, $longest - 1)))
+            ->flatMap(fn (int $index): array => $groups->map(fn (array $group): ?array => $group[$index] ?? null)->filter()->all());
     }
 
     /**
@@ -128,6 +154,63 @@ class PostMentions
         }
 
         return $cards;
+    }
+
+    /**
+     * Cartes des mentions contenues dans des textes bruts, par « type:id ».
+     *
+     * @return array<string, array{kind: string, title: string, description: string|null, image: string|null, url: string}>
+     */
+    public function cardsInText(string $locale, ?string ...$texts): array
+    {
+        preg_match_all(self::TOKEN, implode("\n", array_filter($texts)), $matches, PREG_SET_ORDER);
+
+        return $matches === [] ? [] : $this->cards(
+            array_map(fn (array $match): array => ['kind' => $match[2], 'id' => (int) $match[3]], $matches),
+            $locale,
+        );
+    }
+
+    /** Texte brut sans jetons : chaque mention redevient son libellé (IA, llms.txt…). */
+    public static function plain(?string $text): string
+    {
+        return (string) preg_replace(self::TOKEN, '$1', (string) $text);
+    }
+
+    /**
+     * Cartes des pages de projet et d'article du site citées par adresse dans un texte (réponses
+     * de l'assistant), indexées par l'adresse telle qu'elle apparaît.
+     *
+     * @return array<string, array{kind: string, title: string, description: string|null, image: string|null, url: string}>
+     */
+    public function cardsForUrls(string $text, string $locale): array
+    {
+        $base = preg_quote(rtrim((string) config('app.url'), '/'), '#');
+        preg_match_all("#{$base}/(fr|en)/(projects|blog)/([a-z0-9-]+)#", $text, $matches, PREG_SET_ORDER);
+
+        if ($matches === []) {
+            return [];
+        }
+
+        $slugs = collect($matches)->groupBy(2)->map(fn (Collection $group): array => $group->pluck(3)->unique()->all());
+        $ids = [
+            'projects' => $this->projects()->whereIn('slug', $slugs['projects'] ?? [])->pluck('id', 'slug'),
+            'blog' => $this->posts()->whereIn('slug', $slugs['blog'] ?? [])->pluck('id', 'slug'),
+        ];
+        $references = [];
+
+        foreach ($matches as [$url, , $section, $slug]) {
+            if (isset($ids[$section][$slug])) {
+                $references[$url] = ['kind' => $section === 'projects' ? 'project' : 'post', 'id' => $ids[$section][$slug]];
+            }
+        }
+
+        $cards = $this->cards(array_values($references), $locale);
+
+        return collect($references)
+            ->map(fn (array $reference): ?array => $cards["{$reference['kind']}:{$reference['id']}"] ?? null)
+            ->filter()
+            ->all();
     }
 
     /** @return Builder<Project> */

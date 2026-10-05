@@ -4,8 +4,10 @@ use App\Ai\Agents\PortfolioAssistant;
 use App\Enums\ProjectStatus;
 use App\Enums\PublicationStatus;
 use App\Models\Experience;
+use App\Models\Post;
 use App\Models\Profile;
 use App\Models\Project;
+use App\Models\SiteSetting;
 use App\Services\PortfolioKnowledge;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -20,7 +22,7 @@ test('the assistant answers a visitor question', function () {
 
     $this->postJson('/fr/chat', ['message' => 'Que fais-tu ?'])
         ->assertOk()
-        ->assertExactJson(['reply' => 'Je suis développeur full-stack.']);
+        ->assertExactJson(['reply' => 'Je suis développeur full-stack.', 'mentions' => []]);
 
     PortfolioAssistant::assertPrompted('Que fais-tu ?');
 });
@@ -52,7 +54,7 @@ test('the assistant falls back to the next provider when one fails', function ()
 
     $this->postJson('/fr/chat', ['message' => 'Salut'])
         ->assertOk()
-        ->assertExactJson(['reply' => 'Réponse de secours']);
+        ->assertJsonPath('reply', 'Réponse de secours');
 
     expect($calls)->toBe(3);
     Log::shouldHaveReceived('warning')->twice();
@@ -126,4 +128,19 @@ test('the chat is capped globally across visitors', function () {
         ->postJson('/fr/chat', ['message' => 'Un'])->assertOk();
     $this->withServerVariables(['REMOTE_ADDR' => '10.0.0.2'])
         ->postJson('/fr/chat', ['message' => 'Deux'])->assertTooManyRequests();
+});
+
+test('the knowledge lists the published blog posts with their url, unless the blog is disabled', function () {
+    $post = Post::factory()->create(['title' => ['fr' => 'Mon article publié'], 'excerpt' => ['fr' => 'Le résumé']]);
+    Post::factory()->draft()->create(['title' => ['fr' => 'Brouillon caché']]);
+
+    expect(app(PortfolioKnowledge::class)->build('fr'))
+        ->toContain('Mon article publié : Le résumé')
+        ->toContain(route('blog.show', ['locale' => 'fr', 'post' => $post->slug]))
+        ->toContain(route('blog.index', ['locale' => 'fr']))
+        ->not->toContain('Brouillon caché');
+
+    SiteSetting::current()->update(['blog_enabled' => false]);
+
+    expect(app(PortfolioKnowledge::class)->build('fr'))->not->toContain('Mon article publié');
 });

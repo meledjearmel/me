@@ -105,6 +105,7 @@ export default function ExperienceEdit({
                                 name="description"
                                 label="Description"
                                 textarea
+                                mentions
                                 defaultValue={
                                     experience.description ?? undefined
                                 }

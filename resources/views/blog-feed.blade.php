@@ -18,7 +18,7 @@
 @if ($post->getTranslation('excerpt', $locale))
             <description>{{ $post->getTranslation('excerpt', $locale) }}</description>
 @endif
-            <content:encoded><![CDATA[{!! str_replace(']]>', ']]]]><![CDATA[>', $post->getTranslation('body', $locale)) !!}]]></content:encoded>
+            <content:encoded><![CDATA[{!! str_replace(']]>', ']]]]><![CDATA[>', $content->withMentions($post->getTranslation('body', $locale), $locale)['html']) !!}]]></content:encoded>
 @foreach ($post->tags as $tag)
             <category>{{ $tag->getTranslation('name', $locale) }}</category>
 @endforeach

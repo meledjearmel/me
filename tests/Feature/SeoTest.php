@@ -77,6 +77,14 @@ test('the published posts are in the sitemap, llms.txt and the rss feed', functi
         ->assertDontSee('brouillon-cache');
 });
 
+test('the rss feed turns mentions into links to the mentioned item', function () {
+    $project = Project::factory()->create(['title' => ['fr' => 'App Station', 'en' => 'App Station'], 'status' => ProjectStatus::Published]);
+    Post::factory()->create(['body' => ['fr' => "<p>Voir <span data-type=\"mention\" data-kind=\"project\" data-id=\"{$project->id}\" data-label=\"App Station\"></span></p>"]]);
+
+    $this->get('/fr/blog/feed')
+        ->assertSee('<a href="'.route('projects.show', ['locale' => 'fr', 'project' => $project->slug]).'" class="post-mention" data-mention="project:'.$project->id.'">App Station</a>', false);
+});
+
 test('a disabled blog is left out of the sitemap, llms.txt and the rss feed', function () {
     SiteSetting::current()->update(['blog_enabled' => false]);
     Post::factory()->create(['slug' => 'article-visible']);

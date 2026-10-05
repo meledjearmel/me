@@ -1,11 +1,31 @@
 import type { ReactNode } from 'react';
+import type { PublicPostMention } from '@/types';
 
 const TOKEN =
     /(\*\*[^*]+\*\*|https?:\/\/[^\s)]*[^\s).,;:!?]|[\w.+-]+@[\w-]+\.[\w.-]*\w)/g;
 const LIST_ITEM = /^\s*(?:[-*•]|\d+[.)])\s+(.*)$/;
 
-function inline(text: string): ReactNode[] {
+type Mentions = Record<string, PublicPostMention>;
+
+function inline(text: string, mentions: Mentions): ReactNode[] {
     return text.split(TOKEN).map((part, index) => {
+        const key = part in mentions ? part : part.replace(/\/$/, '');
+        const mention = mentions[key];
+
+        // Page de projet ou d'article du site : son nom, avec la carte au survol.
+        if (mention) {
+            return (
+                <a
+                    key={index}
+                    href={mention.url}
+                    className="post-mention"
+                    data-mention={key}
+                >
+                    {mention.title}
+                </a>
+            );
+        }
+
         if (part.length > 4 && part.startsWith('**') && part.endsWith('**')) {
             return <strong key={index}>{part.slice(2, -2)}</strong>;
         }
@@ -40,7 +60,13 @@ function inline(text: string): ReactNode[] {
  * email), rien d'autre. Le texte est toujours rendu comme texte par React,
  * jamais comme HTML, donc une réponse ne peut pas injecter de balises.
  */
-export default function ChatRichText({ text }: { text: string }) {
+export default function ChatRichText({
+    text,
+    mentions = {},
+}: {
+    text: string;
+    mentions?: Mentions;
+}) {
     const blocks: ReactNode[] = [];
     let items: string[] = [];
 
@@ -49,7 +75,7 @@ export default function ChatRichText({ text }: { text: string }) {
             blocks.push(
                 <ul key={`list-${blocks.length}`}>
                     {items.map((item, index) => (
-                        <li key={index}>{inline(item)}</li>
+                        <li key={index}>{inline(item, mentions)}</li>
                     ))}
                 </ul>,
             );
@@ -70,7 +96,7 @@ export default function ChatRichText({ text }: { text: string }) {
 
         if (line.trim() !== '') {
             blocks.push(
-                <p key={`p-${blocks.length}`}>{inline(line.trim())}</p>,
+                <p key={`p-${blocks.length}`}>{inline(line.trim(), mentions)}</p>,
             );
         }
     }

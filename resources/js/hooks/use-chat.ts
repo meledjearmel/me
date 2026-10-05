@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { PublicPostMention } from '@/types';
 
 /** Doivent rester alignés sur config/ai.php (chat.max_history et chat.max_message_length) et ChatRequest. */
 export const CHAT_MAX_HISTORY = 10;
@@ -11,6 +12,8 @@ export type ChatMessage = {
     id: number;
     role: 'user' | 'assistant';
     content: string;
+    /** Pages du site citées dans la réponse : leur carte, par adresse. */
+    mentions?: Record<string, PublicPostMention>;
 };
 
 export type ChatStatus = 'idle' | 'thinking' | 'error';
@@ -120,7 +123,10 @@ export function useChat(endpoint: string) {
                     throw new Error(String(response.status));
                 }
 
-                const data: { reply: string } = await response.json();
+                const data: {
+                    reply: string;
+                    mentions?: Record<string, PublicPostMention>;
+                } = await response.json();
 
                 commit([
                     ...messagesRef.current,
@@ -128,6 +134,7 @@ export function useChat(endpoint: string) {
                         id: nextId.current++,
                         role: 'assistant',
                         content: data.reply,
+                        mentions: data.mentions,
                     },
                 ]);
                 setStatus('idle');

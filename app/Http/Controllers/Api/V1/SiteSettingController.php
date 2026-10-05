@@ -25,7 +25,8 @@ class SiteSettingController extends Controller
     /**
      * Modifier les réglages de gestion du site
      *
-     * Chaque champ est facultatif : ceux qui ne sont pas envoyés gardent leur valeur.
+     * Chaque champ est facultatif : ceux qui ne sont pas envoyés gardent leur valeur. `now_content` peut
+     * contenir des mentions `@[App Station](project:12)` (voir `GET /v1/posts/mentions`).
      */
     public function update(SiteSettingRequest $request): JsonResponse
     {

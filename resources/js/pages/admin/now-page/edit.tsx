@@ -38,6 +38,7 @@ export default function NowPageEdit({
                                 name="now_content"
                                 label="Texte"
                                 textarea
+                                mentions
                                 maxLength={5000}
                                 defaultValue={content}
                                 errors={{

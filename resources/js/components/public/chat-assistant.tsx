@@ -5,6 +5,7 @@ import type { FormEvent, KeyboardEvent } from 'react';
 import ChatAvatar from '@/components/public/chat-avatar';
 import type { ChatAvatarState } from '@/components/public/chat-avatar';
 import ChatRichText from '@/components/public/chat-rich-text';
+import PostMentionCard from '@/components/public/post-mention-card';
 import { useAppearance } from '@/hooks/use-appearance';
 import { CHAT_MAX_LENGTH, useChat } from '@/hooks/use-chat';
 import {
@@ -235,6 +236,15 @@ export default function ChatAssistant() {
                             role="log"
                             aria-live="polite"
                         >
+                            <PostMentionCard
+                                article={list}
+                                mentions={Object.assign(
+                                    {},
+                                    ...chat.messages.map(
+                                        (message) => message.mentions ?? {},
+                                    ),
+                                )}
+                            />
                             <div className="pub-chat__msg is-assistant">
                                 <p>{fill(t.chat.welcome)}</p>
                             </div>
@@ -245,7 +255,10 @@ export default function ChatAssistant() {
                                     className={`pub-chat__msg is-${message.role}`}
                                 >
                                     {message.role === 'assistant' ? (
-                                        <ChatRichText text={message.content} />
+                                        <ChatRichText
+                                            text={message.content}
+                                            mentions={message.mentions}
+                                        />
                                     ) : (
                                         <p>{message.content}</p>
                                     )}

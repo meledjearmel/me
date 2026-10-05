@@ -87,6 +87,7 @@ export default function ExperienceCreate() {
                                 name="description"
                                 label="Description"
                                 textarea
+                                mentions
                                 errors={{
                                     fr: errors['description.fr'],
                                     en: errors['description.en'],

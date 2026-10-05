@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Public;
 
 use App\Models\Experience;
+use App\Services\PostMentions;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -26,6 +27,8 @@ class ExperienceResource extends JsonResource
             'description' => $this->description !== null
                 ? $this->getTranslation('description', $locale)
                 : null,
+            /** Cartes des mentions `@[…](type:id)` de la description, par « type:id ». */
+            'mentions' => (object) app(PostMentions::class)->cardsInText($locale, $this->getTranslation('description', $locale)),
             'highlights' => $this->whenLoaded('highlights', fn () => $this->highlights
                 ->sortBy('sort_order')
                 ->map(fn ($highlight) => $highlight->getTranslation('text', $locale))

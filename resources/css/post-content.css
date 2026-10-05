@@ -275,14 +275,23 @@
         white-space: nowrap;
     }
 
+    /* Ailleurs (études de cas, expériences, page « Now », Armi), le lien garde la couleur du texte. */
+    a.post-mention {
+        color: inherit;
+        font-weight: 600;
+        text-decoration: underline dotted;
+        text-underline-offset: 3px;
+    }
+
     .post-content a.post-mention {
+        color: var(--color-primary);
         font-weight: 500;
-        text-decoration-style: dotted;
     }
 
     .post-mention-card {
         position: fixed;
-        z-index: 60;
+        /* Au-dessus du panneau d'Armi (90). */
+        z-index: 100;
         display: flex;
         flex-direction: column;
         overflow: hidden;

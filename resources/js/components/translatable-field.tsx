@@ -1,5 +1,6 @@
 import { Languages, Loader2, Sparkles, WandSparkles } from "lucide-react";
 import { type RefObject, useRef, useState } from "react";
+import MentionTextarea from "@/components/admin/mention-textarea";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -48,6 +49,8 @@ type TranslatableFieldProps = {
      * (lue dans le formulaire), et l'IA remplit les deux langues.
      */
     technologySource?: () => { name: string; category: string | null };
+    /** Zone de texte où « @ » insère une mention d'un élément du site. */
+    mentions?: boolean;
 };
 
 export default function TranslatableField({
@@ -59,7 +62,9 @@ export default function TranslatableField({
     required = false,
     maxLength,
     technologySource,
+    mentions = false,
 }: TranslatableFieldProps) {
+    const TextareaComponent = mentions ? MentionTextarea : Textarea;
     const refs = {
         fr: useRef<HTMLInputElement | HTMLTextAreaElement>(null),
         en: useRef<HTMLInputElement | HTMLTextAreaElement>(null),
@@ -242,7 +247,7 @@ export default function TranslatableField({
                             </div>
                         </div>
                         {textarea ? (
-                            <Textarea
+                            <TextareaComponent
                                 id={`${name}-${locale}`}
                                 name={`${name}[${locale}]`}
                                 ref={

@@ -7,8 +7,9 @@ import {
     type LucideIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import { createPortal } from "react-dom";
-import PostController from "@/actions/App/Http/Controllers/Admin/PostController";
+import { useMentionSearch } from "@/hooks/use-mention-search";
 import { cn } from "@/lib/utils";
 import type { MentionKind, Mentionable } from "./mention";
 import type { SlashBridge, SlashState } from "./slash-command";
@@ -19,9 +20,6 @@ const KINDS: Record<MentionKind, { label: string; icon: LucideIcon }> = {
     technology: { label: "Technologie", icon: Wrench },
     experience: { label: "Expérience", icon: Briefcase },
 };
-
-/** Délai avant de chercher, pour ne pas lancer une requête par lettre tapée. */
-const SEARCH_DELAY_MS = 150;
 
 function insertMention(editor: Editor, state: SlashState, item: Mentionable) {
     editor
@@ -38,95 +36,33 @@ function insertMention(editor: Editor, state: SlashState, item: Mentionable) {
 }
 
 /**
- * Menu des éléments du site mentionnables, ouvert par « @ ». Comme le menu « / », il reçoit
- * les flèches et Entrée du plugin de suggestion via le pont.
+ * Liste des suggestions de mention, partagée par l'éditeur d'articles et les zones de
+ * texte des projets, expériences et page « Now ».
  */
-export default function MentionMenu({
-    editor,
-    bridge,
+export function MentionList({
+    items,
+    activeIndex,
+    onHover,
+    onPick,
+    className,
+    style,
 }: {
-    editor: Editor;
-    bridge: SlashBridge;
+    items: Mentionable[];
+    activeIndex: number;
+    onHover: (index: number) => void;
+    onPick: (item: Mentionable) => void;
+    className?: string;
+    style?: CSSProperties;
 }) {
-    const [state, setState] = useState<SlashState | null>(null);
-    const [items, setItems] = useState<Mentionable[]>([]);
-    const [activeIndex, setActiveIndex] = useState(0);
-    const query = state?.query ?? null;
-
-    const latest = useRef({ state, items, activeIndex });
-    latest.current = { state, items, activeIndex };
-
-    useEffect(() => {
-        if (query === null) {
-            setItems([]);
-
-            return;
-        }
-
-        const controller = new AbortController();
-        const timer = window.setTimeout(() => {
-            fetch(PostController.mentions.url({ query: { q: query } }), {
-                headers: { Accept: "application/json" },
-                signal: controller.signal,
-            })
-                .then((response) => response.json())
-                .then((body: { data: Mentionable[] }) => {
-                    setItems(body.data);
-                    setActiveIndex(0);
-                })
-                .catch(() => {});
-        }, SEARCH_DELAY_MS);
-
-        return () => {
-            window.clearTimeout(timer);
-            controller.abort();
-        };
-    }, [query]);
-
-    useEffect(() => {
-        bridge.onChange = (next) => setState(next);
-        bridge.onKeyDown = (event) => {
-            const current = latest.current;
-
-            if (!current.state || current.items.length === 0) {
-                return false;
-            }
-
-            if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-                const step = event.key === "ArrowDown" ? 1 : -1;
-                setActiveIndex(
-                    (current.activeIndex + step + current.items.length) %
-                        current.items.length,
-                );
-
-                return true;
-            }
-
-            if (event.key === "Enter" || event.key === "Tab") {
-                insertMention(
-                    editor,
-                    current.state,
-                    current.items[current.activeIndex],
-                );
-                setState(null);
-
-                return true;
-            }
-
-            return false;
-        };
-    }, [bridge, editor]);
-
-    if (!state?.rect || items.length === 0) {
-        return null;
-    }
-
-    return createPortal(
+    return (
         <div
             role="listbox"
             aria-label="Mentions"
-            className="fixed z-50 max-h-80 w-80 overflow-y-auto rounded-lg border bg-popover p-1 text-popover-foreground shadow-lg"
-            style={{ top: state.rect.bottom + 6, left: state.rect.left }}
+            className={cn(
+                "z-50 max-h-80 w-80 overflow-y-auto rounded-lg border bg-popover p-1 text-popover-foreground shadow-lg",
+                className,
+            )}
+            style={style}
         >
             <p className="px-2 pt-1 pb-1.5 text-xs text-muted-foreground">
                 Mentionner
@@ -140,11 +76,10 @@ export default function MentionMenu({
                         type="button"
                         role="option"
                         aria-selected={index === activeIndex}
-                        onMouseEnter={() => setActiveIndex(index)}
+                        onMouseEnter={() => onHover(index)}
                         onMouseDown={(event) => {
                             event.preventDefault();
-                            insertMention(editor, state, item);
-                            setState(null);
+                            onPick(item);
                         }}
                         className={cn(
                             "flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left",
@@ -166,7 +101,83 @@ export default function MentionMenu({
                     </button>
                 );
             })}
-        </div>,
+        </div>
+    );
+}
+
+/**
+ * Menu des éléments du site mentionnables, ouvert par « @ ». Comme le menu « / », il reçoit
+ * les flèches et Entrée du plugin de suggestion via le pont.
+ */
+export default function MentionMenu({
+    editor,
+    bridge,
+}: {
+    editor: Editor;
+    bridge: SlashBridge;
+}) {
+    const [state, setState] = useState<SlashState | null>(null);
+    const [activeIndex, setActiveIndex] = useState(0);
+    const items = useMentionSearch(state?.query ?? null);
+
+    const latest = useRef({ state, items, activeIndex });
+    latest.current = { state, items, activeIndex };
+
+    useEffect(() => {
+        bridge.onChange = (next) => {
+            setState(next);
+            setActiveIndex(0);
+        };
+        bridge.onKeyDown = (event) => {
+            const current = latest.current;
+
+            if (!current.state || current.items.length === 0) {
+                return false;
+            }
+
+            if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+                const step = event.key === "ArrowDown" ? 1 : -1;
+                setActiveIndex(
+                    (current.activeIndex + step + current.items.length) %
+                        current.items.length,
+                );
+
+                return true;
+            }
+
+            if (event.key === "Enter" || event.key === "Tab") {
+                insertMention(
+                    editor,
+                    current.state,
+                    current.items[
+                        Math.min(current.activeIndex, current.items.length - 1)
+                    ],
+                );
+                setState(null);
+
+                return true;
+            }
+
+            return false;
+        };
+    }, [bridge, editor]);
+
+    if (!state?.rect || items.length === 0) {
+        return null;
+    }
+
+    return createPortal(
+        <MentionList
+            items={items}
+            activeIndex={activeIndex}
+            onHover={setActiveIndex}
+            onPick={(item) => {
+                insertMention(editor, state, item);
+                setState(null);
+            }}
+            className="fixed"
+            style={{ top: state.rect.bottom + 6, left: state.rect.left }}
+        />,
         document.body,
     );
 }

@@ -64,15 +64,9 @@ class PostContent
             return ['html' => '', 'toc' => [], 'mentions' => []];
         }
 
-        $document = new DOMDocument;
-        // Enveloppe UTF-8 : sans elle, DOMDocument lit le HTML en ISO-8859-1.
-        @$document->loadHTML('<?xml encoding="UTF-8"><div id="post-root">'.$html.'</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-
-        $root = $document->getElementById('post-root');
+        [$document, $xpath] = $this->load($html);
         $toc = [];
         $used = [];
-
-        $xpath = new DOMXPath($document);
 
         foreach ($xpath->query('//h2 | //h3') as $heading) {
             $text = trim($heading->textContent);
@@ -91,13 +85,46 @@ class PostContent
         $this->highlightCode($document, $xpath);
         $mentions = $this->resolveMentions($document, $xpath, $locale ?? app()->getLocale());
 
+        return ['html' => $this->save($document), 'toc' => $toc, 'mentions' => $mentions];
+    }
+
+    /**
+     * Mentions seules changées en liens, pour un contenu affiché hors d'un article : flux RSS,
+     * études de cas, expériences, page « Now ».
+     *
+     * @return array{html: string, mentions: array<string, array{kind: string, title: string, description: string|null, image: string|null, url: string}>}
+     */
+    public function withMentions(?string $html, ?string $locale = null): array
+    {
+        if (blank($html)) {
+            return ['html' => '', 'mentions' => []];
+        }
+
+        [$document, $xpath] = $this->load($html);
+        $mentions = $this->resolveMentions($document, $xpath, $locale ?? app()->getLocale());
+
+        return ['html' => $this->save($document), 'mentions' => $mentions];
+    }
+
+    /** @return array{0: DOMDocument, 1: DOMXPath} */
+    private function load(string $html): array
+    {
+        $document = new DOMDocument;
+        // Enveloppe UTF-8 : sans elle, DOMDocument lit le HTML en ISO-8859-1.
+        @$document->loadHTML('<?xml encoding="UTF-8"><div id="post-root">'.$html.'</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+        return [$document, new DOMXPath($document)];
+    }
+
+    private function save(DOMDocument $document): string
+    {
         $output = '';
 
-        foreach ($root->childNodes as $child) {
+        foreach ($document->getElementById('post-root')->childNodes as $child) {
             $output .= $document->saveHTML($child);
         }
 
-        return ['html' => $output, 'toc' => $toc, 'mentions' => $mentions];
+        return $output;
     }
 
     /**

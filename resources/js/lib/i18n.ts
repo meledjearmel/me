@@ -312,6 +312,9 @@ const dictionaries = {
             relatedTitle: 'À lire aussi',
             copyCode: 'Copier',
             codeCopied: 'Copié',
+            rss: 'Flux RSS',
+            rssHint:
+                'Suivre le blog dans un lecteur RSS, ou reprendre les articles sur votre site',
             mentionKinds: {
                 project: 'Projet',
                 post: 'Article',
@@ -885,6 +888,9 @@ const dictionaries = {
             relatedTitle: 'Keep reading',
             copyCode: 'Copy',
             codeCopied: 'Copied',
+            rss: 'RSS feed',
+            rssHint:
+                'Follow the blog in an RSS reader, or show the articles on your own site',
             mentionKinds: {
                 project: 'Project',
                 post: 'Article',

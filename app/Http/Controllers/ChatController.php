@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Ai\Agents\PortfolioAssistant;
 use App\Http\Requests\ChatRequest;
+use App\Services\PostMentions;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class ChatController extends Controller
 {
-    public function store(ChatRequest $request): JsonResponse
+    public function store(ChatRequest $request, PostMentions $mentions): JsonResponse
     {
         $assistant = new PortfolioAssistant($request->history(), app()->getLocale());
 
@@ -29,7 +30,11 @@ class ChatController extends Controller
             }
 
             if (filled($reply)) {
-                return response()->json(['reply' => $reply]);
+                return response()->json([
+                    'reply' => $reply,
+                    // Pages de projet ou d'article citées : le chat les montre en mentions avec leur carte.
+                    'mentions' => (object) $mentions->cardsForUrls($reply, app()->getLocale()),
+                ]);
             }
 
             Log::warning("Assistant : réponse vide de [{$entry}].");

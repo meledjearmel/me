@@ -46,6 +46,8 @@ export type PublicExperience = {
     start_date: string;
     end_date: string | null;
     description: string | null;
+    /** Cartes des mentions `@[…](type:id)` de la description, par « type:id ». */
+    mentions: Record<string, PublicPostMention>;
     highlights: string[];
 };
 
@@ -87,6 +89,8 @@ export type PublicProject = {
     technologies: PublicTechnology[];
     cover_url: string | null;
     gallery_urls: string[];
+    /** Cartes des mentions `@[…](type:id)` du récit, par « type:id ». */
+    mentions: Record<string, PublicPostMention>;
     related_projects: PublicProject[];
 };
 

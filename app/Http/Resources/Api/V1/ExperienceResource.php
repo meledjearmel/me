@@ -25,7 +25,8 @@ class ExperienceResource extends JsonResource
             'start_date' => $this->start_date?->toDateString(),
             'end_date' => $this->end_date?->toDateString(),
             /**
-             * Facultatif : objet vide `{}` tant qu'il n'est pas renseigné.
+             * Facultatif : objet vide `{}` tant qu'il n'est pas renseigné. Peut contenir des mentions
+             * `@[App Station](project:12)` (voir `GET /v1/posts/mentions`).
              *
              * @var array{fr?: string, en?: string}
              */

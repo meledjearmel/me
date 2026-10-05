@@ -27,6 +27,9 @@ export default function PostMentionCard({
         rect: DOMRect;
     } | null>(null);
     const timer = useRef(0);
+    // Lu à l'événement : un nouvel objet à chaque rendu ne relance pas les écouteurs.
+    const cards = useRef(mentions);
+    cards.current = mentions;
 
     useEffect(() => {
         const element = article.current;
@@ -44,7 +47,7 @@ export default function PostMentionCard({
             const link = (event.target as HTMLElement).closest<HTMLElement>(
                 'a[data-mention]',
             );
-            const mention = mentions[link?.dataset.mention ?? ''];
+            const mention = cards.current[link?.dataset.mention ?? ''];
 
             if (!link || !mention) {
                 return;
@@ -71,7 +74,11 @@ export default function PostMentionCard({
         element.addEventListener('pointerout', hide);
         element.addEventListener('focusin', show);
         element.addEventListener('focusout', hide);
-        window.addEventListener('scroll', close, { passive: true });
+        // En capture : aussi au défilement d'un conteneur (liste du chat).
+        window.addEventListener('scroll', close, {
+            capture: true,
+            passive: true,
+        });
 
         return () => {
             window.clearTimeout(timer.current);
@@ -79,9 +86,9 @@ export default function PostMentionCard({
             element.removeEventListener('pointerout', hide);
             element.removeEventListener('focusin', show);
             element.removeEventListener('focusout', hide);
-            window.removeEventListener('scroll', close);
+            window.removeEventListener('scroll', close, { capture: true });
         };
-    }, [article, mentions]);
+    }, [article]);
 
     if (!open) {
         return null;

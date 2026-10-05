@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SiteSetting;
+use App\Services\PostMentions;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
@@ -21,6 +22,7 @@ class NowController extends Controller
 
         return Inertia::render('public/now', [
             'text' => $text,
+            'mentions' => (object) app(PostMentions::class)->cardsInText($locale, $text),
             // Langue réelle du texte : `fr` quand l'anglais n'est pas rédigé.
             'contentLocale' => filled($settings->now_content[$locale] ?? null) ? $locale : 'fr',
             'updatedAt' => $settings->now_updated_at?->toIso8601String(),

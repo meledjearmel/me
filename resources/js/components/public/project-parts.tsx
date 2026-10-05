@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import BookingInvite from '@/components/public/booking-invite';
 import EngageDialog from '@/components/public/engage-dialog';
+import { plainMentions } from '@/components/public/mention-text';
 import ScrollText from '@/components/public/scroll-text';
 import { TechIcon } from '@/components/public/tech-marquee';
 import {
@@ -232,6 +233,7 @@ export function ProjectStory({
             <LedgerSection number={next()} label={t.projects.context}>
                 <ScrollText
                     text={project.context}
+                    mentions={project.mentions}
                     className="pub-ledger__text"
                 />
             </LedgerSection>
@@ -240,6 +242,7 @@ export function ProjectStory({
                 <LedgerSection number={next()} label={t.projects.challenges}>
                     <ScrollText
                         text={project.challenges}
+                        mentions={project.mentions}
                         className="pub-ledger__text"
                     />
                 </LedgerSection>
@@ -248,6 +251,7 @@ export function ProjectStory({
             <LedgerSection number={next()} label={t.projects.realization}>
                 <ScrollText
                     text={project.realization}
+                    mentions={project.mentions}
                     className="pub-ledger__text"
                 />
             </LedgerSection>
@@ -272,6 +276,7 @@ export function ProjectStory({
             >
                 <ScrollText
                     text={project.result}
+                    mentions={project.mentions}
                     className="pub-ledger__text pub-ledger__text--big"
                 />
                 {project.key_figures.length > 0 && (
@@ -421,7 +426,9 @@ export function ReadNext({ project }: { project: PublicProject }) {
                     >
                         {project.title}
                     </Link>
-                    <p className="pub-readnext__desc">{project.result}</p>
+                    <p className="pub-readnext__desc">
+                        {plainMentions(project.result, project.mentions)}
+                    </p>
                     <div className="pub-readnext__bar" aria-hidden="true">
                         <motion.i
                             style={

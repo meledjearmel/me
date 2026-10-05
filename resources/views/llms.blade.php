@@ -28,7 +28,7 @@
 ## Projets
 
 @foreach ($projects as $project)
-- [{!! $project->getTranslation('title', $locale) !!}]({!! $baseUrl !!}/{!! $locale !!}/projects/{!! $project->slug !!}) : {!! str($project->getTranslation('result', $locale))->squish()->limit(200) !!}
+- [{!! $project->getTranslation('title', $locale) !!}]({!! $baseUrl !!}/{!! $locale !!}/projects/{!! $project->slug !!}) : {!! str(\App\Services\PostMentions::plain($project->getTranslation('result', $locale)))->squish()->limit(200) !!}
 @endforeach
 @endif
 @if ($posts->isNotEmpty())

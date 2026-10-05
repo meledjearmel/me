@@ -71,6 +71,7 @@ export default function ProjectCreate({
                                 name="context"
                                 label="Contexte"
                                 textarea
+                                mentions
                                 required
                                 errors={{
                                     fr: errors['context.fr'],
@@ -82,6 +83,7 @@ export default function ProjectCreate({
                                 name="challenges"
                                 label="Défis et contraintes (facultatif)"
                                 textarea
+                                mentions
                                 errors={{
                                     fr: errors['challenges.fr'],
                                     en: errors['challenges.en'],
@@ -92,6 +94,7 @@ export default function ProjectCreate({
                                 name="realization"
                                 label="Réalisation"
                                 textarea
+                                mentions
                                 required
                                 errors={{
                                     fr: errors['realization.fr'],
@@ -105,6 +108,7 @@ export default function ProjectCreate({
                                 name="result"
                                 label="Résultat"
                                 textarea
+                                mentions
                                 required
                                 errors={{
                                     fr: errors['result.fr'],

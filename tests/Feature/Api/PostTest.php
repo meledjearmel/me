@@ -90,3 +90,15 @@ test('the mentionable items are searched through the API', function () {
         ->assertJsonCount(1, 'data')
         ->assertJsonPath('data.0', ['kind' => 'project', 'id' => $project->id, 'label' => 'App Station', 'hint' => $project->getTranslation('tagline', 'fr') ?: null]);
 });
+
+test('the mention suggestions mix the kinds so many projects do not hide an article', function () {
+    Sanctum::actingAs(User::factory()->create());
+    Project::factory()->count(10)->create(['status' => ProjectStatus::Published]);
+    $post = Post::factory()->create();
+
+    $this->getJson(route('api.v1.posts.mentions'))
+        ->assertOk()
+        ->assertJsonCount(8, 'data')
+        ->assertJsonPath('data.0.kind', 'project')
+        ->assertJsonPath('data.1', fn (array $item): bool => $item['kind'] === 'post' && $item['id'] === $post->id);
+});

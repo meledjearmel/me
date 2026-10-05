@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { motion, useTransform } from 'framer-motion';
 import { useRef, type CSSProperties } from 'react';
+import { plainMentions } from '@/components/public/mention-text';
 import { useViewportProgress } from '@/hooks/use-viewport-progress';
 import { accentFor, readableTextOn } from '@/lib/accent';
 import { useLocalizedPath, useTranslations } from '@/lib/i18n';
@@ -89,7 +90,9 @@ export default function ProjectCard({
 
                 <div className="pub-card__body">
                     <h3 className="pub-card__title">{project.title}</h3>
-                    <p className="pub-card__result">{project.result}</p>
+                    <p className="pub-card__result">
+                        {plainMentions(project.result, project.mentions)}
+                    </p>
 
                     <div className="pub-card__foot">
                         <ul className="pub-card__tags">

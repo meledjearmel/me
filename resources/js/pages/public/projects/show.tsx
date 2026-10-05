@@ -1,5 +1,8 @@
 import { Link, usePage } from '@inertiajs/react';
+import { useRef } from 'react';
+import { plainMentions } from '@/components/public/mention-text';
 import PageHero from '@/components/public/page-hero';
+import PostMentionCard from '@/components/public/post-mention-card';
 import {
     accentStyle,
     ProjectCta,
@@ -38,6 +41,8 @@ export default function ProjectShow({
     const locale = useLocale();
     const { props } = usePage<{ siteUrl: string; profile: PublicProfile }>();
     const path = useLocalizedPath();
+    const storyRef = useRef<HTMLDivElement>(null);
+    const summary = plainMentions(project.result, project.mentions);
     const otherRelated = project.related_projects.filter(
         (related) => related.id !== nextProject?.id,
     );
@@ -46,7 +51,7 @@ export default function ProjectShow({
         <>
             <Seo
                 title={project.title}
-                description={project.result}
+                description={summary}
                 image={project.cover_url}
                 type="article"
                 breadcrumbs={[
@@ -57,7 +62,7 @@ export default function ProjectShow({
                     {
                         '@type': 'CreativeWork',
                         name: project.title,
-                        description: project.result,
+                        description: summary,
                         image: project.cover_url ?? undefined,
                         inLanguage: locale,
                         author: { '@type': 'Person', name: props.profile.name },
@@ -85,7 +90,12 @@ export default function ProjectShow({
                             <>
                                 <p>
                                     {project.tagline ??
-                                        firstSentence(project.context)}
+                                        firstSentence(
+                                            plainMentions(
+                                                project.context,
+                                                project.mentions,
+                                            ),
+                                        )}
                                 </p>
                                 <Link
                                     href={path('projects')}
@@ -103,7 +113,16 @@ export default function ProjectShow({
                         </div>
                     )}
 
-                    <ProjectStory project={project} testimonial={testimonial} />
+                    <div ref={storyRef}>
+                        <ProjectStory
+                            project={project}
+                            testimonial={testimonial}
+                        />
+                    </div>
+                    <PostMentionCard
+                        article={storyRef}
+                        mentions={project.mentions}
+                    />
                     <ProjectGallery urls={project.gallery_urls} />
 
                     {otherRelated.length > 0 && (

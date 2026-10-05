@@ -6,8 +6,10 @@ use App\Enums\ProjectStatus;
 use App\Models\Domain;
 use App\Models\Education;
 use App\Models\Experience;
+use App\Models\Post;
 use App\Models\Profile;
 use App\Models\Project;
+use App\Models\SiteSetting;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -23,6 +25,9 @@ class PortfolioKnowledge
 
     /** Nombre maximal de projets décrits. */
     private const PROJECT_LIMIT = 12;
+
+    /** Nombre maximal d'articles du blog listés, les plus récents. */
+    private const POST_LIMIT = 15;
 
     public static function cacheKey(string $locale): string
     {
@@ -53,6 +58,7 @@ class PortfolioKnowledge
             $this->educationSection($locale),
             $this->skillSection($locale),
             $this->projectSection($locale),
+            $this->blogSection($locale),
         ])->filter()->implode("\n\n");
     }
 
@@ -67,6 +73,10 @@ class PortfolioKnowledge
             'Témoignages' => 'testimonials.index',
             'Contact' => 'contact.index',
         ];
+
+        if (SiteSetting::current()->blog_enabled) {
+            $pages['Blog'] = 'blog.index';
+        }
 
         $lines = collect($pages)
             ->map(fn (string $routeName, string $label): string => "- {$label} : ".route($routeName, ['locale' => $locale]));
@@ -215,9 +225,35 @@ class PortfolioKnowledge
         return "## Projets\n".$lines->implode("\n");
     }
 
+    /** Articles publiés du blog, avec leur résumé et leur URL, pour que l'assistant puisse les citer. */
+    private function blogSection(string $locale): string
+    {
+        if (! SiteSetting::current()->blog_enabled) {
+            return '';
+        }
+
+        $posts = Post::query()->published()->latest('published_at')->limit(self::POST_LIMIT)->get();
+
+        if ($posts->isEmpty()) {
+            return '';
+        }
+
+        $lines = $posts->map(function (Post $post) use ($locale): string {
+            $line = "- {$post->getTranslation('title', $locale)}";
+
+            if (filled($excerpt = $post->getTranslation('excerpt', $locale))) {
+                $line .= ' : '.$this->plain($excerpt);
+            }
+
+            return $line."\n  Article : ".route('blog.show', ['locale' => $locale, 'post' => $post->slug]);
+        });
+
+        return "## Articles du blog\n".$lines->implode("\n");
+    }
+
     /** Aplatit le texte (balises, retours à la ligne) pour garder un contexte compact. */
     private function plain(?string $text): string
     {
-        return trim((string) preg_replace('/\s+/', ' ', strip_tags((string) $text)));
+        return trim((string) preg_replace('/\s+/', ' ', strip_tags(PostMentions::plain($text))));
     }
 }

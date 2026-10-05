@@ -86,6 +86,7 @@ export default function ProjectEdit({
                                 name="context"
                                 label="Contexte"
                                 textarea
+                                mentions
                                 required
                                 defaultValue={project.context}
                                 errors={{
@@ -98,6 +99,7 @@ export default function ProjectEdit({
                                 name="challenges"
                                 label="Défis et contraintes (facultatif)"
                                 textarea
+                                mentions
                                 defaultValue={project.challenges ?? undefined}
                                 errors={{
                                     fr: errors['challenges.fr'],
@@ -109,6 +111,7 @@ export default function ProjectEdit({
                                 name="realization"
                                 label="Réalisation"
                                 textarea
+                                mentions
                                 required
                                 defaultValue={project.realization}
                                 errors={{
@@ -126,6 +129,7 @@ export default function ProjectEdit({
                                 name="result"
                                 label="Résultat"
                                 textarea
+                                mentions
                                 required
                                 defaultValue={project.result}
                                 errors={{

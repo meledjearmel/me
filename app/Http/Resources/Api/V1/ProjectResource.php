@@ -70,7 +70,13 @@ class ProjectResource extends JsonResource
             'ended_on' => $this->ended_on?->format('Y-m'),
             /** Taille de l'équipe, moi compris. */
             'team_size' => $this->team_size,
-            /** @var array{fr: string, en: string} */
+            /**
+             * `context`, `challenges`, `realization` et `result` peuvent contenir des mentions
+             * `@[App Station](project:12)` (types : `project`, `post`, `technology`, `experience` ;
+             * recherche : `GET /v1/posts/mentions`). Le site en fait des liens avec une carte au survol.
+             *
+             * @var array{fr: string, en: string}
+             */
             'context' => $this->getTranslations('context'),
             /**
              * Défis et contraintes du projet (section facultative de l'étude de cas).

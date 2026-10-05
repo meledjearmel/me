@@ -1,5 +1,5 @@
 import { Link, router } from '@inertiajs/react';
-import { Search, X } from 'lucide-react';
+import { Rss, Search, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import NewsletterSignup from '@/components/public/newsletter-signup';
 import PageHero from '@/components/public/page-hero';
@@ -108,6 +108,14 @@ export default function BlogIndex({
                     }
                 >
                     <p>{t.blog.hook}</p>
+                    <a
+                        href={`/${locale}/blog/feed`}
+                        className="pub-blog__rss"
+                        title={t.blog.rssHint}
+                    >
+                        <Rss aria-hidden="true" />
+                        {t.blog.rss}
+                    </a>
                 </PageHero>
 
                 <section

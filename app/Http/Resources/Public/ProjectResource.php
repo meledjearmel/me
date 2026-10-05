@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Public;
 
 use App\Models\Project;
+use App\Services\PostMentions;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -48,6 +49,14 @@ class ProjectResource extends JsonResource
             'technologies' => TechnologyResource::collection($this->whenLoaded('technologies')),
             'cover_url' => $this->getFirstMediaUrl('cover') ?: null,
             'gallery_urls' => $this->getMedia('gallery')->map->getUrl()->values(),
+            /** Cartes des mentions `@[…](type:id)` du récit, par « type:id ». */
+            'mentions' => (object) app(PostMentions::class)->cardsInText(
+                $locale,
+                $this->getTranslation('context', $locale),
+                $this->getTranslation('challenges', $locale),
+                $this->getTranslation('realization', $locale),
+                $this->getTranslation('result', $locale),
+            ),
             'related_projects' => static::collection($this->whenLoaded('relatedProjects')),
         ];
     }

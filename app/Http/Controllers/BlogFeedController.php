@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\Profile;
 use App\Models\SiteSetting;
+use App\Services\PostContent;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
@@ -23,6 +24,7 @@ class BlogFeedController extends Controller
             ->view('blog-feed', [
                 'baseUrl' => rtrim((string) config('app.url'), '/'),
                 'locale' => $locale,
+                'content' => app(PostContent::class),
                 'profile' => Profile::query()->firstOrFail(),
                 'posts' => Post::query()->published()->with('tags')->latest('published_at')->limit(self::LIMIT)->get(),
             ])

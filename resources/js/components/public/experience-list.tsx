@@ -1,5 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import MentionText from '@/components/public/mention-text';
+import PostMentionCard from '@/components/public/post-mention-card';
 import ReviewInvite from '@/components/public/review-invite';
 import { useLocale, useTranslations } from '@/lib/i18n';
 import type { PublicExperience } from '@/types';
@@ -30,9 +32,19 @@ export default function ExperienceList({
     const [openId, setOpenId] = useState<number | null>(
         experiences[0]?.id ?? null,
     );
+    const sectionRef = useRef<HTMLElement>(null);
+    const mentions = Object.assign(
+        {},
+        ...experiences.map((experience) => experience.mentions),
+    );
 
     return (
-        <section className="pub-exp" aria-labelledby="pub-exp-title">
+        <section
+            ref={sectionRef}
+            className="pub-exp"
+            aria-labelledby="pub-exp-title"
+        >
+            <PostMentionCard article={sectionRef} mentions={mentions} />
             <div className="site-wrap">
                 <p className="pub-kicker">{t.about.kicker}</p>
                 <h2 id="pub-exp-title" className="pub-exp__title">
@@ -103,7 +115,14 @@ export default function ExperienceList({
 
                                                 {experience.description && (
                                                     <p>
-                                                        {experience.description}
+                                                        <MentionText
+                                                            text={
+                                                                experience.description
+                                                            }
+                                                            mentions={
+                                                                experience.mentions
+                                                            }
+                                                        />
                                                     </p>
                                                 )}
 
