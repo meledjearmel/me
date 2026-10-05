@@ -312,6 +312,11 @@ const dictionaries = {
             relatedTitle: 'À lire aussi',
             copyCode: 'Copier',
             codeCopied: 'Copié',
+            mentionKinds: {
+                project: 'Projet',
+                post: 'Article',
+                technology: 'Technologie',
+            },
             previewNotice:
                 'Aperçu : cet article n’est pas encore visible sur le site.',
             seriesLabel: 'Série d’articles',
@@ -879,6 +884,11 @@ const dictionaries = {
             relatedTitle: 'Keep reading',
             copyCode: 'Copy',
             codeCopied: 'Copied',
+            mentionKinds: {
+                project: 'Project',
+                post: 'Article',
+                technology: 'Technology',
+            },
             previewNotice: 'Preview: this post is not visible on the site yet.',
             seriesLabel: 'Article series',
             seriesPart: (part: number, total: number) =>

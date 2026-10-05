@@ -113,6 +113,16 @@ export type PublicPost = {
     /** Page de l'article seulement : HTML nettoyé, titres ancrés. */
     body?: string;
     toc?: { id: string; text: string; level: number }[];
+    /** Page de l'article seulement : cartes des mentions, par la clé `data-mention` des liens. */
+    mentions?: Record<string, PublicPostMention>;
+};
+
+export type PublicPostMention = {
+    kind: 'project' | 'post' | 'technology';
+    title: string;
+    description: string | null;
+    image: string | null;
+    url: string;
 };
 
 export type PublicJobProfile = {

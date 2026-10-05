@@ -10,6 +10,7 @@ use App\Http\Requests\Admin\PostRequest;
 use App\Http\Resources\Api\V1\PostResource;
 use App\Models\Post;
 use App\Models\PostTag;
+use App\Services\PostMentions;
 use Dedoc\Scramble\Attributes\QueryParameter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -142,6 +143,21 @@ class PostController extends Controller
                 ->map(fn (PostTag $tag): string => $tag->getTranslation('name', 'fr'))
                 ->values(),
         ]);
+    }
+
+    /**
+     * Éléments mentionnables
+     *
+     * Projets publiés, articles publiés et technologies dont le nom contient `q` (8 au plus), à insérer
+     * dans le HTML d'un article : `<span data-type="mention" data-kind="project" data-id="12" data-label="App Station"></span>`.
+     * Sur le site, la mention devient un lien vers l'élément avec une carte au survol.
+     *
+     * @response array{data: list<array{kind: 'project'|'post'|'technology', id: int, label: string, hint: string|null}>}
+     */
+    #[QueryParameter('q', description: 'Texte recherché dans le nom. Vide : les premiers éléments.', type: 'string')]
+    public function mentions(Request $request, PostMentions $mentions): JsonResponse
+    {
+        return response()->json(['data' => $mentions->search((string) $request->query('q', ''))]);
     }
 
     private function respond(Post $post): PostResource

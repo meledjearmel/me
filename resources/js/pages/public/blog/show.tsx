@@ -5,6 +5,7 @@ import NewsletterSignup from '@/components/public/newsletter-signup';
 import PageHero from '@/components/public/page-hero';
 import PostCard, { formatPostDate } from '@/components/public/post-card';
 import PostComments from '@/components/public/post-comments';
+import PostMentionCard from '@/components/public/post-mention-card';
 import type { PublicComment } from '@/components/public/post-comments';
 import PostReactions from '@/components/public/post-reactions';
 import type { ReactionSummary } from '@/components/public/post-reactions';
@@ -400,6 +401,10 @@ export default function BlogShow({
                                     dangerouslySetInnerHTML={{
                                         __html: post.body ?? '',
                                     }}
+                                />
+                                <PostMentionCard
+                                    article={articleRef}
+                                    mentions={post.mentions ?? {}}
                                 />
                                 {reactions && (
                                     <PostReactions

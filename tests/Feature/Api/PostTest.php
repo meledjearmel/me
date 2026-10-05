@@ -1,9 +1,11 @@
 <?php
 
 use App\Ai\Agents\PostWriter;
+use App\Enums\ProjectStatus;
 use App\Jobs\TranslatePostTag;
 use App\Models\Post;
 use App\Models\Profile;
+use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Queue;
@@ -75,4 +77,16 @@ test('the AI writes in a post through the API', function () {
         'locale' => 'fr',
         'context' => 'Début de l’article.',
     ])->assertOk()->assertExactJson(['text' => '<p>Suite rédigée.</p>']);
+});
+
+test('the mentionable items are searched through the API', function () {
+    Sanctum::actingAs(User::factory()->create());
+    $project = Project::factory()->create(['title' => ['fr' => 'App Station', 'en' => 'App Station'], 'status' => ProjectStatus::Published]);
+    Project::factory()->create(['title' => ['fr' => 'App cachée', 'en' => 'App cachée'], 'status' => ProjectStatus::Archived]);
+    Post::factory()->draft()->create(['title' => ['fr' => 'Brouillon app']]);
+
+    $this->getJson(route('api.v1.posts.mentions', ['q' => 'app']))
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0', ['kind' => 'project', 'id' => $project->id, 'label' => 'App Station', 'hint' => $project->getTranslation('tagline', 'fr') ?: null]);
 });

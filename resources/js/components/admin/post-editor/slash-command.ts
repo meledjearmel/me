@@ -22,10 +22,10 @@ export type SlashBridge = {
 export const SlashCommand = Extension.create<{ bridge: SlashBridge }>({
     name: "slashCommand",
 
+    // Pas d'objet par défaut : configure() fusionnerait en copiant le pont, et le menu
+    // React ne modifierait plus celui que le plugin appelle.
     addOptions() {
-        return {
-            bridge: { onChange: () => {}, onKeyDown: () => false },
-        };
+        return { bridge: null as unknown as SlashBridge };
     },
 
     addProseMirrorPlugins() {

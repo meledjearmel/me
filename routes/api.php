@@ -113,6 +113,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('experiences', ExperienceController::class);
         Route::apiResource('projects', ProjectController::class);
         Route::get('posts/tags', [PostController::class, 'tags'])->name('posts.tags');
+        Route::get('posts/mentions', [PostController::class, 'mentions'])->name('posts.mentions');
         Route::post('posts/images', [PostController::class, 'storeImage'])->name('posts.images.store');
         Route::apiResource('posts', PostController::class);
         Route::apiResource('post-comments', PostCommentController::class)->except('store')->parameters(['post-comments' => 'comment']);

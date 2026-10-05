@@ -16,6 +16,8 @@ import { useMemo, useRef, useState } from "react";
 import PostController from "@/actions/App/Http/Controllers/Admin/PostController";
 import type { Locale } from "@/hooks/use-ai-text-assist";
 import AiBar, { type AiBarHandle } from "./ai-bar";
+import { Mention } from "./mention";
+import MentionMenu from "./mention-menu";
 import type { EditorActions } from "./block-commands";
 import OutlineRail from "./outline-rail";
 import SelectionBubble from "./selection-bubble";
@@ -57,7 +59,7 @@ function imageFiles(list: FileList | null | undefined): File[] {
 /**
  * Éditeur des articles du blog. Il réunit la feuille et la barre IA de l'« Agent
  * editor », la barre d'outils du « Simple editor », ainsi que le menu « / », le
- * menu de sélection et le sommaire du modèle « Notion ». Le HTML part avec le
+ * menu de sélection et le sommaire du modèle « Notion », et les mentions « @ ». Le HTML part avec le
  * formulaire via un champ caché ; le serveur le nettoie à l'enregistrement.
  */
 export default function PostEditor({
@@ -79,6 +81,10 @@ export default function PostEditor({
     const fileInputRef = useRef<HTMLInputElement>(null);
     const aiBarRef = useRef<AiBarHandle>(null);
     const bridge = useMemo<SlashBridge>(
+        () => ({ onChange: () => {}, onKeyDown: () => false }),
+        [],
+    );
+    const mentionBridge = useMemo<SlashBridge>(
         () => ({ onChange: () => {}, onKeyDown: () => false }),
         [],
     );
@@ -131,6 +137,7 @@ export default function PostEditor({
                 onUpdate: (data) => setAnchors(data),
             }),
             SlashCommand.configure({ bridge }),
+            Mention.configure({ bridge: mentionBridge }),
         ],
         content: defaultValue ?? "",
         editorProps: {
@@ -245,6 +252,7 @@ export default function PostEditor({
                         bridge={bridge}
                         actions={actions}
                     />
+                    <MentionMenu editor={editor} bridge={mentionBridge} />
                 </>
             ) : (
                 <div className="h-[32rem] animate-pulse" />

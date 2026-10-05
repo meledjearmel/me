@@ -43,3 +43,15 @@ test('posts can be tagged', function () {
 
     expect($post->tags)->toHaveCount(2);
 });
+
+test('a mention keeps only a known kind and a numeric id', function () {
+    $post = Post::factory()->create([
+        'body' => ['fr' => '<p><span data-type="mention" data-kind="project" data-id="3" data-label="App Station" onclick="alert(1)"></span>'
+            .'<span data-type="mention" data-kind="user" data-id="1" data-label="Piège"></span></p>'],
+    ]);
+
+    expect($post->getTranslation('body', 'fr'))
+        ->toContain('<span data-type="mention" data-kind="project" data-id="3" data-label="App Station">App Station</span>')
+        ->not->toContain('onclick')
+        ->not->toContain('data-kind="user"');
+});

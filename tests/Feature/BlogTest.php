@@ -1,8 +1,10 @@
 <?php
 
+use App\Enums\ProjectStatus;
 use App\Models\Post;
 use App\Models\PostTag;
 use App\Models\Profile;
+use App\Models\Project;
 use App\Models\SiteSetting;
 use Illuminate\Http\Request;
 
@@ -173,4 +175,19 @@ test('the whole blog is hidden when it is disabled', function () {
 
     $this->get('/fr/blog')->assertNotFound();
     $this->get("/fr/blog/{$post->slug}")->assertNotFound();
+});
+
+test('a mention becomes a link to the item with its hover card, and plain text once the item is gone', function () {
+    $project = Project::factory()->create(['title' => ['fr' => 'App Station', 'en' => 'App Station'], 'status' => ProjectStatus::Published]);
+    $archived = Project::factory()->create(['status' => ProjectStatus::Archived]);
+    $mention = fn (Project $mentioned, string $label): string => "<span data-type=\"mention\" data-kind=\"project\" data-id=\"{$mentioned->id}\" data-label=\"{$label}\"></span>";
+    $post = Post::factory()->create([
+        'body' => ['fr' => '<p>Voici '.$mention($project, 'Ancien nom').' et '.$mention($archived, 'Vieux projet').'</p>'],
+    ]);
+
+    $this->get("/fr/blog/{$post->slug}")->assertOk()->assertInertia(fn ($page) => $page
+        ->where('post.body', fn (string $body) => str_contains($body, '<a href="'.route('projects.show', ['locale' => 'fr', 'project' => $project->slug]).'" class="post-mention" data-mention="project:'.$project->id.'">App Station</a>')
+            && str_contains($body, 'et Vieux projet</p>'))
+        ->where("post.mentions.project:{$project->id}.title", 'App Station')
+        ->missing("post.mentions.project:{$archived->id}"));
 });

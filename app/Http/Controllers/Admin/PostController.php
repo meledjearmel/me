@@ -10,6 +10,7 @@ use App\Http\Requests\Admin\PostRequest;
 use App\Models\Post;
 use App\Models\PostSeries;
 use App\Models\PostTag;
+use App\Services\PostMentions;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -117,6 +118,12 @@ class PostController extends Controller
     public function storeImage(PostImageRequest $request): JsonResponse
     {
         return response()->json(['url' => $this->storeContentImage($request)], 201);
+    }
+
+    /** Éléments du site mentionnables avec « @ » dans l'éditeur. */
+    public function mentions(Request $request, PostMentions $mentions): JsonResponse
+    {
+        return response()->json(['data' => $mentions->search((string) $request->query('q', ''))]);
     }
 
     /** @return array<string, mixed> */

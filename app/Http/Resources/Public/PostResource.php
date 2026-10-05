@@ -53,9 +53,11 @@ class PostResource extends JsonResource
         ];
 
         if ($this->withBody) {
-            ['html' => $html, 'toc' => $toc] = app(PostContent::class)->forReading((string) $this->getTranslation('body', $locale));
+            ['html' => $html, 'toc' => $toc, 'mentions' => $mentions] = app(PostContent::class)->forReading((string) $this->getTranslation('body', $locale), $locale);
             $data['body'] = $html;
             $data['toc'] = $toc;
+            /** Cartes des éléments mentionnés, par la clé `data-mention` des liens du contenu. */
+            $data['mentions'] = (object) $mentions;
         }
 
         return $data;

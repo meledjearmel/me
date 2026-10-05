@@ -88,6 +88,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('experiences', ExperienceController::class);
     Route::resource('projects', ProjectController::class);
     Route::post('posts/images', [PostController::class, 'storeImage'])->name('posts.images.store');
+    Route::get('posts/mentions', [PostController::class, 'mentions'])->name('posts.mentions');
     Route::resource('posts', PostController::class);
     Route::resource('post-comments', PostCommentController::class)->only(['index', 'update', 'destroy'])->parameters(['post-comments' => 'comment']);
     Route::resource('post-tags', PostTagController::class)->only(['index', 'edit', 'update', 'destroy']);

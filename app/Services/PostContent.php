@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Services\Tiptap\PostMention;
 use DOMDocument;
 use DOMXPath;
 use Illuminate\Support\Str;
@@ -29,6 +30,8 @@ use Tiptap\Nodes\TaskList;
  */
 class PostContent
 {
+    public function __construct(private PostMentions $mentions) {}
+
     public function sanitize(?string $html): string
     {
         if (blank($html)) {
@@ -50,14 +53,15 @@ class PostContent
 
     /**
      * Prépare le contenu pour la lecture : ancre (id) sur les titres h2 et h3 pour le sommaire,
-     * coloration des blocs de code dont le langage est connu (`language-php`…).
+     * coloration des blocs de code dont le langage est connu (`language-php`…), mentions
+     * changées en liens avec leur carte de survol (voir PostMentions).
      *
-     * @return array{html: string, toc: list<array{id: string, text: string, level: int}>}
+     * @return array{html: string, toc: list<array{id: string, text: string, level: int}>, mentions: array<string, array{kind: string, title: string, description: string|null, image: string|null, url: string}>}
      */
-    public function forReading(string $html): array
+    public function forReading(string $html, ?string $locale = null): array
     {
         if (blank($html)) {
-            return ['html' => '', 'toc' => []];
+            return ['html' => '', 'toc' => [], 'mentions' => []];
         }
 
         $document = new DOMDocument;
@@ -85,6 +89,7 @@ class PostContent
         }
 
         $this->highlightCode($document, $xpath);
+        $mentions = $this->resolveMentions($document, $xpath, $locale ?? app()->getLocale());
 
         $output = '';
 
@@ -92,7 +97,47 @@ class PostContent
             $output .= $document->saveHTML($child);
         }
 
-        return ['html' => $output, 'toc' => $toc];
+        return ['html' => $output, 'toc' => $toc, 'mentions' => $mentions];
+    }
+
+    /**
+     * Change chaque mention en lien vers l'élément, au nom actuel, repéré par `data-mention`
+     * pour la carte de survol. Une mention d'un élément retiré devient son libellé en texte.
+     *
+     * @return array<string, array{kind: string, title: string, description: string|null, image: string|null, url: string}>
+     */
+    private function resolveMentions(DOMDocument $document, DOMXPath $xpath, string $locale): array
+    {
+        $nodes = iterator_to_array($xpath->query('//span[@data-type="mention"]'));
+
+        if ($nodes === []) {
+            return [];
+        }
+
+        $cards = $this->mentions->cards(array_map(fn ($node): array => [
+            'kind' => $node->getAttribute('data-kind'),
+            'id' => (int) $node->getAttribute('data-id'),
+        ], $nodes), $locale);
+
+        foreach ($nodes as $node) {
+            $key = $node->getAttribute('data-kind').':'.$node->getAttribute('data-id');
+            $card = $cards[$key] ?? null;
+
+            if ($card === null) {
+                $node->parentNode->replaceChild($document->createTextNode($node->getAttribute('data-label')), $node);
+
+                continue;
+            }
+
+            $link = $document->createElement('a');
+            $link->setAttribute('href', $card['url']);
+            $link->setAttribute('class', 'post-mention');
+            $link->setAttribute('data-mention', $key);
+            $link->appendChild($document->createTextNode($card['title']));
+            $node->parentNode->replaceChild($link, $node);
+        }
+
+        return $cards;
     }
 
     /**
@@ -137,6 +182,7 @@ class PostContent
                 new Subscript,
                 new Superscript,
                 new Image,
+                new PostMention,
                 new Table,
                 new TableRow,
                 new TableHeader,
