@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\ProjectStatus;
+use App\Models\Experience;
 use App\Models\Post;
 use App\Models\Project;
 use App\Models\Technology;
@@ -10,13 +11,14 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 /**
- * Éléments du site qu'un article peut mentionner avec « @ » (projets, articles, technologies).
+ * Éléments du site qu'un article peut mentionner avec « @ » (projets, articles, technologies,
+ * expériences).
  * Le contenu ne garde que le type et l'identifiant : le nom, le lien et la carte affichée au
  * survol sont lus à la lecture, et un élément retiré du site redevient du texte simple.
  */
 class PostMentions
 {
-    public const array KINDS = ['project', 'post', 'technology'];
+    public const array KINDS = ['project', 'post', 'technology', 'experience'];
 
     private const int SEARCH_LIMIT = 8;
 
@@ -48,6 +50,12 @@ class PostMentions
                 'id' => $technology->id,
                 'label' => $technology->name,
                 'hint' => $technology->getTranslation('description', 'fr') ?: null,
+            ]),
+            ...$this->experiences()->get()->map(fn (Experience $experience): array => [
+                'kind' => 'experience',
+                'id' => $experience->id,
+                'label' => $experience->company,
+                'hint' => $experience->getTranslation('role', 'fr') ?: null,
             ]),
         ])
             ->filter(fn (array $item): bool => $matches($item['label']))
@@ -104,6 +112,21 @@ class PostMentions
             }
         }
 
+        if ($ids->has('experience')) {
+            foreach ($this->experiences()->whereKey($ids['experience'])->get() as $experience) {
+                $cards["experience:{$experience->id}"] = [
+                    'kind' => 'experience',
+                    'title' => $experience->company,
+                    'description' => collect([
+                        $experience->getTranslation('role', $locale),
+                        $experience->start_date->year.' – '.($experience->end_date?->year ?? ($locale === 'en' ? 'today' : 'aujourd’hui')),
+                    ])->filter()->implode(' · '),
+                    'image' => null,
+                    'url' => route('about', ['locale' => $locale]),
+                ];
+            }
+        }
+
         return $cards;
     }
 
@@ -111,6 +134,12 @@ class PostMentions
     private function projects(): Builder
     {
         return Project::query()->where('status', ProjectStatus::Published)->orderBy('sort_order');
+    }
+
+    /** @return Builder<Experience> */
+    private function experiences(): Builder
+    {
+        return Experience::query()->published()->orderBy('sort_order');
     }
 
     /** @return Builder<Post> */

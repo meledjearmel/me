@@ -118,7 +118,7 @@ export type PublicPost = {
 };
 
 export type PublicPostMention = {
-    kind: 'project' | 'post' | 'technology';
+    kind: 'project' | 'post' | 'technology' | 'experience';
     title: string;
     description: string | null;
     image: string | null;

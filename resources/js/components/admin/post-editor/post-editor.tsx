@@ -19,6 +19,7 @@ import AiBar, { type AiBarHandle } from "./ai-bar";
 import { Mention } from "./mention";
 import MentionMenu from "./mention-menu";
 import type { EditorActions } from "./block-commands";
+import ImageBubble from "./image-bubble";
 import OutlineRail from "./outline-rail";
 import SelectionBubble from "./selection-bubble";
 import { type SlashBridge, SlashCommand } from "./slash-command";
@@ -247,6 +248,7 @@ export default function PostEditor({
                     </div>
 
                     <SelectionBubble editor={editor} actions={actions} />
+                    <ImageBubble editor={editor} />
                     <SlashMenu
                         editor={editor}
                         bridge={bridge}

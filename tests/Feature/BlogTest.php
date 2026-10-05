@@ -1,6 +1,8 @@
 <?php
 
 use App\Enums\ProjectStatus;
+use App\Enums\PublicationStatus;
+use App\Models\Experience;
 use App\Models\Post;
 use App\Models\PostTag;
 use App\Models\Profile;
@@ -190,4 +192,16 @@ test('a mention becomes a link to the item with its hover card, and plain text o
             && str_contains($body, 'et Vieux projet</p>'))
         ->where("post.mentions.project:{$project->id}.title", 'App Station')
         ->missing("post.mentions.project:{$archived->id}"));
+});
+
+test('a mentioned experience links to the about page, only once published', function () {
+    $experience = Experience::factory()->create(['company' => 'Orange', 'status' => PublicationStatus::Published]);
+    $hidden = Experience::factory()->create(['status' => PublicationStatus::Draft]);
+    $mention = fn (Experience $mentioned): string => "<span data-type=\"mention\" data-kind=\"experience\" data-id=\"{$mentioned->id}\" data-label=\"{$mentioned->company}\"></span>";
+    $post = Post::factory()->create(['body' => ['fr' => '<p>'.$mention($experience).' '.$mention($hidden).'</p>']]);
+
+    $this->get("/fr/blog/{$post->slug}")->assertInertia(fn ($page) => $page
+        ->where("post.mentions.experience:{$experience->id}.title", 'Orange')
+        ->where("post.mentions.experience:{$experience->id}.url", route('about', ['locale' => 'fr']))
+        ->missing("post.mentions.experience:{$hidden->id}"));
 });

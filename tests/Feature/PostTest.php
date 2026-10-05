@@ -55,3 +55,9 @@ test('a mention keeps only a known kind and a numeric id', function () {
         ->not->toContain('onclick')
         ->not->toContain('data-kind="user"');
 });
+
+test('an image keeps its alternative text', function () {
+    $post = Post::factory()->create(['body' => ['fr' => '<img src="/storage/a.jpg" alt="Architecture diagram">']]);
+
+    expect($post->getTranslation('body', 'fr'))->toContain('alt="Architecture diagram"');
+});

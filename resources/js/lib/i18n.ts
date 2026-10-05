@@ -316,6 +316,7 @@ const dictionaries = {
                 project: 'Projet',
                 post: 'Article',
                 technology: 'Technologie',
+                experience: 'Expérience',
             },
             previewNotice:
                 'Aperçu : cet article n’est pas encore visible sur le site.',
@@ -888,6 +889,7 @@ const dictionaries = {
                 project: 'Project',
                 post: 'Article',
                 technology: 'Technology',
+                experience: 'Experience',
             },
             previewNotice: 'Preview: this post is not visible on the site yet.',
             seriesLabel: 'Article series',

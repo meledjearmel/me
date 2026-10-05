@@ -3,7 +3,7 @@ import { PluginKey } from "@tiptap/pm/state";
 import Suggestion from "@tiptap/suggestion";
 import type { SlashBridge } from "./slash-command";
 
-export type MentionKind = "project" | "post" | "technology";
+export type MentionKind = "project" | "post" | "technology" | "experience";
 
 export type Mentionable = {
     kind: MentionKind;

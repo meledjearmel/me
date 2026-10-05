@@ -36,15 +36,14 @@ export function NavMain({
     const { isCurrentUrl } = useCurrentUrl();
     const hasActiveItem = items.some((item) => isCurrentUrl(item.href));
     const storageKey = `admin-nav:${label}`;
-    const [open, setOpen] = useState(
-        () => hasActiveItem || readStoredOpen(storageKey),
-    );
+    // Le choix mémorisé n'est lu qu'après l'hydratation : le rendu serveur n'a pas de localStorage.
+    const [open, setOpen] = useState(hasActiveItem);
 
     useEffect(() => {
-        if (hasActiveItem) {
+        if (hasActiveItem || readStoredOpen(storageKey)) {
             setOpen(true);
         }
-    }, [hasActiveItem]);
+    }, [hasActiveItem, storageKey]);
 
     const handleOpenChange = (value: boolean) => {
         setOpen(value);

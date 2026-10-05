@@ -1,5 +1,11 @@
 import type { Editor } from "@tiptap/core";
-import { FileText, FolderKanban, Wrench, type LucideIcon } from "lucide-react";
+import {
+    Briefcase,
+    FileText,
+    FolderKanban,
+    Wrench,
+    type LucideIcon,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import PostController from "@/actions/App/Http/Controllers/Admin/PostController";
@@ -11,6 +17,7 @@ const KINDS: Record<MentionKind, { label: string; icon: LucideIcon }> = {
     project: { label: "Projet", icon: FolderKanban },
     post: { label: "Article", icon: FileText },
     technology: { label: "Technologie", icon: Wrench },
+    experience: { label: "Expérience", icon: Briefcase },
 };
 
 /** Délai avant de chercher, pour ne pas lancer une requête par lettre tapée. */
