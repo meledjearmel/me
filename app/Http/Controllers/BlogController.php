@@ -91,6 +91,7 @@ class BlogController extends Controller
             'series' => $this->series($post, $locale),
             'adjacent' => $this->adjacentPosts($post, $locale),
             'preview' => $preview,
+            'sharesCount' => $preview ? 0 : $post->sharesTotal(),
             // Pas de réaction sur un aperçu : l'article n'est pas encore public.
             'reactions' => ! $preview && SiteSetting::current()->blog_reactions_enabled
                 ? $this->reactions->summary($post, $readerHash)

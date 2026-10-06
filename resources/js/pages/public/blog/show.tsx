@@ -7,6 +7,7 @@ import PostCard, { formatPostDate } from '@/components/public/post-card';
 import PostComments from '@/components/public/post-comments';
 import PostMentionCard from '@/components/public/post-mention-card';
 import type { PublicComment } from '@/components/public/post-comments';
+import PostShare from '@/components/public/post-share';
 import PostReactions from '@/components/public/post-reactions';
 import type { ReactionSummary } from '@/components/public/post-reactions';
 import { ProjectCta } from '@/components/public/project-parts';
@@ -193,6 +194,7 @@ export default function BlogShow({
     adjacent,
     reactions,
     comments,
+    sharesCount,
     preview = false,
 }: {
     post: PublicPost;
@@ -204,6 +206,8 @@ export default function BlogShow({
     reactions: ReactionSummary | null;
     /** Commentaires approuvés ; null quand ils sont désactivés ou sur un aperçu. */
     comments: PublicComment[] | null;
+    /** Partages comptés depuis le site, tous réseaux confondus. */
+    sharesCount: number;
     /** Brouillon ou article programmé, ouvert depuis un lien d'aperçu signé. */
     preview?: boolean;
 }) {
@@ -215,6 +219,7 @@ export default function BlogShow({
         post.body ?? '',
     );
     const progress = useReadingProgress(articleRef);
+    const [shares, setShares] = useState(sharesCount);
     const locale = useLocale();
     const path = useLocalizedPath();
     const { props } = usePage<{ siteUrl: string; profile: PublicProfile }>();
@@ -223,6 +228,7 @@ export default function BlogShow({
     const untranslated = post.content_locale !== locale;
     const description = post.excerpt ?? t.seo.blog;
     // Sans couverture, une image générée avec le titre de l'article.
+    const postUrl = `${props.siteUrl.replace(/\/$/, '')}/${locale}/blog/${post.slug}`;
     const shareImage =
         post.cover_url ??
         `${props.siteUrl.replace(/\/$/, '')}/${locale}/blog/${post.slug}/share.png`;
@@ -376,6 +382,16 @@ export default function BlogShow({
                                             </li>
                                         ))}
                                     </ol>
+                                    {!preview && (
+                                        <PostShare
+                                            slug={post.slug}
+                                            url={postUrl}
+                                            title={post.title}
+                                            count={shares}
+                                            onShared={setShares}
+                                            compact
+                                        />
+                                    )}
                                 </nav>
                             )}
 
@@ -406,6 +422,15 @@ export default function BlogShow({
                                     article={articleRef}
                                     mentions={post.mentions ?? {}}
                                 />
+                                {!preview && (
+                                    <PostShare
+                                        slug={post.slug}
+                                        url={postUrl}
+                                        title={post.title}
+                                        count={shares}
+                                        onShared={setShares}
+                                    />
+                                )}
                                 {reactions && (
                                     <PostReactions
                                         slug={post.slug}

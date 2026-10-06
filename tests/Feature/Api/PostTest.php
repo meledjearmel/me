@@ -4,6 +4,7 @@ use App\Ai\Agents\PostWriter;
 use App\Enums\ProjectStatus;
 use App\Jobs\TranslatePostTag;
 use App\Models\Post;
+use App\Models\PostShare;
 use App\Models\Profile;
 use App\Models\Project;
 use App\Models\User;
@@ -101,4 +102,18 @@ test('the mention suggestions mix the kinds so many projects do not hide an arti
         ->assertJsonCount(8, 'data')
         ->assertJsonPath('data.0.kind', 'project')
         ->assertJsonPath('data.1', fn (array $item): bool => $item['kind'] === 'post' && $item['id'] === $post->id);
+});
+
+test('a post exposes its share counts per network and in total', function () {
+    Sanctum::actingAs(User::factory()->create());
+    $post = Post::factory()->create();
+    PostShare::factory()->for($post)->count(2)->create(['network' => 'whatsapp']);
+    PostShare::factory()->for($post)->create(['network' => 'copy']);
+
+    $this->getJson(route('api.v1.posts.show', $post))
+        ->assertOk()
+        ->assertJsonPath('shares.whatsapp', 2)
+        ->assertJsonPath('shares.copy', 1)
+        ->assertJsonPath('shares.linkedin', 0)
+        ->assertJsonPath('shares_count', 3);
 });

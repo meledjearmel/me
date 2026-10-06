@@ -57,7 +57,7 @@ class PostController extends Controller
         return to_route('admin.posts.edit', $post);
     }
 
-    /** Consultation d'un article : contenu, lectures, réactions et commentaires reçus. */
+    /** Consultation d'un article : contenu, lectures, réactions, partages et commentaires reçus. */
     public function show(Post $post): Response
     {
         return Inertia::render('admin/posts/show', [
@@ -67,6 +67,7 @@ class PostController extends Controller
                 'is_live' => $post->isPublished(),
             ],
             'reactions' => $post->reactionCounts(),
+            'shares' => $post->shareCounts(),
             'comments' => $post->comments()->latest()->get(['id', 'author_name', 'author_email', 'body', 'locale', 'status', 'created_at']),
             'previewUrl' => $post->previewUrl(),
         ]);

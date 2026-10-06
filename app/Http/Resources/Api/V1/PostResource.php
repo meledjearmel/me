@@ -56,6 +56,15 @@ class PostResource extends JsonResource
              * @var array{like: int, love: int, fire: int, idea: int, think: int}
              */
             'reactions' => $this->reactionCounts(),
+            /**
+             * Partages depuis le site, par réseau : un par session, article et réseau toutes les
+             * 30 minutes, robots exclus. `copy` = lien copié, `native` = feuille de partage du téléphone.
+             *
+             * @var array{linkedin: int, x: int, whatsapp: int, facebook: int, email: int, copy: int, native: int}
+             */
+            'shares' => $this->shareCounts(),
+            /** Total des partages, tous réseaux confondus. */
+            'shares_count' => $this->sharesTotal(),
             /** Commentaires en attente de modération. */
             'pending_comments_count' => $this->comments()->where('status', 'pending')->count(),
             'cover_url' => $this->getFirstMediaUrl('cover') ?: null,

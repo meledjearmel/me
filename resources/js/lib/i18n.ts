@@ -312,6 +312,21 @@ const dictionaries = {
             relatedTitle: 'À lire aussi',
             copyCode: 'Copier',
             codeCopied: 'Copié',
+            shareLabel: 'Partager l’article',
+            shareTitle: 'Partager',
+            shareNative: 'Partager…',
+            shareOn: (network: string) => `Partager sur ${network}`,
+            shareNetworks: {
+                linkedin: 'LinkedIn',
+                x: 'X',
+                whatsapp: 'WhatsApp',
+                facebook: 'Facebook',
+                email: 'e-mail',
+            },
+            copyLink: 'Copier le lien',
+            linkCopied: 'Lien copié',
+            sharesCount: (count: number) =>
+                `${count} partage${count > 1 ? 's' : ''}`,
             rss: 'Flux RSS',
             rssHint:
                 'Suivre le blog dans un lecteur RSS, ou reprendre les articles sur votre site',
@@ -888,6 +903,21 @@ const dictionaries = {
             relatedTitle: 'Keep reading',
             copyCode: 'Copy',
             codeCopied: 'Copied',
+            shareLabel: 'Share this article',
+            shareTitle: 'Share',
+            shareNative: 'Share…',
+            shareOn: (network: string) => `Share on ${network}`,
+            shareNetworks: {
+                linkedin: 'LinkedIn',
+                x: 'X',
+                whatsapp: 'WhatsApp',
+                facebook: 'Facebook',
+                email: 'email',
+            },
+            copyLink: 'Copy link',
+            linkCopied: 'Link copied',
+            sharesCount: (count: number) =>
+                `${count} share${count > 1 ? 's' : ''}`,
             rss: 'RSS feed',
             rssHint:
                 'Follow the blog in an RSS reader, or show the articles on your own site',

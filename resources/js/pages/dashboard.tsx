@@ -10,6 +10,7 @@ import {
     MessagesSquare,
     SmilePlus,
     PartyPopper,
+    Share2,
     Sparkles,
 } from 'lucide-react';
 import type { ComponentType, ReactNode } from 'react';
@@ -62,6 +63,7 @@ type DashboardProps = {
         period_days: number | null;
         views_total: number;
         reactions: { total: number; period: number; by_type: Bar[] };
+        shares: { total: number; period: number; by_network: Bar[] };
         comments: {
             total: number;
             period: number;
@@ -75,6 +77,7 @@ type DashboardProps = {
             url: string;
             views: number;
             reactions: number;
+            shares: number;
             comments: number;
         }[];
     };
@@ -195,6 +198,17 @@ const REACTIONS: Record<string, string> = {
     fire: 'Impressionnant',
     idea: 'Instructif',
     think: 'Ça fait réfléchir',
+};
+
+/** Libellés des moyens de partage du blog. */
+const SHARE_NETWORKS: Record<string, string> = {
+    linkedin: 'LinkedIn',
+    x: 'X',
+    whatsapp: 'WhatsApp',
+    facebook: 'Facebook',
+    email: 'E-mail',
+    copy: 'Lien copié',
+    native: 'Partage du téléphone',
 };
 
 /** Libellés des types d'appareil. */
@@ -718,13 +732,19 @@ export default function Dashboard({
                 </Section>
 
                 {/* Engagement des lecteurs du blog */}
-                <div className="grid gap-4 lg:grid-cols-3">
+                <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
                     <div className="grid gap-4">
                         <StatCard
                             title={`Réactions sur ${blog.period_days ?? 'toute la'} ${blog.period_days ? 'jours' : 'période'}`}
                             value={number.format(blog.reactions.period)}
                             hint={`${number.format(blog.reactions.total)} au total · ${number.format(blog.views_total)} lectures d’articles`}
                             icon={SmilePlus}
+                        />
+                        <StatCard
+                            title={`Partages sur ${blog.period_days ?? 'toute la'} ${blog.period_days ? 'jours' : 'période'}`}
+                            value={number.format(blog.shares.period)}
+                            hint={`${number.format(blog.shares.total)} au total`}
+                            icon={Share2}
                         />
                         <Link href={postCommentsIndex()} className="block">
                             <StatCard
@@ -753,14 +773,33 @@ export default function Dashboard({
                         />
                     </Section>
                     <Section
+                        title="Partages par réseau"
+                        description="Sur la période"
+                    >
+                        <Bars
+                            rows={
+                                blog.shares.period === 0
+                                    ? []
+                                    : blog.shares.by_network.map((row) => ({
+                                          ...row,
+                                          label:
+                                              SHARE_NETWORKS[row.label] ??
+                                              row.label,
+                                      }))
+                            }
+                            empty="Aucun partage sur la période."
+                        />
+                    </Section>
+                    <Section
                         title="Articles qui font réagir"
-                        description="Réactions et commentaires sur la période"
+                        description="Réactions, partages et commentaires sur la période"
                     >
                         {blog.top_posts.length === 0 ? (
                             <Empty className="border py-6">
                                 <EmptyHeader>
                                     <EmptyDescription>
-                                        Aucune réaction ni commentaire.
+                                        Aucune réaction, aucun partage ni
+                                        commentaire.
                                     </EmptyDescription>
                                 </EmptyHeader>
                             </Empty>
@@ -781,6 +820,10 @@ export default function Dashboard({
                                             <span title="Réactions">
                                                 {number.format(row.reactions)}{' '}
                                                 réac.
+                                            </span>
+                                            <span title="Partages">
+                                                {number.format(row.shares)}{' '}
+                                                part.
                                             </span>
                                             <span title="Commentaires">
                                                 {number.format(row.comments)}{' '}

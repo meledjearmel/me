@@ -7987,6 +7987,131 @@ html.pub-scroll {
     will-change: transform;
 }
 
+/* Partage de l'article, sous le contenu et dans le sommaire */
+.pub-share {
+    margin-top: 3rem;
+}
+
+.pub-share__title {
+    margin: 0 0 0.8rem;
+    font-family: var(--pub-font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.pub-share__count {
+    opacity: 0.75;
+    font-variant-numeric: tabular-nums;
+}
+
+.pub-share__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Préfixé par .pub-share pour l'emporter sur les liens du sommaire. */
+.pub-share .pub-share__button {
+    display: inline-flex;
+    margin: 0;
+    opacity: 1;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-sizing: border-box;
+    width: 2.6rem;
+    height: 2.6rem;
+    padding: 0;
+    line-height: 1;
+    border: 1px solid color-mix(in oklab, var(--pub-text) 22%, transparent);
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        border-color 0.25s ease,
+        transform 0.3s var(--pub-ease-spring);
+}
+
+.pub-share .pub-share__button:hover {
+    transform: translateY(-2px);
+    border-color: var(--pub-text);
+}
+
+.pub-share .pub-share__button:focus-visible {
+    outline: 2px solid var(--pub-gold);
+    outline-offset: 2px;
+}
+
+/* Infobulle des boutons de partage, au survol et au focus clavier */
+.pub-share [data-tooltip] {
+    position: relative;
+}
+
+.pub-share [data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 0.5rem);
+    left: 50%;
+    z-index: 10;
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.4rem;
+    background: var(--pub-text);
+    color: var(--pub-bg);
+    font-family: var(--pub-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    text-transform: none;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, 4px);
+    transition:
+        opacity 0.15s ease,
+        transform 0.15s ease;
+}
+
+.pub-share [data-tooltip]:hover::after,
+.pub-share [data-tooltip]:focus-visible::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pub-share [data-tooltip]::after {
+        transition: none;
+    }
+}
+
+.pub-share__icon {
+    display: block;
+    flex-shrink: 0;
+    width: 1.05rem;
+    height: 1.05rem;
+}
+
+.pub-share .pub-share__button--native {
+    width: auto;
+    padding: 0 1rem;
+}
+
+.pub-share--compact {
+    margin-top: 2rem;
+}
+
+.pub-share--compact .pub-share__button.pub-share__button {
+    width: 2.2rem;
+    height: 2.2rem;
+}
+
+.pub-share--compact .pub-share__icon {
+    width: 0.95rem;
+    height: 0.95rem;
+}
+
 /* Réactions anonymes, sous le contenu */
 .pub-reactions {
     display: flex;

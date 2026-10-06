@@ -21,6 +21,25 @@ const REACTIONS: Record<ReactionType, { emoji: string; label: string }> = {
     think: { emoji: '💭', label: 'Ça fait réfléchir' },
 };
 
+type ShareNetwork =
+    | 'linkedin'
+    | 'x'
+    | 'whatsapp'
+    | 'facebook'
+    | 'email'
+    | 'copy'
+    | 'native';
+
+const SHARE_NETWORKS: Record<ShareNetwork, string> = {
+    linkedin: 'LinkedIn',
+    x: 'X',
+    whatsapp: 'WhatsApp',
+    facebook: 'Facebook',
+    email: 'E-mail',
+    copy: 'Lien copié',
+    native: 'Partage du téléphone',
+};
+
 const COMMENT_STATUS = {
     pending: { label: 'En attente', variant: 'secondary' },
     approved: { label: 'Publié', variant: 'default' },
@@ -40,16 +59,22 @@ function moderate(comment: PostComment, status: PostComment['status']): void {
 export default function PostShow({
     post,
     reactions,
+    shares,
     comments,
     previewUrl,
 }: {
     post: Post & { is_live: boolean };
     reactions: Record<ReactionType, number>;
+    shares: Record<ShareNetwork, number>;
     comments: Omit<PostComment, 'post'>[];
     /** Lien signé (72 h) vers l'article tel qu'il apparaîtra sur le site. */
     previewUrl: string;
 }) {
     const totalReactions = Object.values(reactions).reduce(
+        (sum, count) => sum + count,
+        0,
+    );
+    const totalShares = Object.values(shares).reduce(
         (sum, count) => sum + count,
         0,
     );
@@ -96,10 +121,11 @@ export default function PostShow({
                 {
                     title: 'Audience',
                     content: (
-                        <dl className="grid gap-4 sm:grid-cols-3">
+                        <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             {[
                                 ['Lectures', post.views_count ?? 0],
                                 ['Réactions', totalReactions],
+                                ['Partages', totalShares],
                                 [
                                     'Commentaires',
                                     comments.length,
@@ -152,6 +178,30 @@ export default function PostShow({
                                             <span className="text-xs text-muted-foreground">
                                                 {REACTIONS[type].label}
                                             </span>
+                                        </span>
+                                    </li>
+                                ),
+                            )}
+                        </ul>
+                    ),
+                },
+                {
+                    title: 'Partages',
+                    description:
+                        'Une fois par session et par réseau toutes les 30 minutes',
+                    content: (
+                        <ul className="grid gap-2 sm:grid-cols-4 lg:grid-cols-7">
+                            {(Object.keys(SHARE_NETWORKS) as ShareNetwork[]).map(
+                                (network) => (
+                                    <li
+                                        key={network}
+                                        className="grid rounded-lg border px-3 py-2"
+                                    >
+                                        <span className="font-medium tabular-nums">
+                                            {number.format(shares[network])}
+                                        </span>
+                                        <span className="text-xs text-muted-foreground">
+                                            {SHARE_NETWORKS[network]}
                                         </span>
                                     </li>
                                 ),

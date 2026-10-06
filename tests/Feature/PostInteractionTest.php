@@ -1,14 +1,17 @@
 <?php
 
 use App\Enums\CommentStatus;
+use App\Enums\PostShareNetwork;
 use App\Jobs\SendPushNotification;
 use App\Models\Post;
 use App\Models\PostComment;
 use App\Models\PostReaction;
+use App\Models\PostShare;
 use App\Models\Profile;
 use App\Models\SiteSetting;
 use App\Models\User;
 use App\Services\PostReactions;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
 
@@ -161,9 +164,10 @@ test('the API gives the reaction counts of a post', function () {
         ->assertJsonPath('reactions', ['like' => 0, 'love' => 0, 'fire' => 2, 'idea' => 0, 'think' => 0]);
 });
 
-test('the admin page of a post shows its reads, reactions and comments', function () {
+test('the admin page of a post shows its reads, reactions, shares and comments', function () {
     $post = Post::factory()->draft()->create(['views_count' => 12]);
     PostReaction::factory()->for($post)->count(3)->create(['type' => 'love']);
+    PostShare::factory()->for($post)->count(2)->create(['network' => 'whatsapp']);
     PostComment::factory()->for($post)->pending()->create(['author_name' => 'Awa']);
 
     $this->actingAs(User::factory()->create())
@@ -173,6 +177,7 @@ test('the admin page of a post shows its reads, reactions and comments', functio
             ->where('post.views_count', 12)
             ->where('post.is_live', false)
             ->where('reactions.love', 3)
+            ->where('shares.whatsapp', 2)
             ->where('comments.0.author_name', 'Awa')
             ->has('previewUrl'));
 });
@@ -183,6 +188,8 @@ test('the dashboard reports the blog engagement and the comments to moderate', f
     PostReaction::factory()->for($post)->create(['type' => 'like', 'created_at' => now()->subDays(60)]);
     PostComment::factory()->for($post)->pending()->create();
     PostComment::factory()->for($post)->create();
+    PostShare::factory()->for($post)->count(3)->create(['network' => 'linkedin']);
+    PostShare::factory()->for($post)->create(['network' => 'copy', 'created_at' => now()->subDays(60)]);
 
     Sanctum::actingAs(User::factory()->create());
 
@@ -192,6 +199,9 @@ test('the dashboard reports the blog engagement and the comments to moderate', f
         ->assertJsonPath('blog.reactions.total', 3)
         ->assertJsonPath('blog.reactions.period', 2)
         ->assertJsonPath('blog.reactions.by_type.2', ['label' => 'fire', 'count' => 2])
+        ->assertJsonPath('blog.shares.total', 4)
+        ->assertJsonPath('blog.shares.period', 3)
+        ->assertJsonPath('blog.shares.by_network.0', ['label' => 'linkedin', 'count' => 3])
         ->assertJsonPath('blog.comments.pending', 1)
         ->assertJsonPath('blog.comments.approved', 1)
         ->assertJsonPath('blog.top_posts.0', [
@@ -200,8 +210,49 @@ test('the dashboard reports the blog engagement and the comments to moderate', f
             'url' => "/fr/blog/{$post->slug}",
             'views' => 40,
             'reactions' => 2,
+            'shares' => 3,
             'comments' => 2,
         ]);
 
-    $this->get(route('dashboard'))->assertInertia(fn ($page) => $page->where('blog.reactions.period', 2));
+    $this->get(route('dashboard'))->assertInertia(fn ($page) => $page->where('blog.reactions.period', 2)->where('blog.shares.period', 3));
+});
+
+test('a share is counted and shown on the post', function () {
+    $post = Post::factory()->create();
+    $browser = ['User-Agent' => 'Mozilla/5.0'];
+
+    $this->withHeaders($browser)->postJson("/fr/blog/{$post->slug}/shares", ['network' => 'linkedin'])
+        ->assertOk()
+        ->assertJsonPath('total', 1);
+    $this->withHeaders($browser)->postJson("/fr/blog/{$post->slug}/shares", ['network' => 'copy'])
+        ->assertJsonPath('total', 2);
+
+    expect($post->shareCounts())->toMatchArray(['linkedin' => 1, 'copy' => 1, 'x' => 0]);
+
+    $this->get("/fr/blog/{$post->slug}")
+        ->assertInertia(fn ($page) => $page->where('sharesCount', 2));
+});
+
+test('a session counts only one share per network within half an hour', function () {
+    $post = Post::factory()->create();
+    $request = Request::create("/fr/blog/{$post->slug}/shares", 'POST', server: ['HTTP_USER_AGENT' => 'Mozilla/5.0']);
+    $request->setLaravelSession(app('session.store'));
+
+    $post->recordShare($request, PostShareNetwork::X);
+    $post->recordShare($request, PostShareNetwork::X);
+    $post->recordShare($request, PostShareNetwork::Email);
+    $this->travel(31)->minutes();
+    $post->recordShare($request, PostShareNetwork::X);
+
+    expect($post->shareCounts())->toMatchArray(['x' => 2, 'email' => 1]);
+});
+
+test('shares are refused on unknown networks or unpublished posts, and ignored for robots', function () {
+    $post = Post::factory()->create();
+
+    $this->postJson("/fr/blog/{$post->slug}/shares", ['network' => 'myspace'])->assertJsonValidationErrors('network');
+    $this->postJson('/fr/blog/'.Post::factory()->draft()->create()->slug.'/shares', ['network' => 'x'])->assertNotFound();
+    $this->withHeaders(['User-Agent' => 'Googlebot/2.1'])
+        ->postJson("/fr/blog/{$post->slug}/shares", ['network' => 'x'])
+        ->assertJsonPath('total', 0);
 });

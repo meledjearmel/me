@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PostReactionType;
+use App\Enums\PostShareNetwork;
 use App\Enums\PublicationStatus;
 use App\Services\PostContent;
 use App\Services\VisitorContext;
@@ -105,6 +106,52 @@ class Post extends Model implements HasMedia
     public function reactions(): HasMany
     {
         return $this->hasMany(PostReaction::class);
+    }
+
+    /** @return HasMany<PostShare, $this> */
+    public function shares(): HasMany
+    {
+        return $this->hasMany(PostShare::class);
+    }
+
+    /**
+     * Nombre de partages par réseau, tous à zéro par défaut.
+     *
+     * @return array<string, int>
+     */
+    public function shareCounts(): array
+    {
+        $counts = $this->shares()
+            ->toBase()
+            ->selectRaw('network, count(*) as total')
+            ->groupBy('network')
+            ->pluck('total', 'network');
+
+        return collect(PostShareNetwork::cases())
+            ->mapWithKeys(fn (PostShareNetwork $network): array => [$network->value => (int) ($counts[$network->value] ?? 0)])
+            ->all();
+    }
+
+    public function sharesTotal(): int
+    {
+        return $this->shares()->count();
+    }
+
+    /**
+     * Compte un partage, sauf pour un robot ou une session qui vient de partager
+     * l'article sur le même réseau.
+     */
+    public function recordShare(Request $request, PostShareNetwork $network): void
+    {
+        if (app(VisitorContext::class)->isBot($request)) {
+            return;
+        }
+
+        $key = "post-share:{$this->id}:{$network->value}:{$request->session()->getId()}";
+
+        if (Cache::add($key, true, now()->addMinutes(self::VIEW_DEDUPE_MINUTES))) {
+            $this->shares()->create(['network' => $network]);
+        }
     }
 
     /**

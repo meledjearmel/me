@@ -8,6 +8,7 @@ use App\Enums\ContactStatus;
 use App\Enums\EngagementStatus;
 use App\Enums\EngagementType;
 use App\Enums\PostReactionType;
+use App\Enums\PostShareNetwork;
 use App\Enums\ProjectStatus;
 use App\Enums\TestimonialStatus;
 use App\Models\Appointment;
@@ -22,6 +23,7 @@ use App\Models\PageVisit;
 use App\Models\Post;
 use App\Models\PostComment;
 use App\Models\PostReaction;
+use App\Models\PostShare;
 use App\Models\ProfessionalReference;
 use App\Models\Profile;
 use App\Models\Project;
@@ -372,7 +374,7 @@ class DashboardReport
     }
 
     /**
-     * Engagement des lecteurs du blog : lectures, réactions et commentaires, et les articles
+     * Engagement des lecteurs du blog : lectures, réactions, partages et commentaires, et les articles
      * qui en suscitent le plus sur la période.
      *
      * @return array{
@@ -380,8 +382,9 @@ class DashboardReport
      *     since: string|null,
      *     views_total: int,
      *     reactions: array{total: int, period: int, by_type: list<array{label: string, count: int}>},
+     *     shares: array{total: int, period: int, by_network: list<array{label: string, count: int}>},
      *     comments: array{total: int, period: int, pending: int, approved: int, rejected: int},
-     *     top_posts: list<array{id: int, title: string, url: string, views: int, reactions: int, comments: int}>,
+     *     top_posts: list<array{id: int, title: string, url: string, views: int, reactions: int, shares: int, comments: int}>,
      * }
      */
     private function blog(): array
@@ -399,9 +402,13 @@ class DashboardReport
             ->selectRaw('post_id, count(*) as total')->groupBy('post_id')->pluck('total', 'post_id');
         $commentsByPost = $this->inPeriod(PostComment::query(), $since)->toBase()
             ->selectRaw('post_id, count(*) as total')->groupBy('post_id')->pluck('total', 'post_id');
+        $sharesByPost = $this->inPeriod(PostShare::query(), $since)->toBase()
+            ->selectRaw('post_id, count(*) as total')->groupBy('post_id')->pluck('total', 'post_id');
+        $sharesByNetwork = $this->inPeriod(PostShare::query(), $since)->toBase()
+            ->selectRaw('network, count(*) as total')->groupBy('network')->pluck('total', 'network');
 
         $topPosts = Post::query()
-            ->whereKey($reactionsByPost->keys()->merge($commentsByPost->keys())->unique()->all())
+            ->whereKey($reactionsByPost->keys()->merge($commentsByPost->keys())->merge($sharesByPost->keys())->unique()->all())
             ->get(['id', 'slug', 'title', 'views_count'])
             ->map(fn (Post $post): array => [
                 'id' => $post->id,
@@ -409,9 +416,10 @@ class DashboardReport
                 'url' => "/fr/blog/{$post->slug}",
                 'views' => $post->views_count,
                 'reactions' => (int) ($reactionsByPost[$post->id] ?? 0),
+                'shares' => (int) ($sharesByPost[$post->id] ?? 0),
                 'comments' => (int) ($commentsByPost[$post->id] ?? 0),
             ])
-            ->sortByDesc(fn (array $row): int => $row['reactions'] + $row['comments'] * 3)
+            ->sortByDesc(fn (array $row): int => $row['reactions'] + $row['shares'] * 2 + $row['comments'] * 3)
             ->take(5)
             ->values()
             ->all();
@@ -431,6 +439,14 @@ class DashboardReport
                 /** Sur la période, dans l'ordre des réactions du site. */
                 'by_type' => collect(PostReactionType::cases())
                     ->map(fn (PostReactionType $type): array => ['label' => $type->value, 'count' => (int) ($reactionsByType[$type->value] ?? 0)])
+                    ->all(),
+            ],
+            'shares' => [
+                'total' => PostShare::query()->count(),
+                'period' => (int) $sharesByNetwork->sum(),
+                /** Sur la période, dans l'ordre des boutons du site. */
+                'by_network' => collect(PostShareNetwork::cases())
+                    ->map(fn (PostShareNetwork $network): array => ['label' => $network->value, 'count' => (int) ($sharesByNetwork[$network->value] ?? 0)])
                     ->all(),
             ],
             'comments' => [

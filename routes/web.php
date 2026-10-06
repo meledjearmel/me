@@ -20,6 +20,7 @@ use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\NowController;
 use App\Http\Controllers\PostCommentController;
 use App\Http\Controllers\PostReactionController;
+use App\Http\Controllers\PostShareController;
 use App\Http\Controllers\PostShareImageController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RobotsTxtController;
@@ -65,6 +66,9 @@ Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, Lo
     Route::post('blog/{post:slug}/reactions', PostReactionController::class)
         ->middleware('throttle:30,1')
         ->name('blog.reactions');
+    Route::post('blog/{post:slug}/shares', PostShareController::class)
+        ->middleware('throttle:30,1')
+        ->name('blog.shares');
     Route::post('blog/{post:slug}/comments', [PostCommentController::class, 'store'])
         ->middleware('throttle:5,1')
         ->name('blog.comments.store');
