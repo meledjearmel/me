@@ -9054,13 +9054,23 @@ html.pub-scroll {
         inset 0 1px 0 color-mix(in oklab, var(--pub-text) 10%, transparent),
         0 18px 40px -18px rgb(0 0 0 / 0.45);
     transform-origin: bottom right;
-    transition: opacity 0.2s ease;
+    transition:
+        opacity 0.2s ease,
+        visibility 0s;
 }
 
-/* L'éventail du bouton d'action passe devant : le mini-lecteur s'efface. */
+/*
+ * L'éventail du bouton d'action passe devant : le mini-lecteur s'efface,
+ * et sort aussi du focus clavier et des lecteurs d'écran (visibility).
+ * !important : framer-motion pose l'opacité en style en ligne.
+ */
 body:has(.pub-fab.is-open) .pub-listen-mini {
-    opacity: 0;
+    opacity: 0 !important;
+    visibility: hidden;
     pointer-events: none;
+    transition:
+        opacity 0.2s ease,
+        visibility 0s linear 0.2s;
 }
 
 @media (max-width: 707px) {
