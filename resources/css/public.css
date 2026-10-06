@@ -8999,15 +8999,38 @@ html.pub-scroll {
     height: 2.1rem;
 }
 
-@media (max-width: 560px) {
+/* Mobile : lecture et titre en haut ; voix, vitesse et arrêt dessous. */
+@media (max-width: 707px) {
     .pub-listen {
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-areas:
+            'play body body body'
+            'voice voice rate stop';
+        grid-template-columns: auto minmax(0, 1fr) auto auto;
+        row-gap: 0.75rem;
         border-radius: 18px;
     }
 
+    .pub-listen .pub-listen__play {
+        grid-area: play;
+    }
+
+    .pub-listen__body {
+        grid-area: body;
+    }
+
     .pub-listen .pub-listen__voice {
+        grid-area: voice;
+        width: 100%;
         max-width: none;
-        flex: 1;
+    }
+
+    .pub-listen .pub-listen__rate {
+        grid-area: rate;
+    }
+
+    .pub-listen .pub-listen__stop {
+        grid-area: stop;
     }
 }
 
