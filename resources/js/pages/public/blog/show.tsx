@@ -5,6 +5,7 @@ import NewsletterSignup from '@/components/public/newsletter-signup';
 import PageHero from '@/components/public/page-hero';
 import PostCard, { formatPostDate } from '@/components/public/post-card';
 import PostComments from '@/components/public/post-comments';
+import PostListen from '@/components/public/post-listen';
 import PostMentionCard from '@/components/public/post-mention-card';
 import type { PublicComment } from '@/components/public/post-comments';
 import PostShare from '@/components/public/post-share';
@@ -410,6 +411,11 @@ export default function BlogShow({
                                     </p>
                                 )}
                                 {series && <SeriesBox series={series} />}
+                                <PostListen
+                                    article={articleRef}
+                                    lang={post.content_locale}
+                                    html={post.body ?? ''}
+                                />
                                 <article
                                     ref={articleRef}
                                     className="post-content"

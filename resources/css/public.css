@@ -8879,3 +8879,382 @@ html.pub-scroll {
     height: 1rem;
     color: var(--pub-coral);
 }
+
+/* Lecture à voix haute de l'article */
+.pub-listen {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 0 2.5rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid color-mix(in oklab, var(--pub-text) 14%, transparent);
+    border-radius: 999px;
+    background: var(--pub-surface);
+}
+
+.pub-listen button,
+.pub-listen select {
+    flex: none;
+    border: 1px solid color-mix(in oklab, var(--pub-text) 22%, transparent);
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    transition:
+        border-color 0.25s ease,
+        transform 0.3s var(--pub-ease-spring);
+}
+
+.pub-listen button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font: inherit;
+}
+
+.pub-listen button:hover,
+.pub-listen select:hover {
+    border-color: var(--pub-text);
+}
+
+.pub-listen button:active {
+    transform: scale(0.94);
+}
+
+.pub-listen button:focus-visible,
+.pub-listen select:focus-visible {
+    outline: 2px solid var(--pub-gold);
+    outline-offset: 2px;
+}
+
+.pub-listen .pub-listen__play {
+    width: 2.6rem;
+    height: 2.6rem;
+    border-color: var(--pub-gold);
+    background: var(--pub-gold);
+    color: #111;
+}
+
+.pub-listen__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.pub-listen__title {
+    margin: 0;
+    font-family: var(--pub-font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+}
+
+.pub-listen__hint {
+    margin: 0.15rem 0 0;
+    font-size: 13px;
+    opacity: 0.7;
+}
+
+.pub-listen__bar {
+    display: block;
+    height: 3px;
+    margin-top: 0.45rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--pub-text) 12%, transparent);
+}
+
+.pub-listen__bar span {
+    display: block;
+    height: 100%;
+    background: var(--pub-gold);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+}
+
+.pub-listen .pub-listen__voice {
+    max-width: 8.5rem;
+    height: 2.1rem;
+    padding: 0 0.7rem;
+    font-size: 12px;
+    text-overflow: ellipsis;
+}
+
+.pub-listen .pub-listen__voice option {
+    background: var(--pub-surface);
+    color: var(--pub-text);
+}
+
+.pub-listen .pub-listen__rate {
+    min-width: 3rem;
+    height: 2.1rem;
+    padding: 0 0.6rem;
+    font-family: var(--pub-font-mono);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+.pub-listen .pub-listen__stop {
+    width: 2.1rem;
+    height: 2.1rem;
+}
+
+@media (max-width: 560px) {
+    .pub-listen {
+        flex-wrap: wrap;
+        border-radius: 18px;
+    }
+
+    .pub-listen .pub-listen__voice {
+        max-width: none;
+        flex: 1;
+    }
+}
+
+.pub-post .post-content.is-listening :is(h2, h3, h4, p, li, blockquote) {
+    cursor: pointer;
+}
+
+.pub-post .post-content .is-speaking {
+    border-radius: 6px;
+    background: color-mix(in oklab, var(--pub-gold) 18%, transparent);
+    box-shadow: 0 0 0 0.35rem color-mix(in oklab, var(--pub-gold) 18%, transparent);
+    transition: background-color 0.3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pub-listen__bar span {
+        transition: none;
+    }
+}
+
+/* Mini-lecteur translucide, posé au-dessus du bouton d'action flottant */
+.pub-listen-mini {
+    position: fixed;
+    right: clamp(14px, 2.4vw, 28px);
+    bottom: calc(clamp(22px, calc(4.5vw + 5px), 70px) + 72px);
+    z-index: 89;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    width: min(20rem, calc(100vw - 28px));
+    padding: 0.4rem;
+    overflow: hidden;
+    border: 1px solid color-mix(in oklab, var(--pub-text) 16%, transparent);
+    border-radius: 999px;
+    background: color-mix(
+        in oklab,
+        color-mix(in oklab, var(--pub-surface) 90%, var(--pub-text)) 70%,
+        transparent
+    );
+    color: var(--pub-text);
+    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    backdrop-filter: blur(20px) saturate(1.8);
+    box-shadow:
+        inset 0 1px 0 color-mix(in oklab, var(--pub-text) 10%, transparent),
+        0 18px 40px -18px rgb(0 0 0 / 0.45);
+    transform-origin: bottom right;
+    transition: opacity 0.2s ease;
+}
+
+/* L'éventail du bouton d'action passe devant : le mini-lecteur s'efface. */
+body:has(.pub-fab.is-open) .pub-listen-mini {
+    opacity: 0;
+    pointer-events: none;
+}
+
+@media (max-width: 707px) {
+    .pub-listen-mini {
+        bottom: calc(14px + 70px);
+    }
+}
+
+.pub-listen-mini button {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        opacity 0.2s ease,
+        transform 0.3s var(--pub-ease-spring);
+}
+
+.pub-listen-mini button:active {
+    transform: scale(0.94);
+}
+
+.pub-listen-mini button:focus-visible {
+    outline: 2px solid var(--pub-gold);
+    outline-offset: 2px;
+}
+
+.pub-listen-mini .pub-listen-mini__play {
+    width: 2.75rem;
+    height: 2.75rem;
+    background: var(--pub-gold);
+    color: #111;
+    box-shadow: 0 6px 16px -8px color-mix(in oklab, var(--pub-gold) 80%, transparent);
+}
+
+.pub-listen-mini .pub-listen-mini__info {
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+    min-width: 0;
+    padding: 0.2rem 0.5rem 0.2rem 0.6rem;
+    border-radius: 12px;
+    text-align: left;
+}
+
+.pub-listen-mini__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    width: 100%;
+    font-family: var(--pub-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--pub-gold);
+}
+
+.pub-listen-mini__count {
+    margin-left: auto;
+    opacity: 0.6;
+    color: var(--pub-text);
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+}
+
+.pub-listen-mini__section {
+    width: 100%;
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.25;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Égaliseur : trois barres qui dansent pendant la lecture */
+.pub-listen-mini__eq {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 10px;
+}
+
+.pub-listen-mini__eq i {
+    width: 2px;
+    height: 3px;
+    border-radius: 1px;
+    background: currentColor;
+}
+
+.pub-listen-mini__eq.is-playing i {
+    animation: pub-listen-eq 0.9s ease-in-out infinite;
+}
+
+.pub-listen-mini__eq.is-playing i:nth-child(2) {
+    animation-delay: -0.3s;
+}
+
+.pub-listen-mini__eq.is-playing i:nth-child(3) {
+    animation-delay: -0.6s;
+}
+
+@keyframes pub-listen-eq {
+    0%,
+    100% {
+        height: 3px;
+    }
+
+    50% {
+        height: 10px;
+    }
+}
+
+.pub-listen-mini .pub-listen-mini__rate,
+.pub-listen-mini .pub-listen-mini__stop {
+    width: 2.25rem;
+    height: 2.25rem;
+    opacity: 0.7;
+}
+
+.pub-listen-mini .pub-listen-mini__rate {
+    font-family: var(--pub-font-mono);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+.pub-listen-mini .pub-listen-mini__rate:hover,
+.pub-listen-mini .pub-listen-mini__stop:hover,
+.pub-listen-mini .pub-listen-mini__info:hover {
+    opacity: 1;
+    background: color-mix(in oklab, var(--pub-text) 9%, transparent);
+}
+
+/* Progression : un fil doré le long du bas de la pilule */
+.pub-listen-mini__progress {
+    position: absolute;
+    right: 1.4rem;
+    bottom: 0;
+    left: 1.4rem;
+    height: 2px;
+    border-radius: 2px;
+    background: color-mix(in oklab, var(--pub-text) 10%, transparent);
+}
+
+.pub-listen-mini__progress span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--pub-gold);
+    transform-origin: left;
+    transition: transform 0.5s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pub-listen-mini__eq.is-playing i {
+        animation: none;
+        height: 8px;
+    }
+
+    .pub-listen-mini__progress span {
+        transition: none;
+    }
+}
+
+/* Thème clair : verre blanc et libellés encre, le doré illisible sur crème */
+html:not(.dark) .pub-listen-mini {
+    border-color: color-mix(in oklab, var(--pub-text) 10%, transparent);
+    background: rgb(255 255 255 / 0.62);
+    box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 0.8),
+        0 18px 40px -20px rgb(60 45 10 / 0.35);
+}
+
+html:not(.dark) .pub-listen-mini__eyebrow {
+    color: color-mix(in oklab, var(--pub-text) 72%, transparent);
+}
+
+html:not(.dark) .pub-listen-mini__eq i {
+    background: #c99a00;
+}
+
+html:not(.dark) .pub-listen-mini__progress {
+    background: color-mix(in oklab, var(--pub-text) 8%, transparent);
+}
+
+html:not(.dark) .pub-listen-mini__progress span {
+    background: #e0b400;
+}
