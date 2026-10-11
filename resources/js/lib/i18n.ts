@@ -163,6 +163,28 @@ const dictionaries = {
                     `${count} étoile${count > 1 ? 's' : ''}`,
                 updated: 'Mis à jour le',
                 profile: 'Voir mon profil GitHub',
+                calendar: {
+                    title: 'Mon activité',
+                    periods: {
+                        week: 'Semaine',
+                        month: 'Mois',
+                        year: 'Année',
+                    },
+                    periodLabel: 'Période affichée',
+                    total: (count: number) =>
+                        `${count} contribution${count > 1 ? 's' : ''}`,
+                    since: {
+                        week: 'ces 7 derniers jours',
+                        month: 'ces 30 derniers jours',
+                        year: 'cette année',
+                    },
+                    privateRepository: 'Projet privé',
+                    nothing: 'Pas de contribution',
+                    others: (count: number) =>
+                        `et ${count} autre${count > 1 ? 's' : ''}`,
+                    less: 'Moins',
+                    more: 'Plus',
+                },
             },
             present: "aujourd'hui",
             heading:
@@ -769,6 +791,27 @@ const dictionaries = {
                     `${count} star${count > 1 ? 's' : ''}`,
                 updated: 'Updated',
                 profile: 'See my GitHub profile',
+                calendar: {
+                    title: 'My activity',
+                    periods: {
+                        week: 'Week',
+                        month: 'Month',
+                        year: 'Year',
+                    },
+                    periodLabel: 'Period shown',
+                    total: (count: number) =>
+                        `${count} contribution${count > 1 ? 's' : ''}`,
+                    since: {
+                        week: 'in the last 7 days',
+                        month: 'in the last 30 days',
+                        year: 'this year',
+                    },
+                    privateRepository: 'Private project',
+                    nothing: 'No contributions',
+                    others: (count: number) => `and ${count} more`,
+                    less: 'Less',
+                    more: 'More',
+                },
             },
             present: 'present',
             heading: 'I build software people actually use.',

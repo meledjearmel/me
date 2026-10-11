@@ -8,6 +8,7 @@ use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -30,6 +31,9 @@ class GitHubActivity
     /** Dépôts montrés quand aucun n'est choisi dans l'administration. */
     private const int AUTOMATIC_COUNT = 6;
 
+    /** Niveaux d'intensité du calendrier GitHub, de 0 (rien) à 4 (le quart le plus actif). */
+    private const array CONTRIBUTION_LEVELS = ['NONE' => 0, 'FIRST_QUARTILE' => 1, 'SECOND_QUARTILE' => 2, 'THIRD_QUARTILE' => 3, 'FOURTH_QUARTILE' => 4];
+
     /** Dépôts montrés au plus quand ils sont choisis. */
     public const int MAX_SELECTED = 12;
 
@@ -43,6 +47,13 @@ class GitHubActivity
             repositories(first: 100, ownerAffiliations: OWNER, orderBy: {field: PUSHED_AT, direction: DESC}) { nodes { ...repository } }
             repositoriesContributedTo(first: 100, includeUserRepositories: false, contributionTypes: [COMMIT, PULL_REQUEST, REPOSITORY], orderBy: {field: PUSHED_AT, direction: DESC}) { nodes { ...repository } }
             contributionsCollection(from: $from) { totalCommitContributions totalPullRequestContributions totalIssueContributions totalPullRequestReviewContributions restrictedContributionsCount }
+            calendar: contributionsCollection {
+              contributionCalendar { weeks { contributionDays { date contributionCount contributionLevel } } }
+              commitContributionsByRepository(maxRepositories: 100) { repository { nameWithOwner isPrivate } contributions(first: 100, orderBy: {field: OCCURRED_AT, direction: DESC}) { nodes { occurredAt commitCount } } }
+              pullRequestContributionsByRepository(maxRepositories: 100) { repository { nameWithOwner isPrivate } contributions(first: 100, orderBy: {direction: DESC}) { nodes { occurredAt } } }
+              pullRequestReviewContributionsByRepository(maxRepositories: 100) { repository { nameWithOwner isPrivate } contributions(first: 100, orderBy: {direction: DESC}) { nodes { occurredAt } } }
+              issueContributionsByRepository(maxRepositories: 100) { repository { nameWithOwner isPrivate } contributions(first: 100, orderBy: {direction: DESC}) { nodes { occurredAt } } }
+            }
           }
         }
         fragment repository on Repository {
@@ -55,7 +66,7 @@ class GitHubActivity
      * L'activité affichée sur le site : les dépôts choisis dans l'ordre, sinon le choix
      * automatique. Null tant qu'aucune synchronisation n'a réussi.
      *
-     * @return array{username: string, profile_url: string, public_repos: int, followers: int, contributions_last_30_days: int, repositories: list<array<string, mixed>>, synced_at: string}|null
+     * @return array{username: string, profile_url: string, public_repos: int, followers: int, contributions_last_30_days: int, repositories: list<array<string, mixed>>, calendar: list<array{date: string, count: int, level: int, repositories: list<array{name: string|null, count: int}>}>|null, synced_at: string}|null
      */
     public function forDisplay(): ?array
     {
@@ -92,6 +103,17 @@ class GitHubActivity
                 ])
                 ->values()
                 ->all(),
+            // Un dépôt privé reste anonyme : on montre le travail, pas son nom.
+            'calendar' => isset($cached['calendar'])
+                ? collect($cached['calendar'])
+                    ->map(fn (array $day): array => [
+                        ...$day,
+                        'repositories' => collect($day['repositories'])
+                            ->map(fn (array $repository): array => ['name' => $repository['private'] ? null : $repository['full_name'], 'count' => $repository['count']])
+                            ->all(),
+                    ])
+                    ->all()
+                : null,
             'synced_at' => $cached['synced_at'],
         ];
     }
@@ -144,16 +166,23 @@ class GitHubActivity
 
     /**
      * Avec un jeton : mes dépôts (privés compris), ceux auxquels j'ai contribué, et mes
-     * contributions des 30 derniers jours (privées comprises, en nombre seulement).
+     * contributions des 30 derniers jours (privées comprises, en nombre seulement) et le
+     * calendrier de l'année, jour par jour avec les dépôts travaillés.
      *
      * @return array<string, mixed>
      */
     private function fetchWithToken(): array
     {
-        $viewer = $this->client()
+        $response = $this->client()
             ->post('/graphql', ['query' => self::GRAPHQL_QUERY, 'variables' => ['from' => now()->subDays(30)->toIso8601String()]])
-            ->throw()
-            ->json('data.viewer');
+            ->throw();
+
+        // GraphQL répond 200 même quand la requête est refusée : l'erreur est dans le corps.
+        if ($response->json('errors')) {
+            throw new RuntimeException('GitHub GraphQL : '.$response->json('errors.0.message'));
+        }
+
+        $viewer = $response->json('data.viewer');
 
         $contributions = $viewer['contributionsCollection'];
 
@@ -174,7 +203,43 @@ class GitHubActivity
                 ->unique('full_name')
                 ->values()
                 ->all(),
+            'calendar' => $this->calendar($viewer['calendar']),
         ];
+    }
+
+    /**
+     * Les jours de l'année (du plus ancien au plus récent) avec, pour chacun, les dépôts
+     * travaillés et leur nombre de contributions (commits, pull requests, revues, issues).
+     *
+     * @param  array<string, mixed>  $collection
+     * @return list<array{date: string, count: int, level: int, repositories: list<array{full_name: string, private: bool, count: int}>}>
+     */
+    private function calendar(array $collection): array
+    {
+        $byDay = [];
+
+        foreach (['commit', 'pullRequest', 'pullRequestReview', 'issue'] as $type) {
+            foreach ($collection["{$type}ContributionsByRepository"] ?? [] as $entry) {
+                $name = $entry['repository']['nameWithOwner'];
+
+                foreach ($entry['contributions']['nodes'] as $node) {
+                    $date = Carbon::parse($node['occurredAt'])->timezone(config('app.timezone'))->toDateString();
+                    $byDay[$date][$name] ??= ['full_name' => $name, 'private' => (bool) $entry['repository']['isPrivate'], 'count' => 0];
+                    $byDay[$date][$name]['count'] += (int) ($node['commitCount'] ?? 1);
+                }
+            }
+        }
+
+        return collect($collection['contributionCalendar']['weeks'])
+            ->flatMap(fn (array $week): array => $week['contributionDays'])
+            ->map(fn (array $day): array => [
+                'date' => $day['date'],
+                'count' => (int) $day['contributionCount'],
+                'level' => self::CONTRIBUTION_LEVELS[$day['contributionLevel']] ?? 0,
+                'repositories' => collect($byDay[$day['date']] ?? [])->sortByDesc('count')->values()->all(),
+            ])
+            ->values()
+            ->all();
     }
 
     /**
@@ -220,6 +285,7 @@ class GitHubActivity
                 ])
                 ->values()
                 ->all(),
+            'calendar' => null,
         ];
     }
 

@@ -83,8 +83,44 @@ function fakeGraphQlGitHub(): void
             'totalPullRequestReviewContributions' => 2,
             'restrictedContributionsCount' => 10,
         ],
+        'calendar' => [
+            'contributionCalendar' => ['weeks' => [['contributionDays' => [
+                ['date' => '2026-10-05', 'contributionCount' => 0, 'contributionLevel' => 'NONE'],
+                ['date' => '2026-10-06', 'contributionCount' => 6, 'contributionLevel' => 'FOURTH_QUARTILE'],
+            ]]]],
+            'commitContributionsByRepository' => [
+                ['repository' => ['nameWithOwner' => 'armel/public-repo', 'isPrivate' => false], 'contributions' => ['nodes' => [['occurredAt' => '2026-10-06T07:00:00Z', 'commitCount' => 3]]]],
+                ['repository' => ['nameWithOwner' => 'armel/secret', 'isPrivate' => true], 'contributions' => ['nodes' => [['occurredAt' => '2026-10-06T07:00:00Z', 'commitCount' => 1]]]],
+            ],
+            'pullRequestContributionsByRepository' => [
+                ['repository' => ['nameWithOwner' => 'armel/public-repo', 'isPrivate' => false], 'contributions' => ['nodes' => [['occurredAt' => '2026-10-06T09:00:00Z']]]],
+            ],
+            'pullRequestReviewContributionsByRepository' => [],
+            'issueContributionsByRepository' => [],
+        ],
     ]]])]);
 }
+
+test('with a token, the calendar lists each day with the repositories worked on, private ones kept anonymous', function () {
+    config(['services.github.token' => 'github_pat_test', 'app.timezone' => 'UTC']);
+    fakeGraphQlGitHub();
+
+    $this->artisan('github:sync')->assertSuccessful();
+
+    $this->get('/fr/about')->assertInertia(fn ($page) => $page
+        ->has('github.calendar', 2)
+        ->where('github.calendar.0', ['date' => '2026-10-05', 'count' => 0, 'level' => 0, 'repositories' => []])
+        ->where('github.calendar.1.level', 4)
+        ->where('github.calendar.1.repositories', [['name' => 'armel/public-repo', 'count' => 4], ['name' => null, 'count' => 1]]));
+});
+
+test('without a token, there is no calendar', function () {
+    fakePublicGitHub();
+
+    $this->artisan('github:sync')->assertSuccessful();
+
+    expect(app(GitHubActivity::class)->forDisplay()['calendar'])->toBeNull();
+});
 
 test('without a token, the sync reads my public repositories and the automatic choice skips forks and archives', function () {
     fakePublicGitHub();

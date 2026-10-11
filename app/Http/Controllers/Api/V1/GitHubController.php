@@ -21,7 +21,8 @@ class GitHubController extends Controller
      * `available` : tous les dépôts de la dernière synchronisation (les miens, privés compris,
      * et ceux auxquels j'ai contribué quand un jeton GitHub est configuré). `selected` : ceux
      * choisis, dans l'ordre (vide : choix automatique parmi mes dépôts publics). Un dépôt
-     * privé choisi s'affiche sans lien.
+     * privé choisi s'affiche sans lien. `calendar` : l'année de contributions jour par jour
+     * (niveau de 0 à 4 et dépôts travaillés), null sans jeton GitHub.
      */
     public function show(): JsonResponse
     {
@@ -54,7 +55,7 @@ class GitHubController extends Controller
     }
 
     /**
-     * @return array{available: list<array{full_name: string, name: string, description: string|null, language: string|null, stars: int, url: string, pushed_at: string|null, private: bool, archived: bool, contribution: bool}>, selected: list<string>, synced_at: string|null, has_token: bool}
+     * @return array{available: list<array{full_name: string, name: string, description: string|null, language: string|null, stars: int, url: string, pushed_at: string|null, private: bool, archived: bool, contribution: bool}>, selected: list<string>, calendar: list<array{date: string, count: int, level: int, repositories: list<array{full_name: string, private: bool, count: int}>}>|null, synced_at: string|null, has_token: bool}
      */
     private function payload(): array
     {
@@ -63,6 +64,7 @@ class GitHubController extends Controller
         return [
             'available' => $cached['available'] ?? [],
             'selected' => SiteSetting::current()->github_repositories ?? [],
+            'calendar' => $cached['calendar'] ?? null,
             'synced_at' => $cached['synced_at'] ?? null,
             /** Un jeton GitHub est configuré (contributions et dépôts privés disponibles). */
             'has_token' => $this->github->hasToken(),

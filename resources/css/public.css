@@ -8714,6 +8714,262 @@ html.pub-scroll {
     }
 }
 
+/* Calendrier de contributions : semaine en barres, mois en calendrier, année en grille */
+.pub-github-cal {
+    margin: 0 0 clamp(1.5rem, 4vw, 2.5rem);
+    padding: clamp(1rem, 3vw, 1.5rem);
+    border-radius: 16px;
+    background: var(--pub-surface);
+}
+
+.pub-github-cal__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.pub-github-cal__title {
+    margin: 0;
+    font-family: var(--pub-font-mono);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.pub-github-cal__periods {
+    display: inline-flex;
+    padding: 3px;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--pub-text) 8%, transparent);
+}
+
+.pub-github-cal__periods button {
+    padding: 0.35rem 0.85rem;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.pub-github-cal__periods button[aria-pressed='true'] {
+    background: var(--pub-bg);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
+}
+
+.pub-github-cal__total {
+    margin: 0.75rem 0 1rem;
+    opacity: 0.85;
+}
+
+.pub-github-cal__body {
+    position: relative;
+}
+
+/* Teintes plus soutenues en clair : le jaune pâle disparaît sur le sable. */
+.pub-github-cal {
+    --pub-cal-0: rgb(6 6 6 / 0.09);
+    --pub-cal-1: #f3cf5a;
+    --pub-cal-2: #e9a93b;
+    --pub-cal-3: #df7a3c;
+    --pub-cal-4: #bf4527;
+}
+
+.dark .pub-github-cal {
+    --pub-cal-0: color-mix(in oklab, var(--pub-text) 9%, transparent);
+    --pub-cal-1: color-mix(in oklab, var(--pub-gold) 35%, var(--pub-surface));
+    --pub-cal-2: color-mix(in oklab, var(--pub-gold) 60%, var(--pub-surface));
+    --pub-cal-3: color-mix(in oklab, var(--pub-gold) 85%, var(--pub-coral));
+    --pub-cal-4: color-mix(in oklab, var(--pub-coral) 80%, var(--pub-gold));
+}
+
+.pub-github-cal__day {
+    --pub-cal-level: var(--pub-cal-0);
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: var(--pub-cal-level);
+    color: inherit;
+    font: inherit;
+    cursor: default;
+}
+
+.pub-github-cal__day[data-level='1'] {
+    --pub-cal-level: var(--pub-cal-1);
+}
+
+.pub-github-cal__day[data-level='2'] {
+    --pub-cal-level: var(--pub-cal-2);
+}
+
+.pub-github-cal__day[data-level='3'] {
+    --pub-cal-level: var(--pub-cal-3);
+}
+
+.pub-github-cal__day[data-level='4'] {
+    --pub-cal-level: var(--pub-cal-4);
+}
+
+.pub-github-cal__day:focus-visible {
+    outline: 2px solid var(--pub-text);
+    outline-offset: 2px;
+}
+
+/* Semaine : une barre par jour, hauteur proportionnelle */
+.pub-github-cal--week .pub-github-cal__grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: clamp(0.4rem, 2vw, 1rem);
+    height: 180px;
+}
+
+.pub-github-cal--week .pub-github-cal__day {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    justify-items: center;
+    gap: 0.35rem;
+    background: transparent;
+}
+
+.pub-github-cal--week .pub-github-cal__bar {
+    align-self: end;
+    width: min(100%, 44px);
+    border-radius: 8px 8px 4px 4px;
+    background: var(--pub-cal-level);
+    transition: height 0.4s var(--pub-ease-smooth);
+}
+
+.pub-github-cal__count {
+    font-family: var(--pub-font-mono);
+    font-size: 0.8rem;
+}
+
+.pub-github-cal__label {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    text-transform: capitalize;
+}
+
+/* Mois : calendrier de 7 colonnes, lundi en premier */
+.pub-github-cal--month .pub-github-cal__grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+}
+
+.pub-github-cal--month .pub-github-cal__day {
+    height: clamp(34px, 6vw, 48px);
+    border-radius: 8px;
+    font-size: 0.8rem;
+}
+
+/* Année : semaines en colonnes, jours en lignes */
+.pub-github-cal__scroll {
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.pub-github-cal--year .pub-github-cal__grid {
+    display: grid;
+    grid-auto-columns: minmax(10px, 1fr);
+    grid-auto-flow: column;
+    grid-template-rows: repeat(7, auto);
+    gap: 3px;
+    /* 53 semaines d'au moins 10 px : en dessous, la grille défile. */
+    min-width: 690px;
+    padding-bottom: 4px;
+}
+
+.pub-github-cal--year .pub-github-cal__day,
+.pub-github-cal--year .pub-github-cal__gap {
+    aspect-ratio: 1;
+    border-radius: 3px;
+}
+
+.pub-github-cal__tooltip {
+    position: absolute;
+    z-index: 5;
+    display: grid;
+    gap: 0.25rem;
+    width: max-content;
+    max-width: 240px;
+    padding: 0.65rem 0.8rem;
+    border-radius: 12px;
+    background: var(--pub-text);
+    color: var(--pub-bg);
+    font-size: 0.8rem;
+    line-height: 1.35;
+    pointer-events: none;
+    transform: translate(-50%, calc(-100% - 8px));
+}
+
+.pub-github-cal__tooltip strong {
+    text-transform: capitalize;
+}
+
+.pub-github-cal__tooltip ul {
+    display: grid;
+    gap: 0.15rem;
+    margin: 0.25rem 0 0;
+    padding: 0.4rem 0 0;
+    border-top: 1px solid color-mix(in oklab, var(--pub-bg) 25%, transparent);
+    list-style: none;
+}
+
+.pub-github-cal__tooltip li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.pub-github-cal__tooltip li span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pub-github-cal__tooltip li span:last-child {
+    font-family: var(--pub-font-mono);
+    opacity: 0.75;
+}
+
+.pub-github-cal__legend {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    margin-top: 0.75rem;
+    font-size: 0.75rem;
+    opacity: 0.75;
+}
+
+.pub-github-cal__legend .pub-github-cal__day {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+.pub-github-cal__legend .pub-github-cal__day:first-of-type {
+    margin-left: 4px;
+}
+
+.pub-github-cal__legend .pub-github-cal__day:last-of-type {
+    margin-right: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pub-github-cal--week .pub-github-cal__bar {
+        transition: none;
+    }
+}
+
 /* Série d'articles : encadré en tête de l'article */
 .pub-series {
     margin: 0 0 2.5rem;

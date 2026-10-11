@@ -1,3 +1,5 @@
+import GitHubCalendar from '@/components/public/github-calendar';
+import type { GitHubCalendarDay } from '@/components/public/github-calendar';
 import { useLocale, useTranslations } from '@/lib/i18n';
 
 export type GitHubActivityData = {
@@ -18,6 +20,8 @@ export type GitHubActivityData = {
         private: boolean;
         contribution: boolean;
     }[];
+    /** L'année jour par jour ; `null` sans jeton GitHub. */
+    calendar: GitHubCalendarDay[] | null;
     synced_at: string;
 };
 
@@ -45,7 +49,10 @@ export default function GitHubActivity({
         }).format(new Date(iso));
 
     return (
-        <section className="pub-exp pub-github" aria-labelledby="pub-github-title">
+        <section
+            className="pub-exp pub-github"
+            aria-labelledby="pub-github-title"
+        >
             <div className="site-wrap">
                 <h2 id="pub-github-title" className="pub-exp__title">
                     {t.about.github.title}
@@ -55,7 +62,10 @@ export default function GitHubActivity({
                     {[
                         [t.about.github.repos, github.public_repos],
                         [t.about.github.followers, github.followers],
-                        [t.about.github.contributions, github.contributions_last_30_days],
+                        [
+                            t.about.github.contributions,
+                            github.contributions_last_30_days,
+                        ],
                     ].map(([label, value]) => (
                         <div key={label}>
                             <dt>{label}</dt>
@@ -63,6 +73,10 @@ export default function GitHubActivity({
                         </div>
                     ))}
                 </dl>
+
+                {github.calendar && github.calendar.length > 0 && (
+                    <GitHubCalendar days={github.calendar} />
+                )}
 
                 <ul className="pub-github__repos">
                     {github.repositories.map((repository) => {
@@ -73,7 +87,9 @@ export default function GitHubActivity({
                                     repository.contribution) && (
                                     <span className="pub-github__badges">
                                         {repository.private && (
-                                            <span>{t.about.github.private}</span>
+                                            <span>
+                                                {t.about.github.private}
+                                            </span>
                                         )}
                                         {repository.contribution && (
                                             <span>
