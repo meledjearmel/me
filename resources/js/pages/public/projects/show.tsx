@@ -3,6 +3,8 @@ import { useRef } from 'react';
 import { plainMentions } from '@/components/public/mention-text';
 import PageHero from '@/components/public/page-hero';
 import PostMentionCard from '@/components/public/post-mention-card';
+import ProjectGitHub from '@/components/public/project-github';
+import type { ProjectGitHubData } from '@/components/public/project-github';
 import {
     accentStyle,
     ProjectCta,
@@ -15,11 +17,7 @@ import Seo from '@/components/public/seo';
 import PublicShell from '@/components/public/public-shell';
 import ReviewInvite from '@/components/public/review-invite';
 import { useLocale, useLocalizedPath, useTranslations } from '@/lib/i18n';
-import type {
-    PublicProfile,
-    PublicProject,
-    PublicTestimonial,
-} from '@/types';
+import type { PublicProfile, PublicProject, PublicTestimonial } from '@/types';
 
 /** Première phrase d'un texte : sert de chapô dans le bandeau. */
 const firstSentence = (text: string) => {
@@ -32,10 +30,12 @@ export default function ProjectShow({
     project,
     nextProject,
     testimonial,
+    github,
 }: {
     project: PublicProject;
     nextProject: PublicProject | null;
     testimonial: PublicTestimonial | null;
+    github: ProjectGitHubData | null;
 }) {
     const t = useTranslations();
     const locale = useLocale();
@@ -124,6 +124,7 @@ export default function ProjectShow({
                         mentions={project.mentions}
                     />
                     <ProjectGallery urls={project.gallery_urls} />
+                    {github && <ProjectGitHub github={github} />}
 
                     {otherRelated.length > 0 && (
                         <section

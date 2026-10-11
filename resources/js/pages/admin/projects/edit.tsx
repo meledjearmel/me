@@ -5,6 +5,8 @@ import ProjectCaseStudyFields, {
     ProjectDecisionsField,
 } from '@/components/admin/project-case-study-fields';
 import FormPageHeader from '@/components/admin/form-page-header';
+import ProjectGitHubField from '@/components/admin/project-github-field';
+import type { GitHubRepositoryOption } from '@/components/admin/project-github-field';
 import TranslatableField from '@/components/translatable-field';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -27,6 +29,7 @@ type PageProps = {
     technologies: Technology[];
     projects: Project[];
     relatedProjectIds: number[];
+    githubRepositories: GitHubRepositoryOption[];
 };
 
 export default function ProjectEdit({
@@ -36,6 +39,7 @@ export default function ProjectEdit({
     technologies,
     projects,
     relatedProjectIds,
+    githubRepositories,
 }: PageProps) {
     return (
         <>
@@ -162,6 +166,12 @@ export default function ProjectEdit({
                                     <FieldError>{errors.demo_url}</FieldError>
                                 </Field>
                             </div>
+
+                            <ProjectGitHubField
+                                repositories={githubRepositories}
+                                defaultValue={project.github_repository}
+                                error={errors.github_repository}
+                            />
 
                             <div className="grid gap-2 sm:grid-cols-2">
                                 <Field data-invalid={!!errors.status}>

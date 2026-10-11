@@ -1,3 +1,4 @@
+import { Link } from '@inertiajs/react';
 import GitHubCalendar from '@/components/public/github-calendar';
 import type { GitHubCalendarDay } from '@/components/public/github-calendar';
 import { useLocale, useTranslations } from '@/lib/i18n';
@@ -19,6 +20,8 @@ export type GitHubActivityData = {
         pushed_at: string | null;
         private: boolean;
         contribution: boolean;
+        /** Projet publié lié à ce dépôt. */
+        project: { title: string; url: string } | null;
     }[];
     /** L'année jour par jour ; `null` sans jeton GitHub. */
     calendar: GitHubCalendarDay[] | null;
@@ -132,6 +135,15 @@ export default function GitHubActivity({
                                     <div className="pub-github__card">
                                         {content}
                                     </div>
+                                )}
+                                {repository.project && (
+                                    <Link
+                                        href={repository.project.url}
+                                        className="pub-github__case-study"
+                                    >
+                                        {t.about.github.caseStudy}
+                                        <span aria-hidden="true"> →</span>
+                                    </Link>
                                 )}
                             </li>
                         );

@@ -7,8 +7,15 @@ export type GitHubCalendarDay = {
     count: number;
     /** De 0 (rien) à 4 (le quart le plus actif de l'année). */
     level: number;
-    /** `name` est `null` pour un dépôt privé. */
-    repositories: { name: string | null; count: number }[];
+    /**
+     * `name` : le titre du projet publié lié s'il y en a un, sinon le dépôt ; `null` pour
+     * un dépôt privé sans projet.
+     */
+    repositories: {
+        name: string | null;
+        count: number;
+        project: { title: string; url: string } | null;
+    }[];
 };
 
 type Period = 'week' | 'month' | 'year';

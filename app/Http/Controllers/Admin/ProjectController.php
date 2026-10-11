@@ -10,6 +10,7 @@ use App\Models\Domain;
 use App\Models\JobProfile;
 use App\Models\Project;
 use App\Models\Technology;
+use App\Services\GitHubActivity;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -138,6 +139,15 @@ class ProjectController extends Controller
             'jobProfiles' => JobProfile::query()->orderBy('sort_order')->get(),
             'technologies' => Technology::query()->orderBy('name')->get(),
             'projects' => Project::query()->orderBy('sort_order')->get(['id', 'title', 'slug']),
+            // Dépôts de la dernière synchronisation GitHub, privés compris, pour le lien au projet.
+            'githubRepositories' => collect(app(GitHubActivity::class)->cached()['available'] ?? [])
+                ->map(fn (array $repository): array => [
+                    'full_name' => $repository['full_name'],
+                    'private' => $repository['private'],
+                    'url' => $repository['url'],
+                ])
+                ->sortBy('full_name')
+                ->values(),
         ];
     }
 }

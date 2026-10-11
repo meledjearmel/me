@@ -10,12 +10,15 @@ use App\Http\Resources\Public\TestimonialResource;
 use App\Models\Domain;
 use App\Models\Project;
 use App\Models\Testimonial;
+use App\Services\GitHubActivity;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 class ProjectController extends Controller
 {
+    public function __construct(private GitHubActivity $github) {}
+
     public function index(): Response
     {
         return Inertia::render('public/projects/index', [
@@ -45,6 +48,8 @@ class ProjectController extends Controller
             'project' => new ProjectResource($project),
             'nextProject' => $next ? new ProjectResource($next) : null,
             'testimonial' => $testimonial ? new TestimonialResource($testimonial) : null,
+            // Lu dans le cache de `github:sync` : null sans dépôt lié.
+            'github' => $this->github->forProject($project),
         ]);
     }
 

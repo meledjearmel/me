@@ -8714,6 +8714,104 @@ html.pub-scroll {
     }
 }
 
+.pub-github__repos li {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    gap: 0.5rem;
+}
+
+.pub-github__case-study {
+    justify-self: start;
+    padding-left: 0.25rem;
+    color: inherit;
+    font-size: 0.9rem;
+    text-decoration: underline;
+    text-decoration-color: var(--pub-gold);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+}
+
+/* Encart GitHub de la page d'un projet */
+.pub-project-github {
+    margin-block: clamp(2rem, 6vw, 4rem);
+}
+
+.pub-project-github__card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    align-items: end;
+    gap: clamp(1rem, 4vw, 2.5rem);
+    padding: clamp(1.25rem, 3vw, 2rem);
+    border-radius: 16px;
+    background: var(--pub-surface);
+}
+
+.pub-project-github__head {
+    display: grid;
+    gap: 0.4rem;
+}
+
+.pub-project-github__head h2 {
+    margin: 0 0 0.35rem;
+    font-family: var(--pub-font-mono);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.pub-project-github__head a,
+.pub-project-github__head strong {
+    font-family: var(--pub-font-display);
+    font-size: clamp(1.3rem, 3vw, 1.8rem);
+    font-weight: 400;
+    line-height: 1.15;
+    color: inherit;
+    overflow-wrap: anywhere;
+}
+
+.pub-project-github__head p {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.pub-project-github__weeks {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.pub-project-github__weeks div {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 72px;
+}
+
+.pub-project-github__weeks span {
+    flex: 1;
+    border-radius: 2px;
+    background: var(--accent, #df7a3c);
+}
+
+.pub-project-github__weeks span[data-empty] {
+    background: color-mix(in oklab, var(--pub-text) 12%, transparent);
+}
+
+.pub-project-github__weeks figcaption {
+    font-size: 0.85rem;
+    opacity: 0.75;
+    text-align: right;
+}
+
+@media (max-width: 720px) {
+    .pub-project-github__card {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Calendrier de contributions : semaine en barres, mois en calendrier, année en grille */
 .pub-github-cal {
     margin: 0 0 clamp(1.5rem, 4vw, 2.5rem);

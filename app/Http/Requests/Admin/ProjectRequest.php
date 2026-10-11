@@ -49,6 +49,8 @@ class ProjectRequest extends FormRequest
             'key_figures.*.label.en' => ['required', 'string', 'max:80'],
             'accent_color' => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'repo_url' => ['nullable', 'url', 'max:255'],
+            // « propriétaire/nom », pris de préférence dans les dépôts synchronisés (privés compris).
+            'github_repository' => ['nullable', 'string', 'max:200', 'regex:~^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$~'],
             'demo_url' => ['nullable', 'url', 'max:255'],
             'is_featured' => ['boolean'],
             'is_open_source' => ['boolean'],

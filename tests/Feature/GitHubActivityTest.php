@@ -1,6 +1,8 @@
 <?php
 
+use App\Enums\ProjectStatus;
 use App\Models\Profile;
+use App\Models\Project;
 use App\Models\SiteSetting;
 use App\Models\User;
 use App\Services\GitHubActivity;
@@ -111,7 +113,7 @@ test('with a token, the calendar lists each day with the repositories worked on,
         ->has('github.calendar', 2)
         ->where('github.calendar.0', ['date' => '2026-10-05', 'count' => 0, 'level' => 0, 'repositories' => []])
         ->where('github.calendar.1.level', 4)
-        ->where('github.calendar.1.repositories', [['name' => 'armel/public-repo', 'count' => 4], ['name' => null, 'count' => 1]]));
+        ->where('github.calendar.1.repositories', [['name' => 'armel/public-repo', 'count' => 4, 'project' => null], ['name' => null, 'count' => 1, 'project' => null]]));
 });
 
 test('without a token, there is no calendar', function () {
@@ -203,4 +205,55 @@ test('the selection is available through the API', function () {
         ->assertJsonPath('selected', ['armel/recent'])
         ->assertJsonPath('has_token', false)
         ->assertJsonCount(3, 'available');
+});
+
+test('a repository linked to a published project points to it, and a private one takes its title', function () {
+    config(['services.github.token' => 'github_pat_test', 'app.timezone' => 'UTC']);
+    fakeGraphQlGitHub();
+    $this->artisan('github:sync');
+    SiteSetting::current()->update(['github_repositories' => ['armel/public-repo', 'armel/secret']]);
+    $secret = Project::factory()->create(['title' => ['fr' => 'Coffre', 'en' => 'Vault'], 'slug' => 'coffre', 'github_repository' => 'armel/secret']);
+    Project::factory()->create(['status' => ProjectStatus::Archived, 'github_repository' => 'armel/public-repo']);
+    $project = ['title' => 'Coffre', 'url' => route('projects.show', ['locale' => 'fr', 'project' => 'coffre'])];
+
+    $this->get('/fr/about')->assertInertia(fn ($page) => $page
+        ->where('github.repositories.0.project', null)
+        ->where('github.repositories.1.project', $project)
+        ->where('github.calendar.1.repositories', [
+            ['name' => 'armel/public-repo', 'count' => 4, 'project' => null],
+            ['name' => 'Coffre', 'count' => 1, 'project' => $project],
+        ]));
+
+    $this->get("/fr/projects/{$secret->slug}")->assertInertia(fn ($page) => $page
+        ->where('github.name', null)
+        ->where('github.url', null)
+        ->where('github.private', true)
+        ->where('github.total', 1));
+});
+
+test('a project page without a linked repository has no GitHub panel', function () {
+    $project = Project::factory()->create(['github_repository' => null]);
+
+    $this->get("/fr/projects/{$project->slug}")->assertInertia(fn ($page) => $page->where('github', null));
+});
+
+test('the linked repository must look like owner/name', function () {
+    $project = Project::factory()->create();
+    $attributes = [
+        'title' => $project->getTranslations('title'),
+        'slug' => $project->slug,
+        'context' => $project->getTranslations('context'),
+        'realization' => $project->getTranslations('realization'),
+        'result' => $project->getTranslations('result'),
+        'status' => 'published',
+        'sort_order' => 0,
+    ];
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->put(route('admin.projects.update', $project), [...$attributes, 'github_repository' => 'https://github.com/armel/secret'])
+        ->assertSessionHasErrors('github_repository');
+
+    $this->actingAs($user)->put(route('admin.projects.update', $project), [...$attributes, 'github_repository' => 'armel/secret'])
+        ->assertSessionHasNoErrors();
+    expect($project->fresh()->github_repository)->toBe('armel/secret');
 });

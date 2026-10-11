@@ -40,6 +40,7 @@ class Project extends Model implements HasMedia
         'team_size',
         'accent_color',
         'repo_url',
+        'github_repository',
         'demo_url',
         'is_featured',
         'is_open_source',

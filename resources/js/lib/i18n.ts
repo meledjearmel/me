@@ -163,6 +163,7 @@ const dictionaries = {
                     `${count} étoile${count > 1 ? 's' : ''}`,
                 updated: 'Mis à jour le',
                 profile: 'Voir mon profil GitHub',
+                caseStudy: "Voir l'étude de cas",
                 calendar: {
                     title: 'Mon activité',
                     periods: {
@@ -300,6 +301,14 @@ const dictionaries = {
             related: 'Projets liés',
             typeLabel: 'Type',
             linksLabel: 'Liens',
+            github: {
+                title: 'Sur GitHub',
+                privateRepository: 'Dépôt privé',
+                contributions: (count: number) =>
+                    `${count} contribution${count > 1 ? 's' : ''} cette année`,
+                lastActivity: 'Dernière activité le',
+                weeksLabel: 'Contributions par semaine sur un an',
+            },
             readNext: 'À lire ensuite',
             ctaTitle: "Envie d'en voir plus ?",
             ctaText:
@@ -791,6 +800,7 @@ const dictionaries = {
                     `${count} star${count > 1 ? 's' : ''}`,
                 updated: 'Updated',
                 profile: 'See my GitHub profile',
+                caseStudy: 'See the case study',
                 calendar: {
                     title: 'My activity',
                     periods: {
@@ -925,6 +935,14 @@ const dictionaries = {
             related: 'Related projects',
             typeLabel: 'Type',
             linksLabel: 'Links',
+            github: {
+                title: 'On GitHub',
+                privateRepository: 'Private repository',
+                contributions: (count: number) =>
+                    `${count} contribution${count > 1 ? 's' : ''} this year`,
+                lastActivity: 'Last activity',
+                weeksLabel: 'Contributions per week over a year',
+            },
             readNext: 'Read next',
             ctaTitle: 'Want to see more?',
             ctaText:

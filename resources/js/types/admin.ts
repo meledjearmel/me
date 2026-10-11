@@ -178,6 +178,8 @@ export type Project = {
     key_figures: ProjectKeyFigure[] | null;
     accent_color: string | null;
     repo_url: string | null;
+    /** « propriétaire/nom », privé compris. */
+    github_repository: string | null;
     demo_url: string | null;
     is_featured: boolean;
     is_open_source: boolean;

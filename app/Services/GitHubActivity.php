@@ -2,10 +2,13 @@
 
 namespace App\Services;
 
+use App\Enums\ProjectStatus;
 use App\Models\Profile;
+use App\Models\Project;
 use App\Models\SiteSetting;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
@@ -66,7 +69,10 @@ class GitHubActivity
      * L'activité affichée sur le site : les dépôts choisis dans l'ordre, sinon le choix
      * automatique. Null tant qu'aucune synchronisation n'a réussi.
      *
-     * @return array{username: string, profile_url: string, public_repos: int, followers: int, contributions_last_30_days: int, repositories: list<array<string, mixed>>, calendar: list<array{date: string, count: int, level: int, repositories: list<array{name: string|null, count: int}>}>|null, synced_at: string}|null
+     * Un dépôt lié à un projet publié porte ce projet (`project`) : la carte et l'infobulle
+     * du calendrier y renvoient, et un dépôt privé prend alors le titre du projet.
+     *
+     * @return array{username: string, profile_url: string, public_repos: int, followers: int, contributions_last_30_days: int, repositories: list<array<string, mixed>>, calendar: list<array{date: string, count: int, level: int, repositories: list<array{name: string|null, count: int, project: array{title: string, url: string}|null}>}>|null, synced_at: string}|null
      */
     public function forDisplay(): ?array
     {
@@ -75,6 +81,8 @@ class GitHubActivity
         if ($cached === null) {
             return null;
         }
+
+        $projects = $this->publishedProjects();
 
         $available = collect($cached['available'] ?? [])->keyBy('full_name');
         $selected = SiteSetting::current()->github_repositories ?? [];
@@ -100,22 +108,91 @@ class GitHubActivity
                 ->map(fn (array $repository): array => [
                     ...collect($repository)->only(['full_name', 'name', 'description', 'language', 'stars', 'pushed_at', 'private', 'contribution'])->all(),
                     'url' => $repository['private'] ? null : $repository['url'],
+                    'project' => $projects->get(strtolower($repository['full_name'])),
                 ])
                 ->values()
                 ->all(),
-            // Un dépôt privé reste anonyme : on montre le travail, pas son nom.
+            // Un dépôt privé reste anonyme, sauf s'il est lié à un projet publié : on montre
+            // alors le titre du projet, jamais le nom du dépôt.
             'calendar' => isset($cached['calendar'])
                 ? collect($cached['calendar'])
                     ->map(fn (array $day): array => [
                         ...$day,
                         'repositories' => collect($day['repositories'])
-                            ->map(fn (array $repository): array => ['name' => $repository['private'] ? null : $repository['full_name'], 'count' => $repository['count']])
+                            ->map(function (array $repository) use ($projects): array {
+                                $project = $projects->get(strtolower($repository['full_name']));
+
+                                return [
+                                    'name' => $project['title'] ?? ($repository['private'] ? null : $repository['full_name']),
+                                    'count' => $repository['count'],
+                                    'project' => $project,
+                                ];
+                            })
                             ->all(),
                     ])
                     ->all()
                 : null,
             'synced_at' => $cached['synced_at'],
         ];
+    }
+
+    /**
+     * L'encart GitHub de la page d'un projet : son dépôt lié et ses contributions semaine
+     * par semaine sur l'année. Un dépôt privé n'a ni nom ni lien. Null sans dépôt lié ou
+     * s'il est absent de la dernière synchronisation.
+     *
+     * @return array{name: string|null, url: string|null, language: string|null, stars: int, pushed_at: string|null, private: bool, total: int, weeks: list<int>|null}|null
+     */
+    public function forProject(Project $project): ?array
+    {
+        if (blank($project->github_repository) || ($cached = $this->cached()) === null) {
+            return null;
+        }
+
+        $fullName = strtolower($project->github_repository);
+        $repository = collect($cached['available'] ?? [])->first(fn (array $repository): bool => strtolower($repository['full_name']) === $fullName);
+
+        if ($repository === null) {
+            return null;
+        }
+
+        $weeks = isset($cached['calendar'])
+            ? collect($cached['calendar'])
+                ->chunk(7)
+                ->map(fn ($days): int => $days->sum(fn (array $day): int => collect($day['repositories'])
+                    ->filter(fn (array $entry): bool => strtolower($entry['full_name']) === $fullName)
+                    ->sum('count')))
+                ->values()
+                ->all()
+            : null;
+
+        return [
+            'name' => $repository['private'] ? null : $repository['full_name'],
+            'url' => $repository['private'] ? null : $repository['url'],
+            'language' => $repository['language'],
+            'stars' => $repository['stars'],
+            'pushed_at' => $repository['pushed_at'],
+            'private' => $repository['private'],
+            'total' => $weeks === null ? 0 : array_sum($weeks),
+            'weeks' => $weeks,
+        ];
+    }
+
+    /**
+     * Les projets publiés liés à un dépôt, par nom de dépôt en minuscules.
+     *
+     * @return Collection<string, array{title: string, url: string}>
+     */
+    private function publishedProjects(): Collection
+    {
+        return Project::query()
+            ->where('status', ProjectStatus::Published)
+            ->whereNotNull('github_repository')
+            ->get(['id', 'title', 'slug', 'github_repository'])
+            ->mapWithKeys(fn (Project $project): array => [strtolower($project->github_repository) => [
+                'title' => $project->title,
+                'url' => route('projects.show', ['locale' => app()->getLocale(), 'project' => $project->slug]),
+            ]]);
     }
 
     /** @return array<string, mixed>|null */

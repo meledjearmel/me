@@ -102,6 +102,11 @@ class ProjectResource extends JsonResource
             'key_figures' => $this->key_figures ?? [],
             'accent_color' => $this->accent_color,
             'repo_url' => $this->repo_url,
+            /**
+             * Dépôt GitHub lié (« propriétaire/nom », privé compris), pris dans `available` de
+             * `GET /github`. Jamais publié : il relie le projet à l'activité synchronisée.
+             */
+            'github_repository' => $this->github_repository,
             'demo_url' => $this->demo_url,
             'is_featured' => $this->is_featured,
             'is_open_source' => $this->is_open_source,
