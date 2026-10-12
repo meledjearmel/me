@@ -9,6 +9,7 @@ import AiDraftBadge from "@/components/admin/ai-draft-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Domain, ListFilters, Paginated, Skill } from "@/types";
+import ActionTooltip from "@/components/admin/action-tooltip";
 
 export default function SkillsIndex({
     skills,
@@ -23,7 +24,7 @@ export default function SkillsIndex({
         <>
             <Head title="Compétences" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <Heading
                         title="Compétences"
@@ -97,22 +98,26 @@ export default function SkillsIndex({
                     )}
                     actions={(row) => (
                         <>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link
-                                    href={SkillController.show(row.id)}
-                                    aria-label="Voir"
-                                >
-                                    <Eye />
-                                </Link>
-                            </Button>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link
-                                    href={SkillController.edit(row.id)}
-                                    aria-label="Modifier"
-                                >
-                                    <SquarePen />
-                                </Link>
-                            </Button>
+                            <ActionTooltip label="Voir">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={SkillController.show(row.id)}
+                                        aria-label="Voir"
+                                    >
+                                        <Eye />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
+                            <ActionTooltip label="Modifier">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={SkillController.edit(row.id)}
+                                        aria-label="Modifier"
+                                    >
+                                        <SquarePen />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
                             <DeleteButton
                                 href={SkillController.destroy.url(row.id)}
                                 confirmMessage={`Supprimer la compétence "${row.name.fr}" ?`}

@@ -11,7 +11,7 @@ export default function UsesItemCreate() {
         <>
             <Head title="Nouvel élément « Uses »" />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Nouvel élément"
                     description="Matériel, outil, application ou service"

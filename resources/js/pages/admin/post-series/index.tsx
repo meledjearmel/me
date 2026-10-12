@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { index as postsIndex } from '@/routes/admin/posts';
 import { index as pageIndex } from '@/routes/admin/post-series';
 import type { ListFilters, Paginated, PostSeries } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 export default function PostSeriesIndex({
     series,
@@ -21,7 +22,7 @@ export default function PostSeriesIndex({
         <>
             <Head title="Séries d’articles" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <Heading
                     title="Séries d’articles"
                     description="Créées depuis le formulaire d’un article (champ « Série ») ; leur nom anglais se corrige ici."
@@ -51,14 +52,16 @@ export default function PostSeriesIndex({
                     ]}
                     actions={(row) => (
                         <>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link
-                                    href={PostSeriesController.edit(row.id)}
-                                    aria-label="Modifier"
-                                >
-                                    <SquarePen />
-                                </Link>
-                            </Button>
+                            <ActionTooltip label="Modifier">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={PostSeriesController.edit(row.id)}
+                                        aria-label="Modifier"
+                                    >
+                                        <SquarePen />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
                             <DeleteButton
                                 href={PostSeriesController.destroy.url(row.id)}
                                 confirmMessage={`Supprimer la série "${row.name.fr}" ? Ses ${row.posts_count} article(s) restent publiés, hors série.`}

@@ -21,7 +21,7 @@ export default function TrashIndex({
         <>
             <Head title="Corbeille" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <Heading
                         title="Corbeille"

@@ -19,7 +19,7 @@ export default function JobProfileCreate() {
         <>
             <Head title="Nouveau profil métier" />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Nouveau profil métier"
                     description="Ex. Ingénieur full-stack, Chargé IT, Lead Tech..."

@@ -11,7 +11,7 @@ export default function CelebrationCreate() {
         <>
             <Head title="Nouvelle surprise" />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Nouvelle surprise"
                     description="Une bonne nouvelle que le personnage annoncera aux visiteurs"

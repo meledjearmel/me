@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { index as postsIndex } from '@/routes/admin/posts';
 import { index as pageIndex } from '@/routes/admin/post-tags';
 import type { ListFilters, Paginated, PostTag } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 export default function PostTagsIndex({
     tags,
@@ -21,7 +22,7 @@ export default function PostTagsIndex({
         <>
             <Head title="Tags du blog" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <Heading
                     title="Tags du blog"
                     description="Créés depuis les articles ; le nom anglais est traduit automatiquement, à corriger ici si besoin."
@@ -56,14 +57,16 @@ export default function PostTagsIndex({
                     ]}
                     actions={(row) => (
                         <>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link
-                                    href={PostTagController.edit(row.id)}
-                                    aria-label="Modifier"
-                                >
-                                    <SquarePen />
-                                </Link>
-                            </Button>
+                            <ActionTooltip label="Modifier">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={PostTagController.edit(row.id)}
+                                        aria-label="Modifier"
+                                    >
+                                        <SquarePen />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
                             <DeleteButton
                                 href={PostTagController.destroy.url(row.id)}
                                 confirmMessage={`Supprimer le tag "${row.name.fr}" ? Il sera retiré de ${row.posts_count} article(s).`}

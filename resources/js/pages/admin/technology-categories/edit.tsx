@@ -22,7 +22,7 @@ export default function TechnologyCategoryEdit({
         <>
             <Head title={`Modifier — ${category.label.fr}`} />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Modifier la catégorie"
                     description={category.label.fr}

@@ -15,7 +15,7 @@ export default function PostCreate({
         <>
             <Head title="Nouvel article" />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Nouvel article"
                     backHref={postsIndex()}

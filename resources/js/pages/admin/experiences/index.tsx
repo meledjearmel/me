@@ -9,6 +9,7 @@ import AiDraftBadge from "@/components/admin/ai-draft-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ListFilters, Paginated, Experience } from "@/types";
+import ActionTooltip from "@/components/admin/action-tooltip";
 
 export default function ExperiencesIndex({
     experiences,
@@ -21,7 +22,7 @@ export default function ExperiencesIndex({
         <>
             <Head title="Expériences" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <Heading title="Expériences" />
                     <Button asChild>
@@ -83,22 +84,26 @@ export default function ExperiencesIndex({
                     )}
                     actions={(row) => (
                         <>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link
-                                    href={ExperienceController.show(row.id)}
-                                    aria-label="Voir"
-                                >
-                                    <Eye />
-                                </Link>
-                            </Button>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link
-                                    href={ExperienceController.edit(row.id)}
-                                    aria-label="Modifier"
-                                >
-                                    <SquarePen />
-                                </Link>
-                            </Button>
+                            <ActionTooltip label="Voir">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={ExperienceController.show(row.id)}
+                                        aria-label="Voir"
+                                    >
+                                        <Eye />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
+                            <ActionTooltip label="Modifier">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={ExperienceController.edit(row.id)}
+                                        aria-label="Modifier"
+                                    >
+                                        <SquarePen />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
                             <DeleteButton
                                 href={ExperienceController.destroy.url(row.id)}
                                 confirmMessage={`Supprimer l'expérience "${row.company}" ?`}

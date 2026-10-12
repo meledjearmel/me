@@ -28,7 +28,7 @@ export default function RevisionsIndex({
         <>
             <Head title="Révisions proposées" />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <Heading
                     title="Révisions proposées"
                     description="Modifications de contenus en ligne proposées par l'IA. Rien ne change sur le site avant que vous les appliquiez."

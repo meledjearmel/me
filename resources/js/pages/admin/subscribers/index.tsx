@@ -33,7 +33,7 @@ export default function SubscribersIndex({
         <>
             <Head title="Newsletter" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <Heading
                     title="Newsletter"
                     description="Les abonnés qui reçoivent chaque nouvel article du blog"

@@ -11,6 +11,7 @@ import {
     update,
 } from '@/routes/admin/post-comments';
 import type { ListFilters, Paginated, PostComment } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 const STATUS_VARIANT = {
     pending: 'secondary',
@@ -39,7 +40,7 @@ export default function PostCommentsIndex({
         <>
             <Head title="Commentaires" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <Heading
                     title="Commentaires"
                     description="Modération des commentaires du blog : seuls les commentaires publiés apparaissent sous les articles"
@@ -116,26 +117,34 @@ export default function PostCommentsIndex({
                     actions={(row) => (
                         <>
                             {row.status !== 'approved' && (
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    aria-label="Publier"
-                                    title="Publier"
-                                    onClick={() => moderate(row, 'approved')}
-                                >
-                                    <Check />
-                                </Button>
+                                <ActionTooltip label="Publier">
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        aria-label="Publier"
+                                        title="Publier"
+                                        onClick={() =>
+                                            moderate(row, 'approved')
+                                        }
+                                    >
+                                        <Check />
+                                    </Button>
+                                </ActionTooltip>
                             )}
                             {row.status !== 'rejected' && (
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    aria-label="Refuser"
-                                    title="Refuser"
-                                    onClick={() => moderate(row, 'rejected')}
-                                >
-                                    <X />
-                                </Button>
+                                <ActionTooltip label="Refuser">
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        aria-label="Refuser"
+                                        title="Refuser"
+                                        onClick={() =>
+                                            moderate(row, 'rejected')
+                                        }
+                                    >
+                                        <X />
+                                    </Button>
+                                </ActionTooltip>
                             )}
                             <DeleteButton
                                 href={destroy.url(row.id)}

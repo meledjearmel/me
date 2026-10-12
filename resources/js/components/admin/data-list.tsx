@@ -1,7 +1,8 @@
 import { router } from '@inertiajs/react';
-import { SearchIcon, XIcon } from 'lucide-react';
+import { ArrowLeft, ArrowRight, SearchIcon, XIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Empty,
@@ -14,15 +15,6 @@ import {
     InputGroupAddon,
     InputGroupInput,
 } from '@/components/ui/input-group';
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from '@/components/ui/pagination';
 import {
     Select,
     SelectContent,
@@ -39,6 +31,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 import type { ListFilters, Paginated } from '@/types';
 
 const ALL = 'all';
@@ -122,7 +115,7 @@ export function ListToolbar({
     children,
 }: ListToolbarProps) {
     return (
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-1 flex-wrap items-center gap-2">
             <InputGroup className="w-full sm:max-w-xs">
                 <InputGroupAddon>
                     <SearchIcon />
@@ -208,6 +201,7 @@ function pageWindow(current: number, last: number): (number | 'gap')[] {
     return result;
 }
 
+/** Pied du tableau : « Précédent » à gauche, les pages au centre, « Suivant » à droite. */
 export function ListPagination({
     paginator,
     state,
@@ -219,93 +213,92 @@ export function ListPagination({
     const go = (page: number) => state.visit({ page });
 
     return (
-        <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
-            <p className="text-sm text-muted-foreground">
-                {paginator.total === 0
-                    ? 'Aucun résultat'
-                    : `${paginator.from}–${paginator.to} sur ${paginator.total}`}
-            </p>
+        <div className="flex items-center justify-between gap-3 border-t px-4 py-3">
+            <Button
+                variant="outline"
+                size="sm"
+                disabled={current === 1}
+                onClick={() => go(current - 1)}
+            >
+                <ArrowLeft data-icon="inline-start" />
+                <span className="hidden sm:inline">Précédent</span>
+            </Button>
 
-            {last > 1 && (
-                <Pagination className="mx-0 w-auto">
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious
-                                href="#"
-                                aria-disabled={current === 1}
-                                className={
-                                    current === 1
-                                        ? 'pointer-events-none opacity-50'
-                                        : ''
+            <div className="flex items-center gap-1">
+                {last > 1 ? (
+                    pageWindow(current, last).map((page, index) =>
+                        page === 'gap' ? (
+                            <span
+                                key={`gap-${index}`}
+                                className="px-2 text-sm text-muted-foreground"
+                            >
+                                …
+                            </span>
+                        ) : (
+                            <Button
+                                key={page}
+                                variant={
+                                    page === current ? 'secondary' : 'ghost'
                                 }
-                                onClick={(event) => {
-                                    event.preventDefault();
-                                    go(current - 1);
-                                }}
-                            />
-                        </PaginationItem>
-                        {pageWindow(current, last).map((page, index) =>
-                            page === 'gap' ? (
-                                <PaginationItem key={`gap-${index}`}>
-                                    <PaginationEllipsis />
-                                </PaginationItem>
-                            ) : (
-                                <PaginationItem key={page}>
-                                    <PaginationLink
-                                        href="#"
-                                        isActive={page === current}
-                                        onClick={(event) => {
-                                            event.preventDefault();
-                                            go(page);
-                                        }}
-                                    >
-                                        {page}
-                                    </PaginationLink>
-                                </PaginationItem>
-                            ),
-                        )}
-                        <PaginationItem>
-                            <PaginationNext
-                                href="#"
-                                aria-disabled={current === last}
-                                className={
-                                    current === last
-                                        ? 'pointer-events-none opacity-50'
-                                        : ''
+                                size="sm"
+                                className="min-w-8"
+                                aria-current={
+                                    page === current ? 'page' : undefined
                                 }
-                                onClick={(event) => {
-                                    event.preventDefault();
-                                    go(current + 1);
-                                }}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
-            )}
-
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                Par page
-                <Select
-                    value={String(paginator.per_page)}
-                    onValueChange={(next) =>
-                        state.visit({ per_page: Number(next), page: 1 })
-                    }
-                >
-                    <SelectTrigger size="sm" aria-label="Éléments par page">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            {PER_PAGE_OPTIONS.map((size) => (
-                                <SelectItem key={size} value={String(size)}>
-                                    {size}
-                                </SelectItem>
-                            ))}
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
+                                onClick={() => go(page)}
+                            >
+                                {page}
+                            </Button>
+                        ),
+                    )
+                ) : (
+                    <span className="text-sm text-muted-foreground">
+                        {paginator.from}–{paginator.to} sur {paginator.total}
+                    </span>
+                )}
             </div>
+
+            <Button
+                variant="outline"
+                size="sm"
+                disabled={current === last}
+                onClick={() => go(current + 1)}
+            >
+                <span className="hidden sm:inline">Suivant</span>
+                <ArrowRight data-icon="inline-end" />
+            </Button>
         </div>
+    );
+}
+
+/** Nombre d'éléments affichés par page. */
+function PerPageSelect({
+    paginator,
+    state,
+}: {
+    paginator: Paginated<unknown>;
+    state: ReturnType<typeof useListState>;
+}) {
+    return (
+        <Select
+            value={String(paginator.per_page)}
+            onValueChange={(next) =>
+                state.visit({ per_page: Number(next), page: 1 })
+            }
+        >
+            <SelectTrigger size="sm" aria-label="Éléments par page">
+                <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectGroup>
+                    {PER_PAGE_OPTIONS.map((size) => (
+                        <SelectItem key={size} value={String(size)}>
+                            {size} / page
+                        </SelectItem>
+                    ))}
+                </SelectGroup>
+            </SelectContent>
+        </Select>
     );
 }
 
@@ -317,7 +310,7 @@ export function EmptyList({
     children?: ReactNode;
 }) {
     return (
-        <Empty className="border">
+        <Empty>
             <EmptyHeader>
                 <EmptyTitle>
                     {filtered ? 'Aucun résultat' : 'Rien pour le moment'}
@@ -349,7 +342,10 @@ type ResourceListProps<T extends { id: number }> = {
     filterControls?: (state: ReturnType<typeof useListState>) => ReactNode;
 };
 
-/** Liste d'administration complète : recherche, filtres, tableau, état vide et pagination. */
+/**
+ * Liste d'administration complète, dans une carte : recherche, filtres et total
+ * en en-tête, tableau aéré (première colonne mise en avant), pagination en pied.
+ */
 export function ResourceList<T extends { id: number }>({
     paginator,
     filters,
@@ -359,45 +355,63 @@ export function ResourceList<T extends { id: number }>({
     filterControls,
 }: ResourceListProps<T>) {
     const state = useListState(filters);
+    const total = paginator.total;
 
     return (
-        <div className="flex flex-col gap-4">
-            <ListToolbar state={state} placeholder={searchPlaceholder}>
-                {filterControls?.(state)}
-            </ListToolbar>
+        <div className="overflow-hidden rounded-xl border">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3">
+                <ListToolbar state={state} placeholder={searchPlaceholder}>
+                    {filterControls?.(state)}
+                </ListToolbar>
+                <div className="flex items-center gap-2">
+                    <Badge variant="outline">
+                        {total} élément{total > 1 ? 's' : ''}
+                    </Badge>
+                    <PerPageSelect paginator={paginator} state={state} />
+                </div>
+            </div>
 
             {paginator.data.length === 0 ? (
                 <EmptyList filtered={state.activeFilterCount > 0} />
             ) : (
                 <Table>
-                    <TableHeader>
-                        <TableRow>
+                    <TableHeader className="bg-muted/50">
+                        <TableRow className="hover:bg-transparent">
                             {columns.map((column) => (
                                 <TableHead
                                     key={column.header}
-                                    className={column.className}
+                                    className={cn(
+                                        'h-11 px-4 text-xs font-medium text-muted-foreground first:pl-6',
+                                        column.className,
+                                    )}
                                 >
                                     {column.header}
                                 </TableHead>
                             ))}
-                            <TableHead className="text-right">
-                                Actions
+                            <TableHead className="h-11 px-4 pr-6">
+                                <span className="sr-only">Actions</span>
                             </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {paginator.data.map((row) => (
                             <TableRow key={row.id}>
-                                {columns.map((column) => (
+                                {columns.map((column, index) => (
                                     <TableCell
                                         key={column.header}
-                                        className={column.className}
+                                        className={cn(
+                                            'px-4 py-4 first:pl-6',
+                                            index === 0
+                                                ? 'font-medium'
+                                                : 'text-muted-foreground',
+                                            column.className,
+                                        )}
                                     >
                                         {column.cell(row)}
                                     </TableCell>
                                 ))}
-                                <TableCell>
-                                    <div className="flex justify-end gap-1">
+                                <TableCell className="px-4 py-4 pr-6">
+                                    <div className="flex justify-end gap-0.5 text-muted-foreground">
                                         {actions(row)}
                                     </div>
                                 </TableCell>
@@ -407,7 +421,9 @@ export function ResourceList<T extends { id: number }>({
                 </Table>
             )}
 
-            <ListPagination paginator={paginator} state={state} />
+            {total > 0 && (
+                <ListPagination paginator={paginator} state={state} />
+            )}
         </div>
     );
 }

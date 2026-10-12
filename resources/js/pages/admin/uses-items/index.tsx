@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { PUBLICATION_STATUSES, USES_CATEGORIES } from "@/lib/admin-options";
 import { index as pageIndex } from "@/routes/admin/uses-items";
 import type { ListFilters, Paginated, UsesItem } from "@/types";
+import ActionTooltip from "@/components/admin/action-tooltip";
 
 const categoryLabel = (value: string) =>
     USES_CATEGORIES.find((category) => category.value === value)?.label ??
@@ -26,7 +27,7 @@ export default function UsesItemsIndex({
         <>
             <Head title="Uses" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <Heading
                         title="Uses"
@@ -97,14 +98,16 @@ export default function UsesItemsIndex({
                     )}
                     actions={(row) => (
                         <>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link
-                                    href={UsesItemController.edit(row.id)}
-                                    aria-label="Modifier"
-                                >
-                                    <SquarePen />
-                                </Link>
-                            </Button>
+                            <ActionTooltip label="Modifier">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={UsesItemController.edit(row.id)}
+                                        aria-label="Modifier"
+                                    >
+                                        <SquarePen />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
                             <DeleteButton
                                 href={UsesItemController.destroy.url(row.id)}
                                 confirmMessage={`Supprimer « ${row.name} » ?`}

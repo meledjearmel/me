@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PROJECT_STATUSES } from "@/lib/admin-options";
 import type { ListFilters, Paginated, Project } from "@/types";
+import ActionTooltip from "@/components/admin/action-tooltip";
 
 export default function ProjectsIndex({
     projects,
@@ -22,7 +23,7 @@ export default function ProjectsIndex({
         <>
             <Head title="Projets" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <Heading title="Projets" />
                     <Button asChild>
@@ -105,22 +106,26 @@ export default function ProjectsIndex({
                     )}
                     actions={(row) => (
                         <>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link
-                                    href={ProjectController.show(row.id)}
-                                    aria-label="Voir"
-                                >
-                                    <Eye />
-                                </Link>
-                            </Button>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link
-                                    href={ProjectController.edit(row.id)}
-                                    aria-label="Modifier"
-                                >
-                                    <SquarePen />
-                                </Link>
-                            </Button>
+                            <ActionTooltip label="Voir">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={ProjectController.show(row.id)}
+                                        aria-label="Voir"
+                                    >
+                                        <Eye />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
+                            <ActionTooltip label="Modifier">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={ProjectController.edit(row.id)}
+                                        aria-label="Modifier"
+                                    >
+                                        <SquarePen />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
                             <DeleteButton
                                 href={ProjectController.destroy.url(row.id)}
                                 confirmMessage={`Supprimer le projet "${row.title.fr}" ?`}

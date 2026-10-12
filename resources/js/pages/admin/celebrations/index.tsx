@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { index as pageIndex } from '@/routes/admin/celebrations';
 import type { Celebration, ListFilters, Paginated } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 function formatPeriod(celebration: Celebration): string {
     const format = (date: string) =>
@@ -39,7 +40,7 @@ export default function CelebrationsIndex({
         <>
             <Head title="Surprises" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <Heading
                         title="Surprises"
@@ -88,26 +89,32 @@ export default function CelebrationsIndex({
                     ]}
                     actions={(row) => (
                         <>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link
-                                    href={CelebrationController.show(row.id)}
-                                    aria-label="Voir"
-                                >
-                                    <Eye />
-                                </Link>
-                            </Button>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link
-                                    href={CelebrationController.edit(row.id)}
-                                    aria-label="Modifier"
-                                >
-                                    <SquarePen />
-                                </Link>
-                            </Button>
+                            <ActionTooltip label="Voir">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={CelebrationController.show(
+                                            row.id,
+                                        )}
+                                        aria-label="Voir"
+                                    >
+                                        <Eye />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
+                            <ActionTooltip label="Modifier">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={CelebrationController.edit(
+                                            row.id,
+                                        )}
+                                        aria-label="Modifier"
+                                    >
+                                        <SquarePen />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
                             <DeleteButton
-                                href={CelebrationController.destroy.url(
-                                    row.id,
-                                )}
+                                href={CelebrationController.destroy.url(row.id)}
                                 confirmMessage="Supprimer cette surprise et son compteur de félicitations ?"
                             />
                         </>

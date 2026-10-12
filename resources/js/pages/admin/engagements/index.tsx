@@ -12,6 +12,7 @@ import {
     update,
 } from '@/routes/admin/engagements';
 import type { Engagement, ListFilters, Paginated } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 const TYPE_LABEL = { freelance: 'Freelance', hiring: 'Embauche' } as const;
 
@@ -26,7 +27,7 @@ export default function EngagementsIndex({
         <>
             <Head title="Collaborations" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <Heading
                     title="Collaborations"
                     description="Demandes de projet freelance et de recrutement reçues depuis le site"
@@ -139,38 +140,48 @@ export default function EngagementsIndex({
                     ]}
                     actions={(row) => (
                         <>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link href={show(row.id)} aria-label="Voir">
-                                    <Eye />
-                                </Link>
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                title={
+                            <ActionTooltip label="Voir">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link href={show(row.id)} aria-label="Voir">
+                                        <Eye />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
+                            <ActionTooltip
+                                label={
                                     row.status === 'new'
                                         ? 'Marquer comme traité'
                                         : 'Remettre en nouveau'
-                                }
-                                aria-label={
-                                    row.status === 'new'
-                                        ? 'Marquer comme traité'
-                                        : 'Remettre en nouveau'
-                                }
-                                onClick={() =>
-                                    router.patch(
-                                        update.url(row.id),
-                                        {},
-                                        { preserveScroll: true },
-                                    )
                                 }
                             >
-                                {row.status === 'new' ? (
-                                    <Check />
-                                ) : (
-                                    <RotateCcw />
-                                )}
-                            </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    title={
+                                        row.status === 'new'
+                                            ? 'Marquer comme traité'
+                                            : 'Remettre en nouveau'
+                                    }
+                                    aria-label={
+                                        row.status === 'new'
+                                            ? 'Marquer comme traité'
+                                            : 'Remettre en nouveau'
+                                    }
+                                    onClick={() =>
+                                        router.patch(
+                                            update.url(row.id),
+                                            {},
+                                            { preserveScroll: true },
+                                        )
+                                    }
+                                >
+                                    {row.status === 'new' ? (
+                                        <Check />
+                                    ) : (
+                                        <RotateCcw />
+                                    )}
+                                </Button>
+                            </ActionTooltip>
                             <DeleteButton
                                 href={destroy.url(row.id)}
                                 confirmMessage={`Supprimer la demande de "${row.name}" ?`}

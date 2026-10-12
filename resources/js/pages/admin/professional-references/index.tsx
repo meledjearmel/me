@@ -8,6 +8,7 @@ import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { ListFilters, Paginated, ProfessionalReference } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 export default function ProfessionalReferencesIndex({
     professionalReferences,
@@ -20,7 +21,7 @@ export default function ProfessionalReferencesIndex({
         <>
             <Head title="Références professionnelles" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <Heading
                         title="Références professionnelles"
@@ -73,26 +74,30 @@ export default function ProfessionalReferencesIndex({
                     )}
                     actions={(row) => (
                         <>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link
-                                    href={ProfessionalReferenceController.show(
-                                        row.id,
-                                    )}
-                                    aria-label="Voir"
-                                >
-                                    <Eye />
-                                </Link>
-                            </Button>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link
-                                    href={ProfessionalReferenceController.edit(
-                                        row.id,
-                                    )}
-                                    aria-label="Modifier"
-                                >
-                                    <SquarePen />
-                                </Link>
-                            </Button>
+                            <ActionTooltip label="Voir">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={ProfessionalReferenceController.show(
+                                            row.id,
+                                        )}
+                                        aria-label="Voir"
+                                    >
+                                        <Eye />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
+                            <ActionTooltip label="Modifier">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={ProfessionalReferenceController.edit(
+                                            row.id,
+                                        )}
+                                        aria-label="Modifier"
+                                    >
+                                        <SquarePen />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
                             <DeleteButton
                                 href={ProfessionalReferenceController.destroy.url(
                                     row.id,

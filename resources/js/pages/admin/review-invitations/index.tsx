@@ -21,6 +21,7 @@ import type {
     Project,
     ReviewInvitation,
 } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 const STATUSES: Record<
     ReviewInvitation['status'],
@@ -77,7 +78,7 @@ export default function ReviewInvitationsIndex({
         <>
             <Head title="Demandes d’avis" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <Heading
                     title="Demandes d’avis"
                     description="Un lien personnel, à usage unique, qui ouvre le formulaire d’avis prérempli"
@@ -291,16 +292,18 @@ export default function ReviewInvitationsIndex({
                     actions={(row) => (
                         <>
                             {row.status === 'pending' && (
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    aria-label="Copier le lien"
-                                    title="Copier le lien"
-                                    onClick={() => void copyLink(row.url)}
-                                >
-                                    <Copy />
-                                </Button>
+                                <ActionTooltip label="Copier le lien">
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon"
+                                        aria-label="Copier le lien"
+                                        title="Copier le lien"
+                                        onClick={() => void copyLink(row.url)}
+                                    >
+                                        <Copy />
+                                    </Button>
+                                </ActionTooltip>
                             )}
                             <DeleteButton
                                 href={destroy.url(row.id)}

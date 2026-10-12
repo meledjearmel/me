@@ -11,6 +11,7 @@ import {
 } from "@/routes/admin/post-comments";
 import { edit, index as postsIndex } from "@/routes/admin/posts";
 import type { Post, PostComment } from "@/types";
+import ActionTooltip from "@/components/admin/action-tooltip";
 
 type ReactionType = "like" | "love" | "fire" | "idea" | "think";
 
@@ -263,36 +264,40 @@ export default function PostShow({
                                         </div>
                                         <div className="flex shrink-0 items-center">
                                             {comment.status !== "approved" && (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    aria-label="Publier"
-                                                    title="Publier"
-                                                    onClick={() =>
-                                                        moderate(
-                                                            comment as PostComment,
-                                                            "approved",
-                                                        )
-                                                    }
-                                                >
-                                                    <Check />
-                                                </Button>
+                                                <ActionTooltip label="Publier">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        aria-label="Publier"
+                                                        title="Publier"
+                                                        onClick={() =>
+                                                            moderate(
+                                                                comment as PostComment,
+                                                                "approved",
+                                                            )
+                                                        }
+                                                    >
+                                                        <Check />
+                                                    </Button>
+                                                </ActionTooltip>
                                             )}
                                             {comment.status !== "rejected" && (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    aria-label="Refuser"
-                                                    title="Refuser"
-                                                    onClick={() =>
-                                                        moderate(
-                                                            comment as PostComment,
-                                                            "rejected",
-                                                        )
-                                                    }
-                                                >
-                                                    <X />
-                                                </Button>
+                                                <ActionTooltip label="Refuser">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        aria-label="Refuser"
+                                                        title="Refuser"
+                                                        onClick={() =>
+                                                            moderate(
+                                                                comment as PostComment,
+                                                                "rejected",
+                                                            )
+                                                        }
+                                                    >
+                                                        <X />
+                                                    </Button>
+                                                </ActionTooltip>
                                             )}
                                             <DeleteButton
                                                 href={destroyComment.url(

@@ -34,6 +34,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { access, index as serverIndex } from "@/routes/admin/mcp-server";
+import ActionTooltip from "@/components/admin/action-tooltip";
 
 type McpToken = {
     id: number;
@@ -92,19 +93,21 @@ function CopyButton({ value }: { value: string }) {
     const [copied, setCopied] = useState(false);
 
     return (
-        <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            aria-label="Copier"
-            onClick={() => {
-                void navigator.clipboard.writeText(value);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 1500);
-            }}
-        >
-            {copied ? <Check /> : <Copy />}
-        </Button>
+        <ActionTooltip label="Copier">
+            <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label="Copier"
+                onClick={() => {
+                    void navigator.clipboard.writeText(value);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1500);
+                }}
+            >
+                {copied ? <Check /> : <Copy />}
+            </Button>
+        </ActionTooltip>
     );
 }
 
@@ -133,15 +136,17 @@ function RevokeButton({
     onConfirm: () => void;
 }) {
     return (
-        <Button
-            variant="ghost"
-            size="icon"
-            aria-label={label}
-            title={label}
-            onClick={() => confirm(`${label} ?`) && onConfirm()}
-        >
-            <Trash2 />
-        </Button>
+        <ActionTooltip label={label}>
+            <Button
+                variant="ghost"
+                size="icon"
+                aria-label={label}
+                title={label}
+                onClick={() => confirm(`${label} ?`) && onConfirm()}
+            >
+                <Trash2 />
+            </Button>
+        </ActionTooltip>
     );
 }
 

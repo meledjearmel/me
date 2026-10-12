@@ -20,7 +20,7 @@ export default function ExperienceCreate() {
         <>
             <Head title="Nouvelle expérience" />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Nouvelle expérience"
                     backHref={experiencesIndex()}

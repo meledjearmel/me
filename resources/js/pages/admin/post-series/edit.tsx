@@ -12,7 +12,7 @@ export default function PostSeriesEdit({ series }: { series: PostSeries }) {
         <>
             <Head title={`Modifier — ${series.name.fr}`} />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Modifier la série"
                     description={`${series.name.fr} · ${series.posts_count} article(s)`}

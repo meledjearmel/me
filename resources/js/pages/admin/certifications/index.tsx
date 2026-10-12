@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { CERTIFICATION_KINDS, PUBLICATION_STATUSES } from "@/lib/admin-options";
 import { index as pageIndex } from "@/routes/admin/certifications";
 import type { Certification, ListFilters, Paginated } from "@/types";
+import ActionTooltip from "@/components/admin/action-tooltip";
 
 export default function CertificationsIndex({
     certifications,
@@ -23,7 +24,7 @@ export default function CertificationsIndex({
         <>
             <Head title="Certifications" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <Heading
                         title="Certifications"
@@ -97,14 +98,18 @@ export default function CertificationsIndex({
                     )}
                     actions={(row) => (
                         <>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link
-                                    href={CertificationController.edit(row.id)}
-                                    aria-label="Modifier"
-                                >
-                                    <SquarePen />
-                                </Link>
-                            </Button>
+                            <ActionTooltip label="Modifier">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={CertificationController.edit(
+                                            row.id,
+                                        )}
+                                        aria-label="Modifier"
+                                    >
+                                        <SquarePen />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
                             <DeleteButton
                                 href={CertificationController.destroy.url(
                                     row.id,

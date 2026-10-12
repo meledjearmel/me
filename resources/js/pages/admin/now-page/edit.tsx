@@ -17,7 +17,7 @@ export default function NowPageEdit({
         <>
             <Head title="Page « Now »" />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <Heading
                     title="Page « Now »"
                     description={
@@ -49,9 +49,9 @@ export default function NowPageEdit({
                             <FieldDescription>
                                 Une ligne vide sépare deux paragraphes ; des
                                 lignes qui commencent par « - » forment une
-                                liste. Sans texte français, la page est
-                                masquée. La date de mise à jour avance quand le
-                                texte change.
+                                liste. Sans texte français, la page est masquée.
+                                La date de mise à jour avance quand le texte
+                                change.
                             </FieldDescription>
 
                             <Button disabled={processing}>Enregistrer</Button>

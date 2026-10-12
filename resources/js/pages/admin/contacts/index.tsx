@@ -12,6 +12,7 @@ import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { ListFilters, Paginated, Contact } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 const STATUS_VARIANT = {
     new: 'default',
@@ -36,7 +37,7 @@ export default function ContactsIndex({
         <>
             <Head title="Contacts" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <Heading
                         title="Contacts"
@@ -78,16 +79,23 @@ export default function ContactsIndex({
                     )}
                     actions={(row) => (
                         <>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link href={show(row.id)} aria-label="Voir">
-                                    <Eye />
-                                </Link>
-                            </Button>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link href={edit(row.id)} aria-label="Modifier">
-                                    <SquarePen />
-                                </Link>
-                            </Button>
+                            <ActionTooltip label="Voir">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link href={show(row.id)} aria-label="Voir">
+                                        <Eye />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
+                            <ActionTooltip label="Modifier">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={edit(row.id)}
+                                        aria-label="Modifier"
+                                    >
+                                        <SquarePen />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
                             <DeleteButton
                                 href={destroy.url(row.id)}
                                 confirmMessage={`Supprimer le message de "${row.name}" ?`}

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { APPOINTMENT_LOCATIONS, optionLabel } from '@/lib/admin-options';
 import { index as pageIndex } from '@/routes/admin/appointment-types';
 import type { AppointmentType, ListFilters, Paginated } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 export default function AppointmentTypesIndex({
     appointmentTypes,
@@ -21,7 +22,7 @@ export default function AppointmentTypesIndex({
         <>
             <Head title="Types de rendez-vous" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <Heading
                         title="Types de rendez-vous"
@@ -76,16 +77,18 @@ export default function AppointmentTypesIndex({
                     ]}
                     actions={(row) => (
                         <>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link
-                                    href={AppointmentTypeController.edit(
-                                        row.id,
-                                    )}
-                                    aria-label="Modifier"
-                                >
-                                    <SquarePen />
-                                </Link>
-                            </Button>
+                            <ActionTooltip label="Modifier">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={AppointmentTypeController.edit(
+                                            row.id,
+                                        )}
+                                        aria-label="Modifier"
+                                    >
+                                        <SquarePen />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
                             <DeleteButton
                                 href={AppointmentTypeController.destroy.url(
                                     row.id,

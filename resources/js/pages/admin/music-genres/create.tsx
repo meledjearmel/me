@@ -17,7 +17,7 @@ export default function MusicGenreCreate() {
         <>
             <Head title="Nouveau registre" />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Nouveau registre"
                     description="Ajouter un onglet au lecteur de musique"

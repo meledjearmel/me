@@ -19,7 +19,7 @@ export default function DomainCreate() {
         <>
             <Head title="Nouveau domaine" />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Nouveau domaine"
                     description="Ajouter un domaine de compétence"

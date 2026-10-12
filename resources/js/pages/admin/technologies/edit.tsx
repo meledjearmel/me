@@ -32,7 +32,7 @@ export default function TechnologyEdit({
         <>
             <Head title={`Modifier — ${technology.name}`} />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Modifier la technologie"
                     description={technology.name}

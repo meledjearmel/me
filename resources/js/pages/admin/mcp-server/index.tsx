@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { access, index as pageIndex } from "@/routes/admin/mcp-server";
+import ActionTooltip from "@/components/admin/action-tooltip";
 
 type Command = {
     name: string;
@@ -45,19 +46,21 @@ function CopyButton({ value }: { value: string }) {
     const [copied, setCopied] = useState(false);
 
     return (
-        <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            aria-label="Copier"
-            onClick={() => {
-                void navigator.clipboard.writeText(value);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 1500);
-            }}
-        >
-            {copied ? <Check /> : <Copy />}
-        </Button>
+        <ActionTooltip label="Copier">
+            <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label="Copier"
+                onClick={() => {
+                    void navigator.clipboard.writeText(value);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1500);
+                }}
+            >
+                {copied ? <Check /> : <Copy />}
+            </Button>
+        </ActionTooltip>
     );
 }
 

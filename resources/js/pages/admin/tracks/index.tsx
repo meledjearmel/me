@@ -7,6 +7,7 @@ import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { index as pageIndex } from '@/routes/admin/tracks';
 import type { ListFilters, MusicGenre, Paginated, Track } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 export default function TracksIndex({
     tracks,
@@ -21,7 +22,7 @@ export default function TracksIndex({
         <>
             <Head title="Pistes de musique" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <Heading
                         title="Pistes de musique"
@@ -61,14 +62,16 @@ export default function TracksIndex({
                     )}
                     actions={(row) => (
                         <>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link
-                                    href={TrackController.edit(row.id)}
-                                    aria-label="Modifier"
-                                >
-                                    <SquarePen />
-                                </Link>
-                            </Button>
+                            <ActionTooltip label="Modifier">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={TrackController.edit(row.id)}
+                                        aria-label="Modifier"
+                                    >
+                                        <SquarePen />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
                             <DeleteButton
                                 href={TrackController.destroy.url(row.id)}
                                 confirmMessage={`Supprimer la piste "${row.title}" ?`}

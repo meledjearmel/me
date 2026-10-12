@@ -18,7 +18,7 @@ export default function TrackCreate({ genres }: { genres: MusicGenre[] }) {
         <>
             <Head title="Nouvelle piste" />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Nouvelle piste"
                     description="Ajouter un morceau au lecteur"

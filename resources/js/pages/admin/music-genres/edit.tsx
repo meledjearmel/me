@@ -18,7 +18,7 @@ export default function MusicGenreEdit({ genre }: { genre: MusicGenre }) {
         <>
             <Head title={`Modifier — ${genre.label.fr}`} />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Modifier le registre"
                     description={genre.label.fr}

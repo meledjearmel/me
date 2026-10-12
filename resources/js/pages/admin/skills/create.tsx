@@ -27,7 +27,7 @@ export default function SkillCreate({
         <>
             <Head title="Nouvelle compétence" />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Nouvelle compétence"
                     description="Rattachée à un domaine"

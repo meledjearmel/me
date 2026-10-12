@@ -11,6 +11,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import ActionTooltip from '@/components/admin/action-tooltip';
 import { Button } from '@/components/ui/button';
 
 type DeleteButtonProps = {
@@ -24,11 +25,13 @@ export default function DeleteButton({
 }: DeleteButtonProps) {
     return (
         <AlertDialog>
-            <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Supprimer">
-                    <Trash2 className="text-destructive" />
-                </Button>
-            </AlertDialogTrigger>
+            <ActionTooltip label="Supprimer">
+                <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon" aria-label="Supprimer">
+                        <Trash2 className="text-destructive" />
+                    </Button>
+                </AlertDialogTrigger>
+            </ActionTooltip>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>

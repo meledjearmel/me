@@ -26,7 +26,7 @@ export default function TechnologyCreate({
         <>
             <Head title="Nouvelle technologie" />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Nouvelle technologie"
                     description="Ajouter une technologie à la stack"

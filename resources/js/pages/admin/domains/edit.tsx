@@ -20,7 +20,7 @@ export default function DomainEdit({ domain }: { domain: Domain }) {
         <>
             <Head title={`Modifier — ${domain.label.fr}`} />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Modifier le domaine"
                     description={domain.label.fr}

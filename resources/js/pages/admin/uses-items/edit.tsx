@@ -12,7 +12,7 @@ export default function UsesItemEdit({ item }: { item: UsesItem }) {
         <>
             <Head title={`Modifier — ${item.name}`} />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Modifier l’élément"
                     description={item.name}

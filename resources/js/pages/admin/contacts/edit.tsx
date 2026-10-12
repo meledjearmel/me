@@ -18,7 +18,7 @@ export default function ContactEdit({ contact }: { contact: Contact }) {
         <>
             <Head title={`Contact de ${contact.name}`} />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Message de contact"
                     description={`${contact.name} — ${contact.email}`}

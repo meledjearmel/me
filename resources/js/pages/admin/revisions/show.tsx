@@ -44,7 +44,7 @@ export default function RevisionShow({
         <>
             <Head title={`Révision — ${revision.title}`} />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <FormPageHeader
                     title={`${revision.content_type_label} : ${revision.title}`}
                     backHref={revisionsIndex()}

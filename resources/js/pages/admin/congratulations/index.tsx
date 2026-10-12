@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { index as pageIndex } from '@/routes/admin/congratulations';
 import type { Congratulation, ListFilters, Paginated } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 const SOURCE_LABEL = {
     about: 'Page À propos',
@@ -29,7 +30,7 @@ export default function CongratulationsIndex({
         <>
             <Head title="Félicitations" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <Heading
                     title="Félicitations"
                     description="Qui vous félicite, et pour quoi : un envoi par visiteur (ses clics sont regroupés)"
@@ -89,16 +90,18 @@ export default function CongratulationsIndex({
                     ]}
                     actions={(row) =>
                         row.celebration_id ? (
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link
-                                    href={CelebrationController.show(
-                                        row.celebration_id,
-                                    )}
-                                    aria-label="Voir la surprise"
-                                >
-                                    <Eye />
-                                </Link>
-                            </Button>
+                            <ActionTooltip label="Voir la surprise">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={CelebrationController.show(
+                                            row.celebration_id,
+                                        )}
+                                        aria-label="Voir la surprise"
+                                    >
+                                        <Eye />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
                         ) : null
                     }
                     filterControls={(state) => (

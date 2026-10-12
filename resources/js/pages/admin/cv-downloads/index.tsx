@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { destroy, show, index as pageIndex } from '@/routes/admin/cv-downloads';
 import { originOf, placeOf } from '@/lib/cv-downloads';
 import type { CvDownload, ListFilters, Paginated } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 export default function CvDownloadsIndex({
     downloads,
@@ -25,7 +26,7 @@ export default function CvDownloadsIndex({
         <>
             <Head title="Téléchargements du CV" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <Heading
                     title="Téléchargements du CV"
                     description="Chaque téléchargement depuis la page contact, avec sa provenance"
@@ -99,11 +100,13 @@ export default function CvDownloadsIndex({
                     )}
                     actions={(row) => (
                         <>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link href={show(row.id)} aria-label="Voir">
-                                    <Eye />
-                                </Link>
-                            </Button>
+                            <ActionTooltip label="Voir">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link href={show(row.id)} aria-label="Voir">
+                                        <Eye />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
                             <DeleteButton
                                 href={destroy.url(row.id)}
                                 confirmMessage="Supprimer ce téléchargement ?"

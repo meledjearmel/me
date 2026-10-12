@@ -37,7 +37,7 @@ export default function AvailabilityIndex({
         <>
             <Head title="Disponibilités" />
 
-            <div className="flex max-w-4xl flex-col gap-10 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <Heading
                     title="Disponibilités"
                     description="Quand les visiteurs peuvent réserver un rendez-vous. Les heures sont celles d'Abidjan (GMT). Ouverture, délais et lien visio : Réglages du site."

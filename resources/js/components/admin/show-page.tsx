@@ -4,13 +4,7 @@ import type { ReactNode } from 'react';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { PublicationStatus, Translatable } from '@/types';
 
 export type DetailItem = {
@@ -41,7 +35,55 @@ type ShowPageProps = {
 const isEmpty = (value: ReactNode) =>
     value === null || value === undefined || value === '' || value === false;
 
-/** Page de consultation d'un élément : titre, actions, puis des cartes de détails. */
+/** Une section de détails : libellés à gauche, valeurs à droite, lignes séparées. */
+function Section({
+    section,
+    hideTitle = false,
+}: {
+    section: DetailSection;
+    hideTitle?: boolean;
+}) {
+    return (
+        <section className="space-y-3">
+            {(!hideTitle || section.description) && (
+                <div>
+                    {!hideTitle && (
+                        <h2 className="text-sm font-medium">{section.title}</h2>
+                    )}
+                    {section.description && (
+                        <p className="text-sm text-muted-foreground">
+                            {section.description}
+                        </p>
+                    )}
+                </div>
+            )}
+            {section.items && (
+                <dl className="divide-y rounded-lg border">
+                    {section.items.map((item) => (
+                        <div
+                            key={item.label}
+                            className={
+                                item.wide
+                                    ? 'space-y-1 px-4 py-3'
+                                    : 'grid gap-1 px-4 py-3 sm:grid-cols-[12rem_1fr] sm:gap-4'
+                            }
+                        >
+                            <dt className="text-sm text-muted-foreground">
+                                {item.label}
+                            </dt>
+                            <dd className="text-sm break-words whitespace-pre-line">
+                                {isEmpty(item.value) ? '—' : item.value}
+                            </dd>
+                        </div>
+                    ))}
+                </dl>
+            )}
+            {section.content}
+        </section>
+    );
+}
+
+/** Page de consultation d'un élément : titre, actions, puis ses détails (en onglets dès trois sections). */
 export default function ShowPage({
     title,
     description,
@@ -56,7 +98,7 @@ export default function ShowPage({
         <>
             <Head title={title} />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="flex flex-wrap items-center gap-3">
                         <Heading title={title} description={description} />
@@ -81,44 +123,35 @@ export default function ShowPage({
                     </div>
                 </div>
 
-                {sections.map((section) => (
-                    <Card key={section.title}>
-                        <CardHeader>
-                            <CardTitle>{section.title}</CardTitle>
-                            {section.description && (
-                                <CardDescription>
-                                    {section.description}
-                                </CardDescription>
-                            )}
-                        </CardHeader>
-                        <CardContent className="flex flex-col gap-4">
-                            {section.items && (
-                                <dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
-                                    {section.items.map((item) => (
-                                        <div
-                                            key={item.label}
-                                            className={
-                                                item.wide
-                                                    ? 'sm:col-span-2'
-                                                    : undefined
-                                            }
-                                        >
-                                            <dt className="text-sm text-muted-foreground">
-                                                {item.label}
-                                            </dt>
-                                            <dd className="mt-0.5 text-sm break-words whitespace-pre-line">
-                                                {isEmpty(item.value)
-                                                    ? '—'
-                                                    : item.value}
-                                            </dd>
-                                        </div>
-                                    ))}
-                                </dl>
-                            )}
-                            {section.content}
-                        </CardContent>
-                    </Card>
-                ))}
+                {sections.length >= 3 ? (
+                    <Tabs
+                        defaultValue={sections[0].title}
+                        className="space-y-4"
+                    >
+                        <TabsList className="h-auto flex-wrap">
+                            {sections.map((section) => (
+                                <TabsTrigger
+                                    key={section.title}
+                                    value={section.title}
+                                >
+                                    {section.title}
+                                </TabsTrigger>
+                            ))}
+                        </TabsList>
+                        {sections.map((section) => (
+                            <TabsContent
+                                key={section.title}
+                                value={section.title}
+                            >
+                                <Section section={section} hideTitle />
+                            </TabsContent>
+                        ))}
+                    </Tabs>
+                ) : (
+                    sections.map((section) => (
+                        <Section key={section.title} section={section} />
+                    ))
+                )}
             </div>
         </>
     );

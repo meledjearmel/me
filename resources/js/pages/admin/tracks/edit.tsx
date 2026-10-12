@@ -24,7 +24,7 @@ export default function TrackEdit({
         <>
             <Head title={`Modifier — ${track.title}`} />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Modifier la piste"
                     description={track.title}

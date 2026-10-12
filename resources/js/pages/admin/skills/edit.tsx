@@ -29,7 +29,7 @@ export default function SkillEdit({
         <>
             <Head title={`Modifier — ${skill.name.fr}`} />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Modifier la compétence"
                     description={skill.name.fr}

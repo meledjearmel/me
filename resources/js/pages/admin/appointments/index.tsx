@@ -15,6 +15,7 @@ import {
 } from '@/lib/admin-options';
 import { index as pageIndex } from '@/routes/admin/appointments';
 import type { Appointment, ListFilters, Paginated } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 export default function AppointmentsIndex({
     appointments,
@@ -27,7 +28,7 @@ export default function AppointmentsIndex({
         <>
             <Head title="Rendez-vous" />
 
-            <div className="flex flex-col gap-6 p-4">
+            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <Heading
                     title="Rendez-vous"
                     description="Demandes de rendez-vous reçues depuis le site"
@@ -106,14 +107,18 @@ export default function AppointmentsIndex({
                     ]}
                     actions={(row) => (
                         <>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link
-                                    href={AppointmentController.show(row.id)}
-                                    aria-label="Voir"
-                                >
-                                    <Eye />
-                                </Link>
-                            </Button>
+                            <ActionTooltip label="Voir">
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                        href={AppointmentController.show(
+                                            row.id,
+                                        )}
+                                        aria-label="Voir"
+                                    >
+                                        <Eye />
+                                    </Link>
+                                </Button>
+                            </ActionTooltip>
                             <DeleteButton
                                 href={AppointmentController.destroy.url(row.id)}
                                 confirmMessage={`Supprimer le rendez-vous de ${row.name} ? Son créneau sera libéré.`}

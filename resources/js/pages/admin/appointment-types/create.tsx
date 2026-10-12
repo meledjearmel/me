@@ -11,7 +11,7 @@ export default function AppointmentTypeCreate() {
         <>
             <Head title="Nouveau type de rendez-vous" />
 
-            <div className="space-y-6 p-4">
+            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
                     title="Nouveau type de rendez-vous"
                     description="Un rendez-vous que les visiteurs peuvent réserver"
