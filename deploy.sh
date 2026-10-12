@@ -31,6 +31,10 @@ echo "→ Clés OAuth Passport (créées si absentes, lisibles par PHP-FPM)"
 [ -f storage/oauth-private.key ] || php artisan passport:keys
 chown www-data:www-data storage/oauth-private.key storage/oauth-public.key
 
+echo "→ Logos des technologies (enregistrés depuis l'admin)"
+mkdir -p public/icons/tech
+chown -R www-data:www-data public/icons/tech
+
 echo "→ ffmpeg (compression des avis vidéo)"
 command -v ffmpeg >/dev/null && command -v ffprobe >/dev/null \
     || echo "  ⚠ ffmpeg absent : les avis vidéo seront servis bruts, sans aperçu (sudo apt install ffmpeg)"
