@@ -83,68 +83,67 @@ export default function GitHubActivity({
 
                 <ul className="pub-github__repos">
                     {github.repositories.map((repository) => {
-                        const content = (
-                            <>
-                                <strong>{repository.name}</strong>
-                                {(repository.private ||
-                                    repository.contribution) && (
-                                    <span className="pub-github__badges">
-                                        {repository.private && (
-                                            <span>
-                                                {t.about.github.private}
-                                            </span>
-                                        )}
-                                        {repository.contribution && (
-                                            <span>
-                                                {t.about.github.contribution}
-                                            </span>
-                                        )}
-                                    </span>
-                                )}
-                                {repository.description && (
-                                    <p>{repository.description}</p>
-                                )}
-                                <span className="pub-github__meta">
-                                    {[
-                                        repository.language,
-                                        repository.stars > 0
-                                            ? `★ ${t.about.github.stars(repository.stars)}`
-                                            : null,
-                                        repository.pushed_at
-                                            ? `${t.about.github.updated} ${date(repository.pushed_at)}`
-                                            : null,
-                                    ]
-                                        .filter(Boolean)
-                                        .join(' · ')}
-                                </span>
-                            </>
-                        );
-
                         return (
                             <li key={repository.full_name}>
-                                {/* Dépôt privé : pas de lien, les visiteurs tomberaient sur une 404. */}
-                                {repository.url ? (
-                                    <a
-                                        href={repository.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        {content}
-                                    </a>
-                                ) : (
-                                    <div className="pub-github__card">
-                                        {content}
-                                    </div>
-                                )}
-                                {repository.project && (
-                                    <Link
-                                        href={repository.project.url}
-                                        className="pub-github__case-study"
-                                    >
-                                        {t.about.github.caseStudy}
-                                        <span aria-hidden="true"> →</span>
-                                    </Link>
-                                )}
+                                <div className="pub-github__card">
+                                    {/* Le titre porte le lien du dépôt, étendu à toute la carte ; un dépôt
+                                    privé n'en a pas : les visiteurs tomberaient sur une 404. */}
+                                    {repository.url ? (
+                                        <a
+                                            href={repository.url}
+                                            className="pub-github__repo-link"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            {repository.name}
+                                        </a>
+                                    ) : (
+                                        <strong>{repository.name}</strong>
+                                    )}
+                                    {(repository.private ||
+                                        repository.contribution) && (
+                                        <span className="pub-github__badges">
+                                            {repository.private && (
+                                                <span>
+                                                    {t.about.github.private}
+                                                </span>
+                                            )}
+                                            {repository.contribution && (
+                                                <span>
+                                                    {
+                                                        t.about.github
+                                                            .contribution
+                                                    }
+                                                </span>
+                                            )}
+                                        </span>
+                                    )}
+                                    {repository.description && (
+                                        <p>{repository.description}</p>
+                                    )}
+                                    <span className="pub-github__meta">
+                                        {[
+                                            repository.language,
+                                            repository.stars > 0
+                                                ? `★ ${t.about.github.stars(repository.stars)}`
+                                                : null,
+                                            repository.pushed_at
+                                                ? `${t.about.github.updated} ${date(repository.pushed_at)}`
+                                                : null,
+                                        ]
+                                            .filter(Boolean)
+                                            .join(' · ')}
+                                    </span>
+                                    {repository.project && (
+                                        <Link
+                                            href={repository.project.url}
+                                            className="pub-github__case-study"
+                                        >
+                                            {t.about.github.caseStudy}
+                                            <span aria-hidden="true"> →</span>
+                                        </Link>
+                                    )}
+                                </div>
                             </li>
                         );
                     })}

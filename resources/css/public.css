@@ -8663,7 +8663,6 @@ html.pub-scroll {
     list-style: none;
 }
 
-.pub-github__repos a,
 .pub-github__card {
     display: grid;
     align-content: start;
@@ -8677,12 +8676,6 @@ html.pub-scroll {
     transition:
         border-color 0.2s ease,
         transform 0.2s ease;
-}
-
-.pub-github__repos a:hover,
-.pub-github__repos a:focus-visible {
-    border-color: var(--pub-gold);
-    transform: translateY(-2px);
 }
 
 .pub-github__repos strong {
@@ -8714,21 +8707,42 @@ html.pub-scroll {
     }
 }
 
-.pub-github__repos li {
-    display: grid;
-    grid-template-rows: 1fr auto;
-    gap: 0.5rem;
+/* Le lien du dépôt couvre toute la carte ; l'étude de cas passe au-dessus. */
+.pub-github__card {
+    position: relative;
+}
+
+.pub-github__repo-link {
+    color: inherit;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.pub-github__repo-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+}
+
+.pub-github__repo-link:focus-visible {
+    outline: none;
+}
+
+.pub-github__card:has(.pub-github__repo-link:hover),
+.pub-github__card:has(.pub-github__repo-link:focus-visible) {
+    border-color: var(--pub-gold);
+    transform: translateY(-2px);
 }
 
 .pub-github__case-study {
-    justify-self: start;
-    padding-left: 0.25rem;
+    position: relative;
+    z-index: 1;
+    justify-self: end;
     color: inherit;
     font-size: 0.9rem;
-    text-decoration: underline;
-    text-decoration-color: var(--pub-gold);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.3em;
+    text-underline-offset: 0.25em;
 }
 
 /* Encart GitHub de la page d'un projet */
