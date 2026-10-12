@@ -52,16 +52,7 @@ class PostDraftWriter
      */
     public function save(Post $post, array $input): array
     {
-        $data = Validator::make($input, [
-            'title' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255', 'alpha_dash', 'not_in:feed', Rule::unique('posts', 'slug')->ignore($post->id)],
-            'excerpt' => ['nullable', 'string', 'max:300'],
-            'body' => ['required', 'string'],
-            'tags' => ['nullable', 'array', 'max:8'],
-            'tags.*' => ['string', 'max:40'],
-            'series' => ['nullable', 'string', 'max:80'],
-            'series_position' => ['nullable', 'integer', 'min:1', 'max:99', 'required_with:series'],
-        ])->validate();
+        $data = Validator::make($input, $this->rules($post))->validate();
 
         ['html' => $body, 'removed' => $removed] = $this->withEditorMentions($data['body']);
 
@@ -103,6 +94,33 @@ class PostDraftWriter
         return $notes;
     }
 
+    /** @return array<string, mixed> */
+    public function rules(Post $post): array
+    {
+        return [
+            'title' => ['required', 'string', 'max:255'],
+            'slug' => ['required', 'string', 'max:255', 'alpha_dash', 'not_in:feed', Rule::unique('posts', 'slug')->ignore($post->id)],
+            'excerpt' => ['nullable', 'string', 'max:300'],
+            'body' => ['required', 'string'],
+            'tags' => ['nullable', 'array', 'max:8'],
+            'tags.*' => ['string', 'max:40'],
+            'series' => ['nullable', 'string', 'max:80'],
+            'series_position' => ['nullable', 'integer', 'min:1', 'max:99', 'required_with:series'],
+        ];
+    }
+
+    /**
+     * L'article en anglais (titre, résumé, contenu HTML).
+     *
+     * @return array<string, string|null>
+     */
+    public function english(Post $post): array
+    {
+        return collect(['title', 'excerpt', 'body'])
+            ->mapWithKeys(fn (string $field): array => [$field => $post->getTranslation($field, 'en', false) ?: null])
+            ->all();
+    }
+
     /**
      * Enregistre l'anglais d'un brouillon, sans toucher au français.
      *
@@ -118,11 +136,32 @@ class PostDraftWriter
             'body' => ['required', 'string'],
         ])->validate();
 
-        $post->setTranslation('title', 'en', $data['title']);
-        $post->setTranslation('body', 'en', $this->withEditorMentions($data['body'])['html']);
+        $this->setEnglish($post, array_filter($data, fn (mixed $value): bool => filled($value)));
+    }
 
-        if (filled($data['excerpt'] ?? null)) {
-            $post->setTranslation('excerpt', 'en', PostMentions::plain($data['excerpt']));
+    /**
+     * Écrit l'anglais fourni (titre, résumé, contenu HTML) ; les champs absents ne changent pas.
+     *
+     * @param  array<string, string|null>  $english
+     */
+    public function setEnglish(Post $post, array $english): void
+    {
+        foreach (['title', 'excerpt', 'body'] as $field) {
+            if (! array_key_exists($field, $english)) {
+                continue;
+            }
+
+            if (! filled($english[$field])) {
+                $post->forgetTranslation($field, 'en');
+
+                continue;
+            }
+
+            $post->setTranslation($field, 'en', match ($field) {
+                'body' => $this->withEditorMentions($english[$field])['html'],
+                'excerpt' => PostMentions::plain($english[$field]),
+                default => $english[$field],
+            });
         }
 
         $post->save();

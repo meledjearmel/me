@@ -14,6 +14,7 @@ use App\Enums\PublicationStatus;
 use App\Enums\TestimonialStatus;
 use App\Models\Appointment;
 use App\Models\Contact;
+use App\Models\ContentRevision;
 use App\Models\Counter;
 use App\Models\CvDownload;
 use App\Models\Domain;
@@ -178,6 +179,8 @@ class DashboardReport
             // Expériences, formations, certifications, page « Uses » et compétences en brouillon.
             'content_drafts' => collect(app(ContentTypes::class)->all())
                 ->sum(fn (array $type): int => $type['model']::query()->where('status', PublicationStatus::Draft)->count()),
+            // Modifications de contenus en ligne proposées par l'IA, en attente.
+            'revisions' => ContentRevision::query()->pending()->count(),
         ];
     }
 

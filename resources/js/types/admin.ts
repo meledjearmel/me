@@ -482,3 +482,29 @@ export type PostTag = {
     name: Translatable;
     posts_count: number;
 };
+
+/** Révision d'un contenu publié proposée par l'IA (serveur MCP). */
+export type ContentRevisionSummary = {
+    id: number;
+    content_type: string;
+    content_type_label: string;
+    content_id: number | null;
+    title: string;
+    edit_url: string | null;
+    summary: string;
+    drafted_by: string | null;
+    status: "pending" | "applied" | "rejected";
+    created_at: string | null;
+    decided_at: string | null;
+};
+
+export type ContentRevisionDetail = ContentRevisionSummary & {
+    /** Chaque champ modifié : valeur à la proposition, proposée et actuelle. */
+    fields: {
+        field: string;
+        locale: "fr" | "en";
+        before: unknown;
+        after: unknown;
+        current: unknown;
+    }[];
+};

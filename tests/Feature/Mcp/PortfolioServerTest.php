@@ -64,7 +64,7 @@ test('tools and prompts keep the exact names used in the instructions', function
 
     expect($list('tools/list', 'tools'))->toBe([
         'add-post-image', 'add-project-image', 'create-technology', 'get-catalog', 'get-content', 'get-post', 'get-project',
-        'list-contents', 'read-web-page', 'save-content-draft', 'save-content-translation', 'save-post-draft',
+        'list-contents', 'list-revisions', 'propose-revision', 'read-web-page', 'save-content-draft', 'save-content-translation', 'save-post-draft',
         'save-post-translation', 'save-project-draft', 'save-project-translation', 'update-project-draft',
     ])->and($list('prompts/list', 'prompts'))->toBe([
         'add-content', 'draft-project', 'plan-post-images', 'plan-project-images', 'translate-project', 'write-post',

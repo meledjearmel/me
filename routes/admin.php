@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CelebrationController;
 use App\Http\Controllers\Admin\CertificationController;
 use App\Http\Controllers\Admin\CongratulationController;
 use App\Http\Controllers\Admin\ContactController;
+use App\Http\Controllers\Admin\ContentRevisionController;
 use App\Http\Controllers\Admin\CvDownloadController;
 use App\Http\Controllers\Admin\DomainController;
 use App\Http\Controllers\Admin\EducationController;
@@ -48,6 +49,10 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::get('github', [GitHubController::class, 'edit'])->name('github.edit');
     Route::put('github', [GitHubController::class, 'update'])->name('github.update');
     Route::post('github/sync', [GitHubController::class, 'sync'])->middleware('throttle:6,1')->name('github.sync');
+    Route::get('revisions', [ContentRevisionController::class, 'index'])->name('revisions.index');
+    Route::get('revisions/{revision}', [ContentRevisionController::class, 'show'])->name('revisions.show');
+    Route::post('revisions/{revision}/apply', [ContentRevisionController::class, 'apply'])->name('revisions.apply');
+    Route::post('revisions/{revision}/reject', [ContentRevisionController::class, 'reject'])->name('revisions.reject');
     Route::get('mcp-tokens', [McpTokenController::class, 'index'])->name('mcp-tokens.index');
     Route::post('mcp-tokens', [McpTokenController::class, 'store'])->name('mcp-tokens.store');
     Route::delete('mcp-tokens/{token}', [McpTokenController::class, 'destroy'])->whereNumber('token')->name('mcp-tokens.destroy');

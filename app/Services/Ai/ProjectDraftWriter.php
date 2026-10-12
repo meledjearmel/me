@@ -67,6 +67,60 @@ class ProjectDraftWriter
     }
 
     /**
+     * L'anglais du projet, dans la forme de save-project-translation.
+     *
+     * @return array<string, mixed>
+     */
+    public function english(Project $project): array
+    {
+        return [
+            ...collect(self::TRANSLATABLE)->mapWithKeys(fn (string $field): array => [$field => $project->getTranslation($field, 'en', false) ?: null])->all(),
+            'decisions' => collect($project->decisions ?? [])->map(fn (array $decision): array => [
+                'choice' => $decision['choice']['en'] ?? null,
+                'reason' => $decision['reason']['en'] ?? null,
+            ])->all(),
+            'key_figure_labels' => collect($project->key_figures ?? [])->map(fn (array $figure): ?string => $figure['label']['en'] ?? null)->all(),
+        ];
+    }
+
+    /**
+     * Écrit l'anglais fourni (champs absents inchangés) ; les choix techniques et libellés
+     * de chiffres clés suivent l'ordre du français.
+     *
+     * @param  array<string, mixed>  $english
+     */
+    public function setEnglish(Project $project, array $english): void
+    {
+        foreach (self::TRANSLATABLE as $field) {
+            if (! array_key_exists($field, $english)) {
+                continue;
+            }
+
+            filled($english[$field])
+                ? $project->setTranslation($field, 'en', in_array($field, self::WITH_MENTIONS, true)
+                    ? $this->mentions->withoutUnknownMentions($english[$field])['text']
+                    : PostMentions::plain($english[$field]))
+                : $project->forgetTranslation($field, 'en');
+        }
+
+        if (array_key_exists('decisions', $english)) {
+            $project->decisions = collect($project->decisions ?? [])->values()->map(fn (array $decision, int $index): array => [
+                'choice' => [...$decision['choice'], 'en' => $english['decisions'][$index]['choice'] ?? ''],
+                'reason' => [...$decision['reason'], 'en' => $english['decisions'][$index]['reason'] ?? ''],
+            ])->all();
+        }
+
+        if (array_key_exists('key_figure_labels', $english)) {
+            $project->key_figures = collect($project->key_figures ?? [])->values()->map(fn (array $figure, int $index): array => [
+                ...$figure,
+                'label' => [...$figure['label'], 'en' => $english['key_figure_labels'][$index] ?? ''],
+            ])->all();
+        }
+
+        $project->save();
+    }
+
+    /**
      * Valide puis enregistre le brouillon ; renvoie ce que l'agent doit savoir : mentions
      * retirées (élément inconnu ou non publié, remplacé par son libellé) et dépôt lié.
      *
@@ -235,7 +289,7 @@ class ProjectDraftWriter
     }
 
     /** @return array<string, mixed> */
-    private function rules(Project $project): array
+    public function rules(Project $project): array
     {
         return [
             'title' => ['required', 'string', 'max:255'],

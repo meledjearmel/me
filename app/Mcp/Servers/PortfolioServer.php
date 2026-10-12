@@ -16,6 +16,8 @@ use App\Mcp\Tools\GetContentTool;
 use App\Mcp\Tools\GetPostTool;
 use App\Mcp\Tools\GetProjectTool;
 use App\Mcp\Tools\ListContentsTool;
+use App\Mcp\Tools\ListRevisionsTool;
+use App\Mcp\Tools\ProposeRevisionTool;
 use App\Mcp\Tools\ReadWebPageTool;
 use App\Mcp\Tools\SaveContentDraftTool;
 use App\Mcp\Tools\SaveContentTranslationTool;
@@ -52,6 +54,7 @@ Pour un article du blog : get-catalog (tags, séries avec leurs articles dans l'
 - Images : add-post-image ajoute la couverture ou une image du contenu (capture, schéma), puis insère la balise <img> renvoyée dans body. Sans image fournie, propose un plan d'images : emplacement, type (capture réelle de préférence, schéma, illustration), utilité, et pour les images à générer un prompt professionnel en anglais prêt à copier (format, style sobre et cohérent, sans texte incrusté) ; voir le prompt plan-post-images.
 Autres contenus (expériences, formations, certifications, page « Uses », compétences) : list-contents décrit les champs du type et liste l'existant (pas de doublon), get-content lit un contenu, save-content-draft crée ou modifie un brouillon en français ; voir le prompt add-content.
 Ne traduis en anglais (save-project-translation, save-post-translation, save-content-translation) que lorsque le développeur a validé le français et te le demande.
+Contenu déjà publié (ou page « Now ») : ne le modifie jamais directement. Lis-le, vérifie list-revisions pour ne pas proposer deux fois la même chose, puis propose-revision avec seulement les champs modifiés, en français et en anglais, et un résumé de ce qui change et pourquoi ; le développeur relit l'avant/après et applique.
 N'invente rien : client, dates, chiffres ou taille d'équipe absents de la source restent vides. Ne cite ni secret ni donnée confidentielle d'un client. Rien n'est jamais publié par toi : ce sont toujours des brouillons.
 TEXT)]
 class PortfolioServer extends Server
@@ -76,6 +79,8 @@ class PortfolioServer extends Server
         GetContentTool::class,
         SaveContentDraftTool::class,
         SaveContentTranslationTool::class,
+        ProposeRevisionTool::class,
+        ListRevisionsTool::class,
     ];
 
     protected array $prompts = [

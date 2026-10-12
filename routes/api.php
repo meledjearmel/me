@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\CelebrationController;
 use App\Http\Controllers\Api\V1\CertificationController;
 use App\Http\Controllers\Api\V1\CongratulationController;
 use App\Http\Controllers\Api\V1\ContactController;
+use App\Http\Controllers\Api\V1\ContentRevisionController;
 use App\Http\Controllers\Api\V1\CvDownloadController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\DomainController;
@@ -88,6 +89,13 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('testimonials', TestimonialController::class)->except('store');
         Route::delete('testimonials/{testimonial}/video', [TestimonialController::class, 'destroyVideo'])->name('testimonials.video.destroy');
         Route::apiResource('congratulations', CongratulationController::class)->only(['index', 'show']);
+
+        Route::prefix('revisions')->name('revisions.')->group(function (): void {
+            Route::get('/', [ContentRevisionController::class, 'index'])->name('index');
+            Route::get('{revision}', [ContentRevisionController::class, 'show'])->name('show');
+            Route::post('{revision}/apply', [ContentRevisionController::class, 'apply'])->name('apply');
+            Route::post('{revision}/reject', [ContentRevisionController::class, 'reject'])->name('reject');
+        });
 
         Route::apiResource('domains', DomainController::class);
         Route::apiResource('music-genres', MusicGenreController::class);

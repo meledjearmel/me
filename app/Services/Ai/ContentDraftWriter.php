@@ -65,12 +65,7 @@ class ContentDraftWriter
     public function save(string $type, Model $content, array $input): array
     {
         $definition = $this->types->get($type);
-        $rules = [
-            ...collect($definition['fields'])->map(fn (array $field): array => $field['rules'])->all(),
-            ...collect($definition['translatable'])->map(fn (array $field): array => $field['rules'])->all(),
-            ...collect($definition['relations'])->flatMap(fn (array $relation): array => $relation['rules'])->all(),
-        ];
-        $data = Validator::make($input, $rules)->validate();
+        $data = Validator::make($input, $this->rules($type))->validate();
         $removed = [];
 
         DB::transaction(function () use ($definition, $content, $data, &$removed): void {
@@ -109,6 +104,18 @@ class ContentDraftWriter
         return array_values(array_unique($removed));
     }
 
+    /** @return array<string, mixed> */
+    public function rules(string $type): array
+    {
+        $definition = $this->types->get($type);
+
+        return [
+            ...collect($definition['fields'])->map(fn (array $field): array => $field['rules'])->all(),
+            ...collect($definition['translatable'])->map(fn (array $field): array => $field['rules'])->all(),
+            ...collect($definition['relations'])->flatMap(fn (array $relation): array => $relation['rules'])->all(),
+        ];
+    }
+
     /**
      * L'anglais d'un brouillon, sans toucher au français : seuls les champs remplis en
      * français sont traduits, les points forts dans le même ordre.
@@ -134,20 +141,40 @@ class ContentDraftWriter
 
         $data = Validator::make($input, $rules, ['highlights.size' => 'Traduisez les :size réalisations, dans l\'ordre.'])->validate();
 
-        DB::transaction(function () use ($definition, $content, $data): void {
+        // Un champ vide en français reste vide en anglais.
+        $this->setEnglish($type, $content, collect($data)
+            ->filter(fn (mixed $value, string $field): bool => $field === 'highlights' || filled($content->getTranslation($field, 'fr', false)))
+            ->all());
+    }
+
+    /**
+     * Écrit l'anglais fourni (champs absents inchangés) ; les réalisations d'une expérience
+     * suivent l'ordre du français.
+     *
+     * @param  array<string, mixed>  $english
+     */
+    public function setEnglish(string $type, Model $content, array $english): void
+    {
+        $definition = $this->types->get($type);
+
+        DB::transaction(function () use ($definition, $content, $english): void {
             foreach (array_keys($definition['translatable']) as $field) {
-                if (filled($content->getTranslation($field, 'fr', false)) && filled($data[$field] ?? null)) {
-                    $content->setTranslation($field, 'en', in_array($field, $definition['mentions'], true)
-                        ? $this->mentions->withoutUnknownMentions($data[$field])['text']
-                        : PostMentions::plain($data[$field]));
+                if (! array_key_exists($field, $english)) {
+                    continue;
                 }
+
+                filled($english[$field])
+                    ? $content->setTranslation($field, 'en', in_array($field, $definition['mentions'], true)
+                        ? $this->mentions->withoutUnknownMentions($english[$field])['text']
+                        : PostMentions::plain($english[$field]))
+                    : $content->forgetTranslation($field, 'en');
             }
 
             $content->save();
 
-            if ($content instanceof Experience) {
+            if ($content instanceof Experience && array_key_exists('highlights', $english)) {
                 $content->highlights()->orderBy('sort_order')->get()->values()->each(
-                    fn ($highlight, int $index) => $highlight->setTranslation('text', 'en', $data['highlights'][$index] ?? '')->save()
+                    fn ($highlight, int $index) => $highlight->setTranslation('text', 'en', $english['highlights'][$index] ?? '')->save()
                 );
             }
         });

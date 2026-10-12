@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\PostSeries;
 use App\Models\PostTag;
 use App\Models\Project;
+use App\Models\SiteSetting;
 use App\Models\TechnologyCategory;
 use App\Services\Ai\ProjectDraftService;
 use App\Services\GitHubActivity;
@@ -31,6 +32,12 @@ class GetCatalogTool extends Tool
 
         return Response::json([
             ...$drafts->catalog(),
+            // La page « Now » actuelle, à modifier avec propose-revision (type now_page).
+            'now_page' => [
+                'fr' => SiteSetting::current()->now_content['fr'] ?? null,
+                'en' => SiteSetting::current()->now_content['en'] ?? null,
+                'updated_at' => SiteSetting::current()->now_updated_at?->toIso8601String(),
+            ],
             // Dépôts de la dernière synchronisation, privés compris, et le projet déjà lié à chacun.
             'github_repositories' => collect($github->cached()['available'] ?? [])
                 ->map(fn (array $repository): array => [

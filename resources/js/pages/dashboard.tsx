@@ -4,6 +4,7 @@ import {
     CheckCircle2,
     Eye,
     FilePen,
+    GitCompare,
     FileDown,
     Handshake,
     Mail,
@@ -49,6 +50,7 @@ import { index as engagementsIndex } from "@/routes/admin/engagements";
 import { index as referencesIndex } from "@/routes/admin/professional-references";
 import { edit as profileEdit } from "@/routes/admin/profile";
 import { index as projectsIndex } from "@/routes/admin/projects";
+import { index as revisionsIndex } from "@/routes/admin/revisions";
 import { index as testimonialsIndex } from "@/routes/admin/testimonials";
 
 type Bar = { label: string; color?: string; count: number };
@@ -62,6 +64,7 @@ type DashboardProps = {
         project_drafts: number;
         post_drafts: number;
         content_drafts: number;
+        revisions: number;
     };
     blog: {
         period_days: number | null;
@@ -565,7 +568,7 @@ export default function Dashboard({
                 </div>
 
                 {/* À traiter */}
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     <TodoCard
                         title="Messages non lus"
                         count={todo.contacts}
@@ -610,6 +613,13 @@ export default function Dashboard({
                         }
                         icon={FilePen}
                         done="Aucun brouillon en attente"
+                    />
+                    <TodoCard
+                        title="Révisions à relire"
+                        count={todo.revisions}
+                        href={revisionsIndex()}
+                        icon={GitCompare}
+                        done="Aucune révision proposée"
                     />
                 </div>
 
