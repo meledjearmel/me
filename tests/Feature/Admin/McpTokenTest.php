@@ -3,13 +3,13 @@
 use App\Models\User;
 
 test('guests cannot manage mcp tokens', function () {
-    $this->get(route('admin.mcp-tokens.index'))->assertRedirect(route('login'));
+    $this->get(route('admin.mcp-server.access'))->assertRedirect(route('login'));
 });
 
 test('a created mcp token is limited to the mcp server', function () {
     $user = User::factory()->create();
 
-    $this->actingAs($user)->post(route('admin.mcp-tokens.store'), ['name' => 'Claude Code'])
+    $this->actingAs($user)->post(route('admin.mcp-server.tokens.store'), ['name' => 'Claude Code'])
         ->assertRedirect();
 
     $token = $user->tokens()->sole();
@@ -40,12 +40,22 @@ test('the list only shows mcp tokens, which can be revoked', function () {
     $mcp = $user->createToken('Claude Code', ['mcp'])->accessToken;
     $user->createToken('iPhone');
 
-    $this->actingAs($user)->get(route('admin.mcp-tokens.index'))
-        ->assertInertia(fn ($page) => $page->component('admin/mcp-tokens/index')
+    $this->actingAs($user)->get(route('admin.mcp-server.access'))
+        ->assertInertia(fn ($page) => $page->component('admin/mcp-server/access')
             ->has('tokens', 1)
             ->where('tokens.0.name', 'Claude Code'));
 
-    $this->actingAs($user)->delete(route('admin.mcp-tokens.destroy', $mcp->id))->assertRedirect();
+    $this->actingAs($user)->delete(route('admin.mcp-server.tokens.destroy', $mcp->id))->assertRedirect();
 
     expect($user->tokens()->pluck('name')->all())->toBe(['iPhone']);
+});
+
+test('the mcp server page lists every command with its guide', function () {
+    $this->actingAs(User::factory()->create())->get(route('admin.mcp-server.index'))
+        ->assertInertia(fn ($page) => $page->component('admin/mcp-server/index')
+            ->where('serverUrl', url('/mcp/portfolio'))
+            ->has('prompts', 6)
+            ->has('tools', 18)
+            ->where('prompts', fn ($prompts) => collect($prompts)->every(fn ($prompt) => filled($prompt['usage']) && filled($prompt['example'])))
+            ->where('tools', fn ($tools) => collect($tools)->every(fn ($tool) => filled($tool['usage']) && filled($tool['example']))));
 });

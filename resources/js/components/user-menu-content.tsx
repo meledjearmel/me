@@ -1,18 +1,19 @@
-import { Link, router } from '@inertiajs/react';
-import { LogOut, Settings, Settings2, Trash2 } from 'lucide-react';
+import { Link, router } from "@inertiajs/react";
+import { Bot, LogOut, Settings, Settings2, Trash2 } from "lucide-react";
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
-import { UserInfo } from '@/components/user-info';
-import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
-import { logout } from '@/routes';
-import { edit as siteSettingsEdit } from '@/routes/admin/site-settings';
-import { index as trashIndex } from '@/routes/admin/trash';
-import { edit } from '@/routes/profile';
-import type { User } from '@/types';
+} from "@/components/ui/dropdown-menu";
+import { UserInfo } from "@/components/user-info";
+import { useMobileNavigation } from "@/hooks/use-mobile-navigation";
+import { logout } from "@/routes";
+import { index as mcpServerIndex } from "@/routes/admin/mcp-server";
+import { edit as siteSettingsEdit } from "@/routes/admin/site-settings";
+import { index as trashIndex } from "@/routes/admin/trash";
+import { edit } from "@/routes/profile";
+import type { User } from "@/types";
 
 type Props = {
     user: User;
@@ -35,6 +36,17 @@ export function UserMenuContent({ user }: Props) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
+                <DropdownMenuItem asChild>
+                    <Link
+                        className="block w-full cursor-pointer"
+                        href={mcpServerIndex()}
+                        prefetch
+                        onClick={cleanup}
+                    >
+                        <Bot className="mr-2" />
+                        Serveur MCP
+                    </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                     <Link
                         className="block w-full cursor-pointer"

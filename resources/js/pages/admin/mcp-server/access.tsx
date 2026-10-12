@@ -2,12 +2,11 @@ import { Form, Head, router, usePage } from "@inertiajs/react";
 import { Check, Copy, KeyRound, Trash2 } from "lucide-react";
 import { useState } from "react";
 import McpTokenController from "@/actions/App/Http/Controllers/Admin/McpTokenController";
-import Heading from "@/components/heading";
+import FormPageHeader from "@/components/admin/form-page-header";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { destroy as destroyConnector } from "@/routes/admin/mcp-connectors";
-import { index as pageIndex } from "@/routes/admin/mcp-tokens";
+import { access, index as serverIndex } from "@/routes/admin/mcp-server";
 
 type McpToken = {
     id: number;
@@ -50,7 +49,7 @@ type Connector = {
     last_connected_at: string | null;
 };
 
-export default function McpTokensIndex({
+export default function McpServerAccess({
     tokens,
     connectors,
     serverUrl,
@@ -64,12 +63,14 @@ export default function McpTokensIndex({
 
     return (
         <>
-            <Head title="Serveur MCP" />
+            <Head title="Accès au serveur MCP" />
 
             <div className="space-y-6 p-4">
-                <Heading
-                    title="Serveur MCP"
-                    description="Claude Code, Codex, ou les connecteurs Claude et ChatGPT rédigent des brouillons et proposent des modifications, à relire, traduire et publier ici."
+                <FormPageHeader
+                    title="Accès au serveur MCP"
+                    description="Jetons pour Claude Code et Codex, et connecteurs Claude et ChatGPT autorisés."
+                    backHref={serverIndex()}
+                    backLabel="Serveur MCP"
                 />
 
                 <section className="space-y-2">
@@ -179,7 +180,7 @@ export default function McpTokensIndex({
                                                 )
                                             ) {
                                                 router.delete(
-                                                    destroyConnector.url(
+                                                    McpTokenController.destroyConnector.url(
                                                         connector.id,
                                                     ),
                                                     { preserveScroll: true },
@@ -252,6 +253,9 @@ export default function McpTokensIndex({
     );
 }
 
-McpTokensIndex.layout = {
-    breadcrumbs: [{ title: "Serveur MCP", href: pageIndex() }],
+McpServerAccess.layout = {
+    breadcrumbs: [
+        { title: "Serveur MCP", href: serverIndex() },
+        { title: "Accès", href: access() },
+    ],
 };

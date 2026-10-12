@@ -84,10 +84,10 @@ test('a connector is listed and disconnected from the admin', function () {
         'expires_at' => now()->addDay(),
     ]);
 
-    $this->actingAs($user)->get(route('admin.mcp-tokens.index'))
+    $this->actingAs($user)->get(route('admin.mcp-server.access'))
         ->assertInertia(fn ($page) => $page->where('connectors.0.name', 'ChatGPT'));
 
-    $this->actingAs($user)->delete(route('admin.mcp-connectors.destroy', $client->getKey()))->assertRedirect();
+    $this->actingAs($user)->delete(route('admin.mcp-server.connectors.destroy', $client->getKey()))->assertRedirect();
 
     expect($token->fresh()->revoked)->toBeTrue();
 });

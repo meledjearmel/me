@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\EngagementController;
 use App\Http\Controllers\Admin\ExperienceController;
 use App\Http\Controllers\Admin\GitHubController;
 use App\Http\Controllers\Admin\JobProfileController;
+use App\Http\Controllers\Admin\McpServerController;
 use App\Http\Controllers\Admin\McpTokenController;
 use App\Http\Controllers\Admin\MusicGenreController;
 use App\Http\Controllers\Admin\NowPageController;
@@ -53,10 +54,13 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::get('revisions/{revision}', [ContentRevisionController::class, 'show'])->name('revisions.show');
     Route::post('revisions/{revision}/apply', [ContentRevisionController::class, 'apply'])->name('revisions.apply');
     Route::post('revisions/{revision}/reject', [ContentRevisionController::class, 'reject'])->name('revisions.reject');
-    Route::get('mcp-tokens', [McpTokenController::class, 'index'])->name('mcp-tokens.index');
-    Route::post('mcp-tokens', [McpTokenController::class, 'store'])->name('mcp-tokens.store');
-    Route::delete('mcp-tokens/{token}', [McpTokenController::class, 'destroy'])->whereNumber('token')->name('mcp-tokens.destroy');
-    Route::delete('mcp-connectors/{client}', [McpTokenController::class, 'destroyConnector'])->name('mcp-connectors.destroy');
+    Route::prefix('mcp-server')->name('mcp-server.')->group(function () {
+        Route::get('/', McpServerController::class)->name('index');
+        Route::get('access', [McpTokenController::class, 'index'])->name('access');
+        Route::post('tokens', [McpTokenController::class, 'store'])->name('tokens.store');
+        Route::delete('tokens/{token}', [McpTokenController::class, 'destroy'])->whereNumber('token')->name('tokens.destroy');
+        Route::delete('connectors/{client}', [McpTokenController::class, 'destroyConnector'])->name('connectors.destroy');
+    });
     Route::get('now-page', [NowPageController::class, 'edit'])->name('now-page.edit');
     Route::put('now-page', [NowPageController::class, 'update'])->name('now-page.update');
 

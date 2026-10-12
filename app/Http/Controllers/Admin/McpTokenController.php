@@ -23,7 +23,7 @@ class McpTokenController extends Controller
 {
     public function index(Request $request): Response
     {
-        return Inertia::render('admin/mcp-tokens/index', [
+        return Inertia::render('admin/mcp-server/access', [
             'tokens' => $this->mcpTokens($request)
                 ->latest()
                 ->get(['id', 'name', 'last_used_at', 'created_at']),
