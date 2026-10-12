@@ -27,13 +27,9 @@ bun run build:ssr
 echo "→ Base de données"
 php artisan migrate --force
 
-echo "→ Clés OAuth Passport (créées si absentes, lisibles par PHP-FPM)"
+echo "→ Clés OAuth Passport (si absentes)"
 [ -f storage/oauth-private.key ] || php artisan passport:keys
-chown www-data:www-data storage/oauth-private.key storage/oauth-public.key
-
-echo "→ Logos des technologies (enregistrés depuis l'admin)"
 mkdir -p public/icons/tech
-chown -R www-data:www-data public/icons/tech
 
 echo "→ ffmpeg (compression des avis vidéo)"
 command -v ffmpeg >/dev/null && command -v ffprobe >/dev/null \
@@ -45,6 +41,9 @@ php artisan geoip:update --if-missing
 echo "→ Caches Laravel"
 php artisan optimize:clear
 php artisan optimize
+
+echo "→ Propriétaire www-data (PHP-FPM et PM2 tournent en www-data, le déploiement en root)"
+chown -R www-data:www-data storage bootstrap/cache public/icons
 
 echo "→ Redémarrage des processus (queue, scheduler, SSR)"
 php artisan queue:restart
