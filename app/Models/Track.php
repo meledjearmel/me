@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\PlacesNewAtEnd;
 use Database\Factories\TrackFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +15,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 class Track extends Model implements HasMedia
 {
     /** @use HasFactory<TrackFactory> */
-    use HasFactory, InteractsWithMedia, SoftDeletes;
+    use HasFactory, InteractsWithMedia, PlacesNewAtEnd, SoftDeletes;
 
     /** @var list<string> */
     protected $fillable = [

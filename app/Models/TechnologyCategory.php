@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\PlacesNewAtEnd;
 use Database\Factories\TechnologyCategoryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Spatie\Translatable\HasTranslations;
 class TechnologyCategory extends Model
 {
     /** @use HasFactory<TechnologyCategoryFactory> */
-    use HasFactory, HasTranslations, SoftDeletes;
+    use HasFactory, HasTranslations, PlacesNewAtEnd, SoftDeletes;
 
     /** @var array<int, string> */
     protected $translatable = ['label'];

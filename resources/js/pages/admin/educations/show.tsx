@@ -1,11 +1,11 @@
-import EducationController from '@/actions/App/Http/Controllers/Admin/EducationController';
+import StatusSelect from "@/components/admin/status-select";
+import EducationController from "@/actions/App/Http/Controllers/Admin/EducationController";
 import ShowPage, {
     Bilingual,
-    PublicationBadge,
     formatPeriod,
-} from '@/components/admin/show-page';
-import { index as educationsIndex } from '@/routes/admin/educations';
-import type { Education } from '@/types';
+} from "@/components/admin/show-page";
+import { index as educationsIndex } from "@/routes/admin/educations";
+import type { Education } from "@/types";
 
 export default function EducationShow({
     education: row,
@@ -16,30 +16,36 @@ export default function EducationShow({
         <ShowPage
             title={row.degree.fr}
             description={row.institution}
-            badge={<PublicationBadge status={row.status} />}
+            badge={
+                <StatusSelect
+                    type="education"
+                    id={row.id}
+                    status={row.status}
+                />
+            }
             backHref={educationsIndex()}
             backLabel="Formation"
             editHref={EducationController.edit(row.id)}
             sections={[
                 {
-                    title: 'Détails',
+                    title: "Détails",
                     items: [
-                        { label: 'Établissement', value: row.institution },
+                        { label: "Établissement", value: row.institution },
                         {
-                            label: 'Période',
+                            label: "Période",
                             value: formatPeriod(row.start_date, row.end_date),
                         },
                         {
-                            label: 'Diplôme',
+                            label: "Diplôme",
                             value: <Bilingual value={row.degree} />,
                         },
                         {
-                            label: 'Domaine',
+                            label: "Domaine",
                             value: <Bilingual value={row.field} />,
                         },
-                        { label: 'Ordre', value: row.sort_order },
+                        { label: "Ordre", value: row.sort_order },
                         {
-                            label: 'Description',
+                            label: "Description",
                             value: <Bilingual value={row.description} />,
                             wide: true,
                         },
@@ -52,7 +58,7 @@ export default function EducationShow({
 
 EducationShow.layout = {
     breadcrumbs: [
-        { title: 'Formation', href: educationsIndex() },
-        { title: 'Détail', href: '' },
+        { title: "Formation", href: educationsIndex() },
+        { title: "Détail", href: "" },
     ],
 };

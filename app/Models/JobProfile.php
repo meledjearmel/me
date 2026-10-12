@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Concerns\HasPublicationStatus;
+use App\Concerns\PlacesNewAtEnd;
 use Database\Factories\JobProfileFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +16,7 @@ use Spatie\Translatable\HasTranslations;
 class JobProfile extends Model implements HasMedia
 {
     /** @use HasFactory<JobProfileFactory> */
-    use HasFactory, HasPublicationStatus, HasTranslations, InteractsWithMedia, SoftDeletes;
+    use HasFactory, HasPublicationStatus, HasTranslations, InteractsWithMedia, PlacesNewAtEnd, SoftDeletes;
 
     /** Langues pour lesquelles un CV PDF peut être uploadé pour ce profil métier. */
     public const CV_LOCALES = ['fr', 'en'];

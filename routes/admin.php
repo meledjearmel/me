@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\CertificationController;
 use App\Http\Controllers\Admin\CongratulationController;
 use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\ContentRevisionController;
+use App\Http\Controllers\Admin\ContentStatusController;
 use App\Http\Controllers\Admin\CvDownloadController;
 use App\Http\Controllers\Admin\DomainController;
 use App\Http\Controllers\Admin\EducationController;
@@ -39,6 +40,7 @@ use App\Http\Controllers\Admin\TrackController;
 use App\Http\Controllers\Admin\TrashController;
 use App\Http\Controllers\Admin\UsesItemController;
 use App\Models\JobProfile;
+use App\Services\ContentStatus;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
@@ -50,6 +52,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::get('github', [GitHubController::class, 'edit'])->name('github.edit');
     Route::put('github', [GitHubController::class, 'update'])->name('github.update');
     Route::post('github/sync', [GitHubController::class, 'sync'])->middleware('throttle:6,1')->name('github.sync');
+    Route::patch('status/{type}/{id}', ContentStatusController::class)->whereIn('type', ContentStatus::types())->whereNumber('id')->name('content-status.update');
     Route::get('revisions', [ContentRevisionController::class, 'index'])->name('revisions.index');
     Route::get('revisions/{revision}', [ContentRevisionController::class, 'show'])->name('revisions.show');
     Route::post('revisions/{revision}/apply', [ContentRevisionController::class, 'apply'])->name('revisions.apply');

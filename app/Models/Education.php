@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Concerns\HasPublicationStatus;
+use App\Concerns\PlacesNewAtEnd;
 use Database\Factories\EducationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +18,7 @@ use Spatie\Translatable\HasTranslations;
 class Education extends Model
 {
     /** @use HasFactory<EducationFactory> */
-    use HasFactory, HasPublicationStatus, HasTranslations, SoftDeletes;
+    use HasFactory, HasPublicationStatus, HasTranslations, PlacesNewAtEnd, SoftDeletes;
 
     /**
      * "Education" est traité comme indénombrable par l'inflecteur Laravel

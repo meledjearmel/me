@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\PlacesNewAtEnd;
 use Database\Factories\MusicGenreFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ use Spatie\Translatable\HasTranslations;
 class MusicGenre extends Model
 {
     /** @use HasFactory<MusicGenreFactory> */
-    use HasFactory, HasTranslations, SoftDeletes;
+    use HasFactory, HasTranslations, PlacesNewAtEnd, SoftDeletes;
 
     /** @var array<int, string> */
     protected $translatable = ['label'];

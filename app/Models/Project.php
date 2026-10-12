@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\PlacesNewAtEnd;
 use App\Enums\ProjectStatus;
 use Database\Factories\ProjectFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,7 +17,7 @@ use Spatie\Translatable\HasTranslations;
 class Project extends Model implements HasMedia
 {
     /** @use HasFactory<ProjectFactory> */
-    use HasFactory, HasTranslations, InteractsWithMedia, SoftDeletes;
+    use HasFactory, HasTranslations, InteractsWithMedia, PlacesNewAtEnd, SoftDeletes;
 
     /** @var array<int, string> */
     protected $translatable = ['title', 'tagline', 'role', 'client', 'platform', 'context', 'challenges', 'realization', 'result'];

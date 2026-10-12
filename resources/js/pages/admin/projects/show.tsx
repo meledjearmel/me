@@ -1,8 +1,7 @@
+import StatusSelect from "@/components/admin/status-select";
 import { Link } from "@inertiajs/react";
 import ProjectController from "@/actions/App/Http/Controllers/Admin/ProjectController";
 import AiDraftBadge from "@/components/admin/ai-draft-badge";
-import { Badge } from "@/components/ui/badge";
-import { PROJECT_STATUSES } from "@/lib/admin-options";
 import ShowPage, { Bilingual, Pills } from "@/components/admin/show-page";
 import { index as projectsIndex } from "@/routes/admin/projects";
 import type { Project } from "@/types";
@@ -14,17 +13,11 @@ export default function ProjectShow({ project: row }: { project: Project }) {
             description={row.slug}
             badge={
                 <>
-                    <Badge
-                        variant={
-                            row.status === "published" ? "default" : "secondary"
-                        }
-                    >
-                        {
-                            PROJECT_STATUSES.find(
-                                (status) => status.value === row.status,
-                            )?.label
-                        }
-                    </Badge>
+                    <StatusSelect
+                        type="project"
+                        id={row.id}
+                        status={row.status}
+                    />
                     <AiDraftBadge
                         draftedBy={row.drafted_by}
                         status={row.status}

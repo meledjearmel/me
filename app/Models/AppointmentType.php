@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\PlacesNewAtEnd;
 use App\Enums\AppointmentLocation;
 use Database\Factories\AppointmentTypeFactory;
 use Illuminate\Database\Eloquent\Casts\AsEnumCollection;
@@ -15,7 +16,7 @@ use Spatie\Translatable\HasTranslations;
 class AppointmentType extends Model
 {
     /** @use HasFactory<AppointmentTypeFactory> */
-    use HasFactory, HasTranslations, SoftDeletes;
+    use HasFactory, HasTranslations, PlacesNewAtEnd, SoftDeletes;
 
     /** @var array<int, string> */
     protected $translatable = ['name', 'description'];

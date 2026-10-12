@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Concerns\HasPublicationStatus;
+use App\Concerns\PlacesNewAtEnd;
 use Database\Factories\DomainFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +15,7 @@ use Spatie\Translatable\HasTranslations;
 class Domain extends Model
 {
     /** @use HasFactory<DomainFactory> */
-    use HasFactory, HasPublicationStatus, HasTranslations, SoftDeletes;
+    use HasFactory, HasPublicationStatus, HasTranslations, PlacesNewAtEnd, SoftDeletes;
 
     /** @var array<int, string> */
     protected $translatable = ['label'];

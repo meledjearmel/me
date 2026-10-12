@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Concerns\HasPublicationStatus;
+use App\Concerns\PlacesNewAtEnd;
 use App\Enums\CertificationKind;
 use Database\Factories\CertificationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,7 +20,7 @@ use Spatie\Translatable\HasTranslations;
 class Certification extends Model implements HasMedia
 {
     /** @use HasFactory<CertificationFactory> */
-    use HasFactory, HasPublicationStatus, HasTranslations, InteractsWithMedia, SoftDeletes;
+    use HasFactory, HasPublicationStatus, HasTranslations, InteractsWithMedia, PlacesNewAtEnd, SoftDeletes;
 
     /** @var array<int, string> */
     protected $translatable = ['name'];

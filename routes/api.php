@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\CertificationController;
 use App\Http\Controllers\Api\V1\CongratulationController;
 use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\ContentRevisionController;
+use App\Http\Controllers\Api\V1\ContentStatusController;
 use App\Http\Controllers\Api\V1\CvDownloadController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\DomainController;
@@ -41,6 +42,7 @@ use App\Http\Controllers\Api\V1\TrashController;
 use App\Http\Controllers\Api\V1\UsesItemController;
 use App\Http\Middleware\RejectMcpTokens;
 use App\Models\JobProfile;
+use App\Services\ContentStatus;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->name('api.v1.')->group(function (): void {
@@ -92,6 +94,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('congratulations', CongratulationController::class)->only(['index', 'show']);
 
         Route::get('mcp-activity', [McpActivityController::class, 'index'])->name('mcp-activity.index');
+        Route::patch('status/{type}/{id}', ContentStatusController::class)->whereIn('type', ContentStatus::types())->whereNumber('id')->name('content-status.update');
 
         Route::prefix('revisions')->name('revisions.')->group(function (): void {
             Route::get('/', [ContentRevisionController::class, 'index'])->name('index');

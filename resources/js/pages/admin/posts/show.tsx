@@ -1,3 +1,4 @@
+import StatusSelect from "@/components/admin/status-select";
 import { router } from "@inertiajs/react";
 import { Check, ExternalLink, Eye, X } from "lucide-react";
 import DeleteButton from "@/components/admin/delete-button";
@@ -94,6 +95,11 @@ export default function PostShow({
                     </Badge>
                     <AiDraftBadge
                         draftedBy={post.drafted_by}
+                        status={post.status}
+                    />
+                    <StatusSelect
+                        type="post"
+                        id={post.id}
                         status={post.status}
                     />
                 </>
