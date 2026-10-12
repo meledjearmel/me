@@ -39,7 +39,7 @@ return [
     'chat' => [
         'providers' => array_values(array_filter(array_map(
             'trim',
-            explode(',', (string) env('AI_CHAT_PROVIDERS', 'groq,groq-fallback,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,openrouter:inclusionai/ling-3.0-flash-fin:free,openrouter:poolside/laguna-s-2.1:free,gemini,gemini:gemini-3.8-flash,gemini:gemini-3.5-flash-lite')),
+            explode(',', (string) env('AI_CHAT_PROVIDERS', 'groq,groq-fallback,nvidia,nvidia:nvidia/nemotron-3.5-lightning-30b-a3b,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,openrouter:inclusionai/ling-3.0-flash-fin:free,openrouter:poolside/laguna-s-2.1:free,gemini,gemini:gemini-3.8-flash,gemini:gemini-3.5-flash-lite')),
         ))),
         'max_message_length' => 500,
         'max_history' => 10,
@@ -77,7 +77,7 @@ return [
     'text_assist' => [
         'providers' => array_values(array_filter(array_map(
             'trim',
-            explode(',', (string) env('AI_TEXT_ASSIST_PROVIDERS', 'groq,groq-fallback,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,openrouter:inclusionai/ling-3.0-flash-fin:free,openrouter:poolside/laguna-s-2.1:free,gemini,gemini:gemini-3.8-flash,gemini:gemini-3.5-flash-lite')),
+            explode(',', (string) env('AI_TEXT_ASSIST_PROVIDERS', 'groq,groq-fallback,nvidia,nvidia:nvidia/nemotron-3.5-lightning-30b-a3b,openrouter:nvidia/nemotron-3-ultra-550b-a55b:free,openrouter:inclusionai/ling-3.0-flash-fin:free,openrouter:poolside/laguna-s-2.1:free,gemini,gemini:gemini-3.8-flash,gemini:gemini-3.5-flash-lite')),
         ))),
         'max_text_length' => 2000,
         // Fragment HTML d'article (rédaction, traduction) : l'éditeur découpe au-delà.
@@ -196,6 +196,14 @@ return [
         'mistral' => [
             'driver' => 'mistral',
             'key' => env('MISTRAL_API_KEY'),
+        ],
+
+        // NVIDIA (build.nvidia.com) : API compatible OpenAI, gratuite avec une clé « nvapi-… ».
+        'nvidia' => [
+            'driver' => 'openai-compatible',
+            'key' => env('NVIDIA_API_KEY'),
+            'url' => env('NVIDIA_URL', 'https://integrate.api.nvidia.com/v1'),
+            'models' => ['text' => ['default' => env('NVIDIA_MODEL', 'nvidia/nemotron-3-super-120b-a12b')]],
         ],
 
         'ollama' => [
