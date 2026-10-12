@@ -30,6 +30,8 @@ class GetProjectTool extends Tool
             'id' => $project->id,
             'status' => $project->status->value,
             ...$writer->toInput($project),
+            'has_cover' => $project->hasMedia('cover'),
+            'gallery_count' => $project->getMedia('gallery')->count(),
         ]);
     }
 

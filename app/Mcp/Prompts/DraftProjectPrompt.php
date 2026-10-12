@@ -15,6 +15,8 @@ class DraftProjectPrompt extends Prompt
     {
         $notes = filled($request->get('notes')) ? "\n\nNotes du développeur, à prendre en compte en priorité :\n{$request->get('notes')}" : '';
 
+        $guide = PlanProjectImagesPrompt::GUIDE;
+
         return Response::text(<<<TEXT
         Rédige le brouillon de l'étude de cas de ce projet pour mon portfolio.
 
@@ -23,7 +25,9 @@ class DraftProjectPrompt extends Prompt
         3. Appelle get-catalog. Si une technologie importante du projet manque au site, crée-la avec create-technology.
         4. S'il s'agit d'une app liée à un projet déjà présent (back-office, nouvelle version, app compagnon), cite-la avec son jeton de mention et renseigne related_projects.
         5. Enregistre le brouillon avec save-project-draft, en français, sans rien inventer.
-        6. Donne-moi le lien du brouillon et la liste de ce que tu n'as pas pu déterminer (client, chiffres, dates…), pour que je complète.
+        6. Donne-moi le lien du brouillon, la liste de ce que tu n'as pas pu déterminer (client, chiffres, dates…), et le plan d'images ci-dessous.
+
+        {$guide}
         {$notes}
         TEXT);
     }

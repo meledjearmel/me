@@ -3,6 +3,7 @@
 use App\Enums\ProjectStatus;
 use App\Mcp\Prompts\DraftProjectPrompt;
 use App\Mcp\Servers\PortfolioServer;
+use App\Mcp\Tools\AddProjectImageTool;
 use App\Mcp\Tools\CreateTechnologyTool;
 use App\Mcp\Tools\GetCatalogTool;
 use App\Mcp\Tools\GetProjectTool;
@@ -18,6 +19,7 @@ use App\Services\TechnologyIconLibrary;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 function mcpDraftArguments(array $overrides = []): array
@@ -356,4 +358,39 @@ test('the draft prompt passes the developer notes along', function () {
         ->assertOk()
         ->assertSee('Client : la mairie de Cocody')
         ->assertSee('save-project-draft');
+});
+
+test('a project draft receives a cover and gallery images', function () {
+    Storage::fake(config('media-library.disk_name'));
+    $png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+    $draft = Project::factory()->create(['status' => ProjectStatus::Draft]);
+
+    PortfolioServer::actingAs(User::factory()->create())
+        ->tool(AddProjectImageTool::class, ['id' => $draft->id, 'role' => 'cover', 'data' => $png])
+        ->assertOk();
+
+    PortfolioServer::actingAs(User::factory()->create())
+        ->tool(AddProjectImageTool::class, ['id' => $draft->id, 'role' => 'gallery', 'data' => 'data:image/png;base64,'.$png])
+        ->assertOk()
+        ->assertSee('(1 au total)');
+
+    expect($draft->fresh()->hasMedia('cover'))->toBeTrue();
+
+    PortfolioServer::actingAs(User::factory()->create())
+        ->tool(GetProjectTool::class, ['id' => $draft->id])
+        ->assertSee('"has_cover":true')
+        ->assertSee('"gallery_count":1');
+});
+
+test('a published project or a non image is refused', function () {
+    $published = Project::factory()->create(['status' => ProjectStatus::Published]);
+    $draft = Project::factory()->create(['status' => ProjectStatus::Draft]);
+
+    PortfolioServer::actingAs(User::factory()->create())
+        ->tool(AddProjectImageTool::class, ['id' => $published->id, 'role' => 'cover', 'data' => base64_encode('x')])
+        ->assertHasErrors(['Seul un brouillon de projet existant peut recevoir des images.']);
+
+    PortfolioServer::actingAs(User::factory()->create())
+        ->tool(AddProjectImageTool::class, ['id' => $draft->id, 'role' => 'gallery', 'data' => base64_encode('<svg onload="alert(1)"/>')])
+        ->assertHasErrors(['Image refusée : JPEG, PNG, WebP ou GIF de 5 Mo au plus.']);
 });

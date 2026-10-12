@@ -4,9 +4,11 @@ namespace App\Mcp\Servers;
 
 use App\Mcp\Prompts\DraftProjectPrompt;
 use App\Mcp\Prompts\PlanPostImagesPrompt;
+use App\Mcp\Prompts\PlanProjectImagesPrompt;
 use App\Mcp\Prompts\TranslateProjectPrompt;
 use App\Mcp\Prompts\WritePostPrompt;
 use App\Mcp\Tools\AddPostImageTool;
+use App\Mcp\Tools\AddProjectImageTool;
 use App\Mcp\Tools\CreateTechnologyTool;
 use App\Mcp\Tools\GetCatalogTool;
 use App\Mcp\Tools\GetPostTool;
@@ -37,6 +39,7 @@ Avant d'écrire, si la source laisse des trous importants (client ou contexte, t
 3. Appelle save-project-draft avec les champs en français. Ton sobre et concret, à la première personne, paragraphes en texte brut séparés par une ligne vide, sans Markdown.
 Pour citer une autre app, un article, une technologie ou une expérience du site dans le contexte, les défis, la réalisation ou le résultat, insère son jeton de mention tel que get-catalog le donne (ex. « @[App Station](project:12) ») : il devient un lien avec une carte au survol. Si le projet forme un ensemble avec d'autres (app et back-office, nouvelle version, app compagnon), renseigne aussi related_projects.
 Pour corriger un brouillon existant, utilise update-project-draft avec seulement les champs à changer.
+Images d'un projet : add-project-image (couverture, galerie). Sans image fournie, propose un plan d'images (quoi capturer, ou un prompt de génération professionnel) ; voir le prompt plan-project-images.
 Si une technologie importante manque au site, crée-la avec create-technology avant d'enregistrer le brouillon.
 Pour un article du blog : get-catalog (tags, séries avec leurs articles dans l'ordre, éléments à citer), puis save-post-draft avec le contenu en HTML simple ; save-post-draft avec un id modifie seulement les champs envoyés.
 - Séries : si le sujet prolonge une série existante (post_series), lis ses articles (get-post) pour assurer la continuité (rappel de la partie précédente, pas de redite) et place l'article à next_position ; propose une nouvelle série seulement si le développeur prévoit plusieurs parties.
@@ -58,6 +61,7 @@ class PortfolioServer extends Server
         SavePostDraftTool::class,
         SavePostTranslationTool::class,
         AddPostImageTool::class,
+        AddProjectImageTool::class,
         ReadWebPageTool::class,
     ];
 
@@ -66,5 +70,6 @@ class PortfolioServer extends Server
         TranslateProjectPrompt::class,
         WritePostPrompt::class,
         PlanPostImagesPrompt::class,
+        PlanProjectImagesPrompt::class,
     ];
 }
