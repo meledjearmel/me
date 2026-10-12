@@ -1,6 +1,7 @@
 import { getHTMLFromFragment, type Editor } from "@tiptap/core";
 import { Fragment } from "@tiptap/pm/model";
-import { Languages, Loader2, X } from "lucide-react";
+import { ImageOff, Languages, Loader2, X } from "lucide-react";
+import type { ReactNode } from "react";
 import { useRef, useState } from "react";
 import AiAssistController from "@/actions/App/Http/Controllers/Admin/AiAssistController";
 import FormSelect from "@/components/admin/form-select";
@@ -140,6 +141,24 @@ function TagsField({
     );
 }
 
+/** Bloc titré du formulaire (colonne latérale, référencement). */
+function FormSection({
+    title,
+    children,
+}: {
+    title: string;
+    children: ReactNode;
+}) {
+    return (
+        <section className="rounded-xl border">
+            <h2 className="border-b bg-muted/50 px-4 py-2.5 text-xs font-medium text-muted-foreground">
+                {title}
+            </h2>
+            <FieldGroup className="gap-4 p-4">{children}</FieldGroup>
+        </section>
+    );
+}
+
 /** Champs communs à la création et à la modification d'un article. */
 export default function PostForm({
     post,
@@ -148,6 +167,7 @@ export default function PostForm({
     errors,
     processing,
     submitLabel,
+    onRemoveCover,
 }: {
     post?: Post;
     tags: string[];
@@ -155,6 +175,8 @@ export default function PostForm({
     errors: Record<string, string>;
     processing: boolean;
     submitLabel: string;
+    /** Retire la couverture enregistrée (modification seulement). */
+    onRemoveCover?: () => void;
 }) {
     const formRef = useRef<HTMLDivElement>(null);
     const editors = useRef<Partial<Record<Locale, Editor>>>({});
@@ -231,7 +253,7 @@ export default function PostForm({
     return (
         <div
             ref={formRef}
-            className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]"
+            className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]"
         >
             <FieldGroup className="min-w-0">
                 <TranslatableField
@@ -244,6 +266,41 @@ export default function PostForm({
                         en: errors["title.en"],
                     }}
                 />
+                <FormSection title="Référencement">
+                    <Field data-invalid={!!errors.slug}>
+                        <FieldLabel htmlFor="slug">Adresse *</FieldLabel>
+                        <Input
+                            id="slug"
+                            name="slug"
+                            required
+                            value={slug}
+                            onChange={(event) => {
+                                setSlugTouched(true);
+                                setSlug(event.target.value);
+                            }}
+                            onFocus={() => {
+                                if (!slugTouched && slug === "") {
+                                    setSlug(slugify(articleMeta("fr")().title));
+                                }
+                            }}
+                        />
+                        <FieldDescription>
+                            L’adresse de l’article : /blog/{slug || "…"}
+                        </FieldDescription>
+                        <FieldError>{errors.slug}</FieldError>
+                    </Field>
+                    <TranslatableField
+                        name="excerpt"
+                        label="Résumé"
+                        textarea
+                        maxLength={300}
+                        defaultValue={post?.excerpt ?? undefined}
+                        errors={{
+                            fr: errors["excerpt.fr"],
+                            en: errors["excerpt.en"],
+                        }}
+                    />
+                </FormSection>
 
                 <Tabs
                     value={locale}
@@ -305,149 +362,136 @@ export default function PostForm({
                 </Tabs>
             </FieldGroup>
 
-            <FieldGroup className="h-fit rounded-xl border p-4 xl:sticky xl:top-4">
-                <Field data-invalid={!!errors.status}>
-                    <FieldLabel htmlFor="status">Statut *</FieldLabel>
-                    <FormSelect
-                        id="status"
-                        name="status"
-                        defaultValue={post?.status ?? "draft"}
-                    >
-                        <option value="draft">Brouillon</option>
-                        <option value="published">Publié</option>
-                    </FormSelect>
-                    <FieldError>{errors.status}</FieldError>
-                </Field>
-
-                <Field data-invalid={!!errors.published_at}>
-                    <FieldLabel htmlFor="published_at">
-                        Date de publication
-                    </FieldLabel>
-                    <Input
-                        id="published_at"
-                        name="published_at"
-                        type="datetime-local"
-                        defaultValue={post?.published_at?.slice(0, 16) ?? ""}
-                    />
-                    <FieldDescription>
-                        Vide : maintenant. Une date future programme la
-                        publication.
-                    </FieldDescription>
-                    <FieldError>{errors.published_at}</FieldError>
-                </Field>
-
-                <Field orientation="horizontal">
-                    <input type="hidden" name="is_featured" value="0" />
-                    <Checkbox
-                        id="is_featured"
-                        name="is_featured"
-                        value="1"
-                        defaultChecked={post?.is_featured ?? false}
-                    />
-                    <FieldLabel htmlFor="is_featured">Mis en avant</FieldLabel>
-                </Field>
-
-                <Field data-invalid={!!errors.slug}>
-                    <FieldLabel htmlFor="slug">Slug *</FieldLabel>
-                    <Input
-                        id="slug"
-                        name="slug"
-                        required
-                        value={slug}
-                        onChange={(event) => {
-                            setSlugTouched(true);
-                            setSlug(event.target.value);
-                        }}
-                        onFocus={() => {
-                            if (!slugTouched && slug === "") {
-                                setSlug(slugify(articleMeta("fr")().title));
+            <aside className="h-fit space-y-4 xl:sticky xl:top-4">
+                <FormSection title="Publication">
+                    <Button disabled={processing} className="w-full">
+                        {submitLabel}
+                    </Button>
+                    <Field data-invalid={!!errors.status}>
+                        <FieldLabel htmlFor="status">Statut *</FieldLabel>
+                        <FormSelect
+                            id="status"
+                            name="status"
+                            defaultValue={post?.status ?? "draft"}
+                        >
+                            <option value="draft">Brouillon</option>
+                            <option value="published">Publié</option>
+                        </FormSelect>
+                        <FieldError>{errors.status}</FieldError>
+                    </Field>
+                    <Field data-invalid={!!errors.published_at}>
+                        <FieldLabel htmlFor="published_at">
+                            Date de publication
+                        </FieldLabel>
+                        <Input
+                            id="published_at"
+                            name="published_at"
+                            type="datetime-local"
+                            defaultValue={
+                                post?.published_at?.slice(0, 16) ?? ""
                             }
-                        }}
-                    />
-                    <FieldDescription>
-                        L’adresse de l’article : /blog/{slug || "…"}
-                    </FieldDescription>
-                    <FieldError>{errors.slug}</FieldError>
-                </Field>
-
-                <TranslatableField
-                    name="excerpt"
-                    label="Résumé"
-                    textarea
-                    maxLength={300}
-                    defaultValue={post?.excerpt ?? undefined}
-                    errors={{
-                        fr: errors["excerpt.fr"],
-                        en: errors["excerpt.en"],
-                    }}
-                />
-
-                <TagsField
-                    defaultValue={(post?.tags as string[] | undefined) ?? []}
-                    suggestions={tags}
-                    error={errors.tags}
-                />
-
-                <div className="grid gap-4 sm:grid-cols-[1fr_8rem]">
-                    <Field data-invalid={!!errors.series}>
-                        <FieldLabel htmlFor="series">
-                            Série (facultatif)
-                        </FieldLabel>
-                        <Input
-                            id="series"
-                            name="series"
-                            list="post-series-suggestions"
-                            maxLength={80}
-                            placeholder="Ex. : Laravel de A à Z"
-                            defaultValue={post?.series ?? ""}
                         />
-                        <datalist id="post-series-suggestions">
-                            {seriesNames.map((name) => (
-                                <option key={name} value={name} />
-                            ))}
-                        </datalist>
                         <FieldDescription>
-                            Un nom nouveau crée la série ; vide, l’article
-                            n’en fait pas partie.
+                            Vide : maintenant. Une date future programme la
+                            publication.
                         </FieldDescription>
-                        <FieldError>{errors.series}</FieldError>
+                        <FieldError>{errors.published_at}</FieldError>
                     </Field>
-                    <Field data-invalid={!!errors.series_position}>
-                        <FieldLabel htmlFor="series_position">
-                            Partie n°
+                    <Field orientation="horizontal">
+                        <input type="hidden" name="is_featured" value="0" />
+                        <Checkbox
+                            id="is_featured"
+                            name="is_featured"
+                            value="1"
+                            defaultChecked={post?.is_featured ?? false}
+                        />
+                        <FieldLabel htmlFor="is_featured">
+                            Mis en avant
                         </FieldLabel>
-                        <Input
-                            id="series_position"
-                            name="series_position"
-                            type="number"
-                            min={1}
-                            max={99}
-                            defaultValue={post?.series_position ?? ""}
-                        />
-                        <FieldError>{errors.series_position}</FieldError>
                     </Field>
-                </div>
+                </FormSection>
 
-                <Field data-invalid={!!errors.cover}>
-                    <FieldLabel htmlFor="cover">Image de couverture</FieldLabel>
-                    {post?.cover_url && (
-                        <img
-                            src={post.cover_url}
-                            alt=""
-                            className="aspect-video w-full rounded-md object-cover"
+                <FormSection title="Couverture">
+                    <Field data-invalid={!!errors.cover}>
+                        <FieldLabel htmlFor="cover" className="sr-only">
+                            Image de couverture
+                        </FieldLabel>
+                        {post?.cover_url && (
+                            <img
+                                src={post.cover_url}
+                                alt=""
+                                className="aspect-video w-full rounded-md object-cover"
+                            />
+                        )}
+                        {post?.cover_url && onRemoveCover && (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={onRemoveCover}
+                            >
+                                <ImageOff /> Retirer la couverture
+                            </Button>
+                        )}
+                        <Input
+                            id="cover"
+                            name="cover"
+                            type="file"
+                            accept="image/*"
                         />
-                    )}
-                    <Input
-                        id="cover"
-                        name="cover"
-                        type="file"
-                        accept="image/*"
-                    />
-                    <FieldError>{errors.cover}</FieldError>
-                </Field>
+                        <FieldError>{errors.cover}</FieldError>
+                    </Field>
+                </FormSection>
 
-                <Button disabled={processing}>{submitLabel}</Button>
-            </FieldGroup>
+                <FormSection title="Classement">
+                    <TagsField
+                        defaultValue={
+                            (post?.tags as string[] | undefined) ?? []
+                        }
+                        suggestions={tags}
+                        error={errors.tags}
+                    />
+                    <div className="grid gap-4 sm:grid-cols-[1fr_8rem]">
+                        <Field data-invalid={!!errors.series}>
+                            <FieldLabel htmlFor="series">
+                                Série (facultatif)
+                            </FieldLabel>
+                            <Input
+                                id="series"
+                                name="series"
+                                list="post-series-suggestions"
+                                maxLength={80}
+                                placeholder="Ex. : Laravel de A à Z"
+                                defaultValue={post?.series ?? ""}
+                            />
+                            <datalist id="post-series-suggestions">
+                                {seriesNames.map((name) => (
+                                    <option key={name} value={name} />
+                                ))}
+                            </datalist>
+                            <FieldDescription>
+                                Un nom nouveau crée la série ; vide, l’article
+                                n’en fait pas partie.
+                            </FieldDescription>
+                            <FieldError>{errors.series}</FieldError>
+                        </Field>
+                        <Field data-invalid={!!errors.series_position}>
+                            <FieldLabel htmlFor="series_position">
+                                Partie n°
+                            </FieldLabel>
+                            <Input
+                                id="series_position"
+                                name="series_position"
+                                type="number"
+                                min={1}
+                                max={99}
+                                defaultValue={post?.series_position ?? ""}
+                            />
+                            <FieldError>{errors.series_position}</FieldError>
+                        </Field>
+                    </div>
+                </FormSection>
+            </aside>
         </div>
     );
 }

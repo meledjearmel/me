@@ -25,7 +25,7 @@ export default function ProfessionalReferenceCreate({
         <>
             <Head title="Nouvelle référence" />
 
-            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
+            <div className="space-y-6 p-4">
                 <FormPageHeader
                     title="Nouvelle référence professionnelle"
                     backHref={referencesIndex()}

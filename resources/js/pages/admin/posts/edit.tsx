@@ -1,5 +1,5 @@
 import { Form, Head, router } from '@inertiajs/react';
-import { Eye, ImageOff } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import PostController from '@/actions/App/Http/Controllers/Admin/PostController';
 import FormPageHeader from '@/components/admin/form-page-header';
 import PostForm from '@/components/admin/post-form';
@@ -23,7 +23,7 @@ export default function PostEdit({
         <>
             <Head title={`Modifier — ${post.title.fr}`} />
 
-            <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
+            <div className="space-y-6 p-4">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                     <FormPageHeader
                         title="Modifier l’article"
@@ -46,23 +46,6 @@ export default function PostEdit({
                                 <Eye /> Aperçu
                             </a>
                         </Button>
-                        {post.cover_url && (
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() =>
-                                    router.delete(
-                                        PostController.destroyCover.url(
-                                            post.id,
-                                        ),
-                                        { preserveScroll: true },
-                                    )
-                                }
-                            >
-                                <ImageOff /> Retirer la couverture
-                            </Button>
-                        )}
                     </div>
                 </div>
 
@@ -78,6 +61,12 @@ export default function PostEdit({
                             errors={errors}
                             processing={processing}
                             submitLabel="Enregistrer"
+                            onRemoveCover={() =>
+                                router.delete(
+                                    PostController.destroyCover.url(post.id),
+                                    { preserveScroll: true },
+                                )
+                            }
                         />
                     )}
                 </Form>
