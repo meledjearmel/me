@@ -19,9 +19,10 @@ class CommandGuide
 {
     /**
      * Conseils par commande : quand s'en servir, comment l'utiliser au mieux, un exemple de
-     * demande.
+     * demande. Les commandes ont aussi des phrases à écrire telles quelles (requests), pour
+     * claude.ai ou ChatGPT, mobile compris, où l'on ne tape pas de commande.
      *
-     * @var array<string, array{usage: string, tips: list<string>, example: string}>
+     * @var array<string, array{usage: string, tips: list<string>, example: string, requests?: list<string>}>
      */
     private const array GUIDES = [
         // Prompts
@@ -34,6 +35,10 @@ class CommandGuide
                 'Relisez le brouillon dans l\'admin, puis lancez translate-project une fois le français validé.',
             ],
             'example' => '/mcp__portfolio__draft-project notes="Client : mairie de Cocody, 3 mois en 2025, 2 000 utilisateurs"',
+            'requests' => [
+                'Rédige l\'étude de cas de ce projet pour mon portfolio. Client : mairie de Cocody, 3 mois en 2025, 2 000 utilisateurs.',
+                'Crée le brouillon de projet de mon portfolio à partir du dépôt github.com/moi/mon-app.',
+            ],
         ],
         'translate-project' => [
             'usage' => 'Traduire en anglais un brouillon de projet dont vous avez validé le français.',
@@ -43,6 +48,10 @@ class CommandGuide
                 'Le brouillon n\'est pas publié : relisez l\'anglais puis publiez depuis l\'admin.',
             ],
             'example' => '/mcp__portfolio__translate-project id=12',
+            'requests' => [
+                'Traduis en anglais le brouillon de projet #12 de mon portfolio.',
+                'Le français du projet #12 est validé, fais la version anglaise.',
+            ],
         ],
         'write-post' => [
             'usage' => 'Écrire un brouillon d\'article du blog sur un sujet, en s\'appuyant sur le code ouvert et, au besoin, sur un article existant.',
@@ -53,6 +62,10 @@ class CommandGuide
                 'La réponse finit par un plan d\'images avec des prompts de génération prêts à copier.',
             ],
             'example' => '/mcp__portfolio__write-post subject="Fiabiliser les files Laravel en production" source_url="https://…"',
+            'requests' => [
+                'Écris un brouillon d\'article pour mon blog sur la fiabilisation des files Laravel en production, pour des développeurs confirmés.',
+                'Inspire-toi de cet article pour écrire un article de blog avec mon expérience : https://…',
+            ],
         ],
         'plan-post-images' => [
             'usage' => 'Savoir quelles images mettre dans un brouillon d\'article, où, et comment les obtenir.',
@@ -62,6 +75,10 @@ class CommandGuide
                 'Renvoyez-lui ensuite les images (fichier ou adresse) : il les ajoute et les insère aux bons endroits.',
             ],
             'example' => '/mcp__portfolio__plan-post-images id=8',
+            'requests' => [
+                'Quelles images mettre dans le brouillon d\'article #8, et où ?',
+                'Propose une couverture et des illustrations pour l\'article #8.',
+            ],
         ],
         'plan-project-images' => [
             'usage' => 'Savoir quelle couverture et quelle galerie donner à un brouillon de projet.',
@@ -70,6 +87,10 @@ class CommandGuide
                 'Utilisez des données de démonstration, jamais celles d\'un client.',
             ],
             'example' => '/mcp__portfolio__plan-project-images id=12',
+            'requests' => [
+                'Quelle couverture et quelles captures pour le brouillon de projet #12 ?',
+                'Liste les écrans à capturer pour la galerie du projet #12.',
+            ],
         ],
         'add-content' => [
             'usage' => 'Ajouter en brouillon une expérience, une formation, une certification, un élément « Uses » ou une compétence à partir d\'une source.',
@@ -78,6 +99,10 @@ class CommandGuide
                 'L\'agent vérifie d\'abord ce qui existe pour ne pas créer de doublon.',
             ],
             'example' => '/mcp__portfolio__add-content type=certification source="https://www.credly.com/badges/…"',
+            'requests' => [
+                'Ajoute cette certification à mon portfolio : https://www.credly.com/badges/…',
+                'Ajoute mon expérience chez Orange à mon portfolio : développeur mobile depuis janvier 2025.',
+            ],
         ],
 
         // Outils
@@ -235,6 +260,9 @@ class CommandGuide
     {
         $name = $primitive->name();
         $guide = self::GUIDES[$name] ?? ['usage' => '', 'tips' => [], 'example' => ''];
+
+        // L'exemple d'un outil est déjà une phrase à écrire.
+        $guide['requests'] ??= $kind === 'tool' && $guide['example'] !== '' ? [$guide['example']] : [];
 
         return [
             'name' => $name,

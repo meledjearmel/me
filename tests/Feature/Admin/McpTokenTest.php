@@ -56,6 +56,6 @@ test('the mcp server page lists every command with its guide', function () {
             ->where('serverUrl', url('/mcp/portfolio'))
             ->has('prompts', 6)
             ->has('tools', 18)
-            ->where('prompts', fn ($prompts) => collect($prompts)->every(fn ($prompt) => filled($prompt['usage']) && filled($prompt['example'])))
-            ->where('tools', fn ($tools) => collect($tools)->every(fn ($tool) => filled($tool['usage']) && filled($tool['example']))));
+            ->where('prompts', fn ($prompts) => collect($prompts)->every(fn ($prompt) => filled($prompt['usage']) && filled($prompt['example']) && filled($prompt['requests'])))
+            ->where('tools', fn ($tools) => collect($tools)->every(fn ($tool) => filled($tool['usage']) && $tool['requests'] === [$tool['example']])));
 });

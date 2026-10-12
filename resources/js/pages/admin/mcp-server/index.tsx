@@ -32,6 +32,8 @@ type Command = {
     usage: string;
     tips: string[];
     example: string;
+    /** Phrases à écrire telles quelles dans la conversation (claude.ai, ChatGPT, mobile). */
+    requests: string[];
     arguments: { name: string; description: string; required: boolean }[];
 };
 
@@ -125,7 +127,7 @@ export default function McpServerIndex({
                 ? commands
                 : commands.filter((command) =>
                       normalize(
-                          `${command.title} ${command.name} ${command.usage}`,
+                          `${command.title} ${command.name} ${command.usage} ${command.requests.join(" ")}`,
                       ).includes(terms),
                   );
     }, [query]);
@@ -196,10 +198,11 @@ export default function McpServerIndex({
                                 Comment lancer une commande ?
                             </summary>
                             <p className="mt-2">
-                                Dans Claude Code, tapez « / » puis son nom (ex.
-                                /mcp__portfolio__draft-project). Dans claude.ai
-                                ou ChatGPT, choisissez-la dans le menu du
-                                connecteur, ou demandez-la simplement.
+                                Dans Claude Code ou Codex, tapez « / » puis son
+                                nom (ex. /mcp__portfolio__draft-project). Dans
+                                claude.ai ou ChatGPT, y compris sur mobile,
+                                écrivez simplement la demande : chaque fiche
+                                donne des phrases prêtes à copier.
                             </p>
                         </details>
                         <CommandGrid
@@ -230,7 +233,7 @@ export default function McpServerIndex({
                 onOpenChange={(open) => !open && setShown(null)}
             >
                 {shown && (
-                    <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
+                    <DialogContent className="max-h-[90dvh] w-[calc(100%-1rem)] overflow-y-auto p-4 sm:max-w-lg sm:p-6">
                         <DialogHeader>
                             <DialogTitle>{shown.title}</DialogTitle>
                             <div className="flex items-center gap-2">
@@ -247,15 +250,39 @@ export default function McpServerIndex({
                         </DialogHeader>
 
                         <div className="space-y-5 text-sm">
-                            {shown.example && (
+                            {shown.requests.length > 0 && (
                                 <section className="space-y-1.5">
                                     <h3 className="font-medium">
-                                        {shown.kind === "prompt"
-                                            ? "Exemple"
-                                            : "Exemple de demande"}
+                                        À écrire dans la conversation
+                                    </h3>
+                                    <p className="text-muted-foreground">
+                                        Sans commande : dans claude.ai ou
+                                        ChatGPT, sur ordinateur comme sur
+                                        mobile, avec le connecteur activé.
+                                    </p>
+                                    <ul className="space-y-1.5">
+                                        {shown.requests.map((request) => (
+                                            <li
+                                                key={request}
+                                                className="flex items-start gap-1 rounded-md border bg-muted/40 py-1 pr-1 pl-3"
+                                            >
+                                                <p className="flex-1 py-1.5 break-words">
+                                                    {request}
+                                                </p>
+                                                <CopyButton value={request} />
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </section>
+                            )}
+
+                            {shown.kind === "prompt" && shown.example && (
+                                <section className="space-y-1.5">
+                                    <h3 className="font-medium">
+                                        Commande (Claude Code, Codex)
                                     </h3>
                                     <div className="flex items-start gap-1 rounded-md border bg-muted/40 py-1 pr-1 pl-3">
-                                        <code className="flex-1 py-1.5 break-words whitespace-pre-wrap">
+                                        <code className="min-w-0 flex-1 py-1.5 text-xs break-all whitespace-pre-wrap">
                                             {shown.example}
                                         </code>
                                         <CopyButton value={shown.example} />
