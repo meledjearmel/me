@@ -27,6 +27,10 @@ bun run build:ssr
 echo "→ Base de données"
 php artisan migrate --force
 
+echo "→ Clés OAuth Passport (créées si absentes, lisibles par PHP-FPM)"
+[ -f storage/oauth-private.key ] || php artisan passport:keys
+chown www-data:www-data storage/oauth-private.key storage/oauth-public.key
+
 echo "→ ffmpeg (compression des avis vidéo)"
 command -v ffmpeg >/dev/null && command -v ffprobe >/dev/null \
     || echo "  ⚠ ffmpeg absent : les avis vidéo seront servis bruts, sans aperçu (sudo apt install ffmpeg)"
