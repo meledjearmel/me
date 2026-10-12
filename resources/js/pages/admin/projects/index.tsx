@@ -1,14 +1,15 @@
-import { Head, Link } from '@inertiajs/react';
-import { Plus, Eye, SquarePen } from 'lucide-react';
-import { index as pageIndex } from '@/routes/admin/projects';
-import ProjectController from '@/actions/App/Http/Controllers/Admin/ProjectController';
-import DeleteButton from '@/components/admin/delete-button';
-import { FilterSelect, ResourceList } from '@/components/admin/data-list';
-import Heading from '@/components/heading';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { PROJECT_STATUSES } from '@/lib/admin-options';
-import type { ListFilters, Paginated, Project } from '@/types';
+import { Head, Link } from "@inertiajs/react";
+import { Plus, Eye, SquarePen } from "lucide-react";
+import { index as pageIndex } from "@/routes/admin/projects";
+import ProjectController from "@/actions/App/Http/Controllers/Admin/ProjectController";
+import DeleteButton from "@/components/admin/delete-button";
+import { FilterSelect, ResourceList } from "@/components/admin/data-list";
+import Heading from "@/components/heading";
+import AiDraftBadge from "@/components/admin/ai-draft-badge";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { PROJECT_STATUSES } from "@/lib/admin-options";
+import type { ListFilters, Paginated, Project } from "@/types";
 
 export default function ProjectsIndex({
     projects,
@@ -36,15 +37,15 @@ export default function ProjectsIndex({
                     filters={filters}
                     searchPlaceholder="Titre ou slug…"
                     columns={[
-                        { header: 'Titre (FR)', cell: (row) => row.title.fr },
+                        { header: "Titre (FR)", cell: (row) => row.title.fr },
                         {
-                            header: 'Statut',
+                            header: "Statut",
                             cell: (row) => (
                                 <Badge
                                     variant={
-                                        row.status === 'published'
-                                            ? 'default'
-                                            : 'secondary'
+                                        row.status === "published"
+                                            ? "default"
+                                            : "secondary"
                                     }
                                 >
                                     {
@@ -57,10 +58,19 @@ export default function ProjectsIndex({
                             ),
                         },
                         {
-                            header: 'Mis en avant',
-                            cell: (row) => (row.is_featured ? 'Oui' : '—'),
+                            header: "Origine",
+                            cell: (row) => (
+                                <AiDraftBadge
+                                    draftedBy={row.drafted_by}
+                                    status={row.status}
+                                />
+                            ),
                         },
-                        { header: 'Ordre', cell: (row) => row.sort_order },
+                        {
+                            header: "Mis en avant",
+                            cell: (row) => (row.is_featured ? "Oui" : "—"),
+                        },
+                        { header: "Ordre", cell: (row) => row.sort_order },
                     ]}
                     filterControls={(state) => (
                         <>
@@ -77,8 +87,8 @@ export default function ProjectsIndex({
                                 value={filters.is_featured}
                                 label="Mise en avant"
                                 options={[
-                                    { value: '1', label: 'Mis en avant' },
-                                    { value: '0', label: 'Non mis en avant' },
+                                    { value: "1", label: "Mis en avant" },
+                                    { value: "0", label: "Non mis en avant" },
                                 ]}
                             />
                             <FilterSelect
@@ -87,8 +97,8 @@ export default function ProjectsIndex({
                                 value={filters.is_open_source}
                                 label="Open source"
                                 options={[
-                                    { value: '1', label: 'Open source' },
-                                    { value: '0', label: 'Privé' },
+                                    { value: "1", label: "Open source" },
+                                    { value: "0", label: "Privé" },
                                 ]}
                             />
                         </>
@@ -124,5 +134,5 @@ export default function ProjectsIndex({
 }
 
 ProjectsIndex.layout = {
-    breadcrumbs: [{ title: 'Projets', href: pageIndex() }],
+    breadcrumbs: [{ title: "Projets", href: pageIndex() }],
 };

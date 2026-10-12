@@ -5,9 +5,11 @@ namespace App\Mcp\Prompts;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
+use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Prompt;
 use Laravel\Mcp\Server\Prompts\Argument;
 
+#[Name('write-post')]
 #[Description('Écrire un brouillon d\'article du blog en français, à partir d\'un sujet, du code ouvert et éventuellement d\'un article existant dont s\'inspirer.')]
 class WritePostPrompt extends Prompt
 {

@@ -38,6 +38,39 @@ function mcpDraftArguments(array $overrides = []): array
     ];
 }
 
+test('a draft remembers the ai client that wrote it', function () {
+    $user = User::factory()->create();
+    $plain = $user->createToken('Claude Code', ['mcp'])->plainTextToken;
+
+    $this->withToken($plain)->postJson('/mcp/portfolio', [
+        'jsonrpc' => '2.0',
+        'id' => 1,
+        'method' => 'tools/call',
+        'params' => ['name' => 'save-project-draft', 'arguments' => mcpDraftArguments()],
+    ])->assertOk();
+
+    $draft = Project::query()->where('slug', 'gestion-de-stock')->firstOrFail();
+    expect($draft->drafted_by)->toBe('Claude Code');
+
+    $this->actingAs($user)->get(route('admin.projects.index'))
+        ->assertInertia(fn ($page) => $page->where('projects.data.0.drafted_by', 'Claude Code'));
+});
+
+test('tools and prompts keep the exact names used in the instructions', function () {
+    $plain = User::factory()->create()->createToken('Codex', ['mcp'])->plainTextToken;
+    $list = fn (string $method, string $key): array => collect($this->withToken($plain)
+        ->postJson('/mcp/portfolio', ['jsonrpc' => '2.0', 'id' => 1, 'method' => $method])
+        ->json("result.{$key}"))->pluck('name')->sort()->values()->all();
+
+    expect($list('tools/list', 'tools'))->toBe([
+        'add-post-image', 'add-project-image', 'create-technology', 'get-catalog', 'get-post', 'get-project',
+        'read-web-page', 'save-post-draft', 'save-post-translation', 'save-project-draft', 'save-project-translation',
+        'update-project-draft',
+    ])->and($list('prompts/list', 'prompts'))->toBe([
+        'draft-project', 'plan-post-images', 'plan-project-images', 'translate-project', 'write-post',
+    ]);
+});
+
 test('the server requires a token', function () {
     $this->postJson('/mcp/portfolio', ['jsonrpc' => '2.0', 'id' => 1, 'method' => 'tools/list'])->assertUnauthorized();
 });

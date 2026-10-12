@@ -4,6 +4,7 @@ import PostController from "@/actions/App/Http/Controllers/Admin/PostController"
 import { FilterSelect, ResourceList } from "@/components/admin/data-list";
 import DeleteButton from "@/components/admin/delete-button";
 import Heading from "@/components/heading";
+import AiDraftBadge from "@/components/admin/ai-draft-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { index as pageIndex } from "@/routes/admin/posts";
@@ -55,6 +56,10 @@ export default function PostsIndex({
                             cell: (row) => (
                                 <span className="font-medium">
                                     {row.title.fr}
+                                    <AiDraftBadge
+                                        draftedBy={row.drafted_by}
+                                        status={row.status}
+                                    />
                                     {!row.title.en && (
                                         <Badge
                                             variant="outline"

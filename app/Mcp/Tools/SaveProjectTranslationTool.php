@@ -11,9 +11,11 @@ use Illuminate\JsonSchema\Types\Type;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
+use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
 
+#[Name('save-project-translation')]
 #[Description('Enregistre la traduction anglaise d\'un brouillon de projet, une fois son français validé par le développeur. Le français n\'est pas modifié et le brouillon n\'est pas publié. Les choix techniques et les chiffres clés sont traduits dans le même ordre que get-project les renvoie.')]
 #[IsIdempotent]
 class SaveProjectTranslationTool extends Tool

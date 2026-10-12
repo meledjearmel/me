@@ -9,9 +9,11 @@ use Illuminate\JsonSchema\Types\Type;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
+use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 
+#[Name('get-project')]
 #[Description('Lit un projet du portfolio (champs en français, identifiants des relations, statut), pour reprendre un brouillon ou s\'inspirer du ton d\'un projet publié.')]
 #[IsReadOnly]
 class GetProjectTool extends Tool

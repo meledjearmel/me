@@ -13,11 +13,13 @@ use Illuminate\Support\Str;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
+use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsOpenWorld;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 use RuntimeException;
 
+#[Name('read-web-page')]
 #[Description('Lit une page web publique (un article existant, une doc…) et renvoie son titre, sa description et son texte principal (titres, paragraphes, listes, code), pour s\'en inspirer. Ne jamais recopier : reformuler avec ses propres mots, ajouter son expérience, et citer la source avec un lien quand une idée ou un extrait en vient.')]
 #[IsReadOnly]
 #[IsOpenWorld]

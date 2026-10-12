@@ -10,9 +10,11 @@ use Illuminate\JsonSchema\Types\Type;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
+use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
 
+#[Name('save-post-translation')]
 #[Description('Enregistre la traduction anglaise d\'un brouillon d\'article, une fois son français validé par le développeur. Le français n\'est pas modifié et l\'article n\'est pas publié.')]
 #[IsIdempotent]
 class SavePostTranslationTool extends Tool

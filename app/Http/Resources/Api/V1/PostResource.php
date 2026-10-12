@@ -41,6 +41,8 @@ class PostResource extends JsonResource
             'is_featured' => $this->is_featured,
             /** `draft` ou `published`. */
             'status' => $this->status,
+            /** Client IA qui a rédigé le brouillon via le serveur MCP (« Claude Code »…), sinon null. */
+            'drafted_by' => $this->drafted_by,
             /** Date de publication ; dans le futur, l'article est programmé. */
             'published_at' => $this->published_at,
             /** L'article est visible sur le site (publié et date passée). */

@@ -11,8 +11,10 @@ use Illuminate\Validation\Rule;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
+use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 
+#[Name('create-technology')]
 #[Description('Ajoute au site une technologie absente de get-catalog (même nom refusé), pour pouvoir la cocher sur un projet. Son logo est importé depuis Iconify s\'il est donné (ex. « logos:laravel », collections logos, devicon ou simple-icons), sinon il reste à choisir dans l\'administration.')]
 class CreateTechnologyTool extends Tool
 {

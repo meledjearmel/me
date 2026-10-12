@@ -12,9 +12,11 @@ use Illuminate\Support\Str;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
+use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 use RuntimeException;
 
+#[Name('add-project-image')]
 #[Description('Ajoute une image à un brouillon de projet : sa couverture (role « cover », remplace l\'ancienne, affichée en 16:9 sur les cartes et en tête de l\'étude de cas) ou une image de sa galerie (role « gallery », ajoutée à la suite). Source : une adresse publique (url) ou un fichier local encodé en base64 (data), JPEG, PNG, WebP ou GIF de 5 Mo au plus. De préférence de vraies captures du projet ; jamais d\'image d\'un client sans son accord.')]
 class AddProjectImageTool extends Tool
 {

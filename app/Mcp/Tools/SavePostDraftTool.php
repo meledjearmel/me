@@ -3,6 +3,7 @@
 namespace App\Mcp\Tools;
 
 use App\Enums\PublicationStatus;
+use App\Mcp\Concerns\NamesAiClient;
 use App\Models\Post;
 use App\Services\Ai\PostDraftWriter;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
@@ -10,11 +11,15 @@ use Illuminate\JsonSchema\Types\Type;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
+use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 
+#[Name('save-post-draft')]
 #[Description('Crée un brouillon d\'article du blog en français (sans id), ou modifie seulement les champs envoyés d\'un brouillon existant (avec id). Le développeur relit l\'aperçu, fait traduire puis publie lui-même ; un article publié n\'est jamais modifié ici.')]
 class SavePostDraftTool extends Tool
 {
+    use NamesAiClient;
+
     private const array FIELDS = ['title', 'slug', 'excerpt', 'body', 'tags', 'series', 'series_position'];
 
     public function handle(Request $request, PostDraftWriter $writer): Response
@@ -23,6 +28,10 @@ class SavePostDraftTool extends Tool
 
         if ($request->get('id') !== null && $post?->status !== PublicationStatus::Draft) {
             return Response::error('Seul un brouillon d\'article existant peut être modifié.');
+        }
+
+        if (! $post->exists) {
+            $post->drafted_by = $this->aiClient($request);
         }
 
         $changes = collect($request->all())->only(self::FIELDS)->all();

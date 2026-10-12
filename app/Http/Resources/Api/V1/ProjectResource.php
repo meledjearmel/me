@@ -111,6 +111,8 @@ class ProjectResource extends JsonResource
             'is_featured' => $this->is_featured,
             'is_open_source' => $this->is_open_source,
             'status' => $this->status,
+            /** Client IA qui a rédigé le brouillon via le serveur MCP (« Claude Code »…), sinon null. */
+            'drafted_by' => $this->drafted_by,
             'sort_order' => $this->sort_order,
             'cover_url' => $this->getFirstMediaUrl('cover') ?: null,
             /** Galerie : `id` sert à cibler `DELETE /projects/{project}/gallery/{id}`. */

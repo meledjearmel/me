@@ -5,9 +5,11 @@ namespace App\Mcp\Prompts;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
+use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Prompt;
 use Laravel\Mcp\Server\Prompts\Argument;
 
+#[Name('plan-project-images')]
 #[Description('Proposer les images d\'un brouillon de projet : couverture et galerie, quoi capturer, et un prompt professionnel pour celles qui manquent.')]
 class PlanProjectImagesPrompt extends Prompt
 {

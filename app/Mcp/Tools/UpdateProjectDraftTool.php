@@ -11,9 +11,11 @@ use Illuminate\JsonSchema\Types\Type;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
+use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
 
+#[Name('update-project-draft')]
 #[Description('Modifie seulement les champs envoyés d\'un brouillon de projet (en français) ; les autres restent tels quels, l\'anglais déjà traduit aussi. Une liste envoyée (choix techniques, chiffres clés, technologies…) remplace la liste entière : la relire avec get-project avant. Pour vider un champ texte, envoyer null.')]
 #[IsIdempotent]
 class UpdateProjectDraftTool extends Tool

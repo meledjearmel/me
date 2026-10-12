@@ -15,9 +15,11 @@ use Illuminate\JsonSchema\Types\Type;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
+use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 
+#[Name('get-catalog')]
 #[Description('Liste les technologies (et leurs catégories), domaines et profils métier du portfolio (identifiant et libellé), les projets et articles existants (identifiant, slug, titre, statut), les tags et séries du blog, et les éléments publics mentionnables (projets, articles, technologies, expériences) avec leur jeton de mention prêt à insérer. À appeler avant d\'enregistrer un brouillon pour choisir les identifiants, citer un élément du site et éviter un slug déjà pris.')]
 #[IsReadOnly]
 class GetCatalogTool extends Tool

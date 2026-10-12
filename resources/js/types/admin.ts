@@ -184,6 +184,8 @@ export type Project = {
     is_featured: boolean;
     is_open_source: boolean;
     status: "draft" | "published" | "archived";
+    /** Client IA qui a rédigé le brouillon (serveur MCP). */
+    drafted_by?: string | null;
     sort_order: number;
     domains?: Domain[];
     job_profiles?: JobProfile[];
@@ -443,6 +445,8 @@ export type Post = {
     reading_minutes: number;
     is_featured: boolean;
     status: "draft" | "published";
+    /** Client IA qui a rédigé le brouillon (serveur MCP). */
+    drafted_by?: string | null;
     published_at: string | null;
     created_at: string;
     updated_at: string;

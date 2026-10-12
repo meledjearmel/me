@@ -13,9 +13,11 @@ use Illuminate\Support\Str;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
+use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 use RuntimeException;
 
+#[Name('add-post-image')]
 #[Description('Ajoute une image à un brouillon d\'article : sa couverture (role « cover », remplace l\'ancienne), ou une image du contenu (role « content ») dont l\'outil renvoie la balise <img> à insérer dans body avec save-post-draft. Source : une adresse publique (url) ou un fichier local encodé en base64 (data), JPEG, PNG, WebP ou GIF de 5 Mo au plus. N\'utiliser que des images libres de droits ou du développeur (captures de ses projets).')]
 class AddPostImageTool extends Tool
 {
