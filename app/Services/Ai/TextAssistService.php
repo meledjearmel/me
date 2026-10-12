@@ -4,11 +4,13 @@ namespace App\Services\Ai;
 
 use App\Ai\Agents\HtmlTranslator;
 use App\Ai\Agents\PostWriter;
+use App\Ai\Agents\ProjectDrafter;
 use App\Ai\Agents\TechnologyDescriber;
 use App\Ai\Agents\TextImprover;
 use App\Ai\Agents\TextTranslator;
 use App\Enums\TextTone;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Throwable;
 
 /**
@@ -108,6 +110,99 @@ class TextAssistService
     }
 
     /**
+     * Propose, en français, les champs d'un projet à partir d'une source. Le JSON du
+     * modèle est ramené aux limites du formulaire, et les relations aux identifiants
+     * du catalogue ; une réponse illisible ou sans titre ni contexte passe au fournisseur
+     * suivant.
+     *
+     * @param  array{technologies: array<int, string>, domains: array<int, string>, job_profiles: array<int, string>}  $catalog
+     * @return array<string, mixed>|null
+     */
+    public function draftProject(string $source, array $catalog): ?array
+    {
+        $json = $this->attempt(function (string $provider, int $timeout, ?string $model) use ($source, $catalog): string {
+            $draft = $this->normalizeProjectDraft(
+                $this->decodeJson((new ProjectDrafter($catalog))->prompt($source, provider: $provider, model: $model, timeout: $timeout)->text),
+                $catalog,
+            );
+
+            return $draft === null ? '' : (string) json_encode($draft);
+        }, 'ai.text_assist.draft');
+
+        return $json === null ? null : json_decode($json, true);
+    }
+
+    /** @return array<string, mixed>|null */
+    private function decodeJson(string $text): ?array
+    {
+        $start = strpos($text, '{');
+        $end = strrpos($text, '}');
+
+        if ($start === false || $end === false) {
+            return null;
+        }
+
+        $decoded = json_decode(substr($text, $start, $end - $start + 1), true);
+
+        return is_array($decoded) ? $decoded : null;
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $draft
+     * @param  array{technologies: array<int, string>, domains: array<int, string>, job_profiles: array<int, string>}  $catalog
+     * @return array<string, mixed>|null
+     */
+    private function normalizeProjectDraft(?array $draft, array $catalog): ?array
+    {
+        $text = fn (mixed $value, ?int $max = null): ?string => is_string($value) && trim($value) !== ''
+            ? ($max === null ? trim($value) : mb_substr(trim($value), 0, $max))
+            : null;
+        $month = fn (mixed $value): ?string => is_string($value) && preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $value) === 1 ? $value : null;
+        $ids = fn (string $key): array => array_values(array_unique(array_filter(
+            (array) ($draft[$key] ?? []),
+            fn (mixed $id): bool => is_int($id) && array_key_exists($id, $catalog[$key]),
+        )));
+
+        $title = $text($draft['title'] ?? null, 255);
+        $context = $text($draft['context'] ?? null);
+
+        if ($title === null || $context === null) {
+            return null;
+        }
+
+        $teamSize = $draft['team_size'] ?? null;
+
+        return [
+            'title' => $title,
+            'slug' => Str::slug($text($draft['slug'] ?? null, 255) ?? $title),
+            'tagline' => $text($draft['tagline'] ?? null, 160),
+            'role' => $text($draft['role'] ?? null, 120),
+            'client' => $text($draft['client'] ?? null, 120),
+            'platform' => $text($draft['platform'] ?? null, 120),
+            'context' => $context,
+            'challenges' => $text($draft['challenges'] ?? null),
+            'realization' => $text($draft['realization'] ?? null),
+            'result' => $text($draft['result'] ?? null),
+            'decisions' => collect(is_array($draft['decisions'] ?? null) ? $draft['decisions'] : [])
+                ->map(fn (mixed $decision): ?array => is_array($decision) && $text($decision['choice'] ?? null) && $text($decision['reason'] ?? null)
+                    ? ['choice' => $text($decision['choice'], 160), 'reason' => $text($decision['reason'], 600)]
+                    : null)
+                ->filter()->take(6)->values()->all(),
+            'key_figures' => collect(is_array($draft['key_figures'] ?? null) ? $draft['key_figures'] : [])
+                ->map(fn (mixed $figure): ?array => is_array($figure) && $text((string) ($figure['value'] ?? '')) && $text($figure['label'] ?? null)
+                    ? ['value' => $text((string) $figure['value'], 20), 'label' => $text($figure['label'], 80)]
+                    : null)
+                ->filter()->take(4)->values()->all(),
+            'started_on' => $month($draft['started_on'] ?? null),
+            'ended_on' => $month($draft['ended_on'] ?? null),
+            'team_size' => is_int($teamSize) && $teamSize >= 1 && $teamSize <= 200 ? $teamSize : null,
+            'technologies' => $ids('technologies'),
+            'domains' => $ids('domains'),
+            'job_profiles' => $ids('job_profiles'),
+        ];
+    }
+
+    /**
      * Parcourt la chaîne de fournisseurs : un modèle retiré, en quota ou qui
      * répond vide passe simplement au suivant (même choix que ChatController).
      * Chaque entrée de la chaîne est « fournisseur » (modèle par défaut de son
@@ -117,12 +212,13 @@ class TextAssistService
      * pour répondre en 503 JSON avant que PHP ou le proxy ne coupe la requête.
      *
      * @param  callable(string, int, ?string): string  $call
+     * @param  string  $limits  Bloc de config qui porte « timeout » et « total_budget ».
      */
-    private function attempt(callable $call): ?string
+    private function attempt(callable $call, string $limits = 'ai.text_assist'): ?string
     {
-        $budget = (float) config('ai.text_assist.total_budget');
+        $budget = (float) config("{$limits}.total_budget");
         $minimumTimeout = (int) config('ai.text_assist.min_provider_timeout');
-        $maxTimeout = (int) config('ai.text_assist.timeout');
+        $maxTimeout = (int) config("{$limits}.timeout");
         $start = microtime(true);
         $tried = [];
 

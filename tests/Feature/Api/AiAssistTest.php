@@ -1,5 +1,6 @@
 <?php
 
+use App\Ai\Agents\ProjectDrafter;
 use App\Ai\Agents\TechnologyDescriber;
 use App\Ai\Agents\TextImprover;
 use App\Ai\Agents\TextTranslator;
@@ -47,4 +48,14 @@ test('an authenticated device generates a technology description', function () {
             'fr' => 'Système de versionnage pour suivre mes changements.',
             'en' => 'Version control system to track my changes.',
         ]]);
+});
+
+test('an authenticated device drafts a project from notes', function () {
+    Sanctum::actingAs(User::factory()->create());
+    ProjectDrafter::fake([json_encode(['title' => 'Gestion de stock', 'context' => 'Une PME suivait son stock sur tableur.'])]);
+
+    $this->postJson(route('api.v1.ai.draft-project'), ['notes' => 'Outil de stock pour une PME'])
+        ->assertOk()
+        ->assertJsonPath('project.title', 'Gestion de stock')
+        ->assertJsonPath('project.slug', 'gestion-de-stock');
 });

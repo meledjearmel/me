@@ -37,6 +37,7 @@ use App\Http\Controllers\Api\V1\TestimonialController;
 use App\Http\Controllers\Api\V1\TrackController;
 use App\Http\Controllers\Api\V1\TrashController;
 use App\Http\Controllers\Api\V1\UsesItemController;
+use App\Http\Middleware\RejectMcpTokens;
 use App\Models\JobProfile;
 use Illuminate\Support\Facades\Route;
 
@@ -48,7 +49,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         ->middleware('throttle:5,1')
         ->name('auth.two-factor-challenge');
 
-    Route::middleware('auth:sanctum')->group(function (): void {
+    Route::middleware(['auth:sanctum', RejectMcpTokens::class])->group(function (): void {
         Route::get('auth/me', [AuthController::class, 'me'])->name('auth.me');
         Route::post('auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
@@ -60,6 +61,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             Route::post('describe-technology', [AiController::class, 'describeTechnology'])->name('describe-technology');
             Route::post('translate-html', [AiController::class, 'translateHtml'])->name('translate-html');
             Route::post('write-post', [AiController::class, 'writePost'])->name('write-post');
+            Route::post('draft-project', [AiController::class, 'draftProject'])->name('draft-project');
         });
 
         Route::prefix('trash')->name('trash.')->group(function (): void {

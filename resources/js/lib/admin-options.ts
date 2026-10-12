@@ -1,6 +1,7 @@
 import type { AppointmentStatus } from '@/types';
 
 export const PROJECT_STATUSES = [
+    { value: 'draft', label: 'Brouillon' },
     { value: 'published', label: 'Publié' },
     { value: 'archived', label: 'Archivé' },
 ] as const;

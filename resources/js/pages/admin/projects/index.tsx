@@ -7,6 +7,7 @@ import { FilterSelect, ResourceList } from '@/components/admin/data-list';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { PROJECT_STATUSES } from '@/lib/admin-options';
 import type { ListFilters, Paginated, Project } from '@/types';
 
 export default function ProjectsIndex({
@@ -46,9 +47,12 @@ export default function ProjectsIndex({
                                             : 'secondary'
                                     }
                                 >
-                                    {row.status === 'published'
-                                        ? 'Publié'
-                                        : 'Archivé'}
+                                    {
+                                        PROJECT_STATUSES.find(
+                                            (status) =>
+                                                status.value === row.status,
+                                        )?.label
+                                    }
                                 </Badge>
                             ),
                         },
@@ -65,10 +69,7 @@ export default function ProjectsIndex({
                                 name="status"
                                 value={filters.status}
                                 label="Statut"
-                                options={[
-                                    { value: 'published', label: 'Publié' },
-                                    { value: 'archived', label: 'Archivé' },
-                                ]}
+                                options={[...PROJECT_STATUSES]}
                             />
                             <FilterSelect
                                 state={state}

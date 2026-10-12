@@ -21,7 +21,7 @@ export default function ProjectCaseStudyFields({
     project,
     errors,
 }: {
-    project?: Project;
+    project?: Partial<Project>;
     errors: Record<string, string>;
 }) {
     const translatableErrors = (name: string) => ({
@@ -117,7 +117,7 @@ export function ProjectDecisionsField({
     project,
     errors,
 }: {
-    project?: Project;
+    project?: Partial<Project>;
     errors: Record<string, string>;
 }) {
     const idPrefix = useId();

@@ -38,6 +38,24 @@ class PostMentions
         $query = mb_strtolower(trim($query));
         $matches = fn (string $label): bool => $query === '' || str_contains(mb_strtolower($label), $query);
 
+        return $this->mentionables()
+            ->filter(fn (array $item): bool => $matches($item['label']))
+            // Les noms qui commencent par la recherche d'abord (tri stable : l'ordre de chaque type est gardé).
+            ->sortBy(fn (array $item): int => $query !== '' && str_starts_with(mb_strtolower($item['label']), $query) ? 0 : 1)
+            ->groupBy('kind')
+            ->pipe(fn (Collection $groups): Collection => $this->interleave($groups))
+            ->take(self::SEARCH_LIMIT)
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Tous les éléments publics mentionnables (serveur MCP, suggestions).
+     *
+     * @return Collection<int, array{kind: string, id: int, label: string, hint: string|null}>
+     */
+    public function mentionables(): Collection
+    {
         return collect([
             ...$this->projects()->get()->map(fn (Project $project): array => [
                 'kind' => 'project',
@@ -63,15 +81,31 @@ class PostMentions
                 'label' => $experience->company,
                 'hint' => $experience->getTranslation('role', 'fr') ?: null,
             ]),
-        ])
-            ->filter(fn (array $item): bool => $matches($item['label']))
-            // Les noms qui commencent par la recherche d'abord (tri stable : l'ordre de chaque type est gardé).
-            ->sortBy(fn (array $item): int => $query !== '' && str_starts_with(mb_strtolower($item['label']), $query) ? 0 : 1)
-            ->groupBy('kind')
-            ->pipe(fn (Collection $groups): Collection => $this->interleave($groups))
-            ->take(self::SEARCH_LIMIT)
-            ->values()
-            ->all();
+        ]);
+    }
+
+    /**
+     * Remplace par leur libellé les mentions d'éléments absents ou non publics, qui ne
+     * mèneraient nulle part (texte rédigé par une IA).
+     *
+     * @return array{text: string, removed: list<string>}
+     */
+    public function withoutUnknownMentions(string $text): array
+    {
+        $known = $this->mentionables()->map(fn (array $item): string => "{$item['kind']}:{$item['id']}")->flip();
+        $removed = [];
+
+        $text = (string) preg_replace_callback(self::TOKEN, function (array $match) use ($known, &$removed): string {
+            if ($known->has("{$match[2]}:{$match[3]}")) {
+                return $match[0];
+            }
+
+            $removed[] = $match[0];
+
+            return $match[1];
+        }, $text);
+
+        return ['text' => $text, 'removed' => $removed];
     }
 
     /**

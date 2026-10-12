@@ -183,7 +183,7 @@ export type Project = {
     demo_url: string | null;
     is_featured: boolean;
     is_open_source: boolean;
-    status: "published" | "archived";
+    status: "draft" | "published" | "archived";
     sort_order: number;
     domains?: Domain[];
     job_profiles?: JobProfile[];

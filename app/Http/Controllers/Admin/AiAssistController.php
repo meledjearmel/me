@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\TextTone;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ai\DescribeTechnologyRequest;
+use App\Http\Requests\Ai\DraftProjectRequest;
 use App\Http\Requests\Ai\ImproveTextRequest;
 use App\Http\Requests\Ai\TranslateHtmlRequest;
 use App\Http\Requests\Ai\TranslateTextRequest;
 use App\Http\Requests\Ai\WritePostRequest;
+use App\Services\Ai\ProjectDraftService;
 use App\Services\Ai\TextAssistService;
 use Illuminate\Http\JsonResponse;
 
@@ -72,6 +74,18 @@ class AiAssistController extends Controller
         }
 
         return response()->json(['description' => $description]);
+    }
+
+    /** « Pré-remplir avec l'IA » du formulaire de projet : champs en français, à relire. */
+    public function draftProject(DraftProjectRequest $request, ProjectDraftService $drafts): JsonResponse
+    {
+        $project = $drafts->draft($request->validated('github_repository'), $request->validated('notes'));
+
+        if ($project === null) {
+            return $this->respond(null);
+        }
+
+        return response()->json(['project' => $project]);
     }
 
     private function respond(?string $text): JsonResponse

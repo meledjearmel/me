@@ -26,7 +26,7 @@ class ProjectController extends Controller
      * Liste des projets
      */
     #[QueryParameter('search', description: 'Recherche dans le titre et le slug.', type: 'string')]
-    #[QueryParameter('status', description: 'Statut : `published` ou `archived`.', type: 'string')]
+    #[QueryParameter('status', description: 'Statut : `draft`, `published` ou `archived`.', type: 'string')]
     #[QueryParameter('is_featured', description: 'Projets à la une : `1` ou `0`.', type: 'string')]
     #[QueryParameter('is_open_source', description: 'Projets open source : `1` ou `0`.', type: 'string')]
     #[QueryParameter('page', description: 'Numéro de page.', type: 'integer', default: 1)]

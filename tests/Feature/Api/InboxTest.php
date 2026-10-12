@@ -2,10 +2,13 @@
 
 use App\Enums\ContactStatus;
 use App\Enums\EngagementStatus;
+use App\Enums\ProjectStatus;
 use App\Enums\TestimonialStatus;
 use App\Jobs\ProcessTestimonialVideo;
 use App\Models\Contact;
 use App\Models\Engagement;
+use App\Models\Post;
+use App\Models\Project;
 use App\Models\Testimonial;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -21,12 +24,16 @@ test('le tableau de bord expose ce qui attend une action', function () {
     Contact::factory()->count(2)->create();
     Engagement::factory()->create();
     Testimonial::factory()->count(3)->create(['status' => TestimonialStatus::Pending]);
+    Project::factory()->create(['status' => ProjectStatus::Draft]);
+    Post::factory()->draft()->count(2)->create();
 
     $this->getJson(route('api.v1.dashboard'))
         ->assertOk()
         ->assertJsonPath('todo.contacts', 2)
         ->assertJsonPath('todo.engagements', 1)
         ->assertJsonPath('todo.testimonials', 3)
+        ->assertJsonPath('todo.project_drafts', 1)
+        ->assertJsonPath('todo.post_drafts', 2)
         ->assertJsonStructure(['todo', 'visits', 'content', 'distribution', 'health', 'recent']);
 });
 

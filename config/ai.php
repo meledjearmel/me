@@ -87,6 +87,13 @@ return [
         'timeout' => 20,
         'total_budget' => (int) env('AI_TEXT_ASSIST_TOTAL_BUDGET', 25),
         'min_provider_timeout' => 3,
+        // Pré-remplissage d'un projet : une étude de cas complète est bien plus longue à
+        // générer qu'un champ, d'où un plafond et un budget à part.
+        'draft' => [
+            'timeout' => 45,
+            'total_budget' => (int) env('AI_DRAFT_TOTAL_BUDGET', 55),
+            'max_notes_length' => 8000,
+        ],
         'limits' => [
             'per_minute' => (int) env('AI_TEXT_ASSIST_PER_MINUTE', 20),
             'per_day' => (int) env('AI_TEXT_ASSIST_PER_DAY', 300),

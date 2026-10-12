@@ -10,6 +10,7 @@ use App\Enums\EngagementType;
 use App\Enums\PostReactionType;
 use App\Enums\PostShareNetwork;
 use App\Enums\ProjectStatus;
+use App\Enums\PublicationStatus;
 use App\Enums\TestimonialStatus;
 use App\Models\Appointment;
 use App\Models\Contact;
@@ -170,6 +171,9 @@ class DashboardReport
             'testimonials' => Testimonial::query()->where('status', TestimonialStatus::Pending)->count(),
             'appointments' => Appointment::query()->where('status', AppointmentStatus::Pending)->count(),
             'comments' => PostComment::query()->where('status', CommentStatus::Pending)->count(),
+            // Brouillons à relire, souvent proposés par l'IA (serveur MCP).
+            'project_drafts' => Project::query()->where('status', ProjectStatus::Draft)->count(),
+            'post_drafts' => Post::query()->where('status', PublicationStatus::Draft)->count(),
         ];
     }
 
@@ -471,6 +475,7 @@ class DashboardReport
 
         return [
             'projects' => [
+                'draft' => Project::query()->where('status', ProjectStatus::Draft)->count(),
                 'published' => Project::query()->where('status', ProjectStatus::Published)->count(),
                 'archived' => Project::query()->where('status', ProjectStatus::Archived)->count(),
                 'featured' => Project::query()->where('is_featured', true)->count(),

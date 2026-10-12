@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\EngagementController;
 use App\Http\Controllers\Admin\ExperienceController;
 use App\Http\Controllers\Admin\GitHubController;
 use App\Http\Controllers\Admin\JobProfileController;
+use App\Http\Controllers\Admin\McpTokenController;
 use App\Http\Controllers\Admin\MusicGenreController;
 use App\Http\Controllers\Admin\NowPageController;
 use App\Http\Controllers\Admin\PostCommentController;
@@ -47,6 +48,9 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::get('github', [GitHubController::class, 'edit'])->name('github.edit');
     Route::put('github', [GitHubController::class, 'update'])->name('github.update');
     Route::post('github/sync', [GitHubController::class, 'sync'])->middleware('throttle:6,1')->name('github.sync');
+    Route::get('mcp-tokens', [McpTokenController::class, 'index'])->name('mcp-tokens.index');
+    Route::post('mcp-tokens', [McpTokenController::class, 'store'])->name('mcp-tokens.store');
+    Route::delete('mcp-tokens/{token}', [McpTokenController::class, 'destroy'])->whereNumber('token')->name('mcp-tokens.destroy');
     Route::get('now-page', [NowPageController::class, 'edit'])->name('now-page.edit');
     Route::put('now-page', [NowPageController::class, 'update'])->name('now-page.update');
 
@@ -56,6 +60,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::post('translate-html', [AiAssistController::class, 'translateHtml'])->name('translate-html');
         Route::post('write-post', [AiAssistController::class, 'writePost'])->name('write-post');
         Route::post('describe-technology', [AiAssistController::class, 'describeTechnology'])->name('describe-technology');
+        Route::post('draft-project', [AiAssistController::class, 'draftProject'])->name('draft-project');
     });
 
     Route::prefix('trash')->name('trash.')->group(function () {

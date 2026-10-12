@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Api\V1;
 use App\Enums\TextTone;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ai\DescribeTechnologyRequest;
+use App\Http\Requests\Ai\DraftProjectRequest;
 use App\Http\Requests\Ai\ImproveTextRequest;
 use App\Http\Requests\Ai\TranslateHtmlRequest;
 use App\Http\Requests\Ai\TranslateTextRequest;
 use App\Http\Requests\Ai\WritePostRequest;
+use App\Services\Ai\ProjectDraftService;
 use App\Services\Ai\TextAssistService;
 use Illuminate\Http\JsonResponse;
 
@@ -116,6 +118,30 @@ class AiController extends Controller
             $request->validated('locale'),
             $request->safe()->only(['title', 'excerpt', 'selection', 'context']),
         ));
+    }
+
+    /**
+     * Pré-remplir un projet
+     *
+     * Propose, en français, les champs d'un nouveau projet à partir d'un dépôt GitHub public
+     * et/ou de notes, pour pré-remplir le formulaire : rien n'est enregistré. Les champs anglais
+     * restent à traduire (`ai/translate`) après relecture. `technologies`, `domains` et
+     * `job_profiles` ne contiennent que des identifiants existants. Avec un dépôt, la réponse
+     * ajoute `github_repository`, `repo_url`, `demo_url` et `is_open_source`. Un dépôt privé est
+     * refusé (422) : il n'est pas envoyé aux fournisseurs d'IA gratuits.
+     *
+     * @response array{project: array{title: string, slug: string, tagline: string|null, role: string|null, client: string|null, platform: string|null, context: string, challenges: string|null, realization: string|null, result: string|null, decisions: array<int, array{choice: string, reason: string}>, key_figures: array<int, array{value: string, label: string}>, started_on: string|null, ended_on: string|null, team_size: int|null, technologies: array<int, int>, domains: array<int, int>, job_profiles: array<int, int>, github_repository?: string, repo_url?: string, demo_url?: string|null, is_open_source?: bool}}
+     * @response 503 array{message: string}
+     */
+    public function draftProject(DraftProjectRequest $request, ProjectDraftService $drafts): JsonResponse
+    {
+        $project = $drafts->draft($request->validated('github_repository'), $request->validated('notes'));
+
+        if ($project === null) {
+            return $this->respond(null);
+        }
+
+        return response()->json(['project' => $project]);
     }
 
     /**

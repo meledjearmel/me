@@ -145,16 +145,12 @@ class GitHubActivity
      */
     public function forProject(Project $project): ?array
     {
-        if (blank($project->github_repository) || ($cached = $this->cached()) === null) {
+        if (blank($project->github_repository) || ($repository = $this->repository($project->github_repository)) === null) {
             return null;
         }
 
+        $cached = $this->cached();
         $fullName = strtolower($project->github_repository);
-        $repository = collect($cached['available'] ?? [])->first(fn (array $repository): bool => strtolower($repository['full_name']) === $fullName);
-
-        if ($repository === null) {
-            return null;
-        }
 
         $weeks = isset($cached['calendar'])
             ? collect($cached['calendar'])
@@ -193,6 +189,19 @@ class GitHubActivity
                 'title' => $project->title,
                 'url' => route('projects.show', ['locale' => app()->getLocale(), 'project' => $project->slug]),
             ]]);
+    }
+
+    /**
+     * Un dépôt de la dernière synchronisation (privés compris), quelle que soit la casse.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function repository(string $fullName): ?array
+    {
+        $fullName = strtolower($fullName);
+
+        return collect($this->cached()['available'] ?? [])
+            ->first(fn (array $repository): bool => strtolower($repository['full_name']) === $fullName);
     }
 
     /** @return array<string, mixed>|null */

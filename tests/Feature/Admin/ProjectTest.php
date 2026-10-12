@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ProjectStatus;
 use App\Models\Domain;
 use App\Models\Project;
 use App\Models\User;
@@ -71,6 +72,26 @@ test('creating a project requires the mandatory fields', function () {
     $response = $this->actingAs($user)->post(route('admin.projects.store'), []);
 
     $response->assertSessionHasErrors(['title.fr', 'title.en', 'slug', 'context.fr', 'realization.fr', 'result.fr', 'status']);
+});
+
+test('a draft can be saved in french only, but publishing needs the english fields', function () {
+    $user = User::factory()->create();
+    $payload = [
+        'title' => ['fr' => 'Mon projet'],
+        'slug' => 'mon-projet',
+        'context' => ['fr' => 'Contexte'],
+        'realization' => ['fr' => 'Réalisation'],
+        'result' => ['fr' => 'Résultat'],
+        'sort_order' => 1,
+    ];
+
+    $this->actingAs($user)->post(route('admin.projects.store'), [...$payload, 'status' => 'published'])
+        ->assertSessionHasErrors(['title.en', 'context.en', 'realization.en', 'result.en']);
+
+    $this->actingAs($user)->post(route('admin.projects.store'), [...$payload, 'status' => 'draft'])
+        ->assertSessionHasNoErrors();
+
+    expect(Project::query()->where('slug', 'mon-projet')->value('status'))->toBe(ProjectStatus::Draft);
 });
 
 test('authenticated users can remove the cover of a project', function () {

@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import ProjectController from '@/actions/App/Http/Controllers/Admin/ProjectController';
 import { Badge } from '@/components/ui/badge';
+import { PROJECT_STATUSES } from '@/lib/admin-options';
 import ShowPage, { Bilingual, Pills } from '@/components/admin/show-page';
 import { index as projectsIndex } from '@/routes/admin/projects';
 import type { Project } from '@/types';
@@ -16,7 +17,11 @@ export default function ProjectShow({ project: row }: { project: Project }) {
                         row.status === 'published' ? 'default' : 'secondary'
                     }
                 >
-                    {row.status === 'published' ? 'Publié' : 'Archivé'}
+                    {
+                        PROJECT_STATUSES.find(
+                            (status) => status.value === row.status,
+                        )?.label
+                    }
                 </Badge>
             }
             backHref={projectsIndex()}

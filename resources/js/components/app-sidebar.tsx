@@ -8,6 +8,7 @@ import {
     Laptop,
     BadgeCheck,
     Clock,
+    Bot,
     FolderGit,
     FolderGit2,
     GraduationCap,
@@ -73,6 +74,7 @@ import { index as usesItemsIndex } from "@/routes/admin/uses-items";
 import { index as certificationsIndex } from "@/routes/admin/certifications";
 import { edit as nowPageEdit } from "@/routes/admin/now-page";
 import { edit as githubEdit } from "@/routes/admin/github";
+import { index as mcpTokensIndex } from "@/routes/admin/mcp-tokens";
 import { index as testimonialsIndex } from "@/routes/admin/testimonials";
 import { index as postCommentsIndex } from "@/routes/admin/post-comments";
 import { index as tracksIndex } from "@/routes/admin/tracks";
@@ -116,6 +118,7 @@ const publicPageNavItems: NavItem[] = [
     { title: "Uses", href: usesItemsIndex(), icon: Laptop },
     { title: "Page « Now »", href: nowPageEdit(), icon: Clock },
     { title: "Dépôts GitHub", href: githubEdit(), icon: FolderGit },
+    { title: "Serveur MCP", href: mcpTokensIndex(), icon: Bot },
     { title: "Surprises", href: celebrationsIndex(), icon: PartyPopper },
 ];
 
