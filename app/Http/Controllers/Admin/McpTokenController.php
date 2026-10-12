@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\RejectMcpTokens;
 use App\Http\Requests\Admin\McpTokenRequest;
+use App\Mcp\ActivityLog;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,13 +22,17 @@ use Laravel\Sanctum\PersonalAccessToken;
  */
 class McpTokenController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request, ActivityLog $log): Response
     {
+        $lastCalls = $log->lastCallByClient();
+
         return Inertia::render('admin/mcp-server/access', [
             'tokens' => $this->mcpTokens($request)
                 ->latest()
                 ->get(['id', 'name', 'last_used_at', 'created_at']),
-            'connectors' => $this->connectors($request),
+            'connectors' => $this->connectors($request)
+                ->map(fn (array $connector): array => [...$connector, 'last_call_at' => $lastCalls[$connector['name']] ?? null]),
+            'activities' => Inertia::defer(fn () => $log->latest()),
             'serverUrl' => url('/mcp/portfolio'),
         ]);
     }

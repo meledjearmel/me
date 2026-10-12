@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureMcpAccess;
+use App\Http\Middleware\LogMcpActivity;
 use App\Mcp\Servers\PortfolioServer;
 use Laravel\Mcp\Facades\Mcp;
 
@@ -10,4 +11,4 @@ Mcp::oauthRoutes();
 // Jeton Sanctum (administration « Serveur MCP » ou php artisan mcp:token) pour Claude Code et
 // Codex, ou jeton OAuth pour les connecteurs Claude et ChatGPT.
 Mcp::web('/mcp/portfolio', PortfolioServer::class)
-    ->middleware(['auth:sanctum,api', EnsureMcpAccess::class, 'throttle:60,1']);
+    ->middleware(['auth:sanctum,api', EnsureMcpAccess::class, 'throttle:60,1', LogMcpActivity::class]);

@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\V1\EngagementController;
 use App\Http\Controllers\Api\V1\ExperienceController;
 use App\Http\Controllers\Api\V1\GitHubController;
 use App\Http\Controllers\Api\V1\JobProfileController;
+use App\Http\Controllers\Api\V1\McpActivityController;
 use App\Http\Controllers\Api\V1\MusicGenreController;
 use App\Http\Controllers\Api\V1\PostCommentController;
 use App\Http\Controllers\Api\V1\PostController;
@@ -89,6 +90,8 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('testimonials', TestimonialController::class)->except('store');
         Route::delete('testimonials/{testimonial}/video', [TestimonialController::class, 'destroyVideo'])->name('testimonials.video.destroy');
         Route::apiResource('congratulations', CongratulationController::class)->only(['index', 'show']);
+
+        Route::get('mcp-activity', [McpActivityController::class, 'index'])->name('mcp-activity.index');
 
         Route::prefix('revisions')->name('revisions.')->group(function (): void {
             Route::get('/', [ContentRevisionController::class, 'index'])->name('index');

@@ -211,6 +211,12 @@ class CommandGuide
         'list-revisions' => 'Révisions en attente',
     ];
 
+    /** Titre court d'une commande ou d'un outil (son nom s'il n'en a pas). */
+    public static function title(string $name): string
+    {
+        return self::TITLES[$name] ?? $name;
+    }
+
     /**
      * @return array{prompts: list<array<string, mixed>>, tools: list<array<string, mixed>>}
      */

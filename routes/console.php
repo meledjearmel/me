@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\McpActivity;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
@@ -19,3 +20,7 @@ Schedule::command('newsletter:send')->everyFifteenMinutes();
 
 // Activité GitHub de la page À propos.
 Schedule::command('github:sync')->hourly();
+
+// Journal d'activité du serveur MCP (90 jours) et jetons OAuth expirés des connecteurs.
+Schedule::command('model:prune', ['--model' => [McpActivity::class]])->daily()->at('03:30');
+Schedule::command('passport:purge')->daily()->at('03:45');
