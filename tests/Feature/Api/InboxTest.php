@@ -34,6 +34,7 @@ test('le tableau de bord expose ce qui attend une action', function () {
         ->assertJsonPath('todo.testimonials', 3)
         ->assertJsonPath('todo.project_drafts', 1)
         ->assertJsonPath('todo.post_drafts', 2)
+        ->assertJsonPath('todo.content_drafts', 0)
         ->assertJsonStructure(['todo', 'visits', 'content', 'distribution', 'health', 'recent']);
 });
 

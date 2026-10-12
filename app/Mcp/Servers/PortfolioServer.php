@@ -2,6 +2,7 @@
 
 namespace App\Mcp\Servers;
 
+use App\Mcp\Prompts\AddContentPrompt;
 use App\Mcp\Prompts\DraftProjectPrompt;
 use App\Mcp\Prompts\PlanPostImagesPrompt;
 use App\Mcp\Prompts\PlanProjectImagesPrompt;
@@ -11,9 +12,13 @@ use App\Mcp\Tools\AddPostImageTool;
 use App\Mcp\Tools\AddProjectImageTool;
 use App\Mcp\Tools\CreateTechnologyTool;
 use App\Mcp\Tools\GetCatalogTool;
+use App\Mcp\Tools\GetContentTool;
 use App\Mcp\Tools\GetPostTool;
 use App\Mcp\Tools\GetProjectTool;
+use App\Mcp\Tools\ListContentsTool;
 use App\Mcp\Tools\ReadWebPageTool;
+use App\Mcp\Tools\SaveContentDraftTool;
+use App\Mcp\Tools\SaveContentTranslationTool;
 use App\Mcp\Tools\SavePostDraftTool;
 use App\Mcp\Tools\SavePostTranslationTool;
 use App\Mcp\Tools\SaveProjectDraftTool;
@@ -45,11 +50,15 @@ Pour un article du blog : get-catalog (tags, séries avec leurs articles dans l'
 - Séries : si le sujet prolonge une série existante (post_series), lis ses articles (get-post) pour assurer la continuité (rappel de la partie précédente, pas de redite) et place l'article à next_position ; propose une nouvelle série seulement si le développeur prévoit plusieurs parties.
 - Inspiration : read-web-page lit un article existant donné par le développeur. Ne recopie jamais : reformule, apporte son expérience et son code, et cite la source avec un lien quand une idée en vient.
 - Images : add-post-image ajoute la couverture ou une image du contenu (capture, schéma), puis insère la balise <img> renvoyée dans body. Sans image fournie, propose un plan d'images : emplacement, type (capture réelle de préférence, schéma, illustration), utilité, et pour les images à générer un prompt professionnel en anglais prêt à copier (format, style sobre et cohérent, sans texte incrusté) ; voir le prompt plan-post-images.
-Ne traduis en anglais (save-project-translation, save-post-translation) que lorsque le développeur a validé le français et te le demande.
+Autres contenus (expériences, formations, certifications, page « Uses », compétences) : list-contents décrit les champs du type et liste l'existant (pas de doublon), get-content lit un contenu, save-content-draft crée ou modifie un brouillon en français ; voir le prompt add-content.
+Ne traduis en anglais (save-project-translation, save-post-translation, save-content-translation) que lorsque le développeur a validé le français et te le demande.
 N'invente rien : client, dates, chiffres ou taille d'équipe absents de la source restent vides. Ne cite ni secret ni donnée confidentielle d'un client. Rien n'est jamais publié par toi : ce sont toujours des brouillons.
 TEXT)]
 class PortfolioServer extends Server
 {
+    /** Tous les outils sur une seule page : certains clients ne demandent pas la suite. */
+    public int $defaultPaginationLength = 50;
+
     protected array $tools = [
         GetCatalogTool::class,
         GetProjectTool::class,
@@ -63,9 +72,14 @@ class PortfolioServer extends Server
         AddPostImageTool::class,
         AddProjectImageTool::class,
         ReadWebPageTool::class,
+        ListContentsTool::class,
+        GetContentTool::class,
+        SaveContentDraftTool::class,
+        SaveContentTranslationTool::class,
     ];
 
     protected array $prompts = [
+        AddContentPrompt::class,
         DraftProjectPrompt::class,
         TranslateProjectPrompt::class,
         WritePostPrompt::class,

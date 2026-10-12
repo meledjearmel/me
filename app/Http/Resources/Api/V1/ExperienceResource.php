@@ -33,6 +33,8 @@ class ExperienceResource extends JsonResource
             'description' => $this->getTranslations('description') ?: (object) [],
             'sort_order' => $this->sort_order,
             'status' => $this->status,
+            /** Client IA qui a rédigé le brouillon via le serveur MCP (« Claude Code »…), sinon null. */
+            'drafted_by' => $this->drafted_by,
             'highlights' => $this->whenLoaded('highlights', fn () => $this->highlights->map(fn ($highlight): array => [
                 'id' => $highlight->id,
                 /** @var array{fr: string, en: string} */

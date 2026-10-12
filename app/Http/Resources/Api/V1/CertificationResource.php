@@ -34,6 +34,8 @@ class CertificationResource extends JsonResource
             'badge_url' => $this->getFirstMediaUrl('badge') ?: null,
             /** `published` : affichée sur la page publique ; `draft` : masquée. */
             'status' => $this->status,
+            /** Client IA qui a rédigé le brouillon via le serveur MCP (« Claude Code »…), sinon null. */
+            'drafted_by' => $this->drafted_by,
             'sort_order' => $this->sort_order,
         ];
     }

@@ -19,7 +19,7 @@ class CertificationRequest extends FormRequest
         return [
             'kind' => ['required', Rule::enum(CertificationKind::class)],
             'name.fr' => ['required', 'string', 'max:160'],
-            'name.en' => ['required', 'string', 'max:160'],
+            'name.en' => ['required_unless:status,draft', 'nullable', 'string', 'max:160'],
             'issuer' => ['required', 'string', 'max:120'],
             'issued_on' => ['required', 'date', 'before_or_equal:today'],
             'expires_on' => ['nullable', 'date', 'after:issued_on'],

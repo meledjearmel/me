@@ -18,7 +18,7 @@ class ExperienceRequest extends FormRequest
         return [
             'company' => ['required', 'string', 'max:255'],
             'role.fr' => ['required', 'string', 'max:255'],
-            'role.en' => ['required', 'string', 'max:255'],
+            'role.en' => ['required_unless:status,draft', 'nullable', 'string', 'max:255'],
             'location' => ['nullable', 'string', 'max:255'],
             'start_date' => ['required', 'date'],
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
@@ -29,7 +29,7 @@ class ExperienceRequest extends FormRequest
             'highlights' => ['array'],
             'highlights.*.id' => ['nullable', 'integer', 'exists:experience_highlights,id'],
             'highlights.*.text.fr' => ['required', 'string'],
-            'highlights.*.text.en' => ['required', 'string'],
+            'highlights.*.text.en' => ['required_unless:status,draft', 'nullable', 'string'],
             'highlights.*.sort_order' => ['integer'],
         ];
     }

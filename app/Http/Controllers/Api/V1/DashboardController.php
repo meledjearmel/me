@@ -45,7 +45,7 @@ class DashboardController extends Controller
      * et `appointments`, `rate` étant un pourcentage à une décimale.
      *
      * `todo.appointments` compte les demandes de rendez-vous en attente, `todo.comments`
-     * les commentaires du blog à modérer, `todo.project_drafts` et `todo.post_drafts` les
+     * les commentaires du blog à modérer, `todo.project_drafts`, `todo.post_drafts` et `todo.content_drafts` (expériences, formations, certifications, page « Uses », compétences) les
      * brouillons de projets et d'articles à relire (souvent proposés par l'IA).
      *
      * `blog` mesure l'engagement des lecteurs : `views_total` (lectures de tous les articles,

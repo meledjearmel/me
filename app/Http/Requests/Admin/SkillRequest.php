@@ -18,7 +18,7 @@ class SkillRequest extends FormRequest
         return [
             'domain_id' => ['required', 'exists:domains,id'],
             'name.fr' => ['required', 'string', 'max:255'],
-            'name.en' => ['required', 'string', 'max:255'],
+            'name.en' => ['required_unless:status,draft', 'nullable', 'string', 'max:255'],
             'description.fr' => ['nullable', 'string'],
             'description.en' => ['nullable', 'string'],
             'details.fr' => ['nullable', 'string'],

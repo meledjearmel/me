@@ -18,9 +18,9 @@ class EducationRequest extends FormRequest
         return [
             'institution' => ['required', 'string', 'max:255'],
             'degree.fr' => ['required', 'string', 'max:255'],
-            'degree.en' => ['required', 'string', 'max:255'],
+            'degree.en' => ['required_unless:status,draft', 'nullable', 'string', 'max:255'],
             'field.fr' => ['required', 'string', 'max:255'],
-            'field.en' => ['required', 'string', 'max:255'],
+            'field.en' => ['required_unless:status,draft', 'nullable', 'string', 'max:255'],
             'start_date' => ['required', 'date'],
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'description.fr' => ['nullable', 'string'],

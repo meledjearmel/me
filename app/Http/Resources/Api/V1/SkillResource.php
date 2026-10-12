@@ -37,6 +37,8 @@ class SkillResource extends JsonResource
             'technologies' => TechnologyResource::collection($this->whenLoaded('technologies')),
             'sort_order' => $this->sort_order,
             'status' => $this->status,
+            /** Client IA qui a rédigé le brouillon via le serveur MCP (« Claude Code »…), sinon null. */
+            'drafted_by' => $this->drafted_by,
         ];
     }
 }

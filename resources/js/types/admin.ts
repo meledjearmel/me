@@ -105,6 +105,8 @@ export type JobProfile = {
 };
 
 export type Skill = {
+    /** Client IA qui a rédigé le brouillon (serveur MCP). */
+    drafted_by?: string | null;
     id: number;
     domain_id: number;
     domain?: Domain;
@@ -117,6 +119,8 @@ export type Skill = {
 };
 
 export type Education = {
+    /** Client IA qui a rédigé le brouillon (serveur MCP). */
+    drafted_by?: string | null;
     id: number;
     institution: string;
     degree: Translatable;
@@ -136,6 +140,8 @@ export type ExperienceHighlight = {
 };
 
 export type Experience = {
+    /** Client IA qui a rédigé le brouillon (serveur MCP). */
+    drafted_by?: string | null;
     id: number;
     company: string;
     role: Translatable;
@@ -246,8 +252,10 @@ export type CvDownload = {
 };
 
 export type Certification = {
+    /** Client IA qui a rédigé le brouillon (serveur MCP). */
+    drafted_by?: string | null;
     id: number;
-    kind: 'certification' | 'course';
+    kind: "certification" | "course";
     name: Translatable;
     issuer: string;
     /** AAAA-MM-JJ. */
@@ -255,18 +263,20 @@ export type Certification = {
     expires_on: string | null;
     credential_id: string | null;
     credential_url: string | null;
-    status: 'published' | 'draft';
+    status: "published" | "draft";
     sort_order: number;
     badge_url?: string | null;
 };
 
 export type UsesItem = {
+    /** Client IA qui a rédigé le brouillon (serveur MCP). */
+    drafted_by?: string | null;
     id: number;
-    category: 'hardware' | 'development' | 'apps' | 'services';
+    category: "hardware" | "development" | "apps" | "services";
     name: string;
     description: Translatable | null;
     url: string | null;
-    status: 'published' | 'draft';
+    status: "published" | "draft";
     sort_order: number;
 };
 
@@ -404,7 +414,7 @@ export type Appointment = {
 
 export type SiteSettings = {
     contact_opens_drawer: boolean;
-    availability_status: 'available' | 'from' | 'unavailable';
+    availability_status: "available" | "from" | "unavailable";
     /** AAAA-MM-JJ. */
     available_from: string | null;
     testimonial_video_enabled: boolean;
@@ -418,7 +428,7 @@ export type SiteSettings = {
     booking_min_notice_hours: number;
     booking_horizon_days: number;
     booking_buffer_minutes: number;
-    booking_video_provider: 'jitsi' | 'link';
+    booking_video_provider: "jitsi" | "link";
     booking_video_link: string | null;
 };
 

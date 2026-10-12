@@ -32,6 +32,7 @@ use App\Models\Skill;
 use App\Models\Technology;
 use App\Models\TechnologyCategory;
 use App\Models\Testimonial;
+use App\Services\Ai\ContentTypes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -174,6 +175,9 @@ class DashboardReport
             // Brouillons à relire, souvent proposés par l'IA (serveur MCP).
             'project_drafts' => Project::query()->where('status', ProjectStatus::Draft)->count(),
             'post_drafts' => Post::query()->where('status', PublicationStatus::Draft)->count(),
+            // Expériences, formations, certifications, page « Uses » et compétences en brouillon.
+            'content_drafts' => collect(app(ContentTypes::class)->all())
+                ->sum(fn (array $type): int => $type['model']::query()->where('status', PublicationStatus::Draft)->count()),
         ];
     }
 

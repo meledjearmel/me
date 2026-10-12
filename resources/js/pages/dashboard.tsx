@@ -61,6 +61,7 @@ type DashboardProps = {
         comments: number;
         project_drafts: number;
         post_drafts: number;
+        content_drafts: number;
     };
     blog: {
         period_days: number | null;
@@ -597,7 +598,11 @@ export default function Dashboard({
                     />
                     <TodoCard
                         title="Brouillons à relire"
-                        count={todo.project_drafts + todo.post_drafts}
+                        count={
+                            todo.project_drafts +
+                            todo.post_drafts +
+                            todo.content_drafts
+                        }
                         href={
                             todo.project_drafts > 0 || todo.post_drafts === 0
                                 ? projectsIndex({ query: { status: "draft" } })
