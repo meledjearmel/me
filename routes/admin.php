@@ -56,6 +56,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::get('mcp-tokens', [McpTokenController::class, 'index'])->name('mcp-tokens.index');
     Route::post('mcp-tokens', [McpTokenController::class, 'store'])->name('mcp-tokens.store');
     Route::delete('mcp-tokens/{token}', [McpTokenController::class, 'destroy'])->whereNumber('token')->name('mcp-tokens.destroy');
+    Route::delete('mcp-connectors/{client}', [McpTokenController::class, 'destroyConnector'])->name('mcp-connectors.destroy');
     Route::get('now-page', [NowPageController::class, 'edit'])->name('now-page.edit');
     Route::put('now-page', [NowPageController::class, 'update'])->name('now-page.update');
 

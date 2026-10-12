@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\EnsureMcpAccess;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\ShareSitePublicData;
 use App\Models\Profile;
@@ -20,6 +21,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Inertia\ExceptionResponse;
 use Inertia\Inertia;
+use Laravel\Passport\Passport;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -41,12 +43,27 @@ class AppServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
         $this->configureErrorPages();
         $this->configureMails();
+        $this->configurePassport();
     }
 
     /**
      * Signature des emails (en-tête et pied de page) : le nom du propriétaire,
      * le portfolio dans la langue de l'email et ses liens publics.
      */
+    /**
+     * Connecteurs Claude et ChatGPT du serveur MCP : écran d'autorisation en français, et
+     * jetons courts renouvelés par le client tant que l'accès n'est pas révoqué.
+     */
+    protected function configurePassport(): void
+    {
+        Passport::authorizationView(fn (array $parameters) => view('mcp.authorize', $parameters));
+        Passport::tokensCan([
+            EnsureMcpAccess::OAUTH_SCOPE => 'Lire le portfolio, y enregistrer des brouillons et proposer des modifications',
+        ]);
+        Passport::tokensExpireIn(CarbonImmutable::now()->addDay());
+        Passport::refreshTokensExpireIn(CarbonImmutable::now()->addDays(60));
+    }
+
     protected function configureMails(): void
     {
         View::composer('mail::message', function ($view): void {

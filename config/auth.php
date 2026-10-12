@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\OAuthUser;
 use App\Models\User;
 
 return [
@@ -42,6 +43,12 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        // Jetons OAuth des connecteurs Claude et ChatGPT du serveur MCP (Passport).
+        'api' => [
+            'driver' => 'passport',
+            'provider' => 'oauth_users',
+        ],
     ],
 
     /*
@@ -65,6 +72,11 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', User::class),
+        ],
+
+        'oauth_users' => [
+            'driver' => 'eloquent',
+            'model' => OAuthUser::class,
         ],
 
         // 'users' => [

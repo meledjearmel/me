@@ -6,6 +6,7 @@ import Heading from "@/components/heading";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { destroy as destroyConnector } from "@/routes/admin/mcp-connectors";
 import { index as pageIndex } from "@/routes/admin/mcp-tokens";
 
 type McpToken = {
@@ -43,11 +44,19 @@ function CopyButton({ value }: { value: string }) {
  * Jetons du serveur MCP du portfolio (Claude Code, Codex…). Limités au MCP : l'API de
  * l'app mobile les refuse. Le jeton en clair n'est montré qu'une fois, juste après sa création.
  */
+type Connector = {
+    id: string;
+    name: string;
+    last_connected_at: string | null;
+};
+
 export default function McpTokensIndex({
     tokens,
+    connectors,
     serverUrl,
 }: {
     tokens: McpToken[];
+    connectors: Connector[];
     serverUrl: string;
 }) {
     const newToken = usePage().flash.mcpToken as string | undefined;
@@ -60,7 +69,7 @@ export default function McpTokensIndex({
             <div className="space-y-6 p-4">
                 <Heading
                     title="Serveur MCP"
-                    description="Claude Code ou Codex explorent un dépôt et enregistrent un brouillon de projet en français, à relire, traduire et publier ici."
+                    description="Claude Code, Codex, ou les connecteurs Claude et ChatGPT rédigent des brouillons et proposent des modifications, à relire, traduire et publier ici."
                 />
 
                 <section className="space-y-2">
@@ -126,7 +135,70 @@ export default function McpTokensIndex({
                 </section>
 
                 <section className="space-y-3">
-                    <h2 className="font-medium">Jetons actifs</h2>
+                    <h2 className="font-medium">
+                        Connecteurs Claude et ChatGPT
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                        Dans claude.ai (Paramètres → Connecteurs → Ajouter un
+                        connecteur personnalisé) ou ChatGPT (Paramètres →
+                        Applications et connecteurs, mode développeur), ajoutez
+                        l'adresse du serveur ci-dessus : une fenêtre vous
+                        demande de vous connecter ici puis d'autoriser l'accès.
+                        Aucun jeton à copier.
+                    </p>
+                    {connectors.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">
+                            Aucun connecteur autorisé.
+                        </p>
+                    ) : (
+                        <ul className="divide-y rounded-md border">
+                            {connectors.map((connector) => (
+                                <li
+                                    key={connector.id}
+                                    className="flex items-center gap-3 p-3"
+                                >
+                                    <div className="min-w-0 flex-1">
+                                        <p className="font-medium">
+                                            {connector.name}
+                                        </p>
+                                        <p className="text-sm text-muted-foreground">
+                                            Dernière connexion :{" "}
+                                            {formatDate(
+                                                connector.last_connected_at,
+                                            )}
+                                        </p>
+                                    </div>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        aria-label={`Déconnecter ${connector.name}`}
+                                        onClick={() => {
+                                            if (
+                                                confirm(
+                                                    `Déconnecter « ${connector.name} » ? Il devra être autorisé à nouveau.`,
+                                                )
+                                            ) {
+                                                router.delete(
+                                                    destroyConnector.url(
+                                                        connector.id,
+                                                    ),
+                                                    { preserveScroll: true },
+                                                );
+                                            }
+                                        }}
+                                    >
+                                        <Trash2 />
+                                    </Button>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </section>
+
+                <section className="space-y-3">
+                    <h2 className="font-medium">
+                        Jetons actifs (Claude Code, Codex)
+                    </h2>
                     {tokens.length === 0 ? (
                         <p className="text-sm text-muted-foreground">
                             Aucun jeton : le serveur refuse toute connexion.
