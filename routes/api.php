@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\ExperienceController;
 use App\Http\Controllers\Api\V1\GitHubController;
 use App\Http\Controllers\Api\V1\JobProfileController;
 use App\Http\Controllers\Api\V1\McpActivityController;
+use App\Http\Controllers\Api\V1\McpCommandController;
 use App\Http\Controllers\Api\V1\MusicGenreController;
 use App\Http\Controllers\Api\V1\PostCommentController;
 use App\Http\Controllers\Api\V1\PostController;
@@ -94,6 +95,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('congratulations', CongratulationController::class)->only(['index', 'show']);
 
         Route::get('mcp-activity', [McpActivityController::class, 'index'])->name('mcp-activity.index');
+        Route::get('mcp-commands', [McpCommandController::class, 'index'])->name('mcp-commands.index');
         Route::patch('status/{type}/{id}', ContentStatusController::class)->whereIn('type', ContentStatus::types())->whereNumber('id')->name('content-status.update');
 
         Route::prefix('revisions')->name('revisions.')->group(function (): void {
