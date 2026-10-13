@@ -16,6 +16,8 @@ use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\DomainController;
 use App\Http\Controllers\Api\V1\EducationController;
 use App\Http\Controllers\Api\V1\EngagementController;
+use App\Http\Controllers\Api\V1\EstimatorItemController;
+use App\Http\Controllers\Api\V1\EstimatorSettingsController;
 use App\Http\Controllers\Api\V1\ExperienceController;
 use App\Http\Controllers\Api\V1\GitHubController;
 use App\Http\Controllers\Api\V1\JobProfileController;
@@ -67,6 +69,8 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             Route::post('translate-html', [AiController::class, 'translateHtml'])->name('translate-html');
             Route::post('write-post', [AiController::class, 'writePost'])->name('write-post');
             Route::post('draft-project', [AiController::class, 'draftProject'])->name('draft-project');
+            Route::post('suggest-estimator-item', [AiController::class, 'suggestEstimatorItem'])->name('suggest-estimator-item');
+            Route::post('engagements/{engagement}/analyze', [EngagementController::class, 'analyze'])->name('engagements.analyze');
         });
 
         Route::prefix('trash')->name('trash.')->group(function (): void {
@@ -82,6 +86,9 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::post('appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
         Route::post('appointments/{appointment}/decline', [AppointmentController::class, 'decline'])->name('appointments.decline');
         Route::apiResource('appointment-types', AppointmentTypeController::class);
+        Route::apiResource('estimator-items', EstimatorItemController::class);
+        Route::get('estimator-settings', [EstimatorSettingsController::class, 'show'])->name('estimator-settings.show');
+        Route::put('estimator-settings', [EstimatorSettingsController::class, 'update'])->name('estimator-settings.update');
         Route::get('site-settings', [SiteSettingController::class, 'show'])->name('site-settings.show');
         Route::patch('site-settings', [SiteSettingController::class, 'update'])->name('site-settings.update');
         Route::prefix('availability')->name('availability.')->group(function (): void {

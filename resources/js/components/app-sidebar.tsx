@@ -16,6 +16,7 @@ import {
     MailCheck,
     Handshake,
     Heart,
+    Calculator,
     IdCard,
     LayoutGrid,
     Layers,
@@ -56,6 +57,7 @@ import { index as cvDownloadsIndex } from "@/routes/admin/cv-downloads";
 import { index as reviewInvitationsIndex } from "@/routes/admin/review-invitations";
 import { index as subscribersIndex } from "@/routes/admin/subscribers";
 import { index as engagementsIndex } from "@/routes/admin/engagements";
+import { index as estimatorItemsIndex } from "@/routes/admin/estimator-items";
 import { index as domainsIndex } from "@/routes/admin/domains";
 import { index as educationsIndex } from "@/routes/admin/educations";
 import { index as experiencesIndex } from "@/routes/admin/experiences";
@@ -141,6 +143,7 @@ const musicNavItems: NavItem[] = [
 const inboxNavItems: NavItem[] = [
     { title: "Contacts", href: contactsIndex(), icon: Mail },
     { title: "Collaborations", href: engagementsIndex(), icon: Handshake },
+    { title: "Estimateur de projet", href: estimatorItemsIndex(), icon: Calculator },
     { title: "Téléchargements CV", href: cvDownloadsIndex(), icon: FileDown },
     { title: "Newsletter", href: subscribersIndex(), icon: MailCheck },
     { title: "Félicitations", href: congratulationsIndex(), icon: Heart },

@@ -187,6 +187,13 @@ export type SharedCelebration = {
     snoozeDays: number;
 };
 
+export type PublicEstimatorItem = {
+    id: number;
+    name: string;
+    description: string | null;
+    billing: 'fixed' | 'hourly' | null;
+};
+
 export type PublicAppointmentType = {
     id: number;
     name: string;

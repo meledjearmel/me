@@ -16,6 +16,12 @@
 @if ($engagement->contract)
 | **Contrat** | {{ $engagement->contract }} |
 @endif
+@if ($engagement->estimate_label)
+| **Estimation** | {{ $engagement->estimate_label }} |
+@endif
+@if (! empty($engagement->estimate['features']))
+| **Options** | {{ implode(', ', $engagement->estimate['features']) }} |
+@endif
 @if ($engagement->budget_label)
 | **Budget** | {{ $engagement->budget_label }} |
 @endif

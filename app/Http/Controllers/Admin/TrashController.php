@@ -10,6 +10,7 @@ use App\Models\Contact;
 use App\Models\Domain;
 use App\Models\Education;
 use App\Models\Engagement;
+use App\Models\EstimatorItem;
 use App\Models\Experience;
 use App\Models\JobProfile;
 use App\Models\MusicGenre;
@@ -56,6 +57,7 @@ class TrashController extends Controller
         'engagements' => ['model' => Engagement::class, 'label' => 'Demande de collaboration'],
         'appointments' => ['model' => Appointment::class, 'label' => 'Rendez-vous'],
         'appointment-types' => ['model' => AppointmentType::class, 'label' => 'Type de rendez-vous'],
+        'estimator-items' => ['model' => EstimatorItem::class, 'label' => 'Élément de l’estimateur'],
     ];
 
     public function index(Request $request): Response
@@ -149,6 +151,7 @@ class TrashController extends Controller
             'contacts', 'engagements' => trim("{$model->name} — {$model->subject}"),
             'appointments' => trim("{$model->name} — {$model->starts_at?->format('d/m/Y H:i')}"),
             'appointment-types' => (string) $model->name,
+            'estimator-items' => (string) $model->name,
             default => (string) $model->id,
         };
     }

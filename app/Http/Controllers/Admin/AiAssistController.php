@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\EstimatorItemKind;
 use App\Enums\TextTone;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ai\DescribeTechnologyRequest;
 use App\Http\Requests\Ai\DraftProjectRequest;
 use App\Http\Requests\Ai\ImproveTextRequest;
+use App\Http\Requests\Ai\SuggestEstimatorItemRequest;
 use App\Http\Requests\Ai\TranslateHtmlRequest;
 use App\Http\Requests\Ai\TranslateTextRequest;
 use App\Http\Requests\Ai\WritePostRequest;
+use App\Services\Ai\EstimateAssistant;
 use App\Services\Ai\ProjectDraftService;
 use App\Services\Ai\TextAssistService;
 use Illuminate\Http\JsonResponse;
@@ -86,6 +89,22 @@ class AiAssistController extends Controller
         }
 
         return response()->json(['project' => $project]);
+    }
+
+    /** « Proposer avec l'IA » du formulaire de l'estimateur : nom, description et heures, à relire. */
+    public function suggestEstimatorItem(SuggestEstimatorItemRequest $request, EstimateAssistant $assistant): JsonResponse
+    {
+        $item = $assistant->suggestItem(
+            EstimatorItemKind::from($request->validated('kind')),
+            $request->validated('name'),
+            $request->validated('notes'),
+        );
+
+        if ($item === null) {
+            return $this->respond(null);
+        }
+
+        return response()->json(['item' => $item]);
     }
 
     private function respond(?string $text): JsonResponse

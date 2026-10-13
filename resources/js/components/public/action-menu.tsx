@@ -3,6 +3,7 @@ import { router, usePage } from '@inertiajs/react';
 import {
     ArrowUp,
     CalendarDays,
+    Calculator,
     Handshake,
     MessageSquareQuote,
     X,
@@ -35,8 +36,9 @@ type Action = {
 export default function ActionMenu() {
     const t = useTranslations();
     const path = useLocalizedPath();
-    const { bookingOpen, reviewInvitation } = usePage<{
+    const { bookingOpen, estimatorEnabled, reviewInvitation } = usePage<{
         bookingOpen?: boolean;
+        estimatorEnabled?: boolean;
         reviewInvitation?: ReviewInvitation | null;
     }>().props;
     const root = useRef<HTMLDivElement>(null);
@@ -118,6 +120,16 @@ export default function ActionMenu() {
             icon: <Handshake size={22} aria-hidden="true" />,
             run: () => setEngageOpen(true),
         },
+        ...(estimatorEnabled
+            ? [
+                  {
+                      key: 'estimate',
+                      label: t.estimate.cta,
+                      icon: <Calculator size={22} aria-hidden="true" />,
+                      run: () => router.visit(path('estimate')),
+                  },
+              ]
+            : []),
         ...(bookingOpen
             ? [
                   {

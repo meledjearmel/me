@@ -41,6 +41,9 @@ class SiteSetting extends Model
         'now_content',
         'now_updated_at',
         'github_repositories',
+        'estimator_hourly_rates',
+        'estimator_risk_percent',
+        'estimator_hours_per_week',
     ];
 
     /** @var array<string, string> */
@@ -61,7 +64,31 @@ class SiteSetting extends Model
         'now_content' => 'array',
         'now_updated_at' => 'datetime',
         'github_repositories' => 'array',
+        'estimator_hourly_rates' => 'array',
+        'estimator_risk_percent' => 'integer',
+        'estimator_hours_per_week' => 'integer',
     ];
+
+    /**
+     * Taux horaires de l'estimateur, limités aux devises connues et renseignées : une
+     * devise sans taux n'est pas proposée au visiteur.
+     *
+     * @return array<string, int>
+     */
+    public function estimatorRates(): array
+    {
+        $rates = [];
+
+        foreach (EstimatorItem::CURRENCIES as $currency) {
+            $rate = (int) ($this->estimator_hourly_rates[$currency] ?? 0);
+
+            if ($rate > 0) {
+                $rates[$currency] = $rate;
+            }
+        }
+
+        return $rates;
+    }
 
     /**
      * Le texte de la page « Now » dans la langue demandée, en repli sur le français.

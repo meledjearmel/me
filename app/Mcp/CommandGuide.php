@@ -202,6 +202,36 @@ class CommandGuide
             'tips' => ['L\'agent s\'en sert pour ne pas proposer deux fois la même chose.'],
             'example' => 'Quelles modifications m\'as-tu déjà proposées ?',
         ],
+        'get-estimator' => [
+            'usage' => 'Lire la grille de l\'estimateur de projet (heures, facturation) et ses réglages (taux, marge, heures par semaine).',
+            'tips' => ['Appelé avant de proposer un élément ou d\'analyser une demande, pour rester cohérent.'],
+            'example' => 'Ma grille d\'estimation est-elle cohérente ? Qu\'est-ce qui est sous-estimé ?',
+            'requests' => ['Relis la grille de mon estimateur de projet et dis-moi ce qui te paraît sous-estimé.'],
+        ],
+        'save-estimator-item' => [
+            'usage' => 'Ajouter un type de projet ou une option à la grille de l\'estimateur, ou corriger ses heures.',
+            'tips' => [
+                'Un élément créé reste masqué aux visiteurs : vous l\'activez dans l\'admin après relecture.',
+                'Les heures sont hors marge : le site ajoute lui-même la marge pour imprévus.',
+            ],
+            'example' => 'Ajoute à mon estimateur une option « Application mobile compagnon ».',
+            'requests' => ['Ajoute à mon estimateur de projet une option « Espace client avec factures », avec des heures réalistes.'],
+        ],
+        'list-estimate-requests' => [
+            'usage' => 'Lire les demandes reçues par l\'estimateur : choix, estimation affichée, message et analyse existante.',
+            'tips' => ['Les coordonnées du visiteur ne sont pas transmises à l\'agent.'],
+            'example' => 'Quelles demandes d\'estimation n\'ai-je pas encore traitées ?',
+            'requests' => ['Montre-moi les dernières demandes reçues par mon estimateur de projet.'],
+        ],
+        'save-estimate-analysis' => [
+            'usage' => 'Enregistrer une analyse d\'une demande sur sa fiche : risques, points flous, questions, heures réalistes.',
+            'tips' => [
+                'Remplace l\'analyse faite automatiquement à la réception de la demande.',
+                'Rien n\'est envoyé au client : vous gardez la main sur le devis.',
+            ],
+            'example' => 'Analyse la demande #42 et enregistre les questions à poser au client.',
+            'requests' => ['Analyse la dernière demande de mon estimateur : risques, questions à poser au client et heures réalistes, puis enregistre l\'analyse.'],
+        ],
     ];
 
     /**
@@ -234,6 +264,10 @@ class CommandGuide
         'save-content-translation' => 'Traduire un contenu',
         'propose-revision' => 'Proposer une modification',
         'list-revisions' => 'Révisions en attente',
+        'get-estimator' => 'Lire l\'estimateur',
+        'save-estimator-item' => 'Élément de l\'estimateur',
+        'list-estimate-requests' => 'Demandes d\'estimation',
+        'save-estimate-analysis' => 'Analyser une demande',
     ];
 
     /** Titre court d'une commande ou d'un outil (son nom s'il n'en a pas). */

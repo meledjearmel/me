@@ -357,6 +357,10 @@ export type Engagement = {
     subject: string | null;
     contract: string | null;
     budget_label: string | null;
+    estimate_label: string | null;
+    estimate: { features: string[] } | null;
+    ai_analysis: EngagementAiAnalysis | null;
+    ai_analyzed_at: string | null;
     timeline: string | null;
     message: string | null;
     locale: string;
@@ -388,6 +392,42 @@ export type AppointmentType = {
     is_active: boolean;
     sort_order: number;
     appointments_count?: number;
+};
+
+export type EstimatorCurrency = "CHF" | "EUR" | "USD" | "XOF";
+
+export type EstimatorBilling = "fixed" | "hourly";
+
+export type EstimatorItem = {
+    id: number;
+    kind: "project_type" | "feature";
+    name: Translatable;
+    description: Partial<Translatable> | null;
+    hours_min: number;
+    hours_max: number;
+    billing: EstimatorBilling | null;
+    is_active: boolean;
+    sort_order: number;
+};
+
+export type EstimatorSettings = {
+    estimator_hourly_rates: Record<EstimatorCurrency, number | null>;
+    estimator_risk_percent: number;
+    estimator_hours_per_week: number;
+};
+
+export type EngagementAiAnalysis = {
+    summary: string;
+    risks: string[];
+    unclear_points: string[];
+    questions: string[];
+    hours_min: number;
+    hours_max: number;
+    billing: EstimatorBilling;
+    reasoning: string | null;
+    price_min: number | null;
+    price_max: number | null;
+    currency: string | null;
 };
 
 export type Appointment = {

@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\EstimatorItemKind;
 use App\Enums\TextTone;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ai\DescribeTechnologyRequest;
 use App\Http\Requests\Ai\DraftProjectRequest;
 use App\Http\Requests\Ai\ImproveTextRequest;
+use App\Http\Requests\Ai\SuggestEstimatorItemRequest;
 use App\Http\Requests\Ai\TranslateHtmlRequest;
 use App\Http\Requests\Ai\TranslateTextRequest;
 use App\Http\Requests\Ai\WritePostRequest;
+use App\Services\Ai\EstimateAssistant;
 use App\Services\Ai\ProjectDraftService;
 use App\Services\Ai\TextAssistService;
 use Illuminate\Http\JsonResponse;
@@ -142,6 +145,29 @@ class AiController extends Controller
         }
 
         return response()->json(['project' => $project]);
+    }
+
+    /**
+     * Proposer un élément de l'estimateur
+     *
+     * Nom bilingue, description et fourchette d'heures (hors marge) d'un type de projet ou
+     * d'une option, cohérents avec la grille existante. Rien n'est enregistré.
+     *
+     * @response array{item: array{name: array{fr: string, en: string}, description: array{fr: string|null, en: string|null}, hours_min: int, hours_max: int, reasoning: string|null}}
+     */
+    public function suggestEstimatorItem(SuggestEstimatorItemRequest $request, EstimateAssistant $assistant): JsonResponse
+    {
+        $item = $assistant->suggestItem(
+            EstimatorItemKind::from($request->validated('kind')),
+            $request->validated('name'),
+            $request->validated('notes'),
+        );
+
+        if ($item === null) {
+            return $this->respond(null);
+        }
+
+        return response()->json(['item' => $item]);
     }
 
     /**

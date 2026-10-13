@@ -1,6 +1,7 @@
 import { router } from '@inertiajs/react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import EngagementAiAnalysis from '@/components/admin/engagement-ai-analysis';
 import ShowPage, { formatDate } from '@/components/admin/show-page';
 import { index as engagementsIndex, update } from '@/routes/admin/engagements';
 import type { Engagement } from '@/types';
@@ -53,6 +54,13 @@ export default function EngagementShow({
                             value: row.job_profile?.label.fr,
                         },
                         { label: 'Contrat', value: row.contract },
+                        { label: 'Estimation', value: row.estimate_label },
+                        {
+                            label: 'Options choisies',
+                            value: row.estimate?.features.length
+                                ? row.estimate.features.join(', ')
+                                : null,
+                        },
                         { label: 'Budget', value: row.budget_label },
                         { label: 'Délai', value: row.timeline },
                         {
@@ -75,6 +83,18 @@ export default function EngagementShow({
                         { label: 'Message', value: row.message, wide: true },
                     ],
                 },
+                ...(row.estimate
+                    ? [
+                          {
+                              title: "Analyse de l'IA",
+                              description:
+                                  'Pour chiffrer sans sous-estimer : risques, points flous, questions à poser.',
+                              content: (
+                                  <EngagementAiAnalysis engagement={row} />
+                              ),
+                          },
+                      ]
+                    : []),
                 {
                     title: 'Contact',
                     items: [

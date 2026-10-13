@@ -9,6 +9,7 @@ use App\Models\Post;
 use App\Models\Project;
 use App\Models\SiteSetting;
 use App\Models\UsesItem;
+use App\Services\ProjectEstimator;
 use Illuminate\Http\Response;
 
 class SitemapController extends Controller
@@ -25,6 +26,7 @@ class SitemapController extends Controller
             ->when(UsesItem::query()->published()->exists(), fn ($paths) => $paths->push('/uses'))
             ->when(Certification::query()->published()->exists(), fn ($paths) => $paths->push('/certifications'))
             ->when(SiteSetting::current()->nowText('fr') !== null, fn ($paths) => $paths->push('/now'))
+            ->when(app(ProjectEstimator::class)->isAvailable(), fn ($paths) => $paths->push('/estimate'))
             ->map(fn (string $path): array => ['path' => $path, 'lastmod' => null]);
 
         $projects = Project::query()

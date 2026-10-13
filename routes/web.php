@@ -23,6 +23,7 @@ use App\Http\Controllers\PostReactionController;
 use App\Http\Controllers\PostShareController;
 use App\Http\Controllers\PostShareImageController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectEstimateController;
 use App\Http\Controllers\RobotsTxtController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
@@ -121,6 +122,16 @@ Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, Lo
     Route::post('appointments/{token}/cancel', [AppointmentCancellationController::class, 'store'])
         ->middleware('throttle:10,1')
         ->name('appointments.cancel.store');
+    Route::get('estimate', [ProjectEstimateController::class, 'index'])->name('estimate.index');
+    Route::get('estimate/quote', [ProjectEstimateController::class, 'quote'])
+        ->middleware('throttle:120,1')
+        ->name('estimate.quote');
+    Route::post('estimate/suggest', [ProjectEstimateController::class, 'suggest'])
+        ->middleware('throttle:6,1')
+        ->name('estimate.suggest');
+    Route::post('estimate', [ProjectEstimateController::class, 'store'])
+        ->middleware('throttle:5,1')
+        ->name('estimate.store');
     Route::post('engagements', [EngagementController::class, 'store'])
         ->middleware('throttle:5,1')
         ->name('engagements.store');

@@ -11,6 +11,7 @@ use App\Ai\Agents\TextTranslator;
 use App\Enums\TextTone;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Laravel\Ai\Contracts\Agent;
 use Throwable;
 
 /**
@@ -128,6 +129,25 @@ class TextAssistService
 
             return $draft === null ? '' : (string) json_encode($draft);
         }, 'ai.text_assist.draft');
+
+        return $json === null ? null : json_decode($json, true);
+    }
+
+    /**
+     * Fait répondre un agent en JSON, avec le même repli sur les fournisseurs : la réponse
+     * passe par $normalize, et un résultat null (illisible, incomplet) passe au suivant.
+     *
+     * @param  callable(array<string, mixed>): ?array<string, mixed>  $normalize
+     * @return array<string, mixed>|null
+     */
+    public function promptJson(Agent $agent, string $prompt, callable $normalize, string $limits = 'ai.text_assist.draft'): ?array
+    {
+        $json = $this->attempt(function (string $provider, int $timeout, ?string $model) use ($agent, $prompt, $normalize): string {
+            $decoded = $this->decodeJson($agent->prompt($prompt, provider: $provider, model: $model, timeout: $timeout)->text);
+            $result = $decoded === null ? null : $normalize($decoded);
+
+            return $result === null ? '' : (string) json_encode($result);
+        }, $limits);
 
         return $json === null ? null : json_decode($json, true);
     }

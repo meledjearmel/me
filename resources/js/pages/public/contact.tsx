@@ -3,6 +3,7 @@ import { useState } from 'react';
 import ContactController from '@/actions/App/Http/Controllers/ContactController';
 import CvDownloadCard from '@/components/public/cv-download-card';
 import BookingInvite from '@/components/public/booking-invite';
+import EstimateInvite from '@/components/public/estimate-invite';
 import Seo from '@/components/public/seo';
 import PageHero from '@/components/public/page-hero';
 import PhoneLink from '@/components/public/phone-link';
@@ -264,6 +265,7 @@ export default function Contact() {
                                 </Form>
                             )}
 
+                            <EstimateInvite className="pub-review-invite--start pub-review-invite--contact" />
                             <BookingInvite className="pub-review-invite--start pub-review-invite--contact" />
                             <ReviewInvite
                                 className="pub-review-invite--start pub-review-invite--contact"

@@ -11,6 +11,7 @@ use App\Models\Profile;
 use App\Models\SiteSetting;
 use App\Models\UsesItem;
 use App\Services\BookingCalendar;
+use App\Services\ProjectEstimator;
 use Closure;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -66,6 +67,8 @@ class ShareSitePublicData
             // La page « Now » n'existe que si elle a un texte.
             'nowEnabled' => fn () => SiteSetting::current()->nowText('fr') !== null,
             'bookingOpen' => fn () => app(BookingCalendar::class)->isOpen(),
+            // L'estimateur de projet n'est proposé qu'avec un type de projet actif et un taux horaire.
+            'estimatorEnabled' => fn () => app(ProjectEstimator::class)->isAvailable(),
             // Profils proposés dans la fenêtre « Embauche » : chacun a son CV.
             'cvProfiles' => fn () => JobProfile::query()
                 ->published()

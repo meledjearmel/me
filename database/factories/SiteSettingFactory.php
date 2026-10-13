@@ -34,6 +34,16 @@ class SiteSettingFactory extends Factory
         ];
     }
 
+    /** Estimateur chiffré : un taux horaire par devise, 20 % de marge, 30 heures facturables par semaine. */
+    public function estimating(): static
+    {
+        return $this->state(fn (): array => [
+            'estimator_hourly_rates' => ['CHF' => 100, 'EUR' => 90, 'USD' => 100, 'XOF' => 30000],
+            'estimator_risk_percent' => 20,
+            'estimator_hours_per_week' => 30,
+        ]);
+    }
+
     /** Réservation ouverte, sans pause entre deux rendez-vous (créneaux réguliers pour les tests), visio par lien fixe. */
     public function bookable(): static
     {

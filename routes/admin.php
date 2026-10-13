@@ -13,7 +13,10 @@ use App\Http\Controllers\Admin\ContentStatusController;
 use App\Http\Controllers\Admin\CvDownloadController;
 use App\Http\Controllers\Admin\DomainController;
 use App\Http\Controllers\Admin\EducationController;
+use App\Http\Controllers\Admin\EngagementAnalysisController;
 use App\Http\Controllers\Admin\EngagementController;
+use App\Http\Controllers\Admin\EstimatorItemController;
+use App\Http\Controllers\Admin\EstimatorSettingsController;
 use App\Http\Controllers\Admin\ExperienceController;
 use App\Http\Controllers\Admin\GitHubController;
 use App\Http\Controllers\Admin\JobProfileController;
@@ -74,6 +77,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::post('write-post', [AiAssistController::class, 'writePost'])->name('write-post');
         Route::post('describe-technology', [AiAssistController::class, 'describeTechnology'])->name('describe-technology');
         Route::post('draft-project', [AiAssistController::class, 'draftProject'])->name('draft-project');
+        Route::post('suggest-estimator-item', [AiAssistController::class, 'suggestEstimatorItem'])->name('suggest-estimator-item');
+        Route::post('engagements/{engagement}/analyze', [EngagementAnalysisController::class, 'store'])->name('engagements.analyze');
     });
 
     Route::prefix('trash')->name('trash.')->group(function () {
@@ -130,6 +135,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::patch('appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
     Route::patch('appointments/{appointment}/decline', [AppointmentController::class, 'decline'])->name('appointments.decline');
     Route::resource('appointment-types', AppointmentTypeController::class)->except('show');
+    Route::resource('estimator-items', EstimatorItemController::class)->except('show');
+    Route::put('estimator-settings', [EstimatorSettingsController::class, 'update'])->name('estimator-settings.update');
     Route::prefix('availability')->name('availability.')->group(function () {
         Route::get('/', [AvailabilityController::class, 'index'])->name('index');
         Route::post('rules', [AvailabilityController::class, 'storeRule'])->name('rules.store');

@@ -34,6 +34,7 @@ class Engagement extends Model
         'budget_currency',
         'budget_period',
         'timeline',
+        'estimate',
         'message',
         'locale',
         'status',
@@ -47,10 +48,13 @@ class Engagement extends Model
         'type' => EngagementType::class,
         'status' => EngagementStatus::class,
         'cv_sent_at' => 'datetime',
+        'estimate' => 'array',
+        'ai_analysis' => 'array',
+        'ai_analyzed_at' => 'datetime',
     ];
 
     /** @var list<string> */
-    protected $appends = ['budget_label'];
+    protected $appends = ['budget_label', 'estimate_label'];
 
     /** Budget lisible : « 5 000 CHF (forfait) » ou « 80 EUR / heure ». */
     protected function budgetLabel(): Attribute
@@ -72,9 +76,43 @@ class Engagement extends Model
         });
     }
 
+    /**
+     * Estimation lisible quand la demande vient de l'estimateur : « 3 600 – 6 000 CHF (forfait,
+     * 36 – 60 h) · 2 semaines » ou « 36 – 60 h × 100 CHF/h ≈ 3 600 – 6 000 CHF · 2 semaines ».
+     */
+    protected function estimateLabel(): Attribute
+    {
+        return Attribute::get(function (): ?string {
+            $estimate = $this->estimate;
+
+            if (! is_array($estimate) || ! isset($estimate['price_min'], $estimate['hours_min'])) {
+                return null;
+            }
+
+            $number = fn (int $value): string => number_format($value, 0, ',', ' ');
+            $currency = self::currencyLabel($estimate['currency'] ?? null);
+            $prices = "{$number($estimate['price_min'])} – {$number($estimate['price_max'])} {$currency}";
+            $hours = "{$estimate['hours_min']} – {$estimate['hours_max']} h";
+            $weeks = $estimate['weeks_min'] === $estimate['weeks_max']
+                ? $estimate['weeks_min'].' semaine'.($estimate['weeks_min'] > 1 ? 's' : '')
+                : "{$estimate['weeks_min']} à {$estimate['weeks_max']} semaines";
+
+            $amount = ($estimate['billing'] ?? 'fixed') === 'hourly'
+                ? "{$hours} × {$number($estimate['hourly_rate'])} {$currency}/h ≈ {$prices}"
+                : "{$prices} (forfait, {$hours})";
+
+            return "{$amount} · {$weeks}";
+        });
+    }
+
     private function currencySymbol(): string
     {
-        return $this->budget_currency === 'XOF' ? 'FCFA' : (string) $this->budget_currency;
+        return self::currencyLabel($this->budget_currency);
+    }
+
+    private static function currencyLabel(?string $currency): string
+    {
+        return $currency === 'XOF' ? 'FCFA' : (string) $currency;
     }
 
     /** @return BelongsTo<JobProfile, $this> */

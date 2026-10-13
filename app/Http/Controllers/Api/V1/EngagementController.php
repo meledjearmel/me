@@ -7,7 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\EngagementRequest;
 use App\Http\Resources\Api\V1\EngagementResource;
 use App\Models\Engagement;
+use App\Services\Ai\EstimateAssistant;
 use Dedoc\Scramble\Attributes\QueryParameter;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
@@ -48,6 +50,24 @@ class EngagementController extends Controller
     public function update(EngagementRequest $request, Engagement $engagement): EngagementResource
     {
         $engagement->update($request->validated());
+
+        return new EngagementResource($engagement->load('jobProfile'));
+    }
+
+    /**
+     * Analyser une demande avec l'IA
+     *
+     * Risques, points flous, questions à poser et fourchette d'heures réaliste, enregistrés
+     * sur la demande (`ai_analysis`). Une demande envoyée par l'estimateur est analysée
+     * d'office à sa réception ; cet appel relance l'analyse.
+     *
+     * @response 503 array{message: string}
+     */
+    public function analyze(Engagement $engagement, EstimateAssistant $assistant): EngagementResource|JsonResponse
+    {
+        if (! $assistant->analyze($engagement)) {
+            return response()->json(['message' => __('L\'assistance IA est momentanément indisponible.')], 503);
+        }
 
         return new EngagementResource($engagement->load('jobProfile'));
     }

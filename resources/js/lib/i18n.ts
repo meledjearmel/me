@@ -66,6 +66,51 @@ const dictionaries = {
             cta: 'Prendre rendez-vous',
             ctaHint: 'Plutôt en parler de vive voix ?',
         },
+        estimate: {
+            title: 'Estimer mon projet',
+            kicker: 'Estimation',
+            heading: 'Combien coûterait votre projet ?',
+            lead: 'Trois choix et vous obtenez une fourchette de prix et de délai. Si elle vous convient, envoyez-moi la demande : je reviens vers vous avec un devis précis.',
+            step1: 'Le type de projet',
+            step2: 'Les options',
+            step2Hint: 'Cochez ce dont vous avez besoin, ou passez.',
+            step3: 'Vos coordonnées',
+            currency: 'Devise',
+            result: 'Estimation indicative',
+            weeks: (min: number, max: number) =>
+                min === max
+                    ? `${min} semaine${min > 1 ? 's' : ''}`
+                    : `${min} à ${max} semaines`,
+            disclaimer:
+                'Hors taxes. Une estimation, pas un devis : le prix final dépend du détail de votre besoin.',
+            fixedPrice: 'Forfait estimé',
+            hourlyPrice: (hours: string, rate: string) =>
+                `${hours} à ${rate} de l'heure`,
+            hourlyTotal: (total: string) => `soit environ ${total}`,
+            hourlyNote:
+                'Ce type de projet est facturé au temps passé : vous ne payez que les heures réellement travaillées.',
+            aiTitle: 'Pas sûr de quoi choisir ?',
+            aiHint: "Décrivez votre projet en quelques phrases, l'IA présélectionne le type et les options. Vous pourrez tout modifier.",
+            aiPlaceholder:
+                'Ex. : un site pour mon restaurant, avec la réservation de tables et le menu en deux langues.',
+            aiSubmit: "Laisser l'IA choisir",
+            aiThinking: 'Analyse…',
+            aiError:
+                "L'IA n'est pas disponible pour le moment : faites votre choix ci-dessous.",
+            aiDone: 'Sélection faite par l’IA : vérifiez-la ci-dessous.',
+            calculating: 'Calcul…',
+            name: 'Votre nom',
+            email: 'Votre email',
+            company: 'Votre entreprise (facultatif)',
+            message: 'Quelques mots sur votre projet (facultatif)',
+            submit: 'Envoyer ma demande',
+            sending: 'Envoi…',
+            doneTitle: 'Demande envoyée',
+            done: 'Merci ! Votre estimation m’est parvenue. Je reviens vers vous très vite avec un devis.',
+            again: 'Faire une autre estimation',
+            cta: 'Estimer mon projet',
+            ctaHint: 'Une idée du budget en une minute ?',
+        },
         nav: {
             about: 'À propos',
             skills: 'Compétences',
@@ -702,6 +747,51 @@ const dictionaries = {
                 'This meeting has already taken place: it can no longer be cancelled.',
             cta: 'Book a meeting',
             ctaHint: 'Rather talk it through?',
+        },
+        estimate: {
+            title: 'Estimate my project',
+            kicker: 'Estimate',
+            heading: 'How much would your project cost?',
+            lead: 'Three choices and you get a price and timeline range. If it works for you, send me the request: I will get back to you with a detailed quote.',
+            step1: 'Project type',
+            step2: 'Options',
+            step2Hint: 'Tick what you need, or skip.',
+            step3: 'Your details',
+            currency: 'Currency',
+            result: 'Indicative estimate',
+            weeks: (min: number, max: number) =>
+                min === max
+                    ? `${min} week${min > 1 ? 's' : ''}`
+                    : `${min} to ${max} weeks`,
+            disclaimer:
+                'Excluding taxes. An estimate, not a quote: the final price depends on the details of your needs.',
+            fixedPrice: 'Estimated fixed price',
+            hourlyPrice: (hours: string, rate: string) =>
+                `${hours} at ${rate} per hour`,
+            hourlyTotal: (total: string) => `about ${total}`,
+            hourlyNote:
+                'This type of project is billed by the hour: you only pay for the hours actually worked.',
+            aiTitle: 'Not sure what to pick?',
+            aiHint: 'Describe your project in a few sentences and the AI preselects the type and options. You can change everything.',
+            aiPlaceholder:
+                'E.g. a website for my restaurant, with table booking and a menu in two languages.',
+            aiSubmit: 'Let the AI choose',
+            aiThinking: 'Analysing…',
+            aiError:
+                'The AI is not available right now: make your choice below.',
+            aiDone: 'Selection made by the AI: check it below.',
+            calculating: 'Calculating…',
+            name: 'Your name',
+            email: 'Your email',
+            company: 'Your company (optional)',
+            message: 'A few words about your project (optional)',
+            submit: 'Send my request',
+            sending: 'Sending…',
+            doneTitle: 'Request sent',
+            done: 'Thank you! Your estimate reached me. I will get back to you very soon with a quote.',
+            again: 'Make another estimate',
+            cta: 'Estimate my project',
+            ctaHint: 'A budget idea in one minute?',
         },
         nav: {
             about: 'About',
