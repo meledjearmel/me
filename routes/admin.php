@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\DomainController;
 use App\Http\Controllers\Admin\EducationController;
 use App\Http\Controllers\Admin\EngagementAnalysisController;
 use App\Http\Controllers\Admin\EngagementController;
+use App\Http\Controllers\Admin\EstimatorConfigurationController;
 use App\Http\Controllers\Admin\EstimatorItemController;
 use App\Http\Controllers\Admin\EstimatorSettingsController;
 use App\Http\Controllers\Admin\ExperienceController;
@@ -78,6 +79,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::post('describe-technology', [AiAssistController::class, 'describeTechnology'])->name('describe-technology');
         Route::post('draft-project', [AiAssistController::class, 'draftProject'])->name('draft-project');
         Route::post('suggest-estimator-item', [AiAssistController::class, 'suggestEstimatorItem'])->name('suggest-estimator-item');
+        Route::post('propose-estimator-grid', [AiAssistController::class, 'proposeEstimatorGrid'])->name('propose-estimator-grid');
         Route::post('engagements/{engagement}/analyze', [EngagementAnalysisController::class, 'store'])->name('engagements.analyze');
     });
 
@@ -136,7 +138,10 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::patch('appointments/{appointment}/decline', [AppointmentController::class, 'decline'])->name('appointments.decline');
     Route::resource('appointment-types', AppointmentTypeController::class)->except('show');
     Route::resource('estimator-items', EstimatorItemController::class)->except('show');
+    Route::get('estimator-options', [EstimatorItemController::class, 'options'])->name('estimator-options.index');
+    Route::get('estimator-settings', [EstimatorSettingsController::class, 'edit'])->name('estimator-settings.edit');
     Route::put('estimator-settings', [EstimatorSettingsController::class, 'update'])->name('estimator-settings.update');
+    Route::post('estimator-configuration', [EstimatorConfigurationController::class, 'store'])->name('estimator-configuration.store');
     Route::prefix('availability')->name('availability.')->group(function () {
         Route::get('/', [AvailabilityController::class, 'index'])->name('index');
         Route::post('rules', [AvailabilityController::class, 'storeRule'])->name('rules.store');

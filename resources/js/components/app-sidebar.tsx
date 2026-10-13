@@ -17,6 +17,8 @@ import {
     Handshake,
     Heart,
     Calculator,
+    ListPlus,
+    BadgeDollarSign,
     IdCard,
     LayoutGrid,
     Layers,
@@ -58,6 +60,8 @@ import { index as reviewInvitationsIndex } from "@/routes/admin/review-invitatio
 import { index as subscribersIndex } from "@/routes/admin/subscribers";
 import { index as engagementsIndex } from "@/routes/admin/engagements";
 import { index as estimatorItemsIndex } from "@/routes/admin/estimator-items";
+import { index as estimatorOptionsIndex } from "@/routes/admin/estimator-options";
+import { edit as estimatorSettingsEdit } from "@/routes/admin/estimator-settings";
 import { index as domainsIndex } from "@/routes/admin/domains";
 import { index as educationsIndex } from "@/routes/admin/educations";
 import { index as experiencesIndex } from "@/routes/admin/experiences";
@@ -143,10 +147,19 @@ const musicNavItems: NavItem[] = [
 const inboxNavItems: NavItem[] = [
     { title: "Contacts", href: contactsIndex(), icon: Mail },
     { title: "Collaborations", href: engagementsIndex(), icon: Handshake },
-    { title: "Estimateur de projet", href: estimatorItemsIndex(), icon: Calculator },
     { title: "Téléchargements CV", href: cvDownloadsIndex(), icon: FileDown },
     { title: "Newsletter", href: subscribersIndex(), icon: MailCheck },
     { title: "Félicitations", href: congratulationsIndex(), icon: Heart },
+];
+
+const estimatorNavItems: NavItem[] = [
+    { title: "Types de projet", href: estimatorItemsIndex(), icon: Calculator },
+    { title: "Options", href: estimatorOptionsIndex(), icon: ListPlus },
+    {
+        title: "Tarifs et calcul",
+        href: estimatorSettingsEdit(),
+        icon: BadgeDollarSign,
+    },
 ];
 
 const bookingNavItems: NavItem[] = [
@@ -180,6 +193,11 @@ export function AppSidebar() {
                 <NavMain
                     items={bookingNavItems}
                     label="Rendez-vous"
+                    collapsible
+                />
+                <NavMain
+                    items={estimatorNavItems}
+                    label="Estimateur"
                     collapsible
                 />
                 <NavMain items={blogNavItems} label="Blog" collapsible />

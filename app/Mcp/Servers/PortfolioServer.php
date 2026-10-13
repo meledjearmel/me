@@ -10,6 +10,7 @@ use App\Mcp\Prompts\TranslateProjectPrompt;
 use App\Mcp\Prompts\WritePostPrompt;
 use App\Mcp\Tools\AddPostImageTool;
 use App\Mcp\Tools\AddProjectImageTool;
+use App\Mcp\Tools\ConfigureEstimatorTool;
 use App\Mcp\Tools\CreateTechnologyTool;
 use App\Mcp\Tools\GetCatalogTool;
 use App\Mcp\Tools\GetContentTool;
@@ -59,7 +60,7 @@ Pour un article du blog : get-catalog (tags, séries avec leurs articles dans l'
 Autres contenus (expériences, formations, certifications, page « Uses », compétences) : list-contents décrit les champs du type et liste l'existant (pas de doublon), get-content lit un contenu, save-content-draft crée ou modifie un brouillon en français ; voir le prompt add-content.
 Ne traduis en anglais (save-project-translation, save-post-translation, save-content-translation) que lorsque le développeur a validé le français et te le demande.
 Contenu déjà publié (ou page « Now ») : ne le modifie jamais directement. Lis-le, vérifie list-revisions pour ne pas proposer deux fois la même chose, puis propose-revision avec seulement les champs modifiés, en français et en anglais, et un résumé de ce qui change et pourquoi ; le développeur relit l'avant/après et applique.
-Estimateur de projet : get-estimator lit la grille (heures de travail hors marge, facturation forfait ou à l'heure) et les réglages (taux horaire par devise, marge pour imprévus, heures par semaine). save-estimator-item ajoute ou corrige un élément, qui reste masqué jusqu'à ce que le développeur l'active ; chiffre des heures réalistes pour un développeur expérimenté, cohérentes avec le reste de la grille. Pour une demande reçue : list-estimate-requests, puis save-estimate-analysis ; l'objectif est d'éviter une sous-estimation (ce que les choix ne couvrent pas, points flous, questions à poser au client, heures marge comprise, « hourly » quand le périmètre est trop flou pour un forfait sûr).
+Estimateur de projet : get-estimator lit la grille (heures de travail hors marge, facturation forfait ou à l'heure) et les réglages (taux horaire par devise, marge pour imprévus, heures par semaine). Pour tout configurer d'un coup (réglages et plusieurs éléments), utilise configure-estimator : donne une ref à chaque nouveau type de projet pour qu'une option le vise dans project_types (option réservée à ces types ; vide = pour tous) ; une option dont le coût grandit avec le projet (multilingue…) se chiffre en pourcentage (pricing « percent »). save-estimator-item ajoute ou corrige un seul élément. Les éléments créés restent masqués jusqu'à ce que le développeur les active ; chiffre des heures réalistes pour un développeur expérimenté, cohérentes avec le reste de la grille. Pour une demande reçue : list-estimate-requests, puis save-estimate-analysis ; l'objectif est d'éviter une sous-estimation (ce que les choix ne couvrent pas, points flous, questions à poser au client, heures marge comprise, « hourly » quand le périmètre est trop flou pour un forfait sûr).
 N'invente rien : client, dates, chiffres ou taille d'équipe absents de la source restent vides. Ne cite ni secret ni donnée confidentielle d'un client. Rien n'est jamais publié par toi : ce sont toujours des brouillons.
 TEXT)]
 class PortfolioServer extends Server
@@ -88,6 +89,7 @@ class PortfolioServer extends Server
         ListRevisionsTool::class,
         GetEstimatorTool::class,
         SaveEstimatorItemTool::class,
+        ConfigureEstimatorTool::class,
         ListEstimateRequestsTool::class,
         SaveEstimateAnalysisTool::class,
     ];

@@ -4,43 +4,55 @@ import EstimatorItemController from '@/actions/App/Http/Controllers/Admin/Estima
 import ActionTooltip from '@/components/admin/action-tooltip';
 import { ResourceList } from '@/components/admin/data-list';
 import DeleteButton from '@/components/admin/delete-button';
-import {
-    ESTIMATOR_BILLINGS,
-    ESTIMATOR_KINDS,
-} from '@/components/admin/estimator-item-fields';
-import EstimatorSettingsForm from '@/components/admin/estimator-settings-form';
+import EstimatorAiGrid from '@/components/admin/estimator-ai-grid';
+import { ESTIMATOR_BILLINGS } from '@/components/admin/estimator-item-fields';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { index as pageIndex } from '@/routes/admin/estimator-items';
+import { index as projectTypesIndex } from '@/routes/admin/estimator-items';
 import { index as publicEstimate } from '@/routes/estimate';
-import type {
-    EstimatorItem,
-    EstimatorSettings,
-    ListFilters,
-    Paginated,
-} from '@/types';
+import type { EstimatorItem, ListFilters, Paginated } from '@/types';
 
+/**
+ * La grille de l'estimateur, une page par nature (entrées du menu « Estimateur ») :
+ * les types de projet, puis les options, en heures ou en %, liées ou non à des types.
+ */
 export default function EstimatorItemsIndex({
+    kind,
     estimatorItems,
     filters,
-    settings,
 }: {
+    kind: EstimatorItem['kind'];
     estimatorItems: Paginated<EstimatorItem>;
     filters: ListFilters;
-    settings: EstimatorSettings;
 }) {
+    const isFeature = kind === 'feature';
+    const title = isFeature ? 'Options' : 'Types de projet';
+
+    const statusColumn = {
+        header: 'Statut',
+        cell: (row: EstimatorItem) => (
+            <Badge variant={row.is_active ? 'default' : 'secondary'}>
+                {row.is_active ? 'Proposé' : 'Masqué'}
+            </Badge>
+        ),
+    };
+
     return (
         <>
-            <Head title="Estimateur de projet" />
+            <Head title={`Estimateur · ${title}`} />
 
             <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <Heading
-                        title="Estimateur de projet"
-                        description="Types de projet et options : le visiteur obtient une fourchette de prix et de délai, puis envoie sa demande"
+                        title={title}
+                        description={
+                            isFeature
+                                ? "Ce qui s'ajoute à un type de projet : des heures ou un pourcentage, pour tous les types ou certains seulement"
+                                : 'La base de chaque estimation, chiffrée en heures, en forfait ou à l’heure'
+                        }
                     />
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                         <Button variant="outline" asChild>
                             <a
                                 href={publicEstimate.url('fr')}
@@ -51,55 +63,72 @@ export default function EstimatorItemsIndex({
                                 la page
                             </a>
                         </Button>
+                        <EstimatorAiGrid />
                         <Button asChild>
-                            <Link href={EstimatorItemController.create()}>
-                                <Plus data-icon="inline-start" /> Nouvel élément
+                            <Link
+                                href={EstimatorItemController.create({
+                                    query: { kind },
+                                })}
+                            >
+                                <Plus data-icon="inline-start" />{' '}
+                                {isFeature ? 'Nouvelle option' : 'Nouveau type'}
                             </Link>
                         </Button>
                     </div>
                 </div>
 
-                <EstimatorSettingsForm settings={settings} />
-
                 <ResourceList
                     paginator={estimatorItems}
                     filters={filters}
                     searchPlaceholder="Nom…"
-                    columns={[
-                        { header: 'Nom', cell: (row) => row.name.fr },
-                        {
-                            header: 'Nature',
-                            cell: (row) =>
-                                ESTIMATOR_KINDS.find(
-                                    (kind) => kind.value === row.kind,
-                                )?.label,
-                        },
-                        {
-                            header: 'Heures',
-                            cell: (row) =>
-                                `${row.hours_min} – ${row.hours_max} h`,
-                        },
-                        {
-                            header: 'Facturation',
-                            cell: (row) =>
-                                ESTIMATOR_BILLINGS.find(
-                                    (billing) => billing.value === row.billing,
-                                )?.label ?? '—',
-                        },
-                        {
-                            header: 'Statut',
-                            cell: (row) => (
-                                <Badge
-                                    variant={
-                                        row.is_active ? 'default' : 'secondary'
-                                    }
-                                >
-                                    {row.is_active ? 'Proposé' : 'Masqué'}
-                                </Badge>
-                            ),
-                        },
-                        { header: 'Ordre', cell: (row) => row.sort_order },
-                    ]}
+                    columns={
+                        isFeature
+                            ? [
+                                  { header: 'Nom', cell: (row) => row.name.fr },
+                                  {
+                                      header: 'Ajoute',
+                                      cell: (row) =>
+                                          row.pricing === 'percent'
+                                              ? `+${row.percent} %`
+                                              : `${row.hours_min} – ${row.hours_max} h`,
+                                  },
+                                  {
+                                      header: 'Pour',
+                                      cell: (row) =>
+                                          row.project_types?.length
+                                              ? row.project_types
+                                                    .map((type) => type.name.fr)
+                                                    .join(', ')
+                                              : 'Tous les types',
+                                  },
+                                  statusColumn,
+                                  {
+                                      header: 'Ordre',
+                                      cell: (row) => row.sort_order,
+                                  },
+                              ]
+                            : [
+                                  { header: 'Nom', cell: (row) => row.name.fr },
+                                  {
+                                      header: 'Heures',
+                                      cell: (row) =>
+                                          `${row.hours_min} – ${row.hours_max} h`,
+                                  },
+                                  {
+                                      header: 'Facturation',
+                                      cell: (row) =>
+                                          ESTIMATOR_BILLINGS.find(
+                                              (billing) =>
+                                                  billing.value === row.billing,
+                                          )?.label ?? '—',
+                                  },
+                                  statusColumn,
+                                  {
+                                      header: 'Ordre',
+                                      cell: (row) => row.sort_order,
+                                  },
+                              ]
+                    }
                     actions={(row) => (
                         <>
                             <ActionTooltip label="Modifier">
@@ -129,5 +158,5 @@ export default function EstimatorItemsIndex({
 }
 
 EstimatorItemsIndex.layout = {
-    breadcrumbs: [{ title: 'Estimateur de projet', href: pageIndex() }],
+    breadcrumbs: [{ title: 'Estimateur de projet', href: projectTypesIndex() }],
 };

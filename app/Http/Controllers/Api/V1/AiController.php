@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Ai\DescribeTechnologyRequest;
 use App\Http\Requests\Ai\DraftProjectRequest;
 use App\Http\Requests\Ai\ImproveTextRequest;
+use App\Http\Requests\Ai\ProposeEstimatorGridRequest;
 use App\Http\Requests\Ai\SuggestEstimatorItemRequest;
 use App\Http\Requests\Ai\TranslateHtmlRequest;
 use App\Http\Requests\Ai\TranslateTextRequest;
@@ -168,6 +169,26 @@ class AiController extends Controller
         }
 
         return response()->json(['item' => $item]);
+    }
+
+    /**
+     * Proposer une grille d'estimateur complète
+     *
+     * D'après la description de l'activité et les consignes (`brief`), l'IA propose types de
+     * projet, options (en heures ou en pourcentage, liées ou non à des types) et réglages, au
+     * format de `POST /v1/estimator-configuration`. Rien n'est enregistré.
+     *
+     * @response array{proposal: array{settings: array<string, mixed>|null, items: list<array<string, mixed>>, reasoning: string|null}}
+     */
+    public function proposeEstimatorGrid(ProposeEstimatorGridRequest $request, EstimateAssistant $assistant): JsonResponse
+    {
+        $proposal = $assistant->proposeGrid($request->validated('brief'));
+
+        if ($proposal === null) {
+            return $this->respond(null);
+        }
+
+        return response()->json(['proposal' => $proposal]);
     }
 
     /**

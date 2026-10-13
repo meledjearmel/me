@@ -34,9 +34,9 @@ export default function EstimatorSettingsForm({
                     <div>
                         <h2 className="font-medium">Réglages du calcul</h2>
                         <p className="text-sm text-muted-foreground">
-                            Prix = heures × (1 + marge) × taux horaire. Une
-                            devise sans taux n'est pas proposée ; sans aucun
-                            taux, la page est masquée.
+                            Prix = heures × (1 + options en %) × (1 + marge) ×
+                            taux horaire. Une devise sans taux n'est pas
+                            proposée ; sans aucun taux, la page est masquée.
                         </p>
                     </div>
 

@@ -3,10 +3,12 @@
 namespace App\Http\Requests;
 
 use App\Enums\EstimatorItemKind;
+use App\Models\EstimatorItem;
 use App\Services\ProjectEstimator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Exists;
+use Illuminate\Validation\Validator;
 
 /** Les choix faits dans l'estimateur de projet, et les coordonnées quand le visiteur envoie sa demande. */
 class ProjectEstimateRequest extends FormRequest
@@ -40,6 +42,33 @@ class ProjectEstimateRequest extends FormRequest
             'message' => ['nullable', 'string', 'max:5000'],
             // Piège anti-spam : un humain ne le voit ni ne le remplit jamais.
             'website' => ['prohibited'],
+        ];
+    }
+
+    /**
+     * Une option réservée à d'autres types de projet n'est pas acceptée.
+     *
+     * @return array<int, callable(Validator): void>
+     */
+    public function after(): array
+    {
+        return [
+            function (Validator $validator): void {
+                if ($validator->errors()->isNotEmpty()) {
+                    return;
+                }
+
+                $projectTypeId = (int) $this->input('project_type_id');
+                $refused = EstimatorItem::query()
+                    ->with('projectTypes')
+                    ->whereIn('id', (array) $this->input('feature_ids', []))
+                    ->get()
+                    ->reject(fn (EstimatorItem $feature): bool => $feature->isAvailableFor($projectTypeId));
+
+                if ($refused->isNotEmpty()) {
+                    $validator->errors()->add('feature_ids', __('Une option choisie ne s\'applique pas à ce type de projet.'));
+                }
+            },
         ];
     }
 

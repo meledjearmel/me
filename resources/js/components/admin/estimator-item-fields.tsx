@@ -1,7 +1,7 @@
-import { post } from '@/hooks/use-ai-text-assist';
 import { Loader2, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import AiAssistController from '@/actions/App/Http/Controllers/Admin/AiAssistController';
+import CheckboxGroup from '@/components/admin/checkbox-group';
 import FormSelect from '@/components/admin/form-select';
 import TranslatableField from '@/components/translatable-field';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { post } from '@/hooks/use-ai-text-assist';
 import type { EstimatorItem } from '@/types';
 
 export const ESTIMATOR_KINDS = [
@@ -26,9 +27,16 @@ export const ESTIMATOR_BILLINGS = [
     { value: 'hourly', label: "Facturé à l'heure" },
 ] as const;
 
+export const ESTIMATOR_PRICINGS = [
+    { value: 'hours', label: 'Des heures en plus' },
+    { value: 'percent', label: 'Un pourcentage des heures du projet' },
+] as const;
+
 type Suggestion = {
     name: { fr: string; en: string };
     description: { fr: string | null; en: string | null };
+    pricing: EstimatorItem['pricing'];
+    percent: number | null;
     hours_min: number;
     hours_max: number;
     reasoning: string | null;
@@ -37,16 +45,24 @@ type Suggestion = {
 /**
  * Champs communs aux formulaires de création et de modification d'un élément de
  * l'estimateur, avec « Proposer avec l'IA » : la suggestion remplit les champs, à relire.
+ * Une option se chiffre en heures ou en pourcentage, et peut viser certains types de projet.
  */
 export default function EstimatorItemFields({
     estimatorItem,
+    projectTypes,
+    defaultKind = 'project_type',
     errors,
 }: {
     estimatorItem?: EstimatorItem;
+    projectTypes: { id: number; label: string }[];
+    defaultKind?: EstimatorItem['kind'];
     errors: Record<string, string | undefined>;
 }) {
     const [kind, setKind] = useState<EstimatorItem['kind']>(
-        estimatorItem?.kind ?? 'project_type',
+        estimatorItem?.kind ?? defaultKind,
+    );
+    const [pricing, setPricing] = useState<EstimatorItem['pricing']>(
+        estimatorItem?.pricing ?? 'hours',
     );
     const [subject, setSubject] = useState(estimatorItem?.name.fr ?? '');
     const [notes, setNotes] = useState('');
@@ -55,6 +71,9 @@ export default function EstimatorItemFields({
     const [suggestion, setSuggestion] = useState<Suggestion | null>(null);
     // Une suggestion change les valeurs par défaut : on recrée les champs pour les afficher.
     const [version, setVersion] = useState(0);
+
+    const isFeature = kind === 'feature';
+    const isPercent = isFeature && pricing === 'percent';
 
     const values = {
         name: suggestion?.name ?? estimatorItem?.name,
@@ -66,6 +85,7 @@ export default function EstimatorItemFields({
             : (estimatorItem?.description ?? undefined),
         hours_min: suggestion?.hours_min ?? estimatorItem?.hours_min ?? 8,
         hours_max: suggestion?.hours_max ?? estimatorItem?.hours_max ?? 16,
+        percent: suggestion?.percent ?? estimatorItem?.percent ?? 15,
     };
 
     async function suggest() {
@@ -85,6 +105,7 @@ export default function EstimatorItemFields({
             );
 
             setSuggestion(response.item);
+            setPricing(response.item.pricing);
             setVersion((current) => current + 1);
         } catch {
             setAiError('Suggestion indisponible pour le moment, réessayez.');
@@ -114,7 +135,7 @@ export default function EstimatorItemFields({
                 </FormSelect>
                 <FieldDescription>
                     Le visiteur choisit un seul type de projet (la base), puis
-                    autant d'options qu'il veut, qui s'y ajoutent.
+                    les options proposées pour ce type, qui s'y ajoutent.
                 </FieldDescription>
                 <FieldError>{errors.kind}</FieldError>
             </Field>
@@ -148,7 +169,7 @@ export default function EstimatorItemFields({
                         ) : (
                             <Sparkles />
                         )}
-                        Proposer le nom, la description et les heures
+                        Proposer le nom, la description et le chiffrage
                     </Button>
                     {aiError && (
                         <span className="text-sm text-destructive">
@@ -184,42 +205,117 @@ export default function EstimatorItemFields({
                     }}
                 />
 
-                <div className="grid gap-4 sm:grid-cols-2">
-                    <Field data-invalid={!!errors.hours_min}>
-                        <FieldLabel htmlFor="hours_min">
-                            Heures de travail (min) *
+                {isFeature && (
+                    <Field data-invalid={!!errors.pricing}>
+                        <FieldLabel htmlFor="pricing">
+                            Ce que l'option ajoute *
+                        </FieldLabel>
+                        <FormSelect
+                            id="pricing"
+                            name="pricing"
+                            required
+                            defaultValue={pricing}
+                            onValueChange={(value) =>
+                                setPricing(value as EstimatorItem['pricing'])
+                            }
+                        >
+                            {ESTIMATOR_PRICINGS.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </FormSelect>
+                        <FieldDescription>
+                            Le pourcentage convient aux options dont le coût
+                            grandit avec le projet (multilingue, accessibilité,
+                            design sur mesure…).
+                        </FieldDescription>
+                        <FieldError>{errors.pricing}</FieldError>
+                    </Field>
+                )}
+
+                {isPercent ? (
+                    <Field data-invalid={!!errors.percent}>
+                        <FieldLabel htmlFor="percent">
+                            Pourcentage ajouté aux heures du projet *
                         </FieldLabel>
                         <Input
-                            id="hours_min"
-                            name="hours_min"
+                            id="percent"
+                            name="percent"
                             type="number"
-                            min={0}
+                            min={1}
+                            max={500}
                             required
-                            defaultValue={values.hours_min}
+                            defaultValue={values.percent}
                         />
-                        <FieldError>{errors.hours_min}</FieldError>
+                        <FieldDescription>
+                            Appliqué aux heures du type de projet et des options
+                            en heures, avant la marge pour imprévus.
+                        </FieldDescription>
+                        <FieldError>{errors.percent}</FieldError>
                     </Field>
-                    <Field data-invalid={!!errors.hours_max}>
-                        <FieldLabel htmlFor="hours_max">
-                            Heures de travail (max) *
-                        </FieldLabel>
-                        <Input
-                            id="hours_max"
-                            name="hours_max"
-                            type="number"
-                            min={0}
-                            required
-                            defaultValue={values.hours_max}
-                        />
-                        <FieldError>{errors.hours_max}</FieldError>
-                    </Field>
-                </div>
+                ) : (
+                    <>
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <Field data-invalid={!!errors.hours_min}>
+                                <FieldLabel htmlFor="hours_min">
+                                    Heures de travail (min) *
+                                </FieldLabel>
+                                <Input
+                                    id="hours_min"
+                                    name="hours_min"
+                                    type="number"
+                                    min={0}
+                                    required
+                                    defaultValue={values.hours_min}
+                                />
+                                <FieldError>{errors.hours_min}</FieldError>
+                            </Field>
+                            <Field data-invalid={!!errors.hours_max}>
+                                <FieldLabel htmlFor="hours_max">
+                                    Heures de travail (max) *
+                                </FieldLabel>
+                                <Input
+                                    id="hours_max"
+                                    name="hours_max"
+                                    type="number"
+                                    min={0}
+                                    required
+                                    defaultValue={values.hours_max}
+                                />
+                                <FieldError>{errors.hours_max}</FieldError>
+                            </Field>
+                        </div>
+                        <FieldDescription>
+                            Heures réelles, sans marge : le site ajoute la marge
+                            pour imprévus et applique votre taux horaire.
+                        </FieldDescription>
+                    </>
+                )}
             </div>
-            <FieldDescription>
-                Heures réelles, sans marge : le site ajoute la marge pour
-                imprévus et applique votre taux horaire (réglages de
-                l'estimateur).
-            </FieldDescription>
+
+            {isFeature && (
+                <div>
+                    {projectTypes.length > 0 ? (
+                        <CheckboxGroup
+                            label="Réservée aux types de projet"
+                            name="project_type_ids"
+                            options={projectTypes}
+                            defaultSelectedIds={
+                                estimatorItem?.project_type_ids ?? []
+                            }
+                        />
+                    ) : null}
+                    <FieldDescription>
+                        Aucun coché : l'option est proposée pour tous les types
+                        de projet.
+                    </FieldDescription>
+                    <FieldError>
+                        {errors.project_type_ids ??
+                            errors['project_type_ids.0']}
+                    </FieldError>
+                </div>
+            )}
 
             {kind === 'project_type' && (
                 <Field data-invalid={!!errors.billing}>

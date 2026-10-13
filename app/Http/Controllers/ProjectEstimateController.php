@@ -37,7 +37,7 @@ class ProjectEstimateController extends Controller
     {
         abort_unless($this->estimator->isAvailable(), 404);
 
-        $items = EstimatorItem::query()->active()->get();
+        $items = EstimatorItem::query()->active()->with('projectTypes:id')->get();
 
         return Inertia::render('public/estimate', [
             'projectTypes' => EstimatorItemResource::collection($items->where('kind', EstimatorItemKind::ProjectType)->values()),

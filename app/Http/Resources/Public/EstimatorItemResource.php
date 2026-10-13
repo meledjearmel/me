@@ -20,6 +20,8 @@ class EstimatorItemResource extends JsonResource
             'description' => $this->getTranslation('description', app()->getLocale()) ?: null,
             // Types de projet : forfait estimé ou facturation à l'heure.
             'billing' => $this->billing?->value,
+            // Options : types de projet auxquels elles sont réservées (vide : tous).
+            'project_type_ids' => $this->whenLoaded('projectTypes', fn (): array => $this->projectTypes->modelKeys(), []),
         ];
     }
 }

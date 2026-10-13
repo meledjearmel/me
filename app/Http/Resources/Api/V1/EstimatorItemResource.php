@@ -28,8 +28,18 @@ class EstimatorItemResource extends JsonResource
             'hours_min' => $this->hours_min,
             /** Heures de travail au maximum, hors marge pour imprévus. */
             'hours_max' => $this->hours_max,
+            /** Options : `hours` (heures min/max) ou `percent` (pourcentage des heures du projet). */
+            'pricing' => $this->pricing,
+            /** Options en pourcentage : ce qu'elles ajoutent aux heures du projet, en %. */
+            'percent' => $this->percent,
             /** Types de projet : `fixed` (forfait estimé) ou `hourly` (facturé à l'heure) ; null pour une option. */
             'billing' => $this->billing,
+            /**
+             * Options : types de projet auxquels elles sont réservées (vide : proposées pour tous).
+             *
+             * @var list<int>
+             */
+            'project_type_ids' => $this->whenLoaded('projectTypes', fn (): array => $this->projectTypes->modelKeys(), []),
             'is_active' => $this->is_active,
             'sort_order' => $this->sort_order,
         ];

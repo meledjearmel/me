@@ -192,6 +192,8 @@ export type PublicEstimatorItem = {
     name: string;
     description: string | null;
     billing: 'fixed' | 'hourly' | null;
+    /** Options : types de projet auxquels elles sont réservées (vide : tous). */
+    project_type_ids: number[];
 };
 
 export type PublicAppointmentType = {

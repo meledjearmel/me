@@ -4,9 +4,11 @@ namespace App\Services\Ai;
 
 use App\Ai\Agents\EstimateAnalyst;
 use App\Ai\Agents\EstimateMatcher;
+use App\Ai\Agents\EstimatorGridDesigner;
 use App\Ai\Agents\EstimatorItemAdvisor;
 use App\Enums\EstimatorBilling;
 use App\Enums\EstimatorItemKind;
+use App\Enums\EstimatorPricing;
 use App\Models\Engagement;
 use App\Models\EstimatorItem;
 use App\Models\SiteSetting;
@@ -101,11 +103,12 @@ class EstimateAssistant
         $prompt = "{$label} à chiffrer : {$name}".(filled($notes) ? "\nPrécisions du développeur : {$notes}" : '')
             ."\n\n---\n\n".$this->describeGrid();
 
-        return $this->assist->promptJson(new EstimatorItemAdvisor, $prompt, function (array $data): ?array {
+        return $this->assist->promptJson(new EstimatorItemAdvisor, $prompt, function (array $data) use ($kind): ?array {
             $nameFr = self::text($data['name_fr'] ?? null, 255);
             $nameEn = self::text($data['name_en'] ?? null, 255);
-            $hoursMin = self::hours($data['hours_min'] ?? null);
-            $hoursMax = self::hours($data['hours_max'] ?? null);
+            $pricing = self::pricing($kind, $data);
+            $hoursMin = self::hours($data['hours_min'] ?? null) ?? ($pricing === EstimatorPricing::Percent ? 0 : null);
+            $hoursMax = self::hours($data['hours_max'] ?? null) ?? ($pricing === EstimatorPricing::Percent ? 0 : null);
 
             if ($nameFr === null || $nameEn === null || $hoursMin === null || $hoursMax === null) {
                 return null;
@@ -117,11 +120,144 @@ class EstimateAssistant
                     'fr' => self::text($data['description_fr'] ?? null, 1000),
                     'en' => self::text($data['description_en'] ?? null, 1000),
                 ],
+                'pricing' => $pricing->value,
+                'percent' => $pricing === EstimatorPricing::Percent ? self::percent($data['percent'] ?? null) : null,
                 'hours_min' => min($hoursMin, $hoursMax),
                 'hours_max' => max($hoursMin, $hoursMax),
                 'reasoning' => self::text($data['reasoning'] ?? null, 2000),
             ];
         });
+    }
+
+    /**
+     * Propose une grille complète d'après ce que le développeur décrit, au format de
+     * EstimatorConfigurator (à relire avant de l'appliquer). Null si l'IA n'a rien donné.
+     *
+     * @return array{settings: array<string, mixed>|null, items: list<array<string, mixed>>, reasoning: ?string}|null
+     */
+    public function proposeGrid(string $brief): ?array
+    {
+        $prompt = "Ce que fait le développeur et ses consignes :\n\"\"\"\n{$brief}\n\"\"\"\n\n---\n\n".$this->describeGrid();
+        $existingIds = EstimatorItem::query()->pluck('id')->all();
+
+        return $this->assist->promptJson(new EstimatorGridDesigner, $prompt, function (array $data) use ($existingIds): ?array {
+            $items = [];
+            $refs = [];
+
+            foreach (array_slice((array) ($data['items'] ?? []), 0, 60) as $index => $entry) {
+                if (! is_array($entry)) {
+                    continue;
+                }
+
+                $kind = EstimatorItemKind::tryFrom((string) ($entry['kind'] ?? ''));
+                $nameFr = self::text($entry['name_fr'] ?? null, 255);
+                $nameEn = self::text($entry['name_en'] ?? null, 255);
+
+                if ($kind === null || $nameFr === null || $nameEn === null) {
+                    continue;
+                }
+
+                $id = filter_var($entry['id'] ?? null, FILTER_VALIDATE_INT);
+                $pricing = self::pricing($kind, $entry);
+                $hoursMin = self::hours($entry['hours_min'] ?? null) ?? 0;
+                $hoursMax = self::hours($entry['hours_max'] ?? null) ?? $hoursMin;
+                $ref = self::text($entry['ref'] ?? null, 60) ?? "item-{$index}";
+
+                if ($pricing === EstimatorPricing::Hours && $hoursMax === 0) {
+                    continue;
+                }
+
+                $items[] = array_filter([
+                    'id' => in_array($id, $existingIds, true) ? $id : null,
+                    'ref' => isset($refs[$ref]) ? "{$ref}-{$index}" : $ref,
+                    'kind' => $kind->value,
+                    'name_fr' => $nameFr,
+                    'name_en' => $nameEn,
+                    'description_fr' => self::text($entry['description_fr'] ?? null, 1000),
+                    'description_en' => self::text($entry['description_en'] ?? null, 1000),
+                    'hours_min' => min($hoursMin, $hoursMax),
+                    'hours_max' => max($hoursMin, $hoursMax),
+                    'pricing' => $kind === EstimatorItemKind::Feature ? $pricing->value : null,
+                    'percent' => $pricing === EstimatorPricing::Percent ? self::percent($entry['percent'] ?? null) : null,
+                    'billing' => $kind === EstimatorItemKind::ProjectType
+                        ? (EstimatorBilling::tryFrom((string) ($entry['billing'] ?? ''))?->value ?? EstimatorBilling::Fixed->value)
+                        : null,
+                    'project_types' => $kind === EstimatorItemKind::Feature ? (array) ($entry['project_types'] ?? []) : null,
+                ], fn (mixed $value): bool => $value !== null);
+                $refs[$ref] = true;
+            }
+
+            if ($items === []) {
+                return null;
+            }
+
+            // Les liens ne gardent que des types de projet de la proposition, ou existants.
+            $projectTypeRefs = collect($items)->where('kind', EstimatorItemKind::ProjectType->value)->pluck('ref')->all();
+            $existingTypes = EstimatorItem::query()->where('kind', EstimatorItemKind::ProjectType)->pluck('id')->all();
+
+            foreach ($items as &$item) {
+                if (isset($item['project_types'])) {
+                    $item['project_types'] = collect($item['project_types'])
+                        ->map(fn (mixed $target): int|string|null => match (true) {
+                            is_int($target) && in_array($target, $existingTypes, true) => $target,
+                            is_string($target) && in_array($target, $projectTypeRefs, true) => $target,
+                            default => null,
+                        })
+                        ->filter(fn (int|string|null $target): bool => $target !== null)
+                        ->unique()
+                        ->values()
+                        ->all();
+                }
+            }
+            unset($item);
+
+            return [
+                'settings' => self::settings($data['settings'] ?? null),
+                'items' => $items,
+                'reasoning' => self::text($data['reasoning'] ?? null, 2000),
+            ];
+        });
+    }
+
+    /** @param  array<string, mixed>  $data */
+    private static function pricing(EstimatorItemKind $kind, array $data): EstimatorPricing
+    {
+        $pricing = EstimatorPricing::tryFrom((string) ($data['pricing'] ?? '')) ?? EstimatorPricing::Hours;
+
+        return $kind === EstimatorItemKind::Feature && $pricing === EstimatorPricing::Percent && self::percent($data['percent'] ?? null) !== null
+            ? EstimatorPricing::Percent
+            : EstimatorPricing::Hours;
+    }
+
+    private static function percent(mixed $value): ?int
+    {
+        $percent = filter_var($value, FILTER_VALIDATE_INT);
+
+        return $percent === false || $percent < 1 || $percent > 500 ? null : $percent;
+    }
+
+    /** @return array<string, mixed>|null */
+    private static function settings(mixed $value): ?array
+    {
+        if (! is_array($value)) {
+            return null;
+        }
+
+        $rates = collect(is_array($value['hourly_rates'] ?? null) ? $value['hourly_rates'] : [])
+            ->only(EstimatorItem::CURRENCIES)
+            ->map(fn (mixed $rate): int|false => filter_var($rate, FILTER_VALIDATE_INT))
+            ->filter(fn (int|false $rate): bool => $rate !== false && $rate > 0)
+            ->all();
+        $risk = filter_var($value['risk_percent'] ?? null, FILTER_VALIDATE_INT);
+        $hoursPerWeek = filter_var($value['hours_per_week'] ?? null, FILTER_VALIDATE_INT);
+
+        $settings = array_filter([
+            'hourly_rates' => $rates === [] ? null : $rates,
+            'risk_percent' => $risk !== false && $risk >= 0 && $risk <= 200 ? $risk : null,
+            'hours_per_week' => $hoursPerWeek !== false && $hoursPerWeek >= 1 && $hoursPerWeek <= 80 ? $hoursPerWeek : null,
+        ], fn (mixed $setting): bool => $setting !== null);
+
+        return $settings === [] ? null : $settings;
     }
 
     /**
@@ -132,38 +268,42 @@ class EstimateAssistant
      */
     public function match(string $description): ?array
     {
-        $items = EstimatorItem::query()->active()->get();
+        $items = EstimatorItem::query()->active()->with('projectTypes:id')->get();
         $projectTypeIds = $items->where('kind', EstimatorItemKind::ProjectType)->pluck('id')->all();
-        $featureIds = $items->where('kind', EstimatorItemKind::Feature)->pluck('id')->all();
+        $features = $items->where('kind', EstimatorItemKind::Feature)->keyBy('id');
 
         if ($projectTypeIds === []) {
             return null;
         }
 
         $grid = $items->map(fn (EstimatorItem $item): string => sprintf(
-            '- [%s] id %d : %s%s',
+            '- [%s] id %d : %s%s%s',
             $item->kind === EstimatorItemKind::ProjectType ? 'type de projet' : 'option',
             $item->id,
             $item->getTranslation('name', 'fr'),
             filled($item->getTranslation('description', 'fr')) ? ' — '.$item->getTranslation('description', 'fr') : '',
+            $item->projectTypes->isEmpty() ? '' : ' (seulement pour les types '.implode(', ', $item->projectTypes->modelKeys()).')',
         ))->implode("\n");
 
         return $this->assist->promptJson(
             new EstimateMatcher,
             "Grille :\n{$grid}\n\nDescription du visiteur :\n\"\"\"\n{$description}\n\"\"\"",
-            function (array $data) use ($projectTypeIds, $featureIds): ?array {
+            function (array $data) use ($projectTypeIds, $features): ?array {
                 $projectTypeId = filter_var($data['project_type_id'] ?? null, FILTER_VALIDATE_INT);
 
                 if (! in_array($projectTypeId, $projectTypeIds, true)) {
                     return null;
                 }
 
-                $features = array_values(array_unique(array_filter(
-                    array_map(fn (mixed $id): int|false => filter_var($id, FILTER_VALIDATE_INT), (array) ($data['feature_ids'] ?? [])),
-                    fn (int|false $id): bool => in_array($id, $featureIds, true),
-                )));
+                // Seules les options proposées pour ce type de projet sont gardées.
+                $chosen = collect((array) ($data['feature_ids'] ?? []))
+                    ->map(fn (mixed $id): int|false => filter_var($id, FILTER_VALIDATE_INT))
+                    ->filter(fn (int|false $id): bool => $id !== false && $features->has($id) && $features[$id]->isAvailableFor($projectTypeId))
+                    ->unique()
+                    ->values()
+                    ->all();
 
-                return ['project_type_id' => $projectTypeId, 'feature_ids' => $features];
+                return ['project_type_id' => $projectTypeId, 'feature_ids' => $chosen];
             },
             'ai.text_assist',
         );
@@ -175,13 +315,19 @@ class EstimateAssistant
         $settings = SiteSetting::current();
         $rates = collect($settings->estimatorRates())->map(fn (int $rate, string $currency): string => "{$rate} {$currency}/h")->implode(', ');
 
-        $lines = EstimatorItem::query()->active()->get()->map(fn (EstimatorItem $item): string => sprintf(
-            '- %s « %s » : %d à %d h%s',
+        $items = EstimatorItem::query()->active()->with('projectTypes')->get();
+
+        $lines = $items->map(fn (EstimatorItem $item): string => sprintf(
+            '- %s #%d « %s » : %s%s',
             $item->kind === EstimatorItemKind::ProjectType ? 'Type de projet' : 'Option',
+            $item->id,
             $item->getTranslation('name', 'fr'),
-            $item->hours_min,
-            $item->hours_max,
-            $item->kind === EstimatorItemKind::ProjectType ? ' ('.($item->billing === EstimatorBilling::Hourly ? 'à l\'heure' : 'forfait').')' : '',
+            $item->pricing === EstimatorPricing::Percent ? "+{$item->percent} % des heures du projet" : "{$item->hours_min} à {$item->hours_max} h",
+            match (true) {
+                $item->kind === EstimatorItemKind::ProjectType => ' ('.($item->billing === EstimatorBilling::Hourly ? 'à l\'heure' : 'forfait').')',
+                $item->projectTypes->isNotEmpty() => ' (seulement pour : '.$item->projectTypes->map(fn (EstimatorItem $type): string => $type->getTranslation('name', 'fr'))->implode(', ').')',
+                default => ' (pour tous les types)',
+            },
         ));
 
         return "Grille de l'estimateur (heures hors marge) :\n".($lines->isEmpty() ? '(vide)' : $lines->implode("\n"))

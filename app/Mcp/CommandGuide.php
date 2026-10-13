@@ -217,6 +217,15 @@ class CommandGuide
             'example' => 'Ajoute à mon estimateur une option « Application mobile compagnon ».',
             'requests' => ['Ajoute à mon estimateur de projet une option « Espace client avec factures », avec des heures réalistes.'],
         ],
+        'configure-estimator' => [
+            'usage' => 'Configurer tout l\'estimateur en une fois : taux, marge, rythme, types de projet et options (en heures ou en pourcentage, liées ou non à des types).',
+            'tips' => [
+                'Décrivez votre activité et vos tarifs : l\'agent crée la grille complète en un seul appel.',
+                'Rien n\'est enregistré si une partie est invalide ; les éléments créés restent masqués jusqu\'à leur activation.',
+            ],
+            'example' => 'Configure mon estimateur : sites vitrines, boutiques et apps mobiles, 100 CHF de l\'heure, 20 % de marge.',
+            'requests' => ['Configure mon estimateur de projet pour mes activités : sites vitrines, boutiques en ligne et applications mobiles, avec les options utiles à chacun, le multilingue en pourcentage, 100 CHF de l\'heure et 20 % de marge.'],
+        ],
         'list-estimate-requests' => [
             'usage' => 'Lire les demandes reçues par l\'estimateur : choix, estimation affichée, message et analyse existante.',
             'tips' => ['Les coordonnées du visiteur ne sont pas transmises à l\'agent.'],
@@ -266,6 +275,7 @@ class CommandGuide
         'list-revisions' => 'Révisions en attente',
         'get-estimator' => 'Lire l\'estimateur',
         'save-estimator-item' => 'Élément de l\'estimateur',
+        'configure-estimator' => 'Configurer l\'estimateur',
         'list-estimate-requests' => 'Demandes d\'estimation',
         'save-estimate-analysis' => 'Analyser une demande',
     ];

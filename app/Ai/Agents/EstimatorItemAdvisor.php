@@ -31,6 +31,8 @@ class EstimatorItemAdvisor implements Agent
         développement, tests, mise en ligne) ; une « option » est une fonctionnalité qui s'y ajoute.
         Les heures sont des heures de travail réelles d'un développeur expérimenté, hors marge pour
         imprévus (le site l'ajoute lui-même). Reste cohérent avec la grille existante qu'on te donne.
+        Une option dont le coût grandit avec la taille du projet (multilingue, accessibilité renforcée,
+        design sur mesure…) se chiffre plutôt en pourcentage des heures du projet : "pricing": "percent".
 
         Réponds uniquement avec un objet JSON valide, sans bloc de code ni commentaire :
         {
@@ -38,9 +40,11 @@ class EstimatorItemAdvisor implements Agent
           "name_en": "le même en anglais",
           "description_fr": "ce qui est compris, une phrase pour le visiteur (200 max.)",
           "description_en": "la même en anglais",
-          "hours_min": nombre entier,
-          "hours_max": nombre entier,
-          "reasoning": "le détail des heures, poste par poste, en 2 à 4 phrases"
+          "pricing": "hours" ou "percent" (options seulement ; un type de projet est toujours en heures),
+          "hours_min": nombre entier (0 si percent),
+          "hours_max": nombre entier (0 si percent),
+          "percent": nombre entier ou null (si percent : ce qui s'ajoute aux heures du projet, en %),
+          "reasoning": "le détail des heures ou du pourcentage, en 2 à 4 phrases"
         }
         PROMPT;
     }

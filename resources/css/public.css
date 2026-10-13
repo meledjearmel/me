@@ -7665,6 +7665,143 @@ html.pub-scroll {
     }
 }
 
+/* ---------- Estimateur de projet : une étape à la fois ---------- */
+.pub-estimate__progress {
+    display: grid;
+    gap: 0.6rem;
+}
+
+.pub-estimate__progress ol {
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pub-estimate__progress li {
+    display: grid;
+    gap: 0.45rem;
+    min-width: 0;
+    font-size: 0.85rem;
+}
+
+/* La barre de chaque étape : remplie pour les étapes faites et l'étape en cours. */
+.pub-estimate__progress li::before {
+    content: '';
+    height: 4px;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--pub-text) 14%, transparent);
+    transition: background-color 0.3s ease;
+}
+
+.pub-estimate__progress li[data-state='done']::before,
+.pub-estimate__progress li[data-state='current']::before {
+    background: var(--pub-gold);
+}
+
+.pub-estimate__progress li span,
+.pub-estimate__progress li button {
+    overflow: hidden;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pub-estimate__progress li[data-state='todo'] span {
+    opacity: 0.5;
+}
+
+.pub-estimate__progress li[data-state='current'] span {
+    font-weight: 600;
+}
+
+.pub-estimate__progress li button {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+}
+
+.pub-estimate__panel {
+    animation: pub-estimate-in 0.35s var(--pub-ease-smooth);
+}
+
+.pub-estimate__panel h2:focus {
+    outline: none;
+}
+
+.pub-estimate__panel h2:focus-visible {
+    outline: 2px solid var(--pub-gold);
+    outline-offset: 4px;
+}
+
+.pub-estimate__ai {
+    display: grid;
+    gap: 0.6rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px dashed color-mix(in oklab, var(--pub-text) 28%, transparent);
+    border-radius: 22px;
+}
+
+/* Rappel discret de la fourchette en cours, au fil des étapes. */
+.pub-estimate__mini {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.pub-estimate__mini span {
+    font-family: var(--pub-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.68;
+}
+
+.pub-estimate__nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.6rem;
+}
+
+.pub-estimate__nav .pub-drawer__send {
+    margin-top: 0;
+}
+
+/* Sur téléphone, seule l'étape en cours garde son nom sous la barre. */
+@media (max-width: 640px) {
+    .pub-estimate__progress li:not([data-state='current']) span,
+    .pub-estimate__progress li:not([data-state='current']) button {
+        visibility: hidden;
+    }
+
+    .pub-estimate__progress li[data-state='current'] {
+        overflow: visible;
+    }
+}
+
+@keyframes pub-estimate-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pub-estimate__panel {
+        animation: none;
+    }
+}
+
 /* ---------- Blog ---------- */
 .pub-filters a.pub-filter {
     text-decoration: none;

@@ -5,18 +5,33 @@ import FormPageHeader from '@/components/admin/form-page-header';
 import { Button } from '@/components/ui/button';
 import { FieldGroup } from '@/components/ui/field';
 import { index as itemsIndex } from '@/routes/admin/estimator-items';
+import { index as optionsIndex } from '@/routes/admin/estimator-options';
+import type { EstimatorItem } from '@/types';
 
-export default function EstimatorItemCreate() {
+export default function EstimatorItemCreate({
+    kind,
+    projectTypes,
+}: {
+    kind: EstimatorItem['kind'];
+    projectTypes: { id: number; label: string }[];
+}) {
+    const isFeature = kind === 'feature';
+    const title = isFeature ? 'Nouvelle option' : 'Nouveau type de projet';
+
     return (
         <>
-            <Head title="Nouvel élément de l'estimateur" />
+            <Head title={title} />
 
             <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
-                    title="Nouvel élément de l'estimateur"
-                    description="Un type de projet ou une option, avec son prix et son délai"
-                    backHref={itemsIndex()}
-                    backLabel="Estimateur de projet"
+                    title={title}
+                    description={
+                        isFeature
+                            ? "Ce qui s'ajoute à un type de projet, en heures ou en pourcentage"
+                            : "La base d'une estimation, chiffrée en heures"
+                    }
+                    backHref={isFeature ? optionsIndex() : itemsIndex()}
+                    backLabel={isFeature ? 'Options' : 'Types de projet'}
                 />
 
                 <Form
@@ -25,7 +40,11 @@ export default function EstimatorItemCreate() {
                 >
                     {({ processing, errors }) => (
                         <FieldGroup>
-                            <EstimatorItemFields errors={errors} />
+                            <EstimatorItemFields
+                                errors={errors}
+                                projectTypes={projectTypes}
+                                defaultKind={kind}
+                            />
 
                             <Button disabled={processing}>Créer</Button>
                         </FieldGroup>

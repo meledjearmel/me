@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\EstimatorBilling;
 use App\Enums\EstimatorItemKind;
+use App\Enums\EstimatorPricing;
 use App\Models\EstimatorItem;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -48,6 +49,18 @@ class EstimatorItemFactory extends Factory
             'hours_min' => 10,
             'hours_max' => 20,
             'billing' => null,
+        ]);
+    }
+
+    /** Option qui ajoute un pourcentage des heures du projet, ex. le multilingue. */
+    public function percent(int $percent = 20): static
+    {
+        return $this->feature()->state(fn (): array => [
+            'name' => ['fr' => 'Site multilingue', 'en' => 'Multilingual website'],
+            'pricing' => EstimatorPricing::Percent,
+            'percent' => $percent,
+            'hours_min' => 0,
+            'hours_max' => 0,
         ]);
     }
 

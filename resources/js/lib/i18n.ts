@@ -75,6 +75,16 @@ const dictionaries = {
             step2: 'Les options',
             step2Hint: 'Cochez ce dont vous avez besoin, ou passez.',
             step3: 'Vos coordonnées',
+            stepEstimate: 'Votre estimation',
+            stepEstimateHint:
+                'Changez de devise si besoin. Elle vous convient ? Envoyez-moi la demande.',
+            progress: (step: number, total: number) =>
+                `Étape ${step} sur ${total}`,
+            next: 'Continuer',
+            skip: 'Passer',
+            back: 'Retour',
+            send: 'Demander un devis',
+            chooseType: 'Choisissez un type de projet pour continuer.',
             currency: 'Devise',
             result: 'Estimation indicative',
             weeks: (min: number, max: number) =>
@@ -757,6 +767,16 @@ const dictionaries = {
             step2: 'Options',
             step2Hint: 'Tick what you need, or skip.',
             step3: 'Your details',
+            stepEstimate: 'Your estimate',
+            stepEstimateHint:
+                'Switch currency if needed. Does it work for you? Send me the request.',
+            progress: (step: number, total: number) =>
+                `Step ${step} of ${total}`,
+            next: 'Continue',
+            skip: 'Skip',
+            back: 'Back',
+            send: 'Request a quote',
+            chooseType: 'Pick a project type to continue.',
             currency: 'Currency',
             result: 'Indicative estimate',
             weeks: (min: number, max: number) =>

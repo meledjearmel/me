@@ -405,9 +405,41 @@ export type EstimatorItem = {
     description: Partial<Translatable> | null;
     hours_min: number;
     hours_max: number;
+    pricing: "hours" | "percent";
+    percent: number | null;
     billing: EstimatorBilling | null;
     is_active: boolean;
     sort_order: number;
+    /** Options : types de projet visés (édition). */
+    project_type_ids?: number[];
+    /** Options : types de projet visés (liste). */
+    project_types?: { id: number; name: Translatable }[];
+};
+
+export type EstimatorProposalItem = {
+    ref?: string;
+    id?: number;
+    kind: "project_type" | "feature";
+    name_fr: string;
+    name_en: string;
+    description_fr?: string;
+    description_en?: string;
+    hours_min?: number;
+    hours_max?: number;
+    pricing?: "hours" | "percent";
+    percent?: number;
+    billing?: EstimatorBilling;
+    project_types?: (string | number)[];
+};
+
+export type EstimatorProposal = {
+    settings: {
+        hourly_rates?: Partial<Record<EstimatorCurrency, number>>;
+        risk_percent?: number;
+        hours_per_week?: number;
+    } | null;
+    items: EstimatorProposalItem[];
+    reasoning: string | null;
 };
 
 export type EstimatorSettings = {

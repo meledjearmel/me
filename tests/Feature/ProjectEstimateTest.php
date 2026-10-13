@@ -90,6 +90,31 @@ test('the quote prices the hours with the risk margin at the hourly rate', funct
         ]);
 });
 
+test('a percentage option grows the project hours before the risk margin', function () {
+    $multilingual = EstimatorItem::factory()->percent(20)->create();
+
+    // 30 – 50 h × 1,2 (multilingue) × 1,2 (marge) : 44 – 72 h.
+    $this->getJson('/fr/estimate/quote?'.http_build_query(estimateChoices(['feature_ids' => [$multilingual->id]])))
+        ->assertOk()
+        ->assertJsonPath('hours_min', 44)
+        ->assertJsonPath('hours_max', 72)
+        ->assertJsonPath('price_max', 7200);
+});
+
+test('an option reserved to other project types is refused', function () {
+    $mobileApp = EstimatorItem::factory()->create(['name' => ['fr' => 'Application mobile', 'en' => 'Mobile app']]);
+    $storePublishing = EstimatorItem::factory()->feature()->create(['sort_order' => 99]);
+    $storePublishing->projectTypes()->attach($mobileApp);
+
+    $this->get('/fr/estimate')->assertInertia(fn ($page) => $page
+        ->where('features.1.project_type_ids', [$mobileApp->id]));
+
+    $this->getJson('/fr/estimate/quote?'.http_build_query(estimateChoices(['feature_ids' => [$storePublishing->id]])))
+        ->assertJsonValidationErrors('feature_ids');
+    $this->getJson('/fr/estimate/quote?'.http_build_query(estimateChoices(['project_type_id' => $mobileApp->id, 'feature_ids' => [$storePublishing->id]])))
+        ->assertOk();
+});
+
 test('the quote refuses an option as project type and a currency without rate', function () {
     SiteSetting::current()->update(['estimator_hourly_rates' => ['CHF' => 100]]);
 

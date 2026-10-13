@@ -63,7 +63,7 @@ test('tools and prompts keep the exact names used in the instructions', function
         ->json("result.{$key}"))->pluck('name')->sort()->values()->all();
 
     expect($list('tools/list', 'tools'))->toBe([
-        'add-post-image', 'add-project-image', 'create-technology', 'get-catalog', 'get-content', 'get-estimator', 'get-post', 'get-project',
+        'add-post-image', 'add-project-image', 'configure-estimator', 'create-technology', 'get-catalog', 'get-content', 'get-estimator', 'get-post', 'get-project',
         'list-contents', 'list-estimate-requests', 'list-revisions', 'propose-revision', 'read-web-page', 'save-content-draft', 'save-content-translation',
         'save-estimate-analysis', 'save-estimator-item', 'save-post-draft', 'save-post-translation', 'save-project-draft', 'save-project-translation',
         'update-project-draft',

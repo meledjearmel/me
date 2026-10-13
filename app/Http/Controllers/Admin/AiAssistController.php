@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Ai\DescribeTechnologyRequest;
 use App\Http\Requests\Ai\DraftProjectRequest;
 use App\Http\Requests\Ai\ImproveTextRequest;
+use App\Http\Requests\Ai\ProposeEstimatorGridRequest;
 use App\Http\Requests\Ai\SuggestEstimatorItemRequest;
 use App\Http\Requests\Ai\TranslateHtmlRequest;
 use App\Http\Requests\Ai\TranslateTextRequest;
@@ -105,6 +106,18 @@ class AiAssistController extends Controller
         }
 
         return response()->json(['item' => $item]);
+    }
+
+    /** « Configurer avec l'IA » de l'estimateur : une grille complète, à relire avant de l'appliquer. */
+    public function proposeEstimatorGrid(ProposeEstimatorGridRequest $request, EstimateAssistant $assistant): JsonResponse
+    {
+        $proposal = $assistant->proposeGrid($request->validated('brief'));
+
+        if ($proposal === null) {
+            return $this->respond(null);
+        }
+
+        return response()->json(['proposal' => $proposal]);
     }
 
     private function respond(?string $text): JsonResponse

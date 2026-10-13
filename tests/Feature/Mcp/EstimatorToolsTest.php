@@ -1,6 +1,7 @@
 <?php
 
 use App\Mcp\Servers\PortfolioServer;
+use App\Mcp\Tools\ConfigureEstimatorTool;
 use App\Mcp\Tools\GetEstimatorTool;
 use App\Mcp\Tools\ListEstimateRequestsTool;
 use App\Mcp\Tools\SaveEstimateAnalysisTool;
@@ -41,6 +42,39 @@ test('save-estimator-item creates a hidden item, then updates only the sent fiel
 
     expect($item->refresh()->hours_max)->toBe(40)
         ->and($item->getTranslation('name', 'en'))->toBe('Client area');
+});
+
+test('configure-estimator sets the settings and a linked grid in one call', function () {
+    $existing = EstimatorItem::factory()->create();
+
+    $this->server->tool(ConfigureEstimatorTool::class, [
+        'settings' => ['hourly_rates' => ['USD' => 110], 'hours_per_week' => 25],
+        'items' => [
+            ['ref' => 'shop', 'kind' => 'project_type', 'name_fr' => 'Boutique en ligne', 'name_en' => 'Online shop', 'hours_min' => 60, 'hours_max' => 100, 'billing' => 'fixed'],
+            ['kind' => 'feature', 'name_fr' => 'Paiement', 'name_en' => 'Payment', 'hours_min' => 10, 'hours_max' => 16, 'project_types' => ['shop', (string) $existing->id]],
+            ['kind' => 'feature', 'name_fr' => 'Multilingue', 'name_en' => 'Multilingual', 'pricing' => 'percent', 'percent' => 15],
+            ['id' => $existing->id, 'hours_max' => 60],
+        ],
+    ])->assertOk()->assertSee('"settings_updated":true');
+
+    $payment = EstimatorItem::query()->where('name->fr', 'Paiement')->firstOrFail();
+
+    expect($payment->is_active)->toBeFalse()
+        ->and($payment->projectTypes->modelKeys())->toEqualCanonicalizing([$existing->id, EstimatorItem::query()->where('name->fr', 'Boutique en ligne')->value('id')])
+        ->and($existing->refresh()->hours_max)->toBe(60)
+        ->and(SiteSetting::current()->estimatorRates()['USD'])->toBe(110)
+        ->and(SiteSetting::current()->estimatorRates()['CHF'])->toBe(100);
+});
+
+test('configure-estimator writes nothing when a reference is unknown', function () {
+    $this->server->tool(ConfigureEstimatorTool::class, [
+        'items' => [
+            ['kind' => 'project_type', 'name_fr' => 'Vitrine', 'name_en' => 'Showcase', 'hours_min' => 20, 'hours_max' => 30],
+            ['kind' => 'feature', 'name_fr' => 'Blog', 'name_en' => 'Blog', 'hours_min' => 5, 'hours_max' => 8, 'project_types' => ['nope']],
+        ],
+    ])->assertHasErrors();
+
+    expect(EstimatorItem::query()->count())->toBe(0);
 });
 
 test('estimate requests are listed without contact details and an analysis can be saved', function () {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Concerns\PaginatesAdminLists;
+use App\Enums\EstimatorItemKind;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\EstimatorItemRequest;
 use App\Http\Resources\Api\V1\EstimatorItemResource;
@@ -30,16 +31,23 @@ class EstimatorItemController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         return EstimatorItemResource::collection(
-            $this->paginateList(EstimatorItem::query()->orderBy('kind', 'desc')->orderBy('sort_order'), $request, ['name->fr', 'name->en'])
+            $this->paginateList(EstimatorItem::query()->with('projectTypes:id')->orderBy('kind', 'desc')->orderBy('sort_order'), $request, ['name->fr', 'name->en'])
         );
     }
 
     /**
      * Créer un élément de l'estimateur
+     *
+     * Une option peut ajouter des heures (`pricing` = `hours`) ou un pourcentage des heures
+     * du projet (`percent`), et être réservée à certains types de projet (`project_type_ids`).
+     * Pour configurer toute la grille d'un coup, voir l'outil MCP `configure-estimator`.
      */
     public function store(EstimatorItemRequest $request): EstimatorItemResource
     {
-        return new EstimatorItemResource(EstimatorItem::query()->create($request->validated()));
+        $item = EstimatorItem::query()->create($request->safe()->except('project_type_ids'));
+        $this->syncProjectTypes($item, $request);
+
+        return new EstimatorItemResource($item->load('projectTypes:id'));
     }
 
     /**
@@ -47,7 +55,7 @@ class EstimatorItemController extends Controller
      */
     public function show(EstimatorItem $estimatorItem): EstimatorItemResource
     {
-        return new EstimatorItemResource($estimatorItem);
+        return new EstimatorItemResource($estimatorItem->load('projectTypes:id'));
     }
 
     /**
@@ -55,9 +63,15 @@ class EstimatorItemController extends Controller
      */
     public function update(EstimatorItemRequest $request, EstimatorItem $estimatorItem): EstimatorItemResource
     {
-        $estimatorItem->update($request->validated());
+        $estimatorItem->update($request->safe()->except('project_type_ids'));
+        $this->syncProjectTypes($estimatorItem, $request);
 
-        return new EstimatorItemResource($estimatorItem);
+        return new EstimatorItemResource($estimatorItem->load('projectTypes:id'));
+    }
+
+    private function syncProjectTypes(EstimatorItem $item, EstimatorItemRequest $request): void
+    {
+        $item->projectTypes()->sync($item->kind === EstimatorItemKind::Feature ? ($request->validated('project_type_ids') ?? []) : []);
     }
 
     /**

@@ -14,7 +14,7 @@ use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 
 #[Name('get-estimator')]
-#[Description('Lit la grille de l\'estimateur de projet (types de projet et options, en heures hors marge, mode de facturation, actifs ou non) et ses réglages (taux horaire par devise, marge pour imprévus, heures facturables par semaine).')]
+#[Description('Lit la grille de l\'estimateur de projet (types de projet et options, en heures hors marge ou en pourcentage, types visés par chaque option, mode de facturation, actifs ou non) et ses réglages (taux horaire par devise, marge pour imprévus, heures facturables par semaine).')]
 #[IsReadOnly]
 class GetEstimatorTool extends Tool
 {
@@ -28,14 +28,18 @@ class GetEstimatorTool extends Tool
                 'risk_percent' => $settings->estimator_risk_percent,
                 'hours_per_week' => $settings->estimator_hours_per_week,
             ],
-            'items' => EstimatorItem::query()->orderBy('kind', 'desc')->orderBy('sort_order')->get()->map(fn (EstimatorItem $item): array => [
+            'items' => EstimatorItem::query()->with('projectTypes:id')->orderBy('kind', 'desc')->orderBy('sort_order')->get()->map(fn (EstimatorItem $item): array => [
                 'id' => $item->id,
                 'kind' => $item->kind->value,
                 'name' => $item->getTranslations('name'),
                 'description' => $item->getTranslations('description'),
                 'hours_min' => $item->hours_min,
                 'hours_max' => $item->hours_max,
+                'pricing' => $item->pricing->value,
+                'percent' => $item->percent,
                 'billing' => $item->billing?->value,
+                // Options : types de projet auxquels elles sont réservées (vide : tous).
+                'project_types' => $item->projectTypes->modelKeys(),
                 'is_active' => $item->is_active,
             ])->all(),
         ]);

@@ -5,23 +5,31 @@ import FormPageHeader from '@/components/admin/form-page-header';
 import { Button } from '@/components/ui/button';
 import { FieldGroup } from '@/components/ui/field';
 import { index as itemsIndex } from '@/routes/admin/estimator-items';
+import { index as optionsIndex } from '@/routes/admin/estimator-options';
 import type { EstimatorItem } from '@/types';
 
 export default function EstimatorItemEdit({
     estimatorItem,
+    projectTypes,
 }: {
     estimatorItem: EstimatorItem;
+    projectTypes: { id: number; label: string }[];
 }) {
+    const isFeature = estimatorItem.kind === 'feature';
+    const title = isFeature
+        ? "Modifier l'option"
+        : 'Modifier le type de projet';
+
     return (
         <>
-            <Head title="Modifier l'élément de l'estimateur" />
+            <Head title={title} />
 
             <div className="mx-auto w-full max-w-3xl space-y-6 p-4">
                 <FormPageHeader
-                    title="Modifier l'élément de l'estimateur"
+                    title={title}
                     description={estimatorItem.name.fr}
-                    backHref={itemsIndex()}
-                    backLabel="Estimateur de projet"
+                    backHref={isFeature ? optionsIndex() : itemsIndex()}
+                    backLabel={isFeature ? 'Options' : 'Types de projet'}
                 />
 
                 <Form
@@ -32,6 +40,9 @@ export default function EstimatorItemEdit({
                         <FieldGroup>
                             <EstimatorItemFields
                                 estimatorItem={estimatorItem}
+                                projectTypes={projectTypes.filter(
+                                    (type) => type.id !== estimatorItem.id,
+                                )}
                                 errors={errors}
                             />
 

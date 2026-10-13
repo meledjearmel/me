@@ -5,17 +5,20 @@ namespace App\Models;
 use App\Concerns\PlacesNewAtEnd;
 use App\Enums\EstimatorBilling;
 use App\Enums\EstimatorItemKind;
+use App\Enums\EstimatorPricing;
 use Database\Factories\EstimatorItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
 /**
- * Un élément de l'estimateur de projet : un type de projet (le socle, avec son mode de
- * facturation) ou une option qui s'y ajoute, chiffré en heures de travail.
+ * Un élément de l'estimateur de projet : un type de projet (le socle, chiffré en heures,
+ * avec son mode de facturation) ou une option qui s'y ajoute, en heures ou en pourcentage
+ * des heures du projet. Une option peut être réservée à certains types de projet.
  */
 class EstimatorItem extends Model
 {
@@ -35,6 +38,8 @@ class EstimatorItem extends Model
         'description',
         'hours_min',
         'hours_max',
+        'pricing',
+        'percent',
         'billing',
         'is_active',
         'sort_order',
@@ -44,8 +49,10 @@ class EstimatorItem extends Model
     protected $casts = [
         'kind' => EstimatorItemKind::class,
         'billing' => EstimatorBilling::class,
+        'pricing' => EstimatorPricing::class,
         'hours_min' => 'integer',
         'hours_max' => 'integer',
+        'percent' => 'integer',
         'is_active' => 'boolean',
     ];
 
@@ -56,14 +63,48 @@ class EstimatorItem extends Model
         $query->where('is_active', true)->orderBy('sort_order');
     }
 
-    /** Une option n'a pas de mode de facturation : elle suit celui du type de projet. */
+    /**
+     * Option : les types de projet auxquels elle est réservée (aucun : proposée pour tous).
+     *
+     * @return BelongsToMany<EstimatorItem, $this>
+     */
+    public function projectTypes(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, 'estimator_feature_project_type', 'feature_id', 'project_type_id');
+    }
+
+    /** Une option est-elle proposée pour ce type de projet ? */
+    public function isAvailableFor(int $projectTypeId): bool
+    {
+        $ids = $this->relationLoaded('projectTypes')
+            ? $this->projectTypes->modelKeys()
+            : $this->projectTypes()->pluck('estimator_items.id')->all();
+
+        return $ids === [] || in_array($projectTypeId, $ids, true);
+    }
+
+    /**
+     * Garde des données cohérentes : seule une option a un mode de prix (un type de projet
+     * se chiffre en heures) et seul un type de projet a un mode de facturation ; une option
+     * en pourcentage n'a pas d'heures.
+     */
     protected static function booted(): void
     {
         static::saving(function (self $item): void {
             if ($item->kind === EstimatorItemKind::Feature) {
                 $item->billing = null;
-            } elseif ($item->billing === null) {
-                $item->billing = EstimatorBilling::Fixed;
+                $item->pricing ??= EstimatorPricing::Hours;
+            } else {
+                $item->billing ??= EstimatorBilling::Fixed;
+                $item->pricing = EstimatorPricing::Hours;
+            }
+
+            if ($item->pricing === EstimatorPricing::Percent) {
+                $item->hours_min = 0;
+                $item->hours_max = 0;
+                $item->percent ??= 0;
+            } else {
+                $item->percent = null;
             }
         });
     }

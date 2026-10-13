@@ -4,13 +4,15 @@ namespace App\Services;
 
 use App\Enums\EstimatorBilling;
 use App\Enums\EstimatorItemKind;
+use App\Enums\EstimatorPricing;
 use App\Models\EstimatorItem;
 use App\Models\SiteSetting;
 use Illuminate\Support\Collection;
 
 /**
  * Calcule l'estimation d'un projet à partir des heures : le type de projet donne la base,
- * chaque option s'y ajoute, puis la marge de risque couvre les imprévus (une estimation
+ * chaque option s'y ajoute (en heures, ou en pourcentage des heures du projet), puis la
+ * marge de risque couvre les imprévus (une estimation
  * trop basse coûte cher à celui qui la donne). Le prix vaut heures × taux horaire de la
  * devise, arrondi pour rester lisible ; le délai découle des heures facturables par semaine.
  */
@@ -86,10 +88,14 @@ class ProjectEstimator
         $rate = $settings->estimatorRates()[$currency] ?? 0;
         $risk = max(0, (int) $settings->estimator_risk_percent);
         $hoursPerWeek = max(1, (int) $settings->estimator_hours_per_week);
-        $items = collect([$projectType])->merge($features);
+        // Les options en heures s'ajoutent à la base ; celles en pourcentage s'appliquent
+        // ensuite à ce total, puis la marge pour imprévus couvre le tout.
+        $items = collect([$projectType])->merge($features->where('pricing', '!==', EstimatorPricing::Percent));
+        $percent = (int) $features->where('pricing', EstimatorPricing::Percent)->sum('percent');
+        $multiplier = (1 + $percent / 100) * (1 + $risk / 100);
 
-        $hoursMin = (int) ceil($items->sum('hours_min') * (1 + $risk / 100));
-        $hoursMax = max($hoursMin, (int) ceil($items->sum('hours_max') * (1 + $risk / 100)));
+        $hoursMin = (int) ceil($items->sum('hours_min') * $multiplier);
+        $hoursMax = max($hoursMin, (int) ceil($items->sum('hours_max') * $multiplier));
 
         return [
             'billing' => ($projectType->billing ?? EstimatorBilling::Fixed)->value,

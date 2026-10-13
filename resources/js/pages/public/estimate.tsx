@@ -1,5 +1,5 @@
 import { Form, useHttp } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ProjectEstimateController from '@/actions/App/Http/Controllers/ProjectEstimateController';
 import PageHero from '@/components/public/page-hero';
 import PublicShell from '@/components/public/public-shell';
@@ -20,10 +20,13 @@ type Quote = {
     weeks_max: number;
 };
 
+type StepKey = 'project' | 'options' | 'estimate' | 'contact';
+
 /**
- * Estimateur de projet en trois temps : le type de projet, les options, puis les
- * coordonnées. La fourchette est recalculée par le serveur à chaque choix, et
- * l'estimation envoyée arrive figée dans les demandes de collaboration.
+ * Estimateur de projet en étapes, une à la fois : le projet (avec l'aide facultative de
+ * l'IA), les options, l'estimation, puis les coordonnées. La fourchette est recalculée
+ * par le serveur à chaque choix, et l'estimation envoyée arrive figée dans les demandes
+ * de collaboration.
  */
 export default function Estimate({
     projectTypes,
@@ -41,10 +44,39 @@ export default function Estimate({
     const locale = useLocale();
     const { submit } = useHttp();
 
+    const [stepIndex, setStepIndex] = useState(0);
     const [projectTypeId, setProjectTypeId] = useState<number | null>(
         projectTypes.length === 1 ? projectTypes[0].id : null,
     );
     const [featureIds, setFeatureIds] = useState<number[]>([]);
+
+    // Une option peut être réservée à certains types : seules celles du type choisi sont proposées.
+    const isOffered = (feature: PublicEstimatorItem, typeId: number | null) =>
+        feature.project_type_ids.length === 0 ||
+        (typeId !== null && feature.project_type_ids.includes(typeId));
+    const availableFeatures = features.filter((feature) =>
+        isOffered(feature, projectTypeId),
+    );
+
+    // Sans option pour ce type, l'étape des options n'a pas lieu d'être.
+    const steps: StepKey[] =
+        availableFeatures.length > 0
+            ? ['project', 'options', 'estimate', 'contact']
+            : ['project', 'estimate', 'contact'];
+
+    /** Changer de type retire les options qui ne lui sont pas proposées. */
+    const chooseProjectType = (typeId: number) => {
+        setProjectTypeId(typeId);
+        setFeatureIds((current) =>
+            current.filter((id) => {
+                const feature = features.find(
+                    (candidate) => candidate.id === id,
+                );
+
+                return feature !== undefined && isOffered(feature, typeId);
+            }),
+        );
+    };
     const [currency, setCurrency] = useState(defaultCurrency);
     const [quote, setQuote] = useState<Quote | null>(null);
     const [sent, setSent] = useState(false);
@@ -52,6 +84,18 @@ export default function Estimate({
     const [aiStatus, setAiStatus] = useState<
         'idle' | 'pending' | 'done' | 'error'
     >('idle');
+    const [blocked, setBlocked] = useState(false);
+    const headingRef = useRef<HTMLHeadingElement>(null);
+    const hasNavigated = useRef(false);
+
+    const step = steps[stepIndex];
+
+    // Le titre de l'étape prend le focus à chaque changement, pour les lecteurs d'écran.
+    useEffect(() => {
+        if (hasNavigated.current) {
+            headingRef.current?.focus();
+        }
+    }, [stepIndex]);
 
     /** « Laisser l'IA choisir » : le type et les options d'après la description du visiteur. */
     const suggest = async () => {
@@ -67,6 +111,7 @@ export default function Estimate({
 
             setProjectTypeId(match.project_type_id);
             setFeatureIds(match.feature_ids);
+            setBlocked(false);
             setAiStatus('done');
         } catch {
             setAiStatus('error');
@@ -112,6 +157,13 @@ export default function Estimate({
         ' ' +
         (currency === 'XOF' ? 'FCFA' : currency);
 
+    const currentQuote = quote && quote.currency === currency ? quote : null;
+    const quoteLabel = currentQuote
+        ? currentQuote.billing === 'hourly'
+            ? `${t.estimate.hourlyPrice(`${currentQuote.hours_min} – ${currentQuote.hours_max} h`, money(currentQuote.hourly_rate))} · ${t.estimate.weeks(currentQuote.weeks_min, currentQuote.weeks_max)}`
+            : `${money(currentQuote.price_min)} – ${money(currentQuote.price_max)} · ${t.estimate.weeks(currentQuote.weeks_min, currentQuote.weeks_max)}`
+        : t.estimate.calculating;
+
     const toggleFeature = (id: number) =>
         setFeatureIds((current) =>
             current.includes(id)
@@ -119,11 +171,36 @@ export default function Estimate({
                 : [...current, id],
         );
 
+    const goTo = (index: number) => {
+        hasNavigated.current = true;
+        setStepIndex(Math.max(0, Math.min(index, steps.length - 1)));
+    };
+
+    const next = () => {
+        if (step === 'project' && projectTypeId === null) {
+            setBlocked(true);
+
+            return;
+        }
+
+        goTo(stepIndex + 1);
+    };
+
     const restart = () => {
         setSent(false);
         setFeatureIds([]);
         setProjectTypeId(projectTypes.length === 1 ? projectTypes[0].id : null);
         setQuote(null);
+        setDescription('');
+        setAiStatus('idle');
+        goTo(0);
+    };
+
+    const titles: Record<StepKey, string> = {
+        project: t.estimate.step1,
+        options: t.estimate.step2,
+        estimate: t.estimate.stepEstimate,
+        contact: t.estimate.step3,
     };
 
     return (
@@ -147,7 +224,7 @@ export default function Estimate({
                     aria-label={t.estimate.title}
                 >
                     <div className="site-wrap">
-                        <div className="pub-contact__card pub-booking__card">
+                        <div className="pub-contact__card pub-booking__card pub-estimate">
                             {sent ? (
                                 <div className="pub-drawer__done" role="status">
                                     <svg
@@ -170,104 +247,198 @@ export default function Estimate({
                                 </div>
                             ) : (
                                 <>
-                                    <div className="pub-booking__step">
+                                    <div className="pub-estimate__progress">
                                         <p className="pub-booking__label">
-                                            {t.estimate.aiTitle}
+                                            {t.estimate.progress(
+                                                stepIndex + 1,
+                                                steps.length,
+                                            )}
                                         </p>
-                                        <p className="pub-booking__note">
-                                            {t.estimate.aiHint}
-                                        </p>
-                                        <label className="pub-drawer__field pub-drawer__field--wide">
-                                            <span className="sr-only">
-                                                {t.estimate.aiTitle}
-                                            </span>
-                                            <textarea
-                                                rows={3}
-                                                maxLength={2000}
-                                                value={description}
-                                                placeholder={
-                                                    t.estimate.aiPlaceholder
-                                                }
-                                                onChange={(event) =>
-                                                    setDescription(
-                                                        event.target.value,
-                                                    )
-                                                }
-                                            />
-                                        </label>
-                                        <button
-                                            type="button"
-                                            className="pub-filter"
-                                            disabled={
-                                                aiStatus === 'pending' ||
-                                                description.trim().length < 15
-                                            }
-                                            onClick={() => void suggest()}
-                                        >
-                                            {aiStatus === 'pending'
-                                                ? t.estimate.aiThinking
-                                                : t.estimate.aiSubmit}
-                                        </button>
-                                        {(aiStatus === 'done' ||
-                                            aiStatus === 'error') && (
-                                            <p
-                                                className="pub-booking__note"
-                                                role="status"
-                                            >
-                                                {aiStatus === 'done'
-                                                    ? t.estimate.aiDone
-                                                    : t.estimate.aiError}
-                                            </p>
-                                        )}
-                                    </div>
-
-                                    <fieldset className="pub-booking__step">
-                                        <legend>
-                                            <span>01</span> {t.estimate.step1}
-                                        </legend>
-                                        <div className="pub-booking__types">
-                                            {projectTypes.map((candidate) => (
-                                                <button
-                                                    key={candidate.id}
-                                                    type="button"
-                                                    className="pub-booking__type"
-                                                    aria-pressed={
-                                                        candidate.id ===
-                                                        projectTypeId
+                                        <ol>
+                                            {steps.map((key, index) => (
+                                                <li
+                                                    key={key}
+                                                    data-state={
+                                                        index < stepIndex
+                                                            ? 'done'
+                                                            : index ===
+                                                                stepIndex
+                                                              ? 'current'
+                                                              : 'todo'
                                                     }
-                                                    onClick={() =>
-                                                        setProjectTypeId(
-                                                            candidate.id,
-                                                        )
+                                                    aria-current={
+                                                        index === stepIndex
+                                                            ? 'step'
+                                                            : undefined
                                                     }
                                                 >
-                                                    <strong>
-                                                        {candidate.name}
-                                                    </strong>
-                                                    {candidate.description && (
-                                                        <span>
-                                                            {
-                                                                candidate.description
+                                                    {index < stepIndex ? (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                goTo(index)
                                                             }
+                                                        >
+                                                            {titles[key]}
+                                                        </button>
+                                                    ) : (
+                                                        <span>
+                                                            {titles[key]}
                                                         </span>
                                                     )}
-                                                </button>
+                                                </li>
                                             ))}
-                                        </div>
-                                    </fieldset>
+                                        </ol>
+                                    </div>
 
-                                    {projectTypeId !== null &&
-                                        features.length > 0 && (
-                                            <fieldset className="pub-booking__step">
-                                                <legend>
-                                                    <span>02</span>{' '}
-                                                    {t.estimate.step2}
-                                                </legend>
+                                    <div
+                                        key={step}
+                                        className="pub-booking__step pub-estimate__panel"
+                                    >
+                                        <h2
+                                            ref={headingRef}
+                                            tabIndex={-1}
+                                            className="pub-booking__legend"
+                                        >
+                                            <span>
+                                                {String(stepIndex + 1).padStart(
+                                                    2,
+                                                    '0',
+                                                )}
+                                            </span>{' '}
+                                            {titles[step]}
+                                        </h2>
+
+                                        {step !== 'project' && (
+                                            <p
+                                                className="pub-estimate__mini"
+                                                aria-live="polite"
+                                            >
+                                                <span>{t.estimate.result}</span>{' '}
+                                                {quoteLabel}
+                                            </p>
+                                        )}
+
+                                        {step === 'project' && (
+                                            <>
+                                                <div className="pub-estimate__ai">
+                                                    <p className="pub-booking__label">
+                                                        {t.estimate.aiTitle}
+                                                    </p>
+                                                    <p className="pub-booking__note">
+                                                        {t.estimate.aiHint}
+                                                    </p>
+                                                    <label className="pub-drawer__field pub-drawer__field--wide">
+                                                        <span className="sr-only">
+                                                            {t.estimate.aiTitle}
+                                                        </span>
+                                                        <textarea
+                                                            rows={3}
+                                                            maxLength={2000}
+                                                            value={description}
+                                                            placeholder={
+                                                                t.estimate
+                                                                    .aiPlaceholder
+                                                            }
+                                                            onChange={(event) =>
+                                                                setDescription(
+                                                                    event.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                        />
+                                                    </label>
+                                                    <div className="pub-booking__times">
+                                                        <button
+                                                            type="button"
+                                                            className="pub-filter"
+                                                            disabled={
+                                                                aiStatus ===
+                                                                    'pending' ||
+                                                                description.trim()
+                                                                    .length < 15
+                                                            }
+                                                            onClick={() =>
+                                                                void suggest()
+                                                            }
+                                                        >
+                                                            {aiStatus ===
+                                                            'pending'
+                                                                ? t.estimate
+                                                                      .aiThinking
+                                                                : t.estimate
+                                                                      .aiSubmit}
+                                                        </button>
+                                                    </div>
+                                                    {(aiStatus === 'done' ||
+                                                        aiStatus ===
+                                                            'error') && (
+                                                        <p
+                                                            className="pub-booking__note"
+                                                            role="status"
+                                                        >
+                                                            {aiStatus === 'done'
+                                                                ? t.estimate
+                                                                      .aiDone
+                                                                : t.estimate
+                                                                      .aiError}
+                                                        </p>
+                                                    )}
+                                                </div>
+
+                                                <div className="pub-booking__types">
+                                                    {projectTypes.map(
+                                                        (candidate) => (
+                                                            <button
+                                                                key={
+                                                                    candidate.id
+                                                                }
+                                                                type="button"
+                                                                className="pub-booking__type"
+                                                                aria-pressed={
+                                                                    candidate.id ===
+                                                                    projectTypeId
+                                                                }
+                                                                onClick={() => {
+                                                                    chooseProjectType(
+                                                                        candidate.id,
+                                                                    );
+                                                                    setBlocked(
+                                                                        false,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <strong>
+                                                                    {
+                                                                        candidate.name
+                                                                    }
+                                                                </strong>
+                                                                {candidate.description && (
+                                                                    <span>
+                                                                        {
+                                                                            candidate.description
+                                                                        }
+                                                                    </span>
+                                                                )}
+                                                            </button>
+                                                        ),
+                                                    )}
+                                                </div>
+                                                {blocked && (
+                                                    <small className="pub-booking__error">
+                                                        {t.estimate.chooseType}
+                                                    </small>
+                                                )}
+                                            </>
+                                        )}
+
+                                        {step === 'options' && (
+                                            <>
                                                 <p className="pub-booking__note">
                                                     {t.estimate.step2Hint}
                                                 </p>
                                                 <div className="pub-booking__types">
-                                                    {features.map(
+                                                    {availableFeatures.map(
                                                         (candidate) => (
                                                             <button
                                                                 key={
@@ -300,273 +471,368 @@ export default function Estimate({
                                                         ),
                                                     )}
                                                 </div>
-                                            </fieldset>
+                                            </>
                                         )}
 
-                                    {projectTypeId !== null && (
-                                        <div
-                                            className="pub-booking__step"
-                                            aria-live="polite"
-                                        >
-                                            {currencies.length > 1 && (
-                                                <>
-                                                    <p className="pub-booking__label">
-                                                        {t.estimate.currency}
-                                                    </p>
-                                                    <div
-                                                        className="pub-booking__times"
-                                                        role="group"
-                                                        aria-label={
-                                                            t.estimate.currency
-                                                        }
-                                                    >
-                                                        {currencies.map(
-                                                            (candidate) => (
-                                                                <button
-                                                                    key={
-                                                                        candidate
-                                                                    }
-                                                                    type="button"
-                                                                    className="pub-filter"
-                                                                    aria-pressed={
-                                                                        candidate ===
-                                                                        currency
-                                                                    }
-                                                                    onClick={() =>
-                                                                        setCurrency(
-                                                                            candidate,
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    {candidate ===
-                                                                    'XOF'
-                                                                        ? 'FCFA'
-                                                                        : candidate}
-                                                                </button>
-                                                            ),
-                                                        )}
-                                                    </div>
-                                                </>
-                                            )}
+                                        {step === 'estimate' && (
+                                            <>
+                                                {currencies.length > 1 && (
+                                                    <>
+                                                        <p className="pub-booking__label">
+                                                            {
+                                                                t.estimate
+                                                                    .currency
+                                                            }
+                                                        </p>
+                                                        <div
+                                                            className="pub-booking__times"
+                                                            role="group"
+                                                            aria-label={
+                                                                t.estimate
+                                                                    .currency
+                                                            }
+                                                        >
+                                                            {currencies.map(
+                                                                (candidate) => (
+                                                                    <button
+                                                                        key={
+                                                                            candidate
+                                                                        }
+                                                                        type="button"
+                                                                        className="pub-filter"
+                                                                        aria-pressed={
+                                                                            candidate ===
+                                                                            currency
+                                                                        }
+                                                                        onClick={() =>
+                                                                            setCurrency(
+                                                                                candidate,
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        {candidate ===
+                                                                        'XOF'
+                                                                            ? 'FCFA'
+                                                                            : candidate}
+                                                                    </button>
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                    </>
+                                                )}
 
-                                            <p className="pub-booking__summary">
-                                                <span>
-                                                    {quote?.billing === 'fixed'
-                                                        ? t.estimate.fixedPrice
-                                                        : t.estimate.result}
-                                                </span>
-                                                <strong>
-                                                    {!quote ||
-                                                    quote.currency !== currency
-                                                        ? t.estimate.calculating
-                                                        : quote.billing ===
-                                                            'hourly'
-                                                          ? `${t.estimate.hourlyPrice(`${quote.hours_min} – ${quote.hours_max} h`, money(quote.hourly_rate))} · ${t.estimate.weeks(quote.weeks_min, quote.weeks_max)}`
-                                                          : `${money(quote.price_min)} – ${money(quote.price_max)} · ${t.estimate.weeks(quote.weeks_min, quote.weeks_max)}`}
-                                                </strong>
-                                                {quote?.billing === 'hourly' &&
-                                                    quote.currency ===
-                                                        currency && (
+                                                <p
+                                                    className="pub-booking__summary"
+                                                    aria-live="polite"
+                                                >
+                                                    <span>
+                                                        {currentQuote?.billing ===
+                                                        'fixed'
+                                                            ? t.estimate
+                                                                  .fixedPrice
+                                                            : t.estimate.result}
+                                                    </span>
+                                                    <strong>
+                                                        {quoteLabel}
+                                                    </strong>
+                                                    {currentQuote?.billing ===
+                                                        'hourly' && (
                                                         <span>
                                                             {t.estimate.hourlyTotal(
-                                                                `${money(quote.price_min)} – ${money(quote.price_max)}`,
+                                                                `${money(currentQuote.price_min)} – ${money(currentQuote.price_max)}`,
                                                             )}
                                                         </span>
                                                     )}
-                                            </p>
-                                            <p className="pub-booking__note">
-                                                {quote?.billing === 'hourly'
-                                                    ? `${t.estimate.hourlyNote} ${t.estimate.disclaimer}`
-                                                    : t.estimate.disclaimer}
-                                            </p>
-                                        </div>
-                                    )}
+                                                </p>
+                                                <p className="pub-booking__note">
+                                                    {currentQuote?.billing ===
+                                                    'hourly'
+                                                        ? `${t.estimate.hourlyNote} ${t.estimate.disclaimer}`
+                                                        : t.estimate.disclaimer}
+                                                </p>
+                                                <p className="pub-booking__note">
+                                                    {
+                                                        t.estimate
+                                                            .stepEstimateHint
+                                                    }
+                                                </p>
+                                            </>
+                                        )}
 
-                                    {projectTypeId !== null && quote && (
-                                        <Form
-                                            {...ProjectEstimateController.store.form(
-                                                locale,
+                                        {step === 'contact' &&
+                                            projectTypeId !== null && (
+                                                <Form
+                                                    {...ProjectEstimateController.store.form(
+                                                        locale,
+                                                    )}
+                                                    className="pub-contact__form"
+                                                    options={{
+                                                        preserveScroll: true,
+                                                    }}
+                                                    onSuccess={() =>
+                                                        setSent(true)
+                                                    }
+                                                >
+                                                    {({
+                                                        processing,
+                                                        errors,
+                                                    }) => (
+                                                        <>
+                                                            <input
+                                                                type="text"
+                                                                name="website"
+                                                                tabIndex={-1}
+                                                                autoComplete="off"
+                                                                hidden
+                                                                aria-hidden="true"
+                                                            />
+                                                            <input
+                                                                type="hidden"
+                                                                name="project_type_id"
+                                                                value={
+                                                                    projectTypeId
+                                                                }
+                                                            />
+                                                            {featureIds.map(
+                                                                (id) => (
+                                                                    <input
+                                                                        key={id}
+                                                                        type="hidden"
+                                                                        name="feature_ids[]"
+                                                                        value={
+                                                                            id
+                                                                        }
+                                                                    />
+                                                                ),
+                                                            )}
+                                                            <input
+                                                                type="hidden"
+                                                                name="currency"
+                                                                value={currency}
+                                                            />
+
+                                                            <div className="pub-drawer__fields">
+                                                                <label className="pub-drawer__field">
+                                                                    <span>
+                                                                        {
+                                                                            t
+                                                                                .estimate
+                                                                                .name
+                                                                        }
+                                                                    </span>
+                                                                    <input
+                                                                        name="name"
+                                                                        autoComplete="name"
+                                                                        required
+                                                                    />
+                                                                    {errors.name && (
+                                                                        <small>
+                                                                            {
+                                                                                errors.name
+                                                                            }
+                                                                        </small>
+                                                                    )}
+                                                                </label>
+
+                                                                <label className="pub-drawer__field">
+                                                                    <span>
+                                                                        {
+                                                                            t
+                                                                                .estimate
+                                                                                .email
+                                                                        }
+                                                                    </span>
+                                                                    <input
+                                                                        type="email"
+                                                                        name="email"
+                                                                        autoComplete="email"
+                                                                        required
+                                                                    />
+                                                                    {errors.email && (
+                                                                        <small>
+                                                                            {
+                                                                                errors.email
+                                                                            }
+                                                                        </small>
+                                                                    )}
+                                                                </label>
+
+                                                                <label className="pub-drawer__field">
+                                                                    <span>
+                                                                        {
+                                                                            t
+                                                                                .estimate
+                                                                                .company
+                                                                        }
+                                                                    </span>
+                                                                    <input
+                                                                        name="company"
+                                                                        autoComplete="organization"
+                                                                    />
+                                                                </label>
+
+                                                                <label className="pub-drawer__field">
+                                                                    <span>
+                                                                        {
+                                                                            t
+                                                                                .fab
+                                                                                .timeline
+                                                                        }{' '}
+                                                                        (
+                                                                        {
+                                                                            t
+                                                                                .fab
+                                                                                .optional
+                                                                        }
+                                                                        )
+                                                                    </span>
+                                                                    <select
+                                                                        name="timeline"
+                                                                        defaultValue=""
+                                                                    >
+                                                                        <option value="">
+                                                                            {
+                                                                                t
+                                                                                    .fab
+                                                                                    .choose
+                                                                            }
+                                                                        </option>
+                                                                        <option value="urgent">
+                                                                            {
+                                                                                t
+                                                                                    .fab
+                                                                                    .timeUrgent
+                                                                            }
+                                                                        </option>
+                                                                        <option value="quarter">
+                                                                            {
+                                                                                t
+                                                                                    .fab
+                                                                                    .timeQuarter
+                                                                            }
+                                                                        </option>
+                                                                        <option value="semester">
+                                                                            {
+                                                                                t
+                                                                                    .fab
+                                                                                    .timeSemester
+                                                                            }
+                                                                        </option>
+                                                                        <option value="flexible">
+                                                                            {
+                                                                                t
+                                                                                    .fab
+                                                                                    .timeFlexible
+                                                                            }
+                                                                        </option>
+                                                                    </select>
+                                                                </label>
+
+                                                                <label className="pub-drawer__field pub-drawer__field--wide">
+                                                                    <span>
+                                                                        {
+                                                                            t
+                                                                                .estimate
+                                                                                .message
+                                                                        }
+                                                                    </span>
+                                                                    <textarea
+                                                                        name="message"
+                                                                        rows={4}
+                                                                        defaultValue={
+                                                                            description
+                                                                        }
+                                                                    />
+                                                                    {errors.message && (
+                                                                        <small>
+                                                                            {
+                                                                                errors.message
+                                                                            }
+                                                                        </small>
+                                                                    )}
+                                                                </label>
+                                                            </div>
+
+                                                            <div className="pub-estimate__nav">
+                                                                <button
+                                                                    type="button"
+                                                                    className="pub-booking__link"
+                                                                    onClick={() =>
+                                                                        goTo(
+                                                                            stepIndex -
+                                                                                1,
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    ←{' '}
+                                                                    {
+                                                                        t
+                                                                            .estimate
+                                                                            .back
+                                                                    }
+                                                                </button>
+                                                                <button
+                                                                    type="submit"
+                                                                    className="pub-drawer__send"
+                                                                    disabled={
+                                                                        processing
+                                                                    }
+                                                                >
+                                                                    {processing
+                                                                        ? t
+                                                                              .estimate
+                                                                              .sending
+                                                                        : t
+                                                                              .estimate
+                                                                              .submit}
+                                                                    <span aria-hidden="true">
+                                                                        →
+                                                                    </span>
+                                                                </button>
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                </Form>
                                             )}
-                                            className="pub-booking__step pub-contact__form"
-                                            options={{ preserveScroll: true }}
-                                            onSuccess={() => setSent(true)}
-                                        >
-                                            {({ processing, errors }) => (
-                                                <>
-                                                    <h3 className="pub-booking__legend">
-                                                        <span>
-                                                            {features.length > 0
-                                                                ? '03'
-                                                                : '02'}
-                                                        </span>{' '}
-                                                        {t.estimate.step3}
-                                                    </h3>
 
-                                                    <input
-                                                        type="text"
-                                                        name="website"
-                                                        tabIndex={-1}
-                                                        autoComplete="off"
-                                                        hidden
-                                                        aria-hidden="true"
-                                                    />
-                                                    <input
-                                                        type="hidden"
-                                                        name="project_type_id"
-                                                        value={projectTypeId}
-                                                    />
-                                                    {featureIds.map((id) => (
-                                                        <input
-                                                            key={id}
-                                                            type="hidden"
-                                                            name="feature_ids[]"
-                                                            value={id}
-                                                        />
-                                                    ))}
-                                                    <input
-                                                        type="hidden"
-                                                        name="currency"
-                                                        value={currency}
-                                                    />
-
-                                                    <div className="pub-drawer__fields">
-                                                        <label className="pub-drawer__field">
-                                                            <span>
-                                                                {
-                                                                    t.estimate
-                                                                        .name
-                                                                }
-                                                            </span>
-                                                            <input
-                                                                name="name"
-                                                                autoComplete="name"
-                                                                required
-                                                            />
-                                                            {errors.name && (
-                                                                <small>
-                                                                    {
-                                                                        errors.name
-                                                                    }
-                                                                </small>
-                                                            )}
-                                                        </label>
-
-                                                        <label className="pub-drawer__field">
-                                                            <span>
-                                                                {
-                                                                    t.estimate
-                                                                        .email
-                                                                }
-                                                            </span>
-                                                            <input
-                                                                type="email"
-                                                                name="email"
-                                                                autoComplete="email"
-                                                                required
-                                                            />
-                                                            {errors.email && (
-                                                                <small>
-                                                                    {
-                                                                        errors.email
-                                                                    }
-                                                                </small>
-                                                            )}
-                                                        </label>
-
-                                                        <label className="pub-drawer__field">
-                                                            <span>
-                                                                {
-                                                                    t.estimate
-                                                                        .company
-                                                                }
-                                                            </span>
-                                                            <input
-                                                                name="company"
-                                                                autoComplete="organization"
-                                                            />
-                                                        </label>
-
-                                                        <label className="pub-drawer__field">
-                                                            <span>
-                                                                {t.fab.timeline}{' '}
-                                                                (
-                                                                {t.fab.optional}
-                                                                )
-                                                            </span>
-                                                            <select
-                                                                name="timeline"
-                                                                defaultValue=""
-                                                            >
-                                                                <option value="">
-                                                                    {
-                                                                        t.fab
-                                                                            .choose
-                                                                    }
-                                                                </option>
-                                                                <option value="urgent">
-                                                                    {
-                                                                        t.fab
-                                                                            .timeUrgent
-                                                                    }
-                                                                </option>
-                                                                <option value="quarter">
-                                                                    {
-                                                                        t.fab
-                                                                            .timeQuarter
-                                                                    }
-                                                                </option>
-                                                                <option value="semester">
-                                                                    {
-                                                                        t.fab
-                                                                            .timeSemester
-                                                                    }
-                                                                </option>
-                                                                <option value="flexible">
-                                                                    {
-                                                                        t.fab
-                                                                            .timeFlexible
-                                                                    }
-                                                                </option>
-                                                            </select>
-                                                        </label>
-
-                                                        <label className="pub-drawer__field pub-drawer__field--wide">
-                                                            <span>
-                                                                {
-                                                                    t.estimate
-                                                                        .message
-                                                                }
-                                                            </span>
-                                                            <textarea
-                                                                name="message"
-                                                                rows={4}
-                                                            />
-                                                            {errors.message && (
-                                                                <small>
-                                                                    {
-                                                                        errors.message
-                                                                    }
-                                                                </small>
-                                                            )}
-                                                        </label>
-                                                    </div>
-
+                                        {step !== 'contact' && (
+                                            <div className="pub-estimate__nav">
+                                                {stepIndex > 0 ? (
                                                     <button
-                                                        type="submit"
-                                                        className="pub-drawer__send"
-                                                        disabled={processing}
+                                                        type="button"
+                                                        className="pub-booking__link"
+                                                        onClick={() =>
+                                                            goTo(stepIndex - 1)
+                                                        }
                                                     >
-                                                        {processing
-                                                            ? t.estimate.sending
-                                                            : t.estimate.submit}
-                                                        <span aria-hidden="true">
-                                                            →
-                                                        </span>
+                                                        ← {t.estimate.back}
                                                     </button>
-                                                </>
-                                            )}
-                                        </Form>
-                                    )}
+                                                ) : (
+                                                    <span />
+                                                )}
+                                                <button
+                                                    type="button"
+                                                    className="pub-drawer__send"
+                                                    onClick={next}
+                                                    disabled={
+                                                        step === 'estimate' &&
+                                                        !currentQuote
+                                                    }
+                                                >
+                                                    {step === 'estimate'
+                                                        ? t.estimate.send
+                                                        : step === 'options' &&
+                                                            featureIds.length ===
+                                                                0
+                                                          ? t.estimate.skip
+                                                          : t.estimate.next}
+                                                    <span aria-hidden="true">
+                                                        →
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </>
                             )}
                         </div>
