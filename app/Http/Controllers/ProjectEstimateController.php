@@ -45,6 +45,8 @@ class ProjectEstimateController extends Controller
             'currencies' => $this->estimator->currencies(),
             // La devise du pays du visiteur (d'après son adresse IP), choisie d'office.
             'defaultCurrency' => $this->estimator->defaultCurrency($geo->locate($request->ip())['country_code'], app()->getLocale()),
+            // ?type=… (lien « Estimer mon projet » d'une offre) : ce type de projet est présélectionné.
+            'preselectedTypeId' => $items->where('kind', EstimatorItemKind::ProjectType)->firstWhere('id', $request->integer('type'))?->id,
         ]);
     }
 

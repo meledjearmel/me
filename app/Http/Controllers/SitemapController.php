@@ -7,6 +7,7 @@ use App\Http\Middleware\SetLocale;
 use App\Models\Certification;
 use App\Models\Post;
 use App\Models\Project;
+use App\Models\Service;
 use App\Models\SiteSetting;
 use App\Models\UsesItem;
 use App\Services\ProjectEstimator;
@@ -24,6 +25,7 @@ class SitemapController extends Controller
         $entries = collect(self::STATIC_PATHS)
             // Page « Uses » sans élément publié : elle renvoie une 404.
             ->when(UsesItem::query()->published()->exists(), fn ($paths) => $paths->push('/uses'))
+            ->when(Service::query()->published()->exists(), fn ($paths) => $paths->push('/services'))
             ->when(Certification::query()->published()->exists(), fn ($paths) => $paths->push('/certifications'))
             ->when(SiteSetting::current()->nowText('fr') !== null, fn ($paths) => $paths->push('/now'))
             ->when(app(ProjectEstimator::class)->isAvailable(), fn ($paths) => $paths->push('/estimate'))

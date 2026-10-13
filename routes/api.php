@@ -34,6 +34,7 @@ use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\ProjectController;
 use App\Http\Controllers\Api\V1\PushTokenController;
 use App\Http\Controllers\Api\V1\ReviewInvitationController;
+use App\Http\Controllers\Api\V1\ServiceController;
 use App\Http\Controllers\Api\V1\SiteSettingController;
 use App\Http\Controllers\Api\V1\SkillController;
 use App\Http\Controllers\Api\V1\SubscriberController;
@@ -72,6 +73,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             Route::post('draft-project', [AiController::class, 'draftProject'])->name('draft-project');
             Route::post('suggest-estimator-item', [AiController::class, 'suggestEstimatorItem'])->name('suggest-estimator-item');
             Route::post('propose-estimator-grid', [AiController::class, 'proposeEstimatorGrid'])->name('propose-estimator-grid');
+            Route::post('draft-service', [AiController::class, 'draftService'])->name('draft-service');
             Route::post('engagements/{engagement}/analyze', [EngagementController::class, 'analyze'])->name('engagements.analyze');
         });
 
@@ -152,6 +154,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('subscribers', SubscriberController::class)->only(['index', 'destroy']);
         Route::apiResource('review-invitations', ReviewInvitationController::class)->only(['index', 'store', 'destroy']);
         Route::apiResource('uses-items', UsesItemController::class);
+        Route::apiResource('services', ServiceController::class);
         Route::apiResource('certifications', CertificationController::class);
         Route::get('github', [GitHubController::class, 'show'])->name('github.show');
         Route::put('github', [GitHubController::class, 'update'])->name('github.update');

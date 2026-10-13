@@ -26,6 +26,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectEstimateController;
 use App\Http\Controllers\RobotsTxtController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SkillController;
 use App\Http\Controllers\TestimonialController;
@@ -96,6 +97,7 @@ Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, Lo
         ->middleware('throttle:10,1')
         ->name('newsletter.unsubscribe.store');
     Route::get('uses', [UsesController::class, 'index'])->name('uses');
+    Route::get('services', [ServiceController::class, 'index'])->name('services');
     Route::get('certifications', [CertificationController::class, 'index'])->name('certifications');
     Route::get('now', NowController::class)->name('now');
     Route::get('contact', [ContactController::class, 'index'])->name('contact.index');

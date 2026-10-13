@@ -8,6 +8,7 @@ use App\Models\Certification;
 use App\Models\JobProfile;
 use App\Models\PageVisit;
 use App\Models\Profile;
+use App\Models\Service;
 use App\Models\SiteSetting;
 use App\Models\UsesItem;
 use App\Services\BookingCalendar;
@@ -62,6 +63,8 @@ class ShareSitePublicData
             'availability' => fn () => SiteSetting::current()->publicAvailability(),
             // La page « Uses » n'est proposée que si elle a du contenu publié.
             'usesEnabled' => fn () => UsesItem::query()->published()->exists(),
+            // La page « Services » n'existe qu'avec au moins une offre publiée.
+            'servicesEnabled' => fn () => Service::query()->published()->exists(),
             // Idem pour la page « Certifications ».
             'certificationsEnabled' => fn () => Certification::query()->published()->exists(),
             // La page « Now » n'existe que si elle a un texte.

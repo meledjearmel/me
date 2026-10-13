@@ -17,7 +17,8 @@ export type StatusContentType =
     | "education"
     | "certification"
     | "uses_item"
-    | "skill";
+    | "skill"
+    | "service";
 
 /**
  * Change le statut d'un contenu depuis sa fiche, sans passer par le formulaire. Publier est

@@ -58,6 +58,7 @@ export default function SiteHeader({
     const { props, url } = usePage<{
         profile: PublicProfile;
         blogEnabled: boolean;
+        servicesEnabled?: boolean;
     }>();
     const { compact, onDark } = useNavState(overHero);
     const { profile } = props;
@@ -89,6 +90,9 @@ export default function SiteHeader({
         { href: path('about'), label: t.nav.about },
         { href: path('skills'), label: t.nav.skills },
         { href: path('projects'), label: t.nav.projects },
+        ...(props.servicesEnabled
+            ? [{ href: path('services'), label: t.nav.services }]
+            : []),
         ...(props.blogEnabled
             ? [{ href: path('blog'), label: t.nav.blog }]
             : []),

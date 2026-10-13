@@ -18,6 +18,7 @@ use App\Models\Post;
 use App\Models\PostComment;
 use App\Models\ProfessionalReference;
 use App\Models\Project;
+use App\Models\Service;
 use App\Models\Skill;
 use App\Models\Technology;
 use App\Models\TechnologyCategory;
@@ -58,6 +59,7 @@ class TrashController extends Controller
         'appointments' => ['model' => Appointment::class, 'label' => 'Rendez-vous'],
         'appointment-types' => ['model' => AppointmentType::class, 'label' => 'Type de rendez-vous'],
         'estimator-items' => ['model' => EstimatorItem::class, 'label' => 'Élément de l’estimateur'],
+        'services' => ['model' => Service::class, 'label' => 'Offre'],
     ];
 
     public function index(Request $request): Response
@@ -152,6 +154,7 @@ class TrashController extends Controller
             'appointments' => trim("{$model->name} — {$model->starts_at?->format('d/m/Y H:i')}"),
             'appointment-types' => (string) $model->name,
             'estimator-items' => (string) $model->name,
+            'services' => (string) $model->title,
             default => (string) $model->id,
         };
     }

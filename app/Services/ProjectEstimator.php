@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Enums\EstimatorBilling;
 use App\Enums\EstimatorItemKind;
 use App\Enums\EstimatorPricing;
+use App\Enums\ServicePriceMode;
 use App\Models\EstimatorItem;
+use App\Models\Service;
 use App\Models\SiteSetting;
 use Illuminate\Support\Collection;
 
@@ -111,6 +113,37 @@ class ProjectEstimator
             'weeks_min' => max(1, (int) ceil($hoursMin / $hoursPerWeek)),
             'weeks_max' => max(1, (int) ceil($hoursMax / $hoursPerWeek)),
         ];
+    }
+
+    /**
+     * Le prix « à partir de » d'une offre, dans la devise demandée : le bas de la fourchette
+     * de son type de projet (sans option) si le prix vient de l'estimateur (son taux horaire
+     * pour un type facturé à l'heure), ou le montant
+     * saisi (dans sa devise s'il n'existe pas dans celle du visiteur). Null : « sur devis ».
+     *
+     * @return array{amount: int, currency: string, billing: string|null}|null
+     */
+    public function startingPrice(Service $service, string $currency): ?array
+    {
+        if ($service->price_mode === ServicePriceMode::Manual) {
+            $prices = array_filter((array) $service->manual_prices, fn (mixed $amount): bool => (int) $amount > 0);
+            $chosen = isset($prices[$currency]) ? $currency : array_key_first($prices);
+
+            return $chosen === null ? null : ['amount' => (int) $prices[$chosen], 'currency' => $chosen, 'billing' => null];
+        }
+
+        $projectType = $service->estimatorItem;
+
+        if ($service->price_mode !== ServicePriceMode::Estimator || $projectType === null || ! in_array($currency, $this->currencies(), true)) {
+            return null;
+        }
+
+        $estimate = $this->estimate($projectType, collect(), $currency);
+
+        // Facturé à l'heure : c'est le taux qui parle au visiteur, pas un total.
+        return $estimate['billing'] === EstimatorBilling::Hourly->value
+            ? ['amount' => $estimate['hourly_rate'], 'currency' => $currency, 'billing' => $estimate['billing']]
+            : ['amount' => $estimate['price_min'], 'currency' => $currency, 'billing' => $estimate['billing']];
     }
 
     private function round(int $amount, string $currency): int

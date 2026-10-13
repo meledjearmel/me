@@ -28,8 +28,14 @@ export default function SiteFooter({
     const t = useTranslations();
     const path = useLocalizedPath();
     const { open } = useContactDrawer();
-    const { blogEnabled, usesEnabled, certificationsEnabled, nowEnabled } =
-        usePage<{
+    const {
+        blogEnabled,
+        usesEnabled,
+        certificationsEnabled,
+        nowEnabled,
+        servicesEnabled,
+    } = usePage<{
+        servicesEnabled?: boolean;
         blogEnabled: boolean;
         usesEnabled: boolean;
         certificationsEnabled: boolean;
@@ -58,6 +64,9 @@ export default function SiteFooter({
         { label: t.nav.about, href: path('about') },
         { label: t.nav.skills, href: path('skills') },
         { label: t.nav.projects, href: path('projects') },
+        ...(servicesEnabled
+            ? [{ label: t.nav.services, href: path('services') }]
+            : []),
         ...(blogEnabled ? [{ label: t.nav.blog, href: path('blog') }] : []),
         { label: t.testimonials.pageTitle, href: path('testimonials') },
         ...(certificationsEnabled

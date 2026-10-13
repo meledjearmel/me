@@ -33,12 +33,15 @@ export default function Estimate({
     features,
     currencies,
     defaultCurrency,
+    preselectedTypeId,
 }: {
     projectTypes: PublicEstimatorItem[];
     features: PublicEstimatorItem[];
     currencies: string[];
     /** La devise du pays du visiteur, choisie par le serveur. */
     defaultCurrency: string;
+    /** Type de projet présélectionné par le lien d'une offre (?type=…). */
+    preselectedTypeId: number | null;
 }) {
     const t = useTranslations();
     const locale = useLocale();
@@ -46,7 +49,8 @@ export default function Estimate({
 
     const [stepIndex, setStepIndex] = useState(0);
     const [projectTypeId, setProjectTypeId] = useState<number | null>(
-        projectTypes.length === 1 ? projectTypes[0].id : null,
+        preselectedTypeId ??
+            (projectTypes.length === 1 ? projectTypes[0].id : null),
     );
     const [featureIds, setFeatureIds] = useState<number[]>([]);
 

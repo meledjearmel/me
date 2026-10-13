@@ -261,6 +261,7 @@ class ContentRevisions
         'certification' => 'Certification',
         'uses_item' => 'Page « Uses »',
         'skill' => 'Compétence',
+        'service' => 'Offre',
         self::NOW_PAGE => 'Page « Now »',
     ];
 

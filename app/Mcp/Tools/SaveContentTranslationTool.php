@@ -16,7 +16,7 @@ use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
 
 #[Name('save-content-translation')]
-#[Description('Enregistre l\'anglais d\'un brouillon (experience, education, certification, uses_item, skill) une fois son français validé par le développeur : les champs traduits remplis en français, et pour une expérience ses réalisations (highlights) dans le même ordre. Le français n\'est pas modifié et rien n\'est publié.')]
+#[Description('Enregistre l\'anglais d\'un brouillon (experience, education, certification, uses_item, skill, service) une fois son français validé par le développeur : les champs traduits remplis en français, et pour une expérience ses réalisations (highlights) dans le même ordre. Le français n\'est pas modifié et rien n\'est publié.')]
 #[IsIdempotent]
 class SaveContentTranslationTool extends Tool
 {

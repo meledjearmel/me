@@ -15,7 +15,7 @@ use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 
 #[Name('get-content')]
-#[Description('Lit un contenu (experience, education, certification, uses_item, skill) : ses champs en français (fields), l\'anglais déjà traduit (english) et son statut.')]
+#[Description('Lit un contenu (experience, education, certification, uses_item, skill, service) : ses champs en français (fields), l\'anglais déjà traduit (english) et son statut.')]
 #[IsReadOnly]
 class GetContentTool extends Tool
 {

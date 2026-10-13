@@ -18,6 +18,7 @@ import {
     Heart,
     Calculator,
     ListPlus,
+    Store,
     BadgeDollarSign,
     IdCard,
     LayoutGrid,
@@ -60,6 +61,7 @@ import { index as reviewInvitationsIndex } from "@/routes/admin/review-invitatio
 import { index as subscribersIndex } from "@/routes/admin/subscribers";
 import { index as engagementsIndex } from "@/routes/admin/engagements";
 import { index as estimatorItemsIndex } from "@/routes/admin/estimator-items";
+import { index as servicesIndex } from "@/routes/admin/services";
 import { index as estimatorOptionsIndex } from "@/routes/admin/estimator-options";
 import { edit as estimatorSettingsEdit } from "@/routes/admin/estimator-settings";
 import { index as domainsIndex } from "@/routes/admin/domains";
@@ -110,6 +112,7 @@ const blogNavItems: NavItem[] = [
 
 const portfolioNavItems: NavItem[] = [
     { title: "Projets", href: projectsIndex(), icon: FolderGit2 },
+    { title: "Services", href: servicesIndex(), icon: Store },
     { title: "Certifications", href: certificationsIndex(), icon: BadgeCheck },
     { title: "Avis", href: testimonialsIndex(), icon: MessageSquareQuote },
     {

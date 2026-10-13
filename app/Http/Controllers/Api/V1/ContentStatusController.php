@@ -17,7 +17,7 @@ class ContentStatusController extends Controller
      *
      * Change seulement le statut, sans renvoyer tout le formulaire. `type` : `project`
      * (`draft`, `published`, `archived`), `post`, `experience`, `education`, `certification`,
-     * `uses_item` ou `skill` (`draft` ou `published`). Publier est refusé (422) tant que
+     * `uses_item`, `skill` ou `service` (`draft` ou `published`). Publier est refusé (422) tant que
      * l'anglais obligatoire manque ; un article publié sans date paraît tout de suite.
      *
      * @response array{data: array{type: string, id: int, status: string}}

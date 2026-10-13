@@ -93,7 +93,7 @@ class CommandGuide
             ],
         ],
         'add-content' => [
-            'usage' => 'Ajouter en brouillon une expérience, une formation, une certification, un élément « Uses » ou une compétence à partir d\'une source.',
+            'usage' => 'Ajouter en brouillon une expérience, une formation, une certification, un élément « Uses », une compétence ou une offre de la page « Services » à partir d\'une source.',
             'tips' => [
                 'La source peut être une adresse (page de certification, profil), un texte collé ou un fichier (CV).',
                 'L\'agent vérifie d\'abord ce qui existe pour ne pas créer de doublon.',
@@ -171,11 +171,11 @@ class CommandGuide
         ],
         'list-contents' => [
             'usage' => 'Décrire les champs d\'un type de contenu et lister l\'existant.',
-            'tips' => ['Types : experience, education, certification, uses_item, skill.'],
+            'tips' => ['Types : experience, education, certification, uses_item, skill, service.'],
             'example' => 'Quelles certifications ai-je déjà sur le site ?',
         ],
         'get-content' => [
-            'usage' => 'Lire une expérience, une formation, une certification, un élément « Uses » ou une compétence.',
+            'usage' => 'Lire une expérience, une formation, une certification, un élément « Uses », une compétence ou une offre.',
             'tips' => ['Renvoie le français et l\'anglais déjà saisi.'],
             'example' => 'Relis mon expérience #3 et reformule ses réalisations.',
         ],
@@ -205,8 +205,7 @@ class CommandGuide
         'get-estimator' => [
             'usage' => 'Lire la grille de l\'estimateur de projet (heures, facturation) et ses réglages (taux, marge, heures par semaine).',
             'tips' => ['Appelé avant de proposer un élément ou d\'analyser une demande, pour rester cohérent.'],
-            'example' => 'Ma grille d\'estimation est-elle cohérente ? Qu\'est-ce qui est sous-estimé ?',
-            'requests' => ['Relis la grille de mon estimateur de projet et dis-moi ce qui te paraît sous-estimé.'],
+            'example' => 'Relis la grille de mon estimateur de projet et dis-moi ce qui te paraît sous-estimé.',
         ],
         'save-estimator-item' => [
             'usage' => 'Ajouter un type de projet ou une option à la grille de l\'estimateur, ou corriger ses heures.',
@@ -215,7 +214,6 @@ class CommandGuide
                 'Les heures sont hors marge : le site ajoute lui-même la marge pour imprévus.',
             ],
             'example' => 'Ajoute à mon estimateur une option « Application mobile compagnon ».',
-            'requests' => ['Ajoute à mon estimateur de projet une option « Espace client avec factures », avec des heures réalistes.'],
         ],
         'configure-estimator' => [
             'usage' => 'Configurer tout l\'estimateur en une fois : taux, marge, rythme, types de projet et options (en heures ou en pourcentage, liées ou non à des types).',
@@ -224,13 +222,11 @@ class CommandGuide
                 'Rien n\'est enregistré si une partie est invalide ; les éléments créés restent masqués jusqu\'à leur activation.',
             ],
             'example' => 'Configure mon estimateur : sites vitrines, boutiques et apps mobiles, 100 CHF de l\'heure, 20 % de marge.',
-            'requests' => ['Configure mon estimateur de projet pour mes activités : sites vitrines, boutiques en ligne et applications mobiles, avec les options utiles à chacun, le multilingue en pourcentage, 100 CHF de l\'heure et 20 % de marge.'],
         ],
         'list-estimate-requests' => [
             'usage' => 'Lire les demandes reçues par l\'estimateur : choix, estimation affichée, message et analyse existante.',
             'tips' => ['Les coordonnées du visiteur ne sont pas transmises à l\'agent.'],
             'example' => 'Quelles demandes d\'estimation n\'ai-je pas encore traitées ?',
-            'requests' => ['Montre-moi les dernières demandes reçues par mon estimateur de projet.'],
         ],
         'save-estimate-analysis' => [
             'usage' => 'Enregistrer une analyse d\'une demande sur sa fiche : risques, points flous, questions, heures réalistes.',
@@ -239,7 +235,6 @@ class CommandGuide
                 'Rien n\'est envoyé au client : vous gardez la main sur le devis.',
             ],
             'example' => 'Analyse la demande #42 et enregistre les questions à poser au client.',
-            'requests' => ['Analyse la dernière demande de mon estimateur : risques, questions à poser au client et heures réalistes, puis enregistre l\'analyse.'],
         ],
     ];
 

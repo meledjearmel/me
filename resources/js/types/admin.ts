@@ -416,6 +416,24 @@ export type EstimatorItem = {
     project_types?: { id: number; name: Translatable }[];
 };
 
+export type Service = {
+    id: number;
+    slug: string;
+    title: Translatable;
+    tagline: Partial<Translatable> | null;
+    description: Partial<Translatable> | null;
+    /** Ce qui est compris, une ligne par élément. */
+    includes: Partial<Translatable> | null;
+    price_mode: "estimator" | "manual" | "quote";
+    estimator_item_id: number | null;
+    manual_prices: Partial<Record<EstimatorCurrency, number>> | null;
+    status: PublicationStatus;
+    drafted_by: string | null;
+    sort_order: number;
+    projects_count?: number;
+    project_ids?: number[];
+};
+
 export type EstimatorProposalItem = {
     ref?: string;
     id?: number;

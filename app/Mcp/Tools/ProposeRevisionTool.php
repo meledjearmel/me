@@ -13,7 +13,7 @@ use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 
 #[Name('propose-revision')]
-#[Description('Propose une modification d\'un contenu déjà publié (project, post, experience, education, certification, uses_item, skill) ou de la page « Now » (now_page, sans id). Rien ne change sur le site : le développeur voit l\'avant/après dans l\'administration et applique ou rejette. N\'envoyer que les champs modifiés, en français (fr, mêmes noms que les outils de brouillon) et en anglais (en, mêmes noms que les outils de traduction) : le contenu étant en ligne dans les deux langues, chaque champ traduit modifié en français doit l\'être aussi en anglais. Lire le contenu d\'abord (get-project, get-post, get-content). Pour un brouillon, utiliser plutôt les outils de brouillon.')]
+#[Description('Propose une modification d\'un contenu déjà publié (project, post, experience, education, certification, uses_item, skill, service) ou de la page « Now » (now_page, sans id). Rien ne change sur le site : le développeur voit l\'avant/après dans l\'administration et applique ou rejette. N\'envoyer que les champs modifiés, en français (fr, mêmes noms que les outils de brouillon) et en anglais (en, mêmes noms que les outils de traduction) : le contenu étant en ligne dans les deux langues, chaque champ traduit modifié en français doit l\'être aussi en anglais. Lire le contenu d\'abord (get-project, get-post, get-content). Pour un brouillon, utiliser plutôt les outils de brouillon.')]
 class ProposeRevisionTool extends Tool
 {
     use NamesAiClient;

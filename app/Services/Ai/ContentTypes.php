@@ -3,10 +3,13 @@
 namespace App\Services\Ai;
 
 use App\Enums\CertificationKind;
+use App\Enums\ServicePriceMode;
 use App\Enums\UsesCategory;
 use App\Models\Certification;
 use App\Models\Education;
+use App\Models\EstimatorItem;
 use App\Models\Experience;
+use App\Models\Service;
 use App\Models\Skill;
 use App\Models\UsesItem;
 use Illuminate\Database\Eloquent\Model;
@@ -100,6 +103,28 @@ class ContentTypes
                     'url' => ['rules' => ['nullable', 'url', 'max:255'], 'doc' => 'Site officiel.'],
                 ],
                 'relations' => [],
+            ],
+            'service' => [
+                'model' => Service::class,
+                'label' => 'offre de la page « Services »',
+                'route' => 'admin.services.edit',
+                'title' => 'slug',
+                'mentions' => ['description'],
+                'translatable' => [
+                    'title' => ['rules' => ['required', 'string', 'max:120'], 'doc' => 'Nom de l\'offre, court, ex. « Application mobile ».'],
+                    'tagline' => ['rules' => ['nullable', 'string', 'max:200'], 'doc' => 'Accroche d\'une phrase : le bénéfice pour le client.'],
+                    'description' => ['rules' => ['nullable', 'string', 'max:3000'], 'doc' => 'Pour qui, quel problème elle règle et comment je travaille, 1 à 2 paragraphes en texte brut ; peut citer un élément du site avec son jeton de mention.'],
+                    'includes' => ['rules' => ['nullable', 'string', 'max:2000'], 'doc' => 'Ce qui est compris, un élément par ligne (5 à 8 lignes courtes).'],
+                ],
+                'fields' => [
+                    'slug' => ['rules' => ['required', 'string', 'max:120', 'alpha_dash:ascii'], 'doc' => 'Identifiant d\'ancre en minuscules, ex. « application-mobile » (unique).'],
+                    'price_mode' => ['rules' => ['required', Rule::enum(ServicePriceMode::class)], 'doc' => '« estimator » (prix calculé depuis le type de projet de l\'estimateur, voir get-estimator), « manual » (montants dans manual_prices) ou « quote » (sur devis).'],
+                    'estimator_item_id' => ['rules' => ['nullable', 'required_if:price_mode,estimator', 'integer', Rule::exists('estimator_items', 'id')->where('kind', 'project_type')->whereNull('deleted_at')], 'doc' => 'Type de projet de l\'estimateur lié (get-estimator) : prix calculé et lien « Estimer mon projet » ; utile même hors du mode estimator.'],
+                    'manual_prices' => ['rules' => ['nullable', 'required_if:price_mode,manual', 'array:'.implode(',', EstimatorItem::CURRENCIES)], 'doc' => 'Prix « à partir de » par devise, ex. {"CHF": 2500, "EUR": 2400} (mode manual).'],
+                ],
+                'relations' => [
+                    'projects' => ['rules' => ['projects' => ['nullable', 'array', 'max:6'], 'projects.*' => ['integer', 'exists:projects,id']], 'doc' => 'Identifiants des projets qui illustrent l\'offre (get-catalog), liste complète, 6 au plus ; leurs avis publiés s\'affichent avec l\'offre.'],
+                ],
             ],
             'skill' => [
                 'model' => Skill::class,

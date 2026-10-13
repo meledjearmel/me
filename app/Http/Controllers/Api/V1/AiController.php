@@ -7,6 +7,7 @@ use App\Enums\TextTone;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ai\DescribeTechnologyRequest;
 use App\Http\Requests\Ai\DraftProjectRequest;
+use App\Http\Requests\Ai\DraftServiceRequest;
 use App\Http\Requests\Ai\ImproveTextRequest;
 use App\Http\Requests\Ai\ProposeEstimatorGridRequest;
 use App\Http\Requests\Ai\SuggestEstimatorItemRequest;
@@ -169,6 +170,26 @@ class AiController extends Controller
         }
 
         return response()->json(['item' => $item]);
+    }
+
+    /**
+     * Rédiger une offre
+     *
+     * D'après les notes du développeur, l'IA propose en français le titre, l'ancre (`slug`),
+     * l'accroche, la description et ce qui est compris (`includes`, une ligne par élément)
+     * d'une offre de la page « Services ». Rien n'est enregistré.
+     *
+     * @response array{service: array{title: string, slug: string, tagline: string|null, description: string|null, includes: string|null}}
+     */
+    public function draftService(DraftServiceRequest $request): JsonResponse
+    {
+        $service = $this->assist->draftService($request->validated('notes'));
+
+        if ($service === null) {
+            return $this->respond(null);
+        }
+
+        return response()->json(['service' => $service]);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Services\Ai;
 use App\Ai\Agents\HtmlTranslator;
 use App\Ai\Agents\PostWriter;
 use App\Ai\Agents\ProjectDrafter;
+use App\Ai\Agents\ServiceWriter;
 use App\Ai\Agents\TechnologyDescriber;
 use App\Ai\Agents\TextImprover;
 use App\Ai\Agents\TextTranslator;
@@ -131,6 +132,38 @@ class TextAssistService
         }, 'ai.text_assist.draft');
 
         return $json === null ? null : json_decode($json, true);
+    }
+
+    /**
+     * Rédige en français le texte d'une offre de la page « Services » à partir des notes du
+     * développeur. Null si aucun fournisseur n'a répondu de façon exploitable.
+     *
+     * @return array{title: string, slug: string, tagline: string|null, description: string|null, includes: string|null}|null
+     */
+    public function draftService(string $notes): ?array
+    {
+        return $this->promptJson(new ServiceWriter, $notes, function (array $data): ?array {
+            $title = is_string($data['title'] ?? null) ? mb_substr(trim($data['title']), 0, 120) : '';
+
+            if ($title === '') {
+                return null;
+            }
+
+            $text = fn (mixed $value, int $max): ?string => is_string($value) && trim($value) !== '' ? mb_substr(trim($value), 0, $max) : null;
+            $includes = collect(is_array($data['includes'] ?? null) ? $data['includes'] : [])
+                ->map(fn (mixed $line): ?string => $text($line, 200))
+                ->filter()
+                ->take(10)
+                ->implode("\n");
+
+            return [
+                'title' => $title,
+                'slug' => Str::slug($text($data['slug'] ?? null, 120) ?? $title),
+                'tagline' => $text($data['tagline'] ?? null, 200),
+                'description' => $text($data['description'] ?? null, 3000),
+                'includes' => $includes === '' ? null : $includes,
+            ];
+        });
     }
 
     /**

@@ -8677,6 +8677,212 @@ html.pub-scroll {
 }
 
 /* Page « Uses » */
+/* ---------- Services : une offre par bloc, texte à gauche, prix à droite ---------- */
+.pub-services {
+    display: grid;
+    gap: clamp(3rem, 7vw, 5rem);
+    /* Le bas réserve la hauteur de la silhouette de ville du pied de page. */
+    padding: clamp(3rem, 7vw, 5rem) 0
+        calc(clamp(96px, 16vw, 240px) + clamp(3rem, 7vw, 6rem));
+}
+
+.pub-service {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: clamp(1.5rem, 4vw, 3rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid color-mix(in oklab, var(--pub-text) 18%, transparent);
+    scroll-margin-top: 6rem;
+}
+
+.pub-service__main {
+    display: grid;
+    align-content: start;
+    gap: 0.9rem;
+}
+
+.pub-service__index {
+    margin: 0;
+    font-family: var(--pub-font-mono);
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    opacity: 0.6;
+}
+
+.pub-service__title {
+    margin: 0;
+    font-family: var(--pub-font-display);
+    font-size: clamp(2rem, 4.5vw, 3.2rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+}
+
+.pub-service__tagline {
+    margin: 0;
+    font-size: clamp(1.1rem, 2vw, 1.3rem);
+}
+
+.pub-service__text {
+    margin: 0;
+    max-width: 62ch;
+    opacity: 0.85;
+}
+
+.pub-service__includes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.5rem 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pub-service__includes li {
+    position: relative;
+    padding-left: 1.4rem;
+}
+
+.pub-service__includes li::before {
+    content: '';
+    position: absolute;
+    top: 0.55em;
+    left: 0;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: var(--pub-gold);
+}
+
+.pub-service__aside {
+    display: grid;
+    align-content: start;
+    gap: 1rem;
+}
+
+.pub-service__price {
+    display: grid;
+    gap: 0.2rem;
+    padding: 1.1rem 1.25rem;
+    border-radius: 22px;
+    background: color-mix(in oklab, var(--pub-gold) 22%, transparent);
+}
+
+.pub-service__price span {
+    font-family: var(--pub-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.pub-service__price strong {
+    font-family: var(--pub-font-display);
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    font-weight: 400;
+}
+
+.pub-service__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+}
+
+.pub-service__actions .pub-drawer__send {
+    margin-top: 0;
+    text-decoration: none;
+}
+
+.pub-service__proof {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+.pub-service__projects {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.8rem;
+    margin: 0.6rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pub-service__projects a {
+    display: grid;
+    gap: 0.35rem;
+    height: 100%;
+    padding: 0.8rem;
+    border: 1px solid color-mix(in oklab, var(--pub-text) 18%, transparent);
+    border-radius: 18px;
+    color: inherit;
+    text-decoration: none;
+    transition:
+        border-color 0.25s ease,
+        transform 0.25s ease;
+}
+
+.pub-service__projects a:hover {
+    transform: translateY(-2px);
+    border-color: var(--pub-text);
+}
+
+.pub-service__projects img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.pub-service__projects span {
+    font-size: 0.9rem;
+    opacity: 0.75;
+}
+
+.pub-service__quote {
+    align-self: end;
+    margin: 0;
+}
+
+.pub-service__quote blockquote {
+    margin: 0 0 0.6rem;
+    font-family: var(--pub-font-display);
+    font-size: clamp(1.15rem, 2vw, 1.4rem);
+    line-height: 1.35;
+}
+
+.pub-service__quote blockquote::before {
+    content: '“';
+}
+
+.pub-service__quote blockquote::after {
+    content: '”';
+}
+
+.pub-service__quote figcaption {
+    font-size: 0.9rem;
+    opacity: 0.75;
+}
+
+@media (max-width: 860px) {
+    .pub-service,
+    .pub-service__proof {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pub-service__projects a {
+        transition: none;
+    }
+
+    .pub-service__projects a:hover {
+        transform: none;
+    }
+}
+
 .pub-uses {
     display: grid;
     gap: clamp(3rem, 7vw, 5rem);

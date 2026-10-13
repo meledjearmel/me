@@ -4,11 +4,13 @@ namespace App\Services\Ai;
 
 use App\Enums\PublicationStatus;
 use App\Models\Experience;
+use App\Models\Service;
 use App\Models\Skill;
 use App\Services\PostMentions;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -65,7 +67,14 @@ class ContentDraftWriter
     public function save(string $type, Model $content, array $input): array
     {
         $definition = $this->types->get($type);
-        $data = Validator::make($input, $this->rules($type))->validate();
+        $rules = $this->rules($type);
+
+        // L'ancre d'une offre est unique, la sienne mise à part.
+        if ($content instanceof Service) {
+            $rules['slug'][] = Rule::unique('services', 'slug')->ignore($content->id);
+        }
+
+        $data = Validator::make($input, $rules)->validate();
         $removed = [];
 
         DB::transaction(function () use ($definition, $content, $data, &$removed): void {
@@ -98,6 +107,10 @@ class ContentDraftWriter
 
             if ($content instanceof Skill) {
                 $content->technologies()->sync($data['technologies'] ?? []);
+            }
+
+            if ($content instanceof Service) {
+                $content->projects()->sync($data['projects'] ?? []);
             }
         });
 
@@ -219,6 +232,7 @@ class ContentDraftWriter
             $content instanceof Experience && $relation === 'highlights' => $content->highlights()->orderBy('sort_order')->get()
                 ->map(fn ($highlight): string => $highlight->getTranslation('text', $locale, false))->values()->all(),
             $content instanceof Skill && $relation === 'technologies' => $content->technologies()->pluck('technologies.id')->all(),
+            $content instanceof Service && $relation === 'projects' => $content->projects()->pluck('projects.id')->all(),
             default => [],
         };
     }

@@ -187,6 +187,25 @@ export type SharedCelebration = {
     snoozeDays: number;
 };
 
+export type PublicService = {
+    id: number;
+    slug: string;
+    title: string;
+    tagline: string | null;
+    description: string | null;
+    includes: string[];
+    /** Prix « à partir de » (le taux horaire si `billing` = hourly) ; null : sur devis. */
+    price: {
+        amount: number;
+        currency: string;
+        billing: 'fixed' | 'hourly' | null;
+    } | null;
+    /** Type de projet à présélectionner dans l'estimateur ; null si l'estimateur est fermé. */
+    estimate_type_id: number | null;
+    projects: PublicProject[];
+    testimonial: PublicTestimonial | null;
+};
+
 export type PublicEstimatorItem = {
     id: number;
     name: string;

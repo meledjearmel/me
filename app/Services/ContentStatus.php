@@ -9,6 +9,7 @@ use App\Models\Education;
 use App\Models\Experience;
 use App\Models\Post;
 use App\Models\Project;
+use App\Models\Service;
 use App\Models\Skill;
 use App\Models\UsesItem;
 use BackedEnum;
@@ -35,6 +36,7 @@ class ContentStatus
         'certification' => ['model' => Certification::class, 'enum' => PublicationStatus::class, 'english' => ['name']],
         'uses_item' => ['model' => UsesItem::class, 'enum' => PublicationStatus::class, 'english' => []],
         'skill' => ['model' => Skill::class, 'enum' => PublicationStatus::class, 'english' => ['name']],
+        'service' => ['model' => Service::class, 'enum' => PublicationStatus::class, 'english' => ['title']],
     ];
 
     /** @return list<string> */

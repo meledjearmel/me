@@ -33,6 +33,7 @@ use App\Http\Controllers\Admin\ProfessionalReferenceController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\ReviewInvitationController;
+use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\SkillController;
 use App\Http\Controllers\Admin\SubscriberController;
@@ -80,6 +81,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::post('draft-project', [AiAssistController::class, 'draftProject'])->name('draft-project');
         Route::post('suggest-estimator-item', [AiAssistController::class, 'suggestEstimatorItem'])->name('suggest-estimator-item');
         Route::post('propose-estimator-grid', [AiAssistController::class, 'proposeEstimatorGrid'])->name('propose-estimator-grid');
+        Route::post('draft-service', [AiAssistController::class, 'draftService'])->name('draft-service');
         Route::post('engagements/{engagement}/analyze', [EngagementAnalysisController::class, 'store'])->name('engagements.analyze');
     });
 
@@ -92,6 +94,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('domains', DomainController::class);
     Route::resource('music-genres', MusicGenreController::class)->except('show');
     Route::resource('uses-items', UsesItemController::class)->except('show');
+    Route::resource('services', ServiceController::class)->except('show');
     Route::resource('certifications', CertificationController::class)->except('show');
     Route::delete('certifications/{certification}/badge', [CertificationController::class, 'destroyBadge'])->name('certifications.badge.destroy');
     Route::resource('tracks', TrackController::class)->except('show');

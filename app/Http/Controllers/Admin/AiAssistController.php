@@ -7,6 +7,7 @@ use App\Enums\TextTone;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ai\DescribeTechnologyRequest;
 use App\Http\Requests\Ai\DraftProjectRequest;
+use App\Http\Requests\Ai\DraftServiceRequest;
 use App\Http\Requests\Ai\ImproveTextRequest;
 use App\Http\Requests\Ai\ProposeEstimatorGridRequest;
 use App\Http\Requests\Ai\SuggestEstimatorItemRequest;
@@ -106,6 +107,18 @@ class AiAssistController extends Controller
         }
 
         return response()->json(['item' => $item]);
+    }
+
+    /** « Rédiger avec l'IA » du formulaire d'offre : texte en français, à relire puis traduire. */
+    public function draftService(DraftServiceRequest $request): JsonResponse
+    {
+        $service = $this->assist->draftService($request->validated('notes'));
+
+        if ($service === null) {
+            return $this->respond(null);
+        }
+
+        return response()->json(['service' => $service]);
     }
 
     /** « Configurer avec l'IA » de l'estimateur : une grille complète, à relire avant de l'appliquer. */
