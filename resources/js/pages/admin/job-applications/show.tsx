@@ -1,6 +1,7 @@
 import { Check, Copy, ExternalLink } from 'lucide-react';
 import ShowPage, { formatDate } from '@/components/admin/show-page';
 import AiDraftBadge from '@/components/admin/ai-draft-badge';
+import JobApplicationCv from '@/components/admin/job-application-cv';
 import { JOB_APPLICATION_STATUSES } from '@/components/admin/job-application-fields';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -168,6 +169,20 @@ export default function JobApplicationShow({
                             wide: true,
                         },
                     ],
+                },
+                {
+                    title: 'CV',
+                    description:
+                        'Le CV que l’entreprise télécharge depuis la page.',
+                    content: (
+                        <JobApplicationCv
+                            applicationId={application.id}
+                            tailoring={application.cv_tailoring}
+                            tailoredAt={application.cv_tailored_at}
+                            hasProfile={application.job_profile !== null}
+                            hasPosting={!!application.job_posting_text}
+                        />
+                    ),
                 },
                 {
                     title: 'Historique',

@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\V1\EstimatorSettingsController;
 use App\Http\Controllers\Api\V1\ExperienceController;
 use App\Http\Controllers\Api\V1\GitHubController;
 use App\Http\Controllers\Api\V1\JobApplicationController;
+use App\Http\Controllers\Api\V1\JobApplicationCvController;
 use App\Http\Controllers\Api\V1\JobProfileController;
 use App\Http\Controllers\Api\V1\McpActivityController;
 use App\Http\Controllers\Api\V1\McpCommandController;
@@ -162,6 +163,10 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('uses-items', UsesItemController::class);
         Route::apiResource('services', ServiceController::class);
         Route::get('job-applications/{job_application}/events', [JobApplicationController::class, 'events'])->name('job-applications.events');
+        Route::get('job-applications/{job_application}/cv', [JobApplicationCvController::class, 'show'])->name('job-applications.cv.show');
+        Route::post('job-applications/{job_application}/cv/tailor', [JobApplicationCvController::class, 'tailor'])->middleware('throttle:ai-assist')->name('job-applications.cv.tailor');
+        Route::put('job-applications/{job_application}/cv', [JobApplicationCvController::class, 'update'])->name('job-applications.cv.update');
+        Route::delete('job-applications/{job_application}/cv', [JobApplicationCvController::class, 'destroy'])->name('job-applications.cv.destroy');
         Route::apiResource('job-applications', JobApplicationController::class);
         Route::apiResource('certifications', CertificationController::class);
         Route::get('github', [GitHubController::class, 'show'])->name('github.show');

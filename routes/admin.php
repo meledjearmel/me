@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\EstimatorSettingsController;
 use App\Http\Controllers\Admin\ExperienceController;
 use App\Http\Controllers\Admin\GitHubController;
 use App\Http\Controllers\Admin\JobApplicationController;
+use App\Http\Controllers\Admin\JobApplicationCvController;
 use App\Http\Controllers\Admin\JobProfileController;
 use App\Http\Controllers\Admin\McpServerController;
 use App\Http\Controllers\Admin\McpTokenController;
@@ -103,6 +104,12 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('uses-items', UsesItemController::class)->except('show');
     Route::resource('services', ServiceController::class)->except('show');
     Route::resource('job-applications', JobApplicationController::class);
+    Route::prefix('job-applications/{job_application}/cv')->name('job-applications.cv.')->group(function () {
+        Route::get('/', [JobApplicationCvController::class, 'show'])->name('show');
+        Route::post('tailor', [JobApplicationCvController::class, 'tailor'])->middleware('throttle:ai-assist')->name('tailor');
+        Route::put('/', [JobApplicationCvController::class, 'update'])->name('update');
+        Route::delete('/', [JobApplicationCvController::class, 'destroy'])->name('destroy');
+    });
     Route::resource('certifications', CertificationController::class)->except('show');
     Route::delete('certifications/{certification}/badge', [CertificationController::class, 'destroyBadge'])->name('certifications.badge.destroy');
     Route::resource('tracks', TrackController::class)->except('show');

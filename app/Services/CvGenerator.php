@@ -7,6 +7,7 @@ use App\Enums\ProjectStatus;
 use App\Models\Domain;
 use App\Models\Education;
 use App\Models\Experience;
+use App\Models\JobApplication;
 use App\Models\JobProfile;
 use App\Models\ProfessionalReference;
 use App\Models\Profile;
@@ -56,16 +57,25 @@ class CvGenerator
         ],
     ];
 
-    /** Contenu du CV, prêt pour la vue. @return array<string, mixed> */
-    public function data(JobProfile $jobProfile, string $locale): array
+    /**
+     * Contenu du CV, prêt pour la vue. Une adaptation (CV d'une candidature) remplace le titre
+     * et le résumé, choisit et ordonne les réalisations parmi celles du site, met des
+     * compétences en tête de leur domaine et fixe les projets ; elle n'ajoute jamais de fait.
+     *
+     * @param  array{title?: string|null, summary?: string|null, experiences?: array<int|string, list<int>>, skill_ids?: list<int>, project_ids?: list<int>}|null  $tailoring
+     * @return array<string, mixed>
+     */
+    public function data(JobProfile $jobProfile, string $locale, ?array $tailoring = null): array
     {
         $locale = array_key_exists($locale, self::LABELS) ? $locale : 'fr';
         $profile = Profile::query()->firstOrFail();
         $labels = self::LABELS[$locale];
         $month = fn ($date): string => $date->copy()->locale($locale)->translatedFormat('M Y');
+        $chosenHighlights = $tailoring['experiences'] ?? [];
+        $skillRank = array_flip($tailoring['skill_ids'] ?? []);
 
-        $summary = $jobProfile->getTranslation('cv_description', $locale, false)
-            ?: $profile->getTranslation('bio_short', $locale);
+        $summary = filled($tailoring['summary'] ?? null) ? $tailoring['summary'] : ($jobProfile->getTranslation('cv_description', $locale, false)
+            ?: $profile->getTranslation('bio_short', $locale));
 
         $experiences = Experience::query()
             ->published()
@@ -78,8 +88,12 @@ class CvGenerator
                 'role' => $experience->getTranslation('role', $locale),
                 'location' => $experience->location,
                 'period' => $month($experience->start_date).' – '.($experience->end_date ? $month($experience->end_date) : $labels['present']),
-                'highlights' => $experience->highlights
-                    ->sortBy('sort_order')
+                // Adapté : les réalisations retenues, dans l'ordre choisi ; sinon toutes.
+                'highlights' => (isset($chosenHighlights[$experience->id]) && $chosenHighlights[$experience->id] !== []
+                    ? collect($chosenHighlights[$experience->id])
+                        ->map(fn (int $id) => $experience->highlights->firstWhere('id', $id))
+                        ->filter()
+                    : $experience->highlights->sortBy('sort_order'))
                     ->map(fn ($highlight): string => $highlight->getTranslation('text', $locale))
                     ->values()
                     ->all(),
@@ -94,7 +108,12 @@ class CvGenerator
             ->filter(fn (Domain $domain): bool => $domain->skills->isNotEmpty())
             ->map(fn (Domain $domain): array => [
                 'label' => $domain->getTranslation('label', $locale),
-                'items' => $domain->skills->map(fn ($skill): string => $skill->getTranslation('name', $locale))->all(),
+                // Adapté : les compétences mises en avant passent en tête de leur domaine.
+                'items' => $domain->skills
+                    ->sortBy(fn ($skill, int $index): int => isset($skillRank[$skill->id]) ? $skillRank[$skill->id] - 10_000 : $index)
+                    ->map(fn ($skill): string => $skill->getTranslation('name', $locale))
+                    ->values()
+                    ->all(),
             ])
             ->values()
             ->all();
@@ -105,6 +124,19 @@ class CvGenerator
             ->orderBy('sort_order')
             ->limit(self::PROJECT_LIMIT)
             ->get();
+
+        // Adapté : les projets de la candidature, dans son ordre.
+        if (($tailoring['project_ids'] ?? []) !== []) {
+            $tailored = Project::query()
+                ->where('status', ProjectStatus::Published)
+                ->whereIn('id', $tailoring['project_ids'])
+                ->get()
+                ->sortBy(fn (Project $project): int|false => array_search($project->id, $tailoring['project_ids'], true))
+                ->take(self::PROJECT_LIMIT)
+                ->values();
+
+            $projects = $tailored->isEmpty() ? $projects : $tailored;
+        }
 
         if ($projects->isEmpty()) {
             $projects = Project::query()
@@ -123,7 +155,7 @@ class CvGenerator
             // Sur le CV : nom et prénom séparés s'ils sont renseignés, sinon le nom du site.
             'first_name' => $this->cvFirstName($profile),
             'last_name' => $this->cvLastName($profile),
-            'title' => $jobProfile->getTranslation('label', $locale),
+            'title' => filled($tailoring['title'] ?? null) ? $tailoring['title'] : $jobProfile->getTranslation('label', $locale),
             'headline' => $profile->getTranslation('headline', $locale),
             'email' => $profile->email,
             'phone' => $profile->phone,
@@ -219,11 +251,31 @@ class CvGenerator
         return null;
     }
 
-    public function generatedPdf(JobProfile $jobProfile, string $locale): string
+    /**
+     * @param  array<string, mixed>|null  $tailoring  Voir data().
+     */
+    public function generatedPdf(JobProfile $jobProfile, string $locale, ?array $tailoring = null): string
     {
-        return Pdf::loadView('cv.document', ['cv' => $this->data($jobProfile, $locale)])
+        return Pdf::loadView('cv.document', ['cv' => $this->data($jobProfile, $locale, $tailoring)])
             ->setPaper('a4')
             ->output();
+    }
+
+    /**
+     * Le CV d'une candidature : adapté s'il l'a été (toujours généré, un PDF importé ne
+     * s'adapte pas), sinon le CV standard du profil selon la source réglée.
+     */
+    public function forApplication(JobApplication $application): string
+    {
+        $jobProfile = $application->jobProfile;
+
+        // Les projets suivent ceux de la candidature, même modifiés après l'adaptation.
+        return $application->cv_tailoring !== null
+            ? $this->generatedPdf($jobProfile, $application->locale, [
+                ...$application->cv_tailoring,
+                'project_ids' => $application->projects()->pluck('projects.id')->all(),
+            ])
+            : $this->resolve($jobProfile, $application->locale)['content'];
     }
 
     /** Nom de fichier du CV joint à l'email. */

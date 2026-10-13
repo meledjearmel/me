@@ -443,6 +443,14 @@ export type JobApplication = {
     contact_name: string | null;
     position: string;
     job_profile_id: number | null;
+    cv_tailoring: {
+        title: string | null;
+        summary: string | null;
+        experiences: Record<string, number[]>;
+        skill_ids: number[];
+        reasoning: string | null;
+    } | null;
+    cv_tailored_at: string | null;
     locale: "fr" | "en";
     intro: string;
     job_posting_url: string | null;

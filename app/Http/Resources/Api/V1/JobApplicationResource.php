@@ -27,6 +27,15 @@ class JobApplicationResource extends JsonResource
             'position' => $this->position,
             /** Profil métier dont le CV est proposé au téléchargement ; null : pas de CV. */
             'job_profile_id' => $this->job_profile_id,
+            /**
+             * CV adapté à l'offre (null : CV standard du profil). Titre et résumé réécrits ; pour
+             * chaque expérience (clé), les réalisations retenues dans l'ordre ; compétences mises
+             * en tête ; projets de la candidature.
+             *
+             * @var array{title: string|null, summary: string|null, experiences: array<string, list<int>>, skill_ids: list<int>, project_ids: list<int>, reasoning: string|null}|null
+             */
+            'cv_tailoring' => $this->cv_tailoring,
+            'cv_tailored_at' => $this->cv_tailored_at,
             /** Langue de la page et du CV : `fr` ou `en`. */
             'locale' => $this->locale,
             /** Mot d'accompagnement, paragraphes séparés par une ligne vide. */

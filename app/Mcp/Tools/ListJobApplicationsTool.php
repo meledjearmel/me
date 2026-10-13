@@ -3,6 +3,7 @@
 namespace App\Mcp\Tools;
 
 use App\Models\JobApplication;
+use App\Services\Ai\CvTailor;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\JsonSchema\Types\Type;
 use Laravel\Mcp\Request;
@@ -13,11 +14,11 @@ use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 
 #[Name('list-job-applications')]
-#[Description('Liste les pages de candidature (une par entreprise), les plus récentes d\'abord : entreprise, poste, statut, lien, projets montrés, consultations, CV téléchargés, première et dernière visite. Avec un id : la page complète (mot d\'accompagnement, offre, notes) et ses derniers événements.')]
+#[Description('Liste les pages de candidature (une par entreprise), les plus récentes d\'abord : entreprise, poste, statut, lien, projets montrés, consultations, CV téléchargés, première et dernière visite. Avec un id : la page complète (mot d\'accompagnement, offre, notes), son CV adapté, de quoi l\'adapter (cv_material : expériences avec leurs réalisations et compétences, avec identifiants) et ses derniers événements.')]
 #[IsReadOnly]
 class ListJobApplicationsTool extends Tool
 {
-    public function handle(Request $request): Response
+    public function handle(Request $request, CvTailor $tailor): Response
     {
         $data = $request->validate([
             'id' => ['nullable', 'integer'],
@@ -37,6 +38,9 @@ class ListJobApplicationsTool extends Tool
                 'job_posting_url' => $application->job_posting_url,
                 'job_posting_text' => $application->job_posting_text,
                 'notes' => $application->notes,
+                'cv_tailoring' => $application->cv_tailoring,
+                // De quoi adapter le CV avec save-job-application (identifiants des réalisations et des compétences).
+                'cv_material' => collect($tailor->material($application->locale))->except('text')->all(),
                 'events' => $application->events()->latest('created_at')->limit(30)->get()
                     ->map(fn ($event): array => $event->only(['type', 'country', 'city', 'device', 'created_at']))->all(),
             ]);

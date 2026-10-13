@@ -7,6 +7,7 @@ use App\Enums\ProjectStatus;
 use App\Enums\PublicationStatus;
 use App\Mcp\Concerns\NamesAiClient;
 use App\Models\JobApplication;
+use App\Services\Ai\CvTailor;
 use App\Services\Ai\JobApplicationDrafter;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\JsonSchema\Types\Type;
@@ -23,7 +24,7 @@ class SaveJobApplicationTool extends Tool
 {
     use NamesAiClient;
 
-    public function handle(Request $request, JobApplicationDrafter $drafter): Response
+    public function handle(Request $request, JobApplicationDrafter $drafter, CvTailor $tailor): Response
     {
         $creating = $request->get('id') === null;
         $required = $creating ? 'required' : 'sometimes';
@@ -39,6 +40,12 @@ class SaveJobApplicationTool extends Tool
             'job_posting_text' => ['nullable', 'string', 'max:20000'],
             'notes' => ['nullable', 'string', 'max:5000'],
             'job_profile_id' => ['nullable', 'integer', Rule::exists('job_profiles', 'id')->where('status', PublicationStatus::Published->value)],
+            'cv_title' => ['nullable', 'string', 'max:120'],
+            'cv_summary' => ['nullable', 'string', 'max:1500'],
+            'cv_experiences' => ['nullable', 'array'],
+            'cv_experiences.*.experience_id' => ['required', 'integer'],
+            'cv_experiences.*.highlight_ids' => ['required', 'array'],
+            'cv_skill_ids' => ['nullable', 'array'],
             'project_ids' => ['nullable', 'array', 'max:6'],
             'project_ids.*' => ['integer', 'distinct', Rule::exists('projects', 'id')->where('status', ProjectStatus::Published->value)->whereNull('deleted_at')],
         ]);
@@ -60,12 +67,30 @@ class SaveJobApplicationTool extends Tool
             $data['intro'] = $drafter->cleanIntro($data['intro']);
         }
 
-        $application->fill(collect($data)->except(['id', 'project_ids'])->all());
+        $application->fill(collect($data)->except(['id', 'project_ids', 'cv_title', 'cv_summary', 'cv_experiences', 'cv_skill_ids'])->all());
         $application->drafted_by = $this->aiClient($request);
         $application->save();
 
         if (array_key_exists('project_ids', $data)) {
             $application->syncProjects($data['project_ids'] ?? []);
+        }
+
+        // Le CV adapté : seulement des réalisations et compétences existantes (identifiants vérifiés).
+        if (collect(['cv_title', 'cv_summary', 'cv_experiences', 'cv_skill_ids'])->contains(fn (string $field): bool => array_key_exists($field, $data))) {
+            $current = $application->cv_tailoring ?? [];
+            $tailoring = $tailor->normalize([
+                'title' => $data['cv_title'] ?? $current['title'] ?? null,
+                'summary' => $data['cv_summary'] ?? $current['summary'] ?? null,
+                'experiences' => $data['cv_experiences'] ?? collect($current['experiences'] ?? [])
+                    ->map(fn (array $ids, int|string $experienceId): array => ['experience_id' => (int) $experienceId, 'highlight_ids' => $ids])->values()->all(),
+                'skill_ids' => $data['cv_skill_ids'] ?? $current['skill_ids'] ?? [],
+            ]);
+
+            if ($tailoring === null) {
+                return Response::error('Le CV adapté a besoin d\'au moins un titre (cv_title) ou un résumé (cv_summary).');
+            }
+
+            $tailor->save($application, $tailoring);
         }
 
         return Response::text(($creating ? 'Brouillon de candidature créé' : 'Brouillon mis à jour')
@@ -90,6 +115,13 @@ class SaveJobApplicationTool extends Tool
             'notes' => $schema->string()->description('Notes privées pour le développeur (points à vérifier…), jamais affichées.'),
             'job_profile_id' => $schema->integer()->description('Profil métier dont le CV est proposé (job_profiles de get-catalog).'),
             'project_ids' => $schema->array()->items($schema->integer())->description('2 à 4 projets publiés (get-catalog), du plus pertinent au moins pertinent.'),
+            'cv_title' => $schema->string()->description('CV adapté : intitulé pour ce poste, fidèle à ce que fait le développeur (60 caractères max.), dans la langue de la page.'),
+            'cv_summary' => $schema->string()->description('CV adapté : résumé de 2 à 4 phrases tourné vers l\'offre, uniquement avec des faits du portfolio, dans la langue de la page.'),
+            'cv_experiences' => $schema->array()->items($schema->object([
+                'experience_id' => $schema->integer(),
+                'highlight_ids' => $schema->array()->items($schema->integer()),
+            ]))->description('CV adapté : pour chaque expérience, les réalisations à garder, de la plus pertinente à la moins pertinente (identifiants de cv_material dans list-job-applications avec id) ; jamais de nouvelle réalisation.'),
+            'cv_skill_ids' => $schema->array()->items($schema->integer())->description('CV adapté : 5 à 12 compétences à mettre en tête (identifiants de cv_material).'),
         ];
     }
 }

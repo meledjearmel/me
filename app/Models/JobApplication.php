@@ -40,6 +40,8 @@ class JobApplication extends Model
     /** @var array<string, string> */
     protected $casts = [
         'status' => JobApplicationStatus::class,
+        'cv_tailoring' => 'array',
+        'cv_tailored_at' => 'datetime',
         'expires_on' => 'date:Y-m-d',
         'first_viewed_at' => 'datetime',
         'last_viewed_at' => 'datetime',

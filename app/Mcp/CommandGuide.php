@@ -246,6 +246,7 @@ class CommandGuide
             'tips' => [
                 'Donnez le lien de l\'offre : l\'agent la lit, choisit vos projets les plus pertinents et rédige le mot dans sa langue.',
                 'La page reste en brouillon : vous la relisez et la mettez en ligne dans l\'admin.',
+                'Demandez aussi un CV adapté : l\'agent réécrit le titre et le résumé et choisit vos réalisations et compétences les plus pertinentes, sans rien inventer.',
             ],
             'example' => 'Prépare une page de candidature pour cette offre : https://exemple.com/offre-developpeur',
         ],

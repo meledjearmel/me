@@ -54,7 +54,7 @@ class JobApplicationController extends Controller
         ])->toResponse($request)->withHeaders(['X-Robots-Tag' => 'noindex, nofollow']);
     }
 
-    /** Le CV du profil visé, dans la langue de la page ; chaque téléchargement est compté. */
+    /** Le CV de la candidature (adapté à l'offre s'il l'a été), dans la langue de la page ; chaque téléchargement est compté. */
     public function cv(Request $request, string $locale, string $token, CvGenerator $cv, JobApplicationTracker $tracker): Response
     {
         $application = $this->open($token);
@@ -62,7 +62,7 @@ class JobApplicationController extends Controller
 
         $tracker->cvDownload($application, $request);
 
-        return response($cv->resolve($application->jobProfile, $application->locale)['content'], 200, [
+        return response($cv->forApplication($application), 200, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'attachment; filename="'.$cv->filename($application->jobProfile).'"',
             'Cache-Control' => 'no-store',
