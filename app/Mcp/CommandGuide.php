@@ -236,6 +236,24 @@ class CommandGuide
             ],
             'example' => 'Analyse la demande #42 et enregistre les questions à poser au client.',
         ],
+        'list-job-applications' => [
+            'usage' => 'Voir les pages de candidature, leur lien et qui les a consultées (visites, CV téléchargés).',
+            'tips' => ['Avec un identifiant, l\'agent lit la page en entier et ses derniers événements.'],
+            'example' => 'Quelles entreprises ont ouvert mes pages de candidature cette semaine ?',
+        ],
+        'save-job-application' => [
+            'usage' => 'Préparer une page de candidature d\'après une offre d\'emploi : mot d\'accompagnement, projets et CV adaptés.',
+            'tips' => [
+                'Donnez le lien de l\'offre : l\'agent la lit, choisit vos projets les plus pertinents et rédige le mot dans sa langue.',
+                'La page reste en brouillon : vous la relisez et la mettez en ligne dans l\'admin.',
+            ],
+            'example' => 'Prépare une page de candidature pour cette offre : https://exemple.com/offre-developpeur',
+        ],
+        'get-weekly-report' => [
+            'usage' => 'Le bilan des 7 derniers jours : audience, demandes, estimations, candidatures consultées, blog et ce qui attend une action.',
+            'tips' => ['Le même bilan part par email chaque lundi matin (réglable dans l\'admin, Rapport de la semaine).'],
+            'example' => 'Comment s\'est passée ma semaine sur le portfolio ?',
+        ],
     ];
 
     /**
@@ -273,6 +291,9 @@ class CommandGuide
         'configure-estimator' => 'Configurer l\'estimateur',
         'list-estimate-requests' => 'Demandes d\'estimation',
         'save-estimate-analysis' => 'Analyser une demande',
+        'list-job-applications' => 'Pages de candidature',
+        'save-job-application' => 'Préparer une candidature',
+        'get-weekly-report' => 'Bilan de la semaine',
     ];
 
     /** Titre court d'une commande ou d'un outil (son nom s'il n'en a pas). */

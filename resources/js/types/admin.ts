@@ -434,6 +434,42 @@ export type Service = {
     project_ids?: number[];
 };
 
+export type JobApplicationStatus = "draft" | "active" | "archived";
+
+export type JobApplication = {
+    id: number;
+    token: string;
+    company: string;
+    contact_name: string | null;
+    position: string;
+    job_profile_id: number | null;
+    locale: "fr" | "en";
+    intro: string;
+    job_posting_url: string | null;
+    job_posting_text: string | null;
+    notes: string | null;
+    status: JobApplicationStatus;
+    drafted_by: string | null;
+    expires_on: string | null;
+    views_count: number;
+    cv_downloads_count: number;
+    first_viewed_at: string | null;
+    last_viewed_at: string | null;
+    created_at: string;
+    project_ids?: number[];
+};
+
+export type JobApplicationEvent = {
+    id: number;
+    type: "view" | "cv_download";
+    country_code: string | null;
+    country: string | null;
+    city: string | null;
+    device: string | null;
+    referrer_host: string | null;
+    created_at: string;
+};
+
 export type EstimatorProposalItem = {
     ref?: string;
     id?: number;

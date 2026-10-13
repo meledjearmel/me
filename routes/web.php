@@ -14,6 +14,7 @@ use App\Http\Controllers\CvDownloadController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EngagementController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\LlmsTxtController;
 use App\Http\Controllers\LocaleRedirectController;
 use App\Http\Controllers\NewsletterController;
@@ -98,6 +99,13 @@ Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, Lo
         ->name('newsletter.unsubscribe.store');
     Route::get('uses', [UsesController::class, 'index'])->name('uses');
     Route::get('services', [ServiceController::class, 'index'])->name('services');
+    // Pages de candidature : privées, ouvertes seulement par leur lien.
+    Route::get('for/{token}', [JobApplicationController::class, 'show'])
+        ->middleware('throttle:60,1')
+        ->name('job-applications.show');
+    Route::get('for/{token}/cv', [JobApplicationController::class, 'cv'])
+        ->middleware('throttle:20,1')
+        ->name('job-applications.cv');
     Route::get('certifications', [CertificationController::class, 'index'])->name('certifications');
     Route::get('now', NowController::class)->name('now');
     Route::get('contact', [ContactController::class, 'index'])->name('contact.index');

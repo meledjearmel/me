@@ -205,6 +205,17 @@ class PostMentions
         );
     }
 
+    /**
+     * Le jeton d'une mention, `@[App Station](project:12)` : le site en fait un lien avec une
+     * carte au survol. Le libellé perd les caractères qui casseraient le jeton.
+     */
+    public static function token(string $kind, int $id, string $label): string
+    {
+        $label = mb_substr(trim((string) preg_replace('/[\[\]\n]+/u', ' ', $label)), 0, 120);
+
+        return "@[{$label}]({$kind}:{$id})";
+    }
+
     /** Texte brut sans jetons : chaque mention redevient son libellé (IA, llms.txt…). */
     public static function plain(?string $text): string
     {

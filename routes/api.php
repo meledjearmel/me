@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\V1\EstimatorItemController;
 use App\Http\Controllers\Api\V1\EstimatorSettingsController;
 use App\Http\Controllers\Api\V1\ExperienceController;
 use App\Http\Controllers\Api\V1\GitHubController;
+use App\Http\Controllers\Api\V1\JobApplicationController;
 use App\Http\Controllers\Api\V1\JobProfileController;
 use App\Http\Controllers\Api\V1\McpActivityController;
 use App\Http\Controllers\Api\V1\McpCommandController;
@@ -45,6 +46,7 @@ use App\Http\Controllers\Api\V1\TestimonialController;
 use App\Http\Controllers\Api\V1\TrackController;
 use App\Http\Controllers\Api\V1\TrashController;
 use App\Http\Controllers\Api\V1\UsesItemController;
+use App\Http\Controllers\Api\V1\WeeklyReportController;
 use App\Http\Middleware\RejectMcpTokens;
 use App\Models\JobProfile;
 use App\Services\ContentStatus;
@@ -63,6 +65,9 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::post('auth/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
         Route::get('dashboard', DashboardController::class)->name('dashboard');
+        Route::get('weekly-report', [WeeklyReportController::class, 'show'])->name('weekly-report.show');
+        Route::put('weekly-report', [WeeklyReportController::class, 'update'])->name('weekly-report.update');
+        Route::post('weekly-report/send', [WeeklyReportController::class, 'send'])->middleware('throttle:5,1')->name('weekly-report.send');
 
         Route::prefix('ai')->name('ai.')->middleware('throttle:ai-assist')->group(function (): void {
             Route::post('translate', [AiController::class, 'translate'])->name('translate');
@@ -74,6 +79,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             Route::post('suggest-estimator-item', [AiController::class, 'suggestEstimatorItem'])->name('suggest-estimator-item');
             Route::post('propose-estimator-grid', [AiController::class, 'proposeEstimatorGrid'])->name('propose-estimator-grid');
             Route::post('draft-service', [AiController::class, 'draftService'])->name('draft-service');
+            Route::post('draft-job-application', [AiController::class, 'draftJobApplication'])->name('draft-job-application');
             Route::post('engagements/{engagement}/analyze', [EngagementController::class, 'analyze'])->name('engagements.analyze');
         });
 
@@ -155,6 +161,8 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('review-invitations', ReviewInvitationController::class)->only(['index', 'store', 'destroy']);
         Route::apiResource('uses-items', UsesItemController::class);
         Route::apiResource('services', ServiceController::class);
+        Route::get('job-applications/{job_application}/events', [JobApplicationController::class, 'events'])->name('job-applications.events');
+        Route::apiResource('job-applications', JobApplicationController::class);
         Route::apiResource('certifications', CertificationController::class);
         Route::get('github', [GitHubController::class, 'show'])->name('github.show');
         Route::put('github', [GitHubController::class, 'update'])->name('github.update');

@@ -12,6 +12,7 @@ use App\Models\Education;
 use App\Models\Engagement;
 use App\Models\EstimatorItem;
 use App\Models\Experience;
+use App\Models\JobApplication;
 use App\Models\JobProfile;
 use App\Models\MusicGenre;
 use App\Models\Post;
@@ -60,6 +61,7 @@ class TrashController extends Controller
         'appointment-types' => ['model' => AppointmentType::class, 'label' => 'Type de rendez-vous'],
         'estimator-items' => ['model' => EstimatorItem::class, 'label' => 'Élément de l’estimateur'],
         'services' => ['model' => Service::class, 'label' => 'Offre'],
+        'job-applications' => ['model' => JobApplication::class, 'label' => 'Page de candidature'],
     ];
 
     public function index(Request $request): Response
@@ -155,6 +157,7 @@ class TrashController extends Controller
             'appointment-types' => (string) $model->name,
             'estimator-items' => (string) $model->name,
             'services' => (string) $model->title,
+            'job-applications' => trim("{$model->company} — {$model->position}"),
             default => (string) $model->id,
         };
     }

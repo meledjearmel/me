@@ -14,7 +14,7 @@ test('the MCP commands list the server address, prompts and tools', function () 
         ->assertOk()
         ->assertJsonPath('data.server_url', url('/mcp/portfolio'))
         ->assertJsonCount(6, 'data.prompts')
-        ->assertJsonCount(23, 'data.tools');
+        ->assertJsonCount(26, 'data.tools');
 
     foreach ($response->json('data.prompts') as $prompt) {
         expect($prompt['kind'])->toBe('prompt')

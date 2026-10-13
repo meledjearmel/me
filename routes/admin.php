@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\EstimatorItemController;
 use App\Http\Controllers\Admin\EstimatorSettingsController;
 use App\Http\Controllers\Admin\ExperienceController;
 use App\Http\Controllers\Admin\GitHubController;
+use App\Http\Controllers\Admin\JobApplicationController;
 use App\Http\Controllers\Admin\JobProfileController;
 use App\Http\Controllers\Admin\McpServerController;
 use App\Http\Controllers\Admin\McpTokenController;
@@ -44,6 +45,7 @@ use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\TrackController;
 use App\Http\Controllers\Admin\TrashController;
 use App\Http\Controllers\Admin\UsesItemController;
+use App\Http\Controllers\Admin\WeeklyReportController;
 use App\Models\JobProfile;
 use App\Services\ContentStatus;
 use Illuminate\Support\Facades\Route;
@@ -69,6 +71,10 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::delete('tokens/{token}', [McpTokenController::class, 'destroy'])->whereNumber('token')->name('tokens.destroy');
         Route::delete('connectors/{client}', [McpTokenController::class, 'destroyConnector'])->name('connectors.destroy');
     });
+    Route::get('weekly-report', [WeeklyReportController::class, 'show'])->name('weekly-report.show');
+    Route::get('weekly-report/preview', [WeeklyReportController::class, 'preview'])->name('weekly-report.preview');
+    Route::put('weekly-report', [WeeklyReportController::class, 'update'])->name('weekly-report.update');
+    Route::post('weekly-report/send', [WeeklyReportController::class, 'send'])->middleware('throttle:5,1')->name('weekly-report.send');
     Route::get('now-page', [NowPageController::class, 'edit'])->name('now-page.edit');
     Route::put('now-page', [NowPageController::class, 'update'])->name('now-page.update');
 
@@ -82,6 +88,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::post('suggest-estimator-item', [AiAssistController::class, 'suggestEstimatorItem'])->name('suggest-estimator-item');
         Route::post('propose-estimator-grid', [AiAssistController::class, 'proposeEstimatorGrid'])->name('propose-estimator-grid');
         Route::post('draft-service', [AiAssistController::class, 'draftService'])->name('draft-service');
+        Route::post('draft-job-application', [AiAssistController::class, 'draftJobApplication'])->name('draft-job-application');
         Route::post('engagements/{engagement}/analyze', [EngagementAnalysisController::class, 'store'])->name('engagements.analyze');
     });
 
@@ -95,6 +102,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('music-genres', MusicGenreController::class)->except('show');
     Route::resource('uses-items', UsesItemController::class)->except('show');
     Route::resource('services', ServiceController::class)->except('show');
+    Route::resource('job-applications', JobApplicationController::class);
     Route::resource('certifications', CertificationController::class)->except('show');
     Route::delete('certifications/{certification}/badge', [CertificationController::class, 'destroyBadge'])->name('certifications.badge.destroy');
     Route::resource('tracks', TrackController::class)->except('show');

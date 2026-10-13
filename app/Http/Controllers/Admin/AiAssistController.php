@@ -6,6 +6,7 @@ use App\Enums\EstimatorItemKind;
 use App\Enums\TextTone;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ai\DescribeTechnologyRequest;
+use App\Http\Requests\Ai\DraftJobApplicationRequest;
 use App\Http\Requests\Ai\DraftProjectRequest;
 use App\Http\Requests\Ai\DraftServiceRequest;
 use App\Http\Requests\Ai\ImproveTextRequest;
@@ -15,6 +16,7 @@ use App\Http\Requests\Ai\TranslateHtmlRequest;
 use App\Http\Requests\Ai\TranslateTextRequest;
 use App\Http\Requests\Ai\WritePostRequest;
 use App\Services\Ai\EstimateAssistant;
+use App\Services\Ai\JobApplicationDrafter;
 use App\Services\Ai\ProjectDraftService;
 use App\Services\Ai\TextAssistService;
 use Illuminate\Http\JsonResponse;
@@ -107,6 +109,18 @@ class AiAssistController extends Controller
         }
 
         return response()->json(['item' => $item]);
+    }
+
+    /** « Préparer avec l'IA » d'une page de candidature, d'après le texte de l'offre d'emploi. */
+    public function draftJobApplication(DraftJobApplicationRequest $request, JobApplicationDrafter $drafter): JsonResponse
+    {
+        $application = $drafter->draft($request->validated('job_posting'), $request->validated('locale'));
+
+        if ($application === null) {
+            return $this->respond(null);
+        }
+
+        return response()->json(['application' => $application]);
     }
 
     /** « Rédiger avec l'IA » du formulaire d'offre : texte en français, à relire puis traduire. */

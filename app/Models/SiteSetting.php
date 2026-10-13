@@ -44,6 +44,8 @@ class SiteSetting extends Model
         'estimator_hourly_rates',
         'estimator_risk_percent',
         'estimator_hours_per_week',
+        'weekly_report_enabled',
+        'weekly_report_sent_at',
     ];
 
     /** @var array<string, string> */
@@ -67,6 +69,8 @@ class SiteSetting extends Model
         'estimator_hourly_rates' => 'array',
         'estimator_risk_percent' => 'integer',
         'estimator_hours_per_week' => 'integer',
+        'weekly_report_enabled' => 'boolean',
+        'weekly_report_sent_at' => 'datetime',
     ];
 
     /**

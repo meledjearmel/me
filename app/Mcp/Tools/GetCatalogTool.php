@@ -53,7 +53,7 @@ class GetCatalogTool extends Tool
                 ->all(),
             'mentionables' => $mentions->mentionables()
                 ->map(fn (array $item): array => [
-                    'mention' => "@[{$item['label']}]({$item['kind']}:{$item['id']})",
+                    'mention' => PostMentions::token($item['kind'], $item['id'], $item['label']),
                     'hint' => $item['hint'],
                 ])
                 ->values()

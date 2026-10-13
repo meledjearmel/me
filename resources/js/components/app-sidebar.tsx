@@ -19,6 +19,8 @@ import {
     Calculator,
     ListPlus,
     Store,
+    Send,
+    CalendarCheck,
     BadgeDollarSign,
     IdCard,
     LayoutGrid,
@@ -62,6 +64,8 @@ import { index as subscribersIndex } from "@/routes/admin/subscribers";
 import { index as engagementsIndex } from "@/routes/admin/engagements";
 import { index as estimatorItemsIndex } from "@/routes/admin/estimator-items";
 import { index as servicesIndex } from "@/routes/admin/services";
+import { index as jobApplicationsIndex } from "@/routes/admin/job-applications";
+import { show as weeklyReportShow } from "@/routes/admin/weekly-report";
 import { index as estimatorOptionsIndex } from "@/routes/admin/estimator-options";
 import { edit as estimatorSettingsEdit } from "@/routes/admin/estimator-settings";
 import { index as domainsIndex } from "@/routes/admin/domains";
@@ -93,6 +97,11 @@ const mainNavItems: NavItem[] = [
         title: "Tableau de bord",
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: "Rapport de la semaine",
+        href: weeklyReportShow(),
+        icon: CalendarCheck,
     },
 ];
 
@@ -150,6 +159,7 @@ const musicNavItems: NavItem[] = [
 const inboxNavItems: NavItem[] = [
     { title: "Contacts", href: contactsIndex(), icon: Mail },
     { title: "Collaborations", href: engagementsIndex(), icon: Handshake },
+    { title: "Candidatures", href: jobApplicationsIndex(), icon: Send },
     { title: "Téléchargements CV", href: cvDownloadsIndex(), icon: FileDown },
     { title: "Newsletter", href: subscribersIndex(), icon: MailCheck },
     { title: "Félicitations", href: congratulationsIndex(), icon: Heart },

@@ -13,6 +13,7 @@ use App\Models\Education;
 use App\Models\Engagement;
 use App\Models\EstimatorItem;
 use App\Models\Experience;
+use App\Models\JobApplication;
 use App\Models\JobProfile;
 use App\Models\MusicGenre;
 use App\Models\Post;
@@ -64,6 +65,7 @@ class TrashController extends Controller
         'appointment-types' => ['model' => AppointmentType::class, 'label' => 'Type de rendez-vous'],
         'estimator-items' => ['model' => EstimatorItem::class, 'label' => 'Élément de l’estimateur'],
         'services' => ['model' => Service::class, 'label' => 'Offre'],
+        'job-applications' => ['model' => JobApplication::class, 'label' => 'Page de candidature'],
     ];
 
     /**
@@ -73,7 +75,7 @@ class TrashController extends Controller
      * triée par date de suppression décroissante.
      */
     #[QueryParameter('search', description: 'Recherche dans le titre affiché de l’élément.', type: 'string')]
-    #[QueryParameter('type', description: 'Type d’élément : `domains`, `music-genres`, `tracks`, `uses-items`, `technology-categories`, `technologies`, `job-profiles`, `skills`, `educations`, `experiences`, `projects`, `posts`, `professional-references`, `testimonials`, `post-comments`, `contacts`, `engagements`, `appointments`, `appointment-types`, `certifications`, `estimator-items` ou `services`.', type: 'string')]
+    #[QueryParameter('type', description: 'Type d’élément : `domains`, `music-genres`, `tracks`, `uses-items`, `technology-categories`, `technologies`, `job-profiles`, `skills`, `educations`, `experiences`, `projects`, `posts`, `professional-references`, `testimonials`, `post-comments`, `contacts`, `engagements`, `appointments`, `appointment-types`, `certifications`, `estimator-items`, `services` ou `job-applications`.', type: 'string')]
     #[QueryParameter('page', description: 'Numéro de page.', type: 'integer', default: 1)]
     #[QueryParameter('per_page', description: 'Éléments par page : `10`, `25` ou `50`.', type: 'integer', default: 10)]
     public function index(Request $request): AnonymousResourceCollection
@@ -158,6 +160,7 @@ class TrashController extends Controller
             'appointments' => trim("{$model->name} — {$model->starts_at?->format('d/m/Y H:i')}"),
             'appointment-types', 'estimator-items' => (string) $model->name,
             'services' => (string) $model->title,
+            'job-applications' => trim("{$model->company} — {$model->position}"),
             default => (string) $model->id,
         };
     }

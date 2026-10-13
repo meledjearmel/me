@@ -6,6 +6,7 @@ use App\Enums\EstimatorItemKind;
 use App\Enums\TextTone;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ai\DescribeTechnologyRequest;
+use App\Http\Requests\Ai\DraftJobApplicationRequest;
 use App\Http\Requests\Ai\DraftProjectRequest;
 use App\Http\Requests\Ai\DraftServiceRequest;
 use App\Http\Requests\Ai\ImproveTextRequest;
@@ -15,6 +16,7 @@ use App\Http\Requests\Ai\TranslateHtmlRequest;
 use App\Http\Requests\Ai\TranslateTextRequest;
 use App\Http\Requests\Ai\WritePostRequest;
 use App\Services\Ai\EstimateAssistant;
+use App\Services\Ai\JobApplicationDrafter;
 use App\Services\Ai\ProjectDraftService;
 use App\Services\Ai\TextAssistService;
 use Illuminate\Http\JsonResponse;
@@ -170,6 +172,27 @@ class AiController extends Controller
         }
 
         return response()->json(['item' => $item]);
+    }
+
+    /**
+     * Préparer une page de candidature
+     *
+     * D'après le texte d'une offre d'emploi (`job_posting`) et la langue de la page
+     * (`locale`), l'IA propose l'entreprise, le poste, le recruteur, le mot d'accompagnement,
+     * 2 à 4 projets publiés (`project_ids`, du plus pertinent au moins pertinent) et le profil
+     * métier du CV. Rien n'est enregistré.
+     *
+     * @response array{application: array{company: string, contact_name: string|null, position: string, intro: string, project_ids: list<int>, job_profile_id: int|null, reasoning: string|null}}
+     */
+    public function draftJobApplication(DraftJobApplicationRequest $request, JobApplicationDrafter $drafter): JsonResponse
+    {
+        $application = $drafter->draft($request->validated('job_posting'), $request->validated('locale'));
+
+        if ($application === null) {
+            return $this->respond(null);
+        }
+
+        return response()->json(['application' => $application]);
     }
 
     /**
