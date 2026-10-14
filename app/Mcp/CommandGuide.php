@@ -294,9 +294,19 @@ class CommandGuide
             'example' => 'Publie les commentaires en attente qui ne sont pas du spam.',
         ],
         'mark-handled' => [
-            'usage' => 'Ranger un message (lu ou répondu) ou une demande de collaboration (traitée).',
-            'tips' => ['Rien n\'est envoyé au visiteur.'],
+            'usage' => 'Ranger un message (lu ou répondu) ou une demande de collaboration (traitée), ou noter qu\'une demande est signée ou perdue.',
+            'tips' => ['Rien n\'est envoyé au visiteur.', 'Pour une demande signée, donnez le montant et la devise : ils alimentent la valeur gagnée du tableau de bord.'],
             'example' => 'J\'ai répondu à Awa, range son message.',
+        ],
+        'list-commercial-documents' => [
+            'usage' => 'Suivre les devis, proformas et factures : émis, acceptés, à encaisser.',
+            'tips' => ['Filtrez par type (quote, proforma, invoice) ou par statut (issued : en attente de réponse ou de paiement).'],
+            'example' => 'Quelles factures sont encore à encaisser ?',
+        ],
+        'draft-quote' => [
+            'usage' => 'Préparer un devis en brouillon depuis une demande, avec les lignes de son estimation ou les vôtres.',
+            'tips' => ['Le brouillon n\'a pas de numéro et n\'est jamais envoyé : vous le relisez, l\'émettez et l\'envoyez depuis l\'administration.'],
+            'example' => 'Prépare le devis de la demande de la boutique en ligne, avec un forfait de 7 500 CHF.',
         ],
     ];
 
@@ -346,6 +356,8 @@ class CommandGuide
         'moderate-testimonial' => 'Modérer un avis',
         'moderate-comment' => 'Modérer un commentaire',
         'mark-handled' => 'Ranger un message',
+        'list-commercial-documents' => 'Suivre devis et factures',
+        'draft-quote' => 'Préparer un devis',
     ];
 
     /** Titre court d'une commande ou d'un outil (son nom s'il n'en a pas). */

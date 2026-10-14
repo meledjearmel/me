@@ -63,8 +63,8 @@ test('tools and prompts keep the exact names used in the instructions', function
         ->json("result.{$key}"))->pluck('name')->sort()->values()->all();
 
     expect($list('tools/list', 'tools'))->toBe([
-        'add-post-image', 'add-project-image', 'configure-estimator', 'create-technology', 'decide-appointment', 'get-catalog', 'get-content', 'get-estimator',
-        'get-inbox', 'get-post', 'get-project', 'get-stats', 'get-weekly-report', 'list-contents', 'list-estimate-requests', 'list-job-applications', 'list-revisions',
+        'add-post-image', 'add-project-image', 'configure-estimator', 'create-technology', 'decide-appointment', 'draft-quote', 'get-catalog', 'get-content', 'get-estimator',
+        'get-inbox', 'get-post', 'get-project', 'get-stats', 'get-weekly-report', 'list-commercial-documents', 'list-contents', 'list-estimate-requests', 'list-job-applications', 'list-revisions',
         'mark-handled', 'moderate-comment', 'moderate-testimonial', 'propose-revision', 'read-web-page', 'save-content-draft', 'save-content-translation',
         'save-estimate-analysis', 'save-estimator-item', 'save-job-application', 'save-post-draft', 'save-post-social-texts', 'save-post-translation', 'save-project-draft', 'save-project-translation',
         'syndicate-post', 'update-project-draft',

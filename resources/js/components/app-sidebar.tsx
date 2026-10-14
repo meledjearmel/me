@@ -18,6 +18,7 @@ import {
     Heart,
     Calculator,
     Coins,
+    ReceiptText,
     ListPlus,
     Store,
     Send,
@@ -71,6 +72,7 @@ import { show as weeklyReportShow } from "@/routes/admin/weekly-report";
 import { edit as syndicationEdit } from "@/routes/admin/syndication";
 import { index as estimatorOptionsIndex } from "@/routes/admin/estimator-options";
 import { index as estimatorRatesIndex } from "@/routes/admin/estimator-rates";
+import { index as commercialDocumentsIndex } from "@/routes/admin/commercial-documents";
 import { edit as estimatorSettingsEdit } from "@/routes/admin/estimator-settings";
 import { index as domainsIndex } from "@/routes/admin/domains";
 import { index as educationsIndex } from "@/routes/admin/educations";
@@ -164,6 +166,11 @@ const musicNavItems: NavItem[] = [
 const inboxNavItems: NavItem[] = [
     { title: "Contacts", href: contactsIndex(), icon: Mail },
     { title: "Collaborations", href: engagementsIndex(), icon: Handshake },
+    {
+        title: "Devis et factures",
+        href: commercialDocumentsIndex(),
+        icon: ReceiptText,
+    },
     { title: "Candidatures", href: jobApplicationsIndex(), icon: Send },
     { title: "Téléchargements CV", href: cvDownloadsIndex(), icon: FileDown },
     { title: "Newsletter", href: subscribersIndex(), icon: MailCheck },

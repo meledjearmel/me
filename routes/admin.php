@@ -4,8 +4,10 @@ use App\Http\Controllers\Admin\AiAssistController;
 use App\Http\Controllers\Admin\AppointmentController;
 use App\Http\Controllers\Admin\AppointmentTypeController;
 use App\Http\Controllers\Admin\AvailabilityController;
+use App\Http\Controllers\Admin\BillingSettingsController;
 use App\Http\Controllers\Admin\CelebrationController;
 use App\Http\Controllers\Admin\CertificationController;
+use App\Http\Controllers\Admin\CommercialDocumentController;
 use App\Http\Controllers\Admin\CongratulationController;
 use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\ContentRevisionController;
@@ -164,6 +166,18 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('contacts', ContactController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
     Route::resource('engagements', EngagementController::class)->only(['index', 'show', 'update', 'destroy']);
     Route::put('engagements/{engagement}/outcome', [EngagementController::class, 'outcome'])->name('engagements.outcome');
+    Route::post('engagements/{engagement}/documents', [CommercialDocumentController::class, 'fromEngagement'])->name('engagements.documents.store');
+    Route::resource('commercial-documents', CommercialDocumentController::class);
+    Route::get('billing-settings', [BillingSettingsController::class, 'edit'])->name('billing-settings.edit');
+    Route::put('billing-settings', [BillingSettingsController::class, 'update'])->name('billing-settings.update');
+    Route::prefix('commercial-documents/{commercial_document}')->name('commercial-documents.')->group(function () {
+        Route::get('pdf', [CommercialDocumentController::class, 'pdf'])->name('pdf');
+        Route::post('issue', [CommercialDocumentController::class, 'issue'])->name('issue');
+        Route::post('suggest-mail', [CommercialDocumentController::class, 'suggestMail'])->name('suggest-mail');
+        Route::post('send', [CommercialDocumentController::class, 'send'])->name('send');
+        Route::post('convert', [CommercialDocumentController::class, 'convert'])->name('convert');
+        Route::patch('status', [CommercialDocumentController::class, 'status'])->name('status');
+    });
     Route::resource('cv-downloads', CvDownloadController::class)->only(['index', 'show', 'destroy']);
     Route::resource('subscribers', SubscriberController::class)->only(['index', 'destroy']);
 

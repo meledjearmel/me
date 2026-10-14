@@ -8,6 +8,7 @@ use App\Http\Controllers\BlogFeedController;
 use App\Http\Controllers\CelebrationCongratulationController;
 use App\Http\Controllers\CertificationController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\CommercialDocumentController;
 use App\Http\Controllers\CongratulationController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CvDownloadController;
@@ -106,6 +107,19 @@ Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, Lo
     Route::get('for/{token}/cv', [JobApplicationController::class, 'cv'])
         ->middleware('throttle:20,1')
         ->name('job-applications.cv');
+    // Devis et factures : privés, ouverts seulement par leur lien.
+    Route::get('documents/{token}', [CommercialDocumentController::class, 'show'])
+        ->middleware('throttle:60,1')
+        ->name('commercial-documents.show');
+    Route::get('documents/{token}/pdf', [CommercialDocumentController::class, 'pdf'])
+        ->middleware('throttle:20,1')
+        ->name('commercial-documents.pdf');
+    Route::post('documents/{token}/accept', [CommercialDocumentController::class, 'accept'])
+        ->middleware('throttle:10,1')
+        ->name('commercial-documents.accept');
+    Route::post('documents/{token}/decline', [CommercialDocumentController::class, 'decline'])
+        ->middleware('throttle:10,1')
+        ->name('commercial-documents.decline');
     Route::get('certifications', [CertificationController::class, 'index'])->name('certifications');
     Route::get('now', NowController::class)->name('now');
     Route::get('contact', [ContactController::class, 'index'])->name('contact.index');

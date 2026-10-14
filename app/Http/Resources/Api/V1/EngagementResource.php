@@ -35,9 +35,11 @@ class EngagementResource extends JsonResource
              * Estimation affichée au visiteur, quand la demande vient de l'estimateur de projet.
              * `hourly_rate` est le taux du type de projet (ses taux, sinon sa grille, sinon le taux
              * global) ; `rate_grid` le nom de sa grille tarifaire, `null` sans grille ou pour les
-             * demandes reçues avant l'ajout des grilles.
+             * demandes reçues avant l'ajout des grilles. `lines` détaille chaque élément, marge
+             * comprise (`{label, hours_min, hours_max, rate}`), pour préremplir un devis ; absent
+             * des demandes reçues avant l'ajout des devis.
              *
-             * @var array{billing: string, currency: string, hourly_rate: int, risk_percent: int, project_type: string, rate_grid: string|null, features: list<string>, hours_min: int, hours_max: int, price_min: int, price_max: int, weeks_min: int, weeks_max: int}|null
+             * @var array{billing: string, currency: string, hourly_rate: int, risk_percent: int, project_type: string, rate_grid: string|null, features: list<string>, hours_min: int, hours_max: int, price_min: int, price_max: int, weeks_min: int, weeks_max: int, lines: list<array{label: string, hours_min: int, hours_max: int, rate: int}>}|null
              */
             'estimate' => $this->estimate,
             /** La même estimation, lisible : « 3 600 – 6 000 CHF (forfait, 36 – 60 h) · 2 semaines ». */

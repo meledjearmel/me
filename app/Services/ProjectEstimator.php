@@ -83,7 +83,7 @@ class ProjectEstimator
 
     /**
      * @param  Collection<int, EstimatorItem>  $features
-     * @return array{billing: string, currency: string, hourly_rate: int, risk_percent: int, project_type: string, rate_grid: string|null, features: list<string>, hours_min: int, hours_max: int, price_min: int, price_max: int, weeks_min: int, weeks_max: int}
+     * @return array{billing: string, currency: string, hourly_rate: int, risk_percent: int, project_type: string, rate_grid: string|null, features: list<string>, hours_min: int, hours_max: int, price_min: int, price_max: int, weeks_min: int, weeks_max: int, lines: list<array{label: string, hours_min: int, hours_max: int, rate: int}>}
      */
     public function estimate(EstimatorItem $projectType, Collection $features, string $currency): array
     {
@@ -126,7 +126,36 @@ class ProjectEstimator
             'price_max' => $priceMax,
             'weeks_min' => max(1, (int) ceil($hoursMin / $hoursPerWeek)),
             'weeks_max' => max(1, (int) ceil($hoursMax / $hoursPerWeek)),
+            'lines' => $this->lines($items, $features->where('pricing', EstimatorPricing::Percent), $currency, $globalRates, $riskMultiplier, $rate),
         ];
+    }
+
+    /**
+     * Le détail de l'estimation, ligne par ligne, marge comprise : de quoi préremplir un devis.
+     * Une option en pourcentage devient une ligne d'heures au taux du type de projet.
+     *
+     * @param  Collection<int, EstimatorItem>  $items
+     * @param  Collection<int, EstimatorItem>  $percentFeatures
+     * @param  array<string, int>  $globalRates
+     * @return list<array{label: string, hours_min: int, hours_max: int, rate: int}>
+     */
+    private function lines(Collection $items, Collection $percentFeatures, string $currency, array $globalRates, float $riskMultiplier, int $projectRate): array
+    {
+        $lines = $items->map(fn (EstimatorItem $item): array => [
+            'label' => $item->getTranslation('name', 'fr'),
+            'hours_min' => (int) ceil($item->hours_min * $riskMultiplier),
+            'hours_max' => (int) ceil($item->hours_max * $riskMultiplier),
+            'rate' => $item->hourlyRate($currency, $globalRates),
+        ]);
+
+        $percentLines = $percentFeatures->map(fn (EstimatorItem $item): array => [
+            'label' => $item->getTranslation('name', 'fr'),
+            'hours_min' => (int) ceil($items->sum('hours_min') * $item->percent / 100 * $riskMultiplier),
+            'hours_max' => (int) ceil($items->sum('hours_max') * $item->percent / 100 * $riskMultiplier),
+            'rate' => $projectRate,
+        ]);
+
+        return $lines->merge($percentLines)->values()->all();
     }
 
     /**

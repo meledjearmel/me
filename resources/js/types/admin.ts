@@ -447,6 +447,72 @@ export type EstimatorRateOption = {
     rates: Partial<Record<EstimatorCurrency, number>>;
 };
 
+export type CommercialDocumentType = "quote" | "proforma" | "invoice";
+
+export type CommercialDocumentStatus =
+    | "draft"
+    | "issued"
+    | "accepted"
+    | "declined"
+    | "paid"
+    | "cancelled";
+
+export type CommercialDocumentLine = {
+    label: string;
+    description: string | null;
+    quantity: number;
+    unit: "hour" | "day" | "flat";
+    unit_price: number;
+};
+
+export type CommercialDocument = {
+    id: number;
+    type: CommercialDocumentType;
+    status: CommercialDocumentStatus;
+    number: string | null;
+    engagement_id: number | null;
+    source_id: number | null;
+    locale: "fr" | "en";
+    client_name: string;
+    client_email: string | null;
+    client_company: string | null;
+    client_address: string | null;
+    title: string;
+    currency: EstimatorCurrency;
+    lines: CommercialDocumentLine[];
+    total: number;
+    deposit_percent: number;
+    payment_terms: string | null;
+    notes: string | null;
+    issued_at: string | null;
+    valid_until: string | null;
+    due_at: string | null;
+    sent_at: string | null;
+    accepted_at: string | null;
+    declined_at: string | null;
+    paid_at: string | null;
+    created_at: string;
+    /** Fiche : acompte, lien du client (devis), demande et document d'origine. */
+    deposit_amount?: number;
+    public_url?: string | null;
+    engagement?: { id: number; name: string; subject: string | null } | null;
+    source?: { id: number; number: string | null; type: CommercialDocumentType } | null;
+};
+
+export type BillingSettings = {
+    billing_business_name: string | null;
+    billing_legal_form: string | null;
+    billing_address: string | null;
+    billing_registration_number: string | null;
+    billing_iban: string | null;
+    billing_bank: string | null;
+    billing_vat_mention: string | null;
+    billing_payment_terms: string | null;
+    billing_quote_validity_days: number;
+    billing_invoice_due_days: number;
+    billing_deposit_percent: number;
+};
+
 export type Service = {
     id: number;
     slug: string;

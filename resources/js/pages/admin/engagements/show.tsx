@@ -5,6 +5,7 @@ import EngagementAiAnalysis from "@/components/admin/engagement-ai-analysis";
 import EngagementOutcomeForm from "@/components/admin/engagement-outcome-form";
 import ShowPage, { formatDate } from "@/components/admin/show-page";
 import { index as engagementsIndex, update } from "@/routes/admin/engagements";
+import { store as storeDocument } from "@/routes/admin/engagements/documents";
 import type { Engagement } from "@/types";
 
 export default function EngagementShow({
@@ -26,20 +27,32 @@ export default function EngagementShow({
             backHref={engagementsIndex()}
             backLabel="Collaborations"
             actions={
-                <Button
-                    variant="outline"
-                    onClick={() =>
-                        router.patch(
-                            update.url(row.id),
-                            {},
-                            { preserveScroll: true },
-                        )
-                    }
-                >
-                    {row.status === "new"
-                        ? "Marquer comme traité"
-                        : "Remettre en nouveau"}
-                </Button>
+                <>
+                    <Button
+                        variant="outline"
+                        onClick={() =>
+                            router.post(storeDocument.url(row.id), {
+                                type: "quote",
+                            })
+                        }
+                    >
+                        Créer un devis
+                    </Button>
+                    <Button
+                        variant="outline"
+                        onClick={() =>
+                            router.patch(
+                                update.url(row.id),
+                                {},
+                                { preserveScroll: true },
+                            )
+                        }
+                    >
+                        {row.status === "new"
+                            ? "Marquer comme traité"
+                            : "Remettre en nouveau"}
+                    </Button>
+                </>
             }
             sections={[
                 {

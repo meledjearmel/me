@@ -57,6 +57,17 @@ class SiteSetting extends Model
         'hashnode_locale',
         'hashnode_auto_since',
         'hashnode_publication_id',
+        'billing_business_name',
+        'billing_legal_form',
+        'billing_address',
+        'billing_registration_number',
+        'billing_iban',
+        'billing_bank',
+        'billing_vat_mention',
+        'billing_payment_terms',
+        'billing_quote_validity_days',
+        'billing_invoice_due_days',
+        'billing_deposit_percent',
     ];
 
     /** Les clés d'API ne sortent jamais en clair (réponses, journaux, admin). @var list<string> */

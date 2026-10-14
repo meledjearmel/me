@@ -13,6 +13,7 @@ use App\Mcp\Tools\AddProjectImageTool;
 use App\Mcp\Tools\ConfigureEstimatorTool;
 use App\Mcp\Tools\CreateTechnologyTool;
 use App\Mcp\Tools\DecideAppointmentTool;
+use App\Mcp\Tools\DraftQuoteTool;
 use App\Mcp\Tools\GetCatalogTool;
 use App\Mcp\Tools\GetContentTool;
 use App\Mcp\Tools\GetEstimatorTool;
@@ -21,6 +22,7 @@ use App\Mcp\Tools\GetPostTool;
 use App\Mcp\Tools\GetProjectTool;
 use App\Mcp\Tools\GetStatsTool;
 use App\Mcp\Tools\GetWeeklyReportTool;
+use App\Mcp\Tools\ListCommercialDocumentsTool;
 use App\Mcp\Tools\ListContentsTool;
 use App\Mcp\Tools\ListEstimateRequestsTool;
 use App\Mcp\Tools\ListJobApplicationsTool;
@@ -74,7 +76,8 @@ Contenu déjà publié (ou page « Now ») : ne le modifie jamais directement. L
 Estimateur de projet : get-estimator lit la grille (heures de travail hors marge, facturation forfait ou à l'heure) et les réglages (taux horaire par devise, marge pour imprévus, heures par semaine). Pour tout configurer d'un coup (réglages et plusieurs éléments), utilise configure-estimator : donne une ref à chaque nouveau type de projet pour qu'une option le vise dans project_types (option réservée à ces types ; vide = pour tous) ; une option dont le coût grandit avec le projet (multilingue…) se chiffre en pourcentage (pricing « percent »). save-estimator-item ajoute ou corrige un seul élément. Les éléments créés restent masqués jusqu'à ce que le développeur les active ; chiffre des heures réalistes pour un développeur expérimenté, cohérentes avec le reste de la grille. Pour une demande reçue : list-estimate-requests, puis save-estimate-analysis ; l'objectif est d'éviter une sous-estimation (ce que les choix ne couvrent pas, points flous, questions à poser au client, heures marge comprise, « hourly » quand le périmètre est trop flou pour un forfait sûr).
 Candidature : pour une offre d'emploi donnée par le développeur, lis-la (read-web-page), regarde list-job-applications (pas de doublon pour la même entreprise), le portfolio (get-catalog, get-project), puis save-job-application : un mot d'accompagnement dans la langue de l'offre, appuyé sur des projets réels cités avec leur jeton de mention de get-catalog (jamais un identifiant seul dans le texte), et 2 à 4 projets du plus pertinent au moins pertinent. Pour un CV adapté à l'offre, relis la page avec list-job-applications (id) pour avoir cv_material, puis envoie cv_title, cv_summary, cv_experiences et cv_skill_ids : uniquement des réalisations et compétences existantes, choisies et ordonnées, jamais de nouvelle. La page reste en brouillon : le développeur la relit et la met en ligne.
 Faire connaître un article : save-post-social-texts enregistre ses textes de partage (LinkedIn, X, Facebook, statut WhatsApp), que le développeur publie lui-même ; syndicate-post le republie sur dev.to ou Hashnode, mais seulement à sa demande explicite (c'est une publication réelle).
-Suivi du site : get-inbox liste ce qui attend une réponse (messages, demandes, rendez-vous, avis, commentaires), get-stats et get-weekly-report donnent les chiffres. decide-appointment (le visiteur reçoit un email), moderate-testimonial et moderate-comment (publication immédiate) agissent pour de vrai : seulement sur demande explicite, élément par élément ; mark-handled range ce dont le développeur dit s'être occupé.
+Suivi du site : get-inbox liste ce qui attend une réponse (messages, demandes, rendez-vous, avis, commentaires), get-stats et get-weekly-report donnent les chiffres. decide-appointment (le visiteur reçoit un email), moderate-testimonial et moderate-comment (publication immédiate) agissent pour de vrai : seulement sur demande explicite, élément par élément ; mark-handled range ce dont le développeur dit s'être occupé, et enregistre qu'une demande est signée (avec le montant qu'il donne) ou perdue.
+Devis et factures : list-commercial-documents suit les devis, proformas et factures (émis, acceptés, à encaisser). draft-quote prépare un devis en brouillon depuis une demande, avec les lignes de son estimation ou celles que le développeur valide ; tu n'émets ni n'envoies jamais un document : il le fait lui-même depuis l'administration.
 N'invente rien : client, dates, chiffres ou taille d'équipe absents de la source restent vides. Ne cite ni secret ni donnée confidentielle d'un client. Rien n'est jamais publié par toi : ce sont toujours des brouillons.
 TEXT)]
 class PortfolioServer extends Server
@@ -117,6 +120,8 @@ class PortfolioServer extends Server
         ModerateTestimonialTool::class,
         ModerateCommentTool::class,
         MarkHandledTool::class,
+        ListCommercialDocumentsTool::class,
+        DraftQuoteTool::class,
     ];
 
     protected array $prompts = [
