@@ -36,7 +36,10 @@
         .band .muted { color: rgba(255, 255, 255, 0.75); }
         .band-accent { height: 5px; background: {{ $accent }}; margin: -26px 0 26px; }
         .parties { margin-top: 26px; }
-        .parties td { width: 50%; vertical-align: top; }
+        /* Le client s'aligne sur le bloc du total (55 % / 45 %). */
+        .parties td { vertical-align: top; }
+        .parties td:first-child { width: 55%; }
+        .parties td:last-child { width: 45%; }
         .label { font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 3px; }
         .client { border-left: 3px solid {{ $accent }}; padding-left: 10px; }
         .title { margin: 24px 0 10px; font-size: 12px; font-weight: bold; color: {{ $primary }}; }
@@ -59,7 +62,8 @@
         .section p { margin: 0; }
         .accept { margin-top: 18px; padding: 10px 12px; border: 1px solid {{ $accent }}; }
         .signature { margin-top: 26px; page-break-inside: avoid; }
-        .signature td { width: 50%; vertical-align: top; padding-right: 16px; }
+        .signature td { width: 50%; vertical-align: top; }
+        .signature td:first-child { padding-right: 16px; }
         .signature-box { height: 60px; border: 1px solid #ccc; margin-top: 4px; }
         .footer { position: fixed; bottom: -30px; left: 0; right: 0; text-align: center; font-size: 7.5px; color: #888; }
     </style>
