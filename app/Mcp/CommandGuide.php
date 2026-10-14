@@ -255,6 +255,19 @@ class CommandGuide
             'tips' => ['Le même bilan part par email chaque lundi matin (réglable dans l\'admin, Rapport de la semaine).'],
             'example' => 'Comment s\'est passée ma semaine sur le portfolio ?',
         ],
+        'save-post-social-texts' => [
+            'usage' => 'Écrire les textes qui annoncent un article sur LinkedIn, X, Facebook et en statut WhatsApp.',
+            'tips' => ['Rien n\'est publié : sur la fiche de l\'article, un clic ouvre chaque réseau avec le texte et le lien déjà remplis.'],
+            'example' => 'Prépare les textes de partage de mon dernier article pour LinkedIn, X, Facebook et WhatsApp.',
+        ],
+        'syndicate-post' => [
+            'usage' => 'Republier un article publié sur dev.to ou Hashnode, avec un lien canonique vers votre site.',
+            'tips' => [
+                'Publie réellement : l\'agent ne l\'utilise que si vous le demandez pour cet article.',
+                'La plateforme doit être configurée dans l\'admin (Blog, Republication) ; republier met à jour la version existante.',
+            ],
+            'example' => 'Republie mon dernier article sur dev.to.',
+        ],
     ];
 
     /**
@@ -295,6 +308,8 @@ class CommandGuide
         'list-job-applications' => 'Pages de candidature',
         'save-job-application' => 'Préparer une candidature',
         'get-weekly-report' => 'Bilan de la semaine',
+        'save-post-social-texts' => 'Textes de partage',
+        'syndicate-post' => 'Republier un article',
     ];
 
     /** Titre court d'une commande ou d'un outil (son nom s'il n'en a pas). */

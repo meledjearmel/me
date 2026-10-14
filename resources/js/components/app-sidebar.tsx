@@ -21,6 +21,7 @@ import {
     Store,
     Send,
     CalendarCheck,
+    Share2,
     BadgeDollarSign,
     IdCard,
     LayoutGrid,
@@ -66,6 +67,7 @@ import { index as estimatorItemsIndex } from "@/routes/admin/estimator-items";
 import { index as servicesIndex } from "@/routes/admin/services";
 import { index as jobApplicationsIndex } from "@/routes/admin/job-applications";
 import { show as weeklyReportShow } from "@/routes/admin/weekly-report";
+import { edit as syndicationEdit } from "@/routes/admin/syndication";
 import { index as estimatorOptionsIndex } from "@/routes/admin/estimator-options";
 import { edit as estimatorSettingsEdit } from "@/routes/admin/estimator-settings";
 import { index as domainsIndex } from "@/routes/admin/domains";
@@ -117,6 +119,7 @@ const blogNavItems: NavItem[] = [
     { title: "Tags du blog", href: postTagsIndex(), icon: Tags },
     { title: "Séries du blog", href: postSeriesIndex(), icon: ListOrdered },
     { title: "Commentaires", href: postCommentsIndex(), icon: MessagesSquare },
+    { title: "Republication", href: syndicationEdit(), icon: Share2 },
 ];
 
 const portfolioNavItems: NavItem[] = [

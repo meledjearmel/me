@@ -30,9 +30,11 @@ use App\Mcp\Tools\SaveEstimateAnalysisTool;
 use App\Mcp\Tools\SaveEstimatorItemTool;
 use App\Mcp\Tools\SaveJobApplicationTool;
 use App\Mcp\Tools\SavePostDraftTool;
+use App\Mcp\Tools\SavePostSocialTextsTool;
 use App\Mcp\Tools\SavePostTranslationTool;
 use App\Mcp\Tools\SaveProjectDraftTool;
 use App\Mcp\Tools\SaveProjectTranslationTool;
+use App\Mcp\Tools\SyndicatePostTool;
 use App\Mcp\Tools\UpdateProjectDraftTool;
 use Laravel\Mcp\Server;
 use Laravel\Mcp\Server\Attributes\Instructions;
@@ -65,6 +67,7 @@ Ne traduis en anglais (save-project-translation, save-post-translation, save-con
 Contenu déjà publié (ou page « Now ») : ne le modifie jamais directement. Lis-le, vérifie list-revisions pour ne pas proposer deux fois la même chose, puis propose-revision avec seulement les champs modifiés, en français et en anglais, et un résumé de ce qui change et pourquoi ; le développeur relit l'avant/après et applique.
 Estimateur de projet : get-estimator lit la grille (heures de travail hors marge, facturation forfait ou à l'heure) et les réglages (taux horaire par devise, marge pour imprévus, heures par semaine). Pour tout configurer d'un coup (réglages et plusieurs éléments), utilise configure-estimator : donne une ref à chaque nouveau type de projet pour qu'une option le vise dans project_types (option réservée à ces types ; vide = pour tous) ; une option dont le coût grandit avec le projet (multilingue…) se chiffre en pourcentage (pricing « percent »). save-estimator-item ajoute ou corrige un seul élément. Les éléments créés restent masqués jusqu'à ce que le développeur les active ; chiffre des heures réalistes pour un développeur expérimenté, cohérentes avec le reste de la grille. Pour une demande reçue : list-estimate-requests, puis save-estimate-analysis ; l'objectif est d'éviter une sous-estimation (ce que les choix ne couvrent pas, points flous, questions à poser au client, heures marge comprise, « hourly » quand le périmètre est trop flou pour un forfait sûr).
 Candidature : pour une offre d'emploi donnée par le développeur, lis-la (read-web-page), regarde list-job-applications (pas de doublon pour la même entreprise), le portfolio (get-catalog, get-project), puis save-job-application : un mot d'accompagnement dans la langue de l'offre, appuyé sur des projets réels cités avec leur jeton de mention de get-catalog (jamais un identifiant seul dans le texte), et 2 à 4 projets du plus pertinent au moins pertinent. Pour un CV adapté à l'offre, relis la page avec list-job-applications (id) pour avoir cv_material, puis envoie cv_title, cv_summary, cv_experiences et cv_skill_ids : uniquement des réalisations et compétences existantes, choisies et ordonnées, jamais de nouvelle. La page reste en brouillon : le développeur la relit et la met en ligne.
+Faire connaître un article : save-post-social-texts enregistre ses textes de partage (LinkedIn, X, Facebook, statut WhatsApp), que le développeur publie lui-même ; syndicate-post le republie sur dev.to ou Hashnode, mais seulement à sa demande explicite (c'est une publication réelle).
 N'invente rien : client, dates, chiffres ou taille d'équipe absents de la source restent vides. Ne cite ni secret ni donnée confidentielle d'un client. Rien n'est jamais publié par toi : ce sont toujours des brouillons.
 TEXT)]
 class PortfolioServer extends Server
@@ -99,6 +102,8 @@ class PortfolioServer extends Server
         ListJobApplicationsTool::class,
         SaveJobApplicationTool::class,
         GetWeeklyReportTool::class,
+        SavePostSocialTextsTool::class,
+        SyndicatePostTool::class,
     ];
 
     protected array $prompts = [

@@ -1,51 +1,61 @@
-import StatusSelect from "@/components/admin/status-select";
-import { router } from "@inertiajs/react";
-import { Check, ExternalLink, Eye, X } from "lucide-react";
-import DeleteButton from "@/components/admin/delete-button";
-import ShowPage, { formatDate } from "@/components/admin/show-page";
-import AiDraftBadge from "@/components/admin/ai-draft-badge";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import StatusSelect from '@/components/admin/status-select';
+import { router } from '@inertiajs/react';
+import { Check, ExternalLink, Eye, X } from 'lucide-react';
+import DeleteButton from '@/components/admin/delete-button';
+import ShowPage, { formatDate } from '@/components/admin/show-page';
+import AiDraftBadge from '@/components/admin/ai-draft-badge';
+import PostDistribution, {
+    type SocialKit,
+    type Syndication,
+} from '@/components/admin/post-distribution';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     destroy as destroyComment,
     update as updateComment,
-} from "@/routes/admin/post-comments";
-import { edit, index as postsIndex } from "@/routes/admin/posts";
-import type { Post, PostComment } from "@/types";
-import ActionTooltip from "@/components/admin/action-tooltip";
+} from '@/routes/admin/post-comments';
+import { edit, index as postsIndex } from '@/routes/admin/posts';
+import type { Post, PostComment } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
-type ReactionType = "like" | "love" | "fire" | "idea" | "think";
+type ReactionType = 'like' | 'love' | 'fire' | 'idea' | 'think';
 
 const REACTIONS: Record<ReactionType, { emoji: string; label: string }> = {
-    like: { emoji: "👍", label: "J’aime" },
-    love: { emoji: "❤️", label: "J’adore" },
-    fire: { emoji: "🔥", label: "Impressionnant" },
-    idea: { emoji: "💡", label: "Instructif" },
-    think: { emoji: "💭", label: "Ça fait réfléchir" },
+    like: { emoji: '👍', label: 'J’aime' },
+    love: { emoji: '❤️', label: 'J’adore' },
+    fire: { emoji: '🔥', label: 'Impressionnant' },
+    idea: { emoji: '💡', label: 'Instructif' },
+    think: { emoji: '💭', label: 'Ça fait réfléchir' },
 };
 
 type ShareNetwork =
-    "linkedin" | "x" | "whatsapp" | "facebook" | "email" | "copy" | "native";
+    | 'linkedin'
+    | 'x'
+    | 'whatsapp'
+    | 'facebook'
+    | 'email'
+    | 'copy'
+    | 'native';
 
 const SHARE_NETWORKS: Record<ShareNetwork, string> = {
-    linkedin: "LinkedIn",
-    x: "X",
-    whatsapp: "WhatsApp",
-    facebook: "Facebook",
-    email: "E-mail",
-    copy: "Lien copié",
-    native: "Partage du téléphone",
+    linkedin: 'LinkedIn',
+    x: 'X',
+    whatsapp: 'WhatsApp',
+    facebook: 'Facebook',
+    email: 'E-mail',
+    copy: 'Lien copié',
+    native: 'Partage du téléphone',
 };
 
 const COMMENT_STATUS = {
-    pending: { label: "En attente", variant: "secondary" },
-    approved: { label: "Publié", variant: "default" },
-    rejected: { label: "Refusé", variant: "destructive" },
+    pending: { label: 'En attente', variant: 'secondary' },
+    approved: { label: 'Publié', variant: 'default' },
+    rejected: { label: 'Refusé', variant: 'destructive' },
 } as const;
 
-const number = new Intl.NumberFormat("fr-FR");
+const number = new Intl.NumberFormat('fr-FR');
 
-function moderate(comment: PostComment, status: PostComment["status"]): void {
+function moderate(comment: PostComment, status: PostComment['status']): void {
     router.patch(
         updateComment.url(comment.id),
         { status },
@@ -59,13 +69,19 @@ export default function PostShow({
     shares,
     comments,
     previewUrl,
+    syndications,
+    syndicationPlatforms,
+    socialKits,
 }: {
     post: Post & { is_live: boolean };
     reactions: Record<ReactionType, number>;
     shares: Record<ShareNetwork, number>;
-    comments: Omit<PostComment, "post">[];
+    comments: Omit<PostComment, 'post'>[];
     /** Lien signé (72 h) vers l'article tel qu'il apparaîtra sur le site. */
     previewUrl: string;
+    syndications: Syndication[];
+    syndicationPlatforms: { value: 'devto' | 'hashnode'; label: string }[];
+    socialKits: { fr: SocialKit; en: SocialKit | null };
 }) {
     const totalReactions = Object.values(reactions).reduce(
         (sum, count) => sum + count,
@@ -76,9 +92,9 @@ export default function PostShow({
         0,
     );
     const pending = comments.filter(
-        (comment) => comment.status === "pending",
+        (comment) => comment.status === 'pending',
     ).length;
-    const tags = (post.tags as string[]).join(", ");
+    const tags = (post.tags as string[]).join(', ');
 
     return (
         <ShowPage
@@ -86,12 +102,12 @@ export default function PostShow({
             description={post.title.en}
             badge={
                 <>
-                    <Badge variant={post.is_live ? "default" : "secondary"}>
+                    <Badge variant={post.is_live ? 'default' : 'secondary'}>
                         {post.is_live
-                            ? "En ligne"
-                            : post.status === "published"
-                              ? "Programmé"
-                              : "Brouillon"}
+                            ? 'En ligne'
+                            : post.status === 'published'
+                              ? 'Programmé'
+                              : 'Brouillon'}
                     </Badge>
                     <AiDraftBadge
                         draftedBy={post.drafted_by}
@@ -121,21 +137,35 @@ export default function PostShow({
                         ) : (
                             <Eye data-icon="inline-start" />
                         )}
-                        {post.is_live ? "Voir sur le site" : "Aperçu"}
+                        {post.is_live ? 'Voir sur le site' : 'Aperçu'}
                     </a>
                 </Button>
             }
             sections={[
                 {
-                    title: "Audience",
+                    title: 'Faire connaître l’article',
+                    description:
+                        'Republication avec lien canonique, et partage sur les réseaux.',
+                    content: (
+                        <PostDistribution
+                            postId={post.id}
+                            isLive={post.is_live}
+                            syndications={syndications}
+                            platforms={syndicationPlatforms}
+                            socialKits={socialKits}
+                        />
+                    ),
+                },
+                {
+                    title: 'Audience',
                     content: (
                         <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             {[
-                                ["Lectures", post.views_count ?? 0],
-                                ["Réactions", totalReactions],
-                                ["Partages", totalShares],
+                                ['Lectures', post.views_count ?? 0],
+                                ['Réactions', totalReactions],
+                                ['Partages', totalShares],
                                 [
-                                    "Commentaires",
+                                    'Commentaires',
                                     comments.length,
                                     pending > 0
                                         ? `${pending} en attente`
@@ -163,8 +193,8 @@ export default function PostShow({
                     ),
                 },
                 {
-                    title: "Réactions",
-                    description: "Données sans compte, une fois par lecteur",
+                    title: 'Réactions',
+                    description: 'Données sans compte, une fois par lecteur',
                     content: (
                         <ul className="grid gap-2 sm:grid-cols-5">
                             {(Object.keys(REACTIONS) as ReactionType[]).map(
@@ -194,9 +224,9 @@ export default function PostShow({
                     ),
                 },
                 {
-                    title: "Partages",
+                    title: 'Partages',
                     description:
-                        "Une fois par session et par réseau toutes les 30 minutes",
+                        'Une fois par session et par réseau toutes les 30 minutes',
                     content: (
                         <ul className="grid gap-2 sm:grid-cols-4 lg:grid-cols-7">
                             {(
@@ -218,9 +248,9 @@ export default function PostShow({
                     ),
                 },
                 {
-                    title: "Commentaires",
+                    title: 'Commentaires',
                     description:
-                        "Seuls les commentaires publiés apparaissent sous l’article",
+                        'Seuls les commentaires publiés apparaissent sous l’article',
                     content:
                         comments.length === 0 ? (
                             <p className="text-sm text-muted-foreground">
@@ -259,8 +289,8 @@ export default function PostShow({
                                                 <span className="text-xs text-muted-foreground">
                                                     {formatDate(
                                                         comment.created_at,
-                                                    )}{" "}
-                                                    ·{" "}
+                                                    )}{' '}
+                                                    ·{' '}
                                                     {comment.locale.toUpperCase()}
                                                 </span>
                                             </p>
@@ -269,7 +299,7 @@ export default function PostShow({
                                             </p>
                                         </div>
                                         <div className="flex shrink-0 items-center">
-                                            {comment.status !== "approved" && (
+                                            {comment.status !== 'approved' && (
                                                 <ActionTooltip label="Publier">
                                                     <Button
                                                         variant="ghost"
@@ -279,7 +309,7 @@ export default function PostShow({
                                                         onClick={() =>
                                                             moderate(
                                                                 comment as PostComment,
-                                                                "approved",
+                                                                'approved',
                                                             )
                                                         }
                                                     >
@@ -287,7 +317,7 @@ export default function PostShow({
                                                     </Button>
                                                 </ActionTooltip>
                                             )}
-                                            {comment.status !== "rejected" && (
+                                            {comment.status !== 'rejected' && (
                                                 <ActionTooltip label="Refuser">
                                                     <Button
                                                         variant="ghost"
@@ -297,7 +327,7 @@ export default function PostShow({
                                                         onClick={() =>
                                                             moderate(
                                                                 comment as PostComment,
-                                                                "rejected",
+                                                                'rejected',
                                                             )
                                                         }
                                                     >
@@ -318,37 +348,37 @@ export default function PostShow({
                         ),
                 },
                 {
-                    title: "Article",
+                    title: 'Article',
                     items: [
-                        { label: "Adresse", value: `/blog/${post.slug}` },
+                        { label: 'Adresse', value: `/blog/${post.slug}` },
                         {
-                            label: "Publication",
+                            label: 'Publication',
                             value: post.published_at
                                 ? formatDate(post.published_at)
                                 : null,
                         },
                         {
-                            label: "Temps de lecture",
+                            label: 'Temps de lecture',
                             value: `${post.reading_minutes} min`,
                         },
                         {
-                            label: "À la une",
-                            value: post.is_featured ? "Oui" : "Non",
+                            label: 'À la une',
+                            value: post.is_featured ? 'Oui' : 'Non',
                         },
-                        { label: "Tags", value: tags },
+                        { label: 'Tags', value: tags },
                         {
-                            label: "Série",
+                            label: 'Série',
                             value: post.series
-                                ? `${post.series}${post.series_position ? ` · partie ${post.series_position}` : ""}`
+                                ? `${post.series}${post.series_position ? ` · partie ${post.series_position}` : ''}`
                                 : null,
                         },
                         {
-                            label: "Extrait",
+                            label: 'Extrait',
                             value: post.excerpt?.fr,
                             wide: true,
                         },
                         {
-                            label: "Couverture",
+                            label: 'Couverture',
                             value: post.cover_url ? (
                                 <img
                                     src={post.cover_url}
@@ -367,7 +397,7 @@ export default function PostShow({
 
 PostShow.layout = {
     breadcrumbs: [
-        { title: "Blog", href: postsIndex() },
-        { title: "Article", href: "" },
+        { title: 'Blog', href: postsIndex() },
+        { title: 'Article', href: '' },
     ],
 };

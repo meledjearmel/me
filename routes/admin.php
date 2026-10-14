@@ -30,6 +30,7 @@ use App\Http\Controllers\Admin\NowPageController;
 use App\Http\Controllers\Admin\PostCommentController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\PostSeriesController;
+use App\Http\Controllers\Admin\PostSyndicationController;
 use App\Http\Controllers\Admin\PostTagController;
 use App\Http\Controllers\Admin\ProfessionalReferenceController;
 use App\Http\Controllers\Admin\ProfileController;
@@ -39,6 +40,7 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\SkillController;
 use App\Http\Controllers\Admin\SubscriberController;
+use App\Http\Controllers\Admin\SyndicationSettingsController;
 use App\Http\Controllers\Admin\TechnologyCategoryController;
 use App\Http\Controllers\Admin\TechnologyController;
 use App\Http\Controllers\Admin\TechnologyIconController;
@@ -139,6 +141,18 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         ->only(['index', 'edit', 'update', 'destroy'])
         ->parameters(['post-series' => 'postSeries']);
     Route::delete('posts/{post}/cover', [PostController::class, 'destroyCover'])->name('posts.cover.destroy');
+    // Republication (dev.to, Hashnode) et kit de partage (LinkedIn, X, Facebook, WhatsApp).
+    Route::post('posts/{post}/syndications/{platform}', [PostSyndicationController::class, 'store'])
+        ->whereIn('platform', ['devto', 'hashnode'])
+        ->middleware('throttle:10,1')
+        ->name('posts.syndications.store');
+    Route::post('posts/{post}/social-texts/{locale}', [PostSyndicationController::class, 'generateSocialTexts'])
+        ->whereIn('locale', ['fr', 'en'])
+        ->middleware('throttle:ai-assist')
+        ->name('posts.social-texts.generate');
+    Route::put('posts/{post}/social-texts', [PostSyndicationController::class, 'updateSocialTexts'])->name('posts.social-texts.update');
+    Route::get('syndication', [SyndicationSettingsController::class, 'edit'])->name('syndication.edit');
+    Route::put('syndication', [SyndicationSettingsController::class, 'update'])->name('syndication.update');
     Route::delete('projects/{project}/cover', [ProjectController::class, 'destroyCover'])->name('projects.cover.destroy');
     Route::delete('projects/{project}/gallery/{media}', [ProjectController::class, 'destroyGalleryImage'])->name('projects.gallery.destroy');
     Route::resource('professional-references', ProfessionalReferenceController::class);

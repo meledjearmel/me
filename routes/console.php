@@ -18,6 +18,9 @@ Schedule::command('appointments:send-reminders')->hourly();
 // Annonce des nouveaux articles aux abonnés de la newsletter.
 Schedule::command('newsletter:send')->everyFifteenMinutes();
 
+// Republication des articles sur dev.to et Hashnode (plateformes en mode auto).
+Schedule::command('posts:syndicate')->everyFifteenMinutes();
+
 // Rapport de la semaine, par email, chaque lundi matin.
 Schedule::command('report:weekly')->weekly()->mondays()->at('07:00');
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Concerns\PaginatesAdminLists;
 use App\Concerns\SavesPosts;
+use App\Enums\SyndicationPlatform;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PostImageRequest;
 use App\Http\Requests\Admin\PostRequest;
@@ -11,6 +12,8 @@ use App\Models\Post;
 use App\Models\PostSeries;
 use App\Models\PostTag;
 use App\Services\PostMentions;
+use App\Services\Syndication\PostSyndicator;
+use App\Services\Syndication\SocialKit;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -70,6 +73,15 @@ class PostController extends Controller
             'shares' => $post->shareCounts(),
             'comments' => $post->comments()->latest()->get(['id', 'author_name', 'author_email', 'body', 'locale', 'status', 'created_at']),
             'previewUrl' => $post->previewUrl(),
+            // Republication et kit de partage (voir PostSyndicationController).
+            'syndications' => $post->syndications()->get(['platform', 'status', 'external_url', 'locale', 'error', 'published_at', 'updated_at']),
+            'syndicationPlatforms' => collect(app(PostSyndicator::class)->available())
+                ->map(fn (SyndicationPlatform $platform): array => ['value' => $platform->value, 'label' => $platform->label()])
+                ->all(),
+            'socialKits' => [
+                'fr' => app(SocialKit::class)->kit($post, 'fr'),
+                'en' => filled($post->getTranslation('title', 'en', false)) ? app(SocialKit::class)->kit($post, 'en') : null,
+            ],
         ]);
     }
 

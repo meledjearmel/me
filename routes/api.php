@@ -30,6 +30,7 @@ use App\Http\Controllers\Api\V1\MusicGenreController;
 use App\Http\Controllers\Api\V1\PostCommentController;
 use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\PostSeriesController;
+use App\Http\Controllers\Api\V1\PostSyndicationController;
 use App\Http\Controllers\Api\V1\PostTagController;
 use App\Http\Controllers\Api\V1\ProfessionalReferenceController;
 use App\Http\Controllers\Api\V1\ProfileController;
@@ -174,6 +175,15 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::post('github/sync', [GitHubController::class, 'sync'])->middleware('throttle:6,1')->name('github.sync');
         Route::delete('certifications/{certification}/badge', [CertificationController::class, 'destroyBadge'])->name('certifications.badge.destroy');
         Route::delete('posts/{post}/cover', [PostController::class, 'destroyCover'])->name('posts.cover.destroy');
+        Route::get('syndication', [PostSyndicationController::class, 'settings'])->name('syndication.show');
+        Route::put('syndication', [PostSyndicationController::class, 'updateSettings'])->name('syndication.update');
+        Route::get('syndication/hashnode-publications', [PostSyndicationController::class, 'hashnodePublications'])->name('syndication.hashnode-publications');
+        Route::get('posts/{post}/syndications', [PostSyndicationController::class, 'show'])->name('posts.syndications.show');
+        Route::post('posts/{post}/syndications/{platform}', [PostSyndicationController::class, 'store'])
+            ->whereIn('platform', ['devto', 'hashnode'])->middleware('throttle:10,1')->name('posts.syndications.store');
+        Route::post('posts/{post}/social-texts/{locale}', [PostSyndicationController::class, 'generateSocialTexts'])
+            ->whereIn('locale', ['fr', 'en'])->middleware('throttle:ai-assist')->name('posts.social-texts.generate');
+        Route::put('posts/{post}/social-texts', [PostSyndicationController::class, 'updateSocialTexts'])->name('posts.social-texts.update');
         Route::delete('projects/{project}/cover', [ProjectController::class, 'destroyCover'])->name('projects.cover.destroy');
         Route::delete('projects/{project}/gallery/{media}', [ProjectController::class, 'destroyGalleryImage'])->name('projects.gallery.destroy');
 

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\AvailabilityStatus;
 use App\Enums\CvSource;
+use App\Enums\SyndicationMode;
+use App\Enums\SyndicationPlatform;
 use Database\Factories\SiteSettingFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -46,7 +48,19 @@ class SiteSetting extends Model
         'estimator_hours_per_week',
         'weekly_report_enabled',
         'weekly_report_sent_at',
+        'devto_mode',
+        'devto_api_key',
+        'devto_locale',
+        'devto_auto_since',
+        'hashnode_mode',
+        'hashnode_api_key',
+        'hashnode_locale',
+        'hashnode_auto_since',
+        'hashnode_publication_id',
     ];
+
+    /** Les clés d'API ne sortent jamais en clair (réponses, journaux, admin). @var list<string> */
+    protected $hidden = ['devto_api_key', 'hashnode_api_key'];
 
     /** @var array<string, string> */
     protected $casts = [
@@ -71,7 +85,21 @@ class SiteSetting extends Model
         'estimator_hours_per_week' => 'integer',
         'weekly_report_enabled' => 'boolean',
         'weekly_report_sent_at' => 'datetime',
+        'devto_mode' => SyndicationMode::class,
+        'devto_api_key' => 'encrypted',
+        'devto_auto_since' => 'datetime',
+        'hashnode_mode' => SyndicationMode::class,
+        'hashnode_api_key' => 'encrypted',
+        'hashnode_auto_since' => 'datetime',
     ];
+
+    /** Le mode de republication d'une plateforme (coupé sans clé, quel que soit le réglage). */
+    public function syndicationMode(SyndicationPlatform $platform): SyndicationMode
+    {
+        $mode = $this->{"{$platform->value}_mode"} ?? SyndicationMode::Off;
+
+        return blank($this->{"{$platform->value}_api_key"}) ? SyndicationMode::Off : $mode;
+    }
 
     /**
      * Taux horaires de l'estimateur, limités aux devises connues et renseignées : une

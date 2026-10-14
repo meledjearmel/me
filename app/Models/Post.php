@@ -57,6 +57,7 @@ class Post extends Model implements HasMedia
         'status' => PublicationStatus::class,
         'published_at' => 'datetime',
         'newsletter_sent_at' => 'datetime',
+        'social_texts' => 'array',
         'reading_minutes' => 'integer',
         'views_count' => 'integer',
         'series_position' => 'integer',
@@ -88,6 +89,16 @@ class Post extends Model implements HasMedia
     public function series(): BelongsTo
     {
         return $this->belongsTo(PostSeries::class, 'post_series_id');
+    }
+
+    /**
+     * Ses republications sur dev.to et Hashnode.
+     *
+     * @return HasMany<PostSyndication, $this>
+     */
+    public function syndications(): HasMany
+    {
+        return $this->hasMany(PostSyndication::class);
     }
 
     /** @return BelongsToMany<PostTag, $this> */
