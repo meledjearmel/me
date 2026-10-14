@@ -257,6 +257,9 @@ export default function Estimate({
                                                 stepIndex + 1,
                                                 steps.length,
                                             )}
+                                            <span className="pub-estimate__current">
+                                                {` · ${titles[step]}`}
+                                            </span>
                                         </p>
                                         <ol>
                                             {steps.map((key, index) => (
@@ -313,7 +316,8 @@ export default function Estimate({
                                             {titles[step]}
                                         </h2>
 
-                                        {step !== 'project' && (
+                                        {(step === 'options' ||
+                                            step === 'contact') && (
                                             <p
                                                 className="pub-estimate__mini"
                                                 aria-live="polite"

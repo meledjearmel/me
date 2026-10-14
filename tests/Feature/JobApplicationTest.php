@@ -63,6 +63,16 @@ test('an open application page shows its intro and projects, never indexed', fun
             ->where('projects.0.slug', $this->project->slug));
 });
 
+test('a page stays open until the end of its last day', function () {
+    $this->travelTo(now()->setTime(15, 0));
+    $lastDay = JobApplication::factory()->create(['expires_on' => now()->toDateString()]);
+
+    $this->withHeaders(RECRUITER_BROWSER)->get("/fr/for/{$lastDay->token}")->assertOk();
+
+    $this->travelTo(now()->addDay()->setTime(0, 1));
+    $this->withHeaders(RECRUITER_BROWSER)->get("/fr/for/{$lastDay->token}")->assertNotFound();
+});
+
 test('a draft, archived or expired page answers 404, and the other language redirects', function () {
     $draft = JobApplication::factory()->draft()->create();
     $archived = JobApplication::factory()->archived()->create();

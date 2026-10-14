@@ -69,11 +69,11 @@ class JobApplication extends Model
         return $token;
     }
 
-    /** La page s'ouvre-t-elle avec son lien (en ligne et pas expirée) ? */
+    /** La page s'ouvre-t-elle avec son lien (en ligne et pas expirée) ? Le dernier jour est compris. */
     public function isOpen(): bool
     {
         return $this->status === JobApplicationStatus::Active
-            && ($this->expires_on === null || ! $this->expires_on->isPast());
+            && ($this->expires_on === null || ! $this->expires_on->copy()->endOfDay()->isPast());
     }
 
     /** @return BelongsTo<JobProfile, $this> */

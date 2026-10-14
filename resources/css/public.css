@@ -7609,6 +7609,12 @@ html.pub-scroll {
     cursor: pointer;
 }
 
+/* En lien (« En parler »…) : « .pub a » retirerait sinon le soulignement. */
+.pub a.pub-booking__link {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
 .pub-booking__summary {
     display: grid;
     gap: 0.2rem;
@@ -7777,15 +7783,20 @@ html.pub-scroll {
     margin-top: 0;
 }
 
-/* Sur téléphone, seule l'étape en cours garde son nom sous la barre. */
+/* Le nom de l'étape en cours, à côté de « Étape 3 sur 4 » : utile seulement sur téléphone. */
+.pub-estimate__current {
+    display: none;
+}
+
+/* Sur téléphone, les noms ne tiennent pas sous la barre : l'étape en cours est nommée au-dessus. */
 @media (max-width: 640px) {
-    .pub-estimate__progress li:not([data-state='current']) span,
-    .pub-estimate__progress li:not([data-state='current']) button {
-        visibility: hidden;
+    .pub-estimate__current {
+        display: inline;
     }
 
-    .pub-estimate__progress li[data-state='current'] {
-        overflow: visible;
+    .pub-estimate__progress li span,
+    .pub-estimate__progress li button {
+        display: none;
     }
 }
 
@@ -8681,8 +8692,9 @@ html.pub-scroll {
 .pub-application {
     display: grid;
     gap: clamp(3.5rem, 8vw, 6rem);
-    /* Le bas réserve la hauteur de la silhouette de ville du pied de page. */
-    padding: clamp(2rem, 5vw, 4rem) 0
+    /* Le haut laisse la place à la navigation fixe (la page n'a pas de bandeau : main est en
+       display: contents, sa marge ne s'applique pas) ; le bas réserve la silhouette de ville. */
+    padding: clamp(8rem, 13vw, 11rem) 0
         calc(clamp(96px, 16vw, 240px) + clamp(3rem, 7vw, 6rem));
 }
 
@@ -8811,7 +8823,8 @@ html.pub-scroll {
     margin-top: 0;
 }
 
-.pub-application__secondary {
+/* « .pub a » retirerait le soulignement : sélecteur renforcé. */
+.pub .pub-application__secondary {
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
