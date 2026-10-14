@@ -109,13 +109,37 @@ export default function DocumentTemplateEdit({
                     method: "POST",
                     headers: {
                         "X-XSRF-TOKEN": csrfToken(),
-                        Accept: "application/pdf",
+                        // JSON : une erreur de validation revient en 422, pas en page HTML.
+                        Accept: "application/json",
+                        "X-Requested-With": "XMLHttpRequest",
                     },
                     body: data,
                 },
             );
 
-            if (response.ok) {
+            if (response.status === 422) {
+                const body = (await response.json()) as {
+                    errors?: Record<string, string[]>;
+                };
+                setErrors(
+                    Object.fromEntries(
+                        Object.entries(body.errors ?? {}).map(
+                            ([field, messages]) => [field, messages[0]],
+                        ),
+                    ),
+                );
+
+                return;
+            }
+
+            // Seul un PDF s'affiche dans l'aperçu (jamais une page de l'application).
+            if (
+                response.ok &&
+                response.headers
+                    .get("Content-Type")
+                    ?.startsWith("application/pdf")
+            ) {
+                setErrors({});
                 const url = URL.createObjectURL(await response.blob());
                 setPreviewUrl((previous) => {
                     if (previous) {

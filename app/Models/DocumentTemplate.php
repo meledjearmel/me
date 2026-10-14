@@ -51,8 +51,13 @@ class DocumentTemplate extends Model implements HasMedia
     public static function for(CommercialDocumentType $type): self
     {
         $template = self::query()->firstOrCreate(['type' => $type], ['show_signature' => $type === CommercialDocumentType::Quote]);
-        // Une création implicite : les réponses de l'API ne doivent pas devenir des « 201 Created ».
-        $template->wasRecentlyCreated = false;
+
+        if ($template->wasRecentlyCreated) {
+            // Relu pour avoir les valeurs par défaut de la base (mise en page, couleurs, police…).
+            $template->refresh();
+            // Une création implicite : les réponses de l'API ne doivent pas devenir des « 201 Created ».
+            $template->wasRecentlyCreated = false;
+        }
 
         return $template;
     }

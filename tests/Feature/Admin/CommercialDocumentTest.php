@@ -230,6 +230,15 @@ test('a template is previewed unsaved, then saved with its logo, and shapes the 
         ->assertSessionHasErrors('primary_color');
 });
 
+test('a template created on first use carries the default design', function () {
+    $this->actingAs($this->user)->get(route('admin.document-templates.edit', 'proforma'))
+        ->assertInertia(fn ($page) => $page
+            ->where('template.layout', 'classic')
+            ->where('template.primary_color', '#0f2747')
+            ->where('template.font', 'sans')
+            ->where('template.show_bank_details', true));
+});
+
 test('templates are read, saved and previewed through the API', function () {
     Sanctum::actingAs($this->user);
 
