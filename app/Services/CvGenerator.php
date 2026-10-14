@@ -257,6 +257,8 @@ class CvGenerator
     public function generatedPdf(JobProfile $jobProfile, string $locale, ?array $tailoring = null): string
     {
         return Pdf::loadView('cv.document', ['cv' => $this->data($jobProfile, $locale, $tailoring)])
+            // Seuls les caractères utilisés de la police sont embarqués : un CV léger à envoyer.
+            ->setOption('isFontSubsettingEnabled', true)
             ->setPaper('a4')
             ->output();
     }
