@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Concerns\PaginatesAdminLists;
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\RejectMcpTokens;
 use App\Http\Requests\Admin\McpTokenRequest;
 use App\Mcp\ActivityLog;
+use App\Models\McpActivity;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,6 +24,11 @@ use Laravel\Sanctum\PersonalAccessToken;
  */
 class McpTokenController extends Controller
 {
+    use PaginatesAdminLists;
+
+    /** @var list<string> */
+    private const array ACTIVITY_FILTERS = ['client', 'name', 'kind', 'status', 'days'];
+
     public function index(Request $request, ActivityLog $log): Response
     {
         $lastCalls = $log->lastCallByClient();
@@ -32,7 +39,10 @@ class McpTokenController extends Controller
                 ->get(['id', 'name', 'last_used_at', 'created_at']),
             'connectors' => $this->connectors($request)
                 ->map(fn (array $connector): array => [...$connector, 'last_call_at' => $lastCalls[$connector['name']] ?? null]),
-            'activities' => Inertia::defer(fn () => $log->latest()),
+            'activities' => $this->paginateList($log->query($request->query()), $request)
+                ->through(fn (McpActivity $activity): array => $log->present($activity)),
+            'activityOptions' => $log->filterOptions(),
+            'activityFilters' => $this->listFilters($request, self::ACTIVITY_FILTERS),
             'serverUrl' => url('/mcp/portfolio'),
         ]);
     }

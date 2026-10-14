@@ -1,4 +1,4 @@
-import { Deferred, Form, Head, Link, router, usePage } from "@inertiajs/react";
+import { Form, Head, Link, router, usePage } from '@inertiajs/react';
 import {
     Activity,
     Check,
@@ -9,32 +9,33 @@ import {
     Plug,
     Plus,
     Trash2,
-} from "lucide-react";
-import { useMemo, useState } from "react";
-import McpTokenController from "@/actions/App/Http/Controllers/Admin/McpTokenController";
-import FormPageHeader from "@/components/admin/form-page-header";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+} from 'lucide-react';
+import { useState } from 'react';
+import McpTokenController from '@/actions/App/Http/Controllers/Admin/McpTokenController';
+import FormPageHeader from '@/components/admin/form-page-header';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
     DialogDescription,
     DialogHeader,
     DialogTitle,
-} from "@/components/ui/dialog";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/dialog';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { access, index as serverIndex } from '@/routes/admin/mcp-server';
+import ActionTooltip from '@/components/admin/action-tooltip';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { access, index as serverIndex } from "@/routes/admin/mcp-server";
-import ActionTooltip from "@/components/admin/action-tooltip";
+    EmptyList,
+    FilterSelect,
+    ListPagination,
+    ListToolbar,
+    PerPageSelect,
+    useListState,
+} from '@/components/admin/data-list';
+import type { ListFilters, Paginated } from '@/types';
 
 type McpToken = {
     id: number;
@@ -53,7 +54,7 @@ type Connector = {
 type McpActivity = {
     id: number;
     client: string;
-    kind: "tool" | "prompt";
+    kind: 'tool' | 'prompt';
     name: string;
     title: string;
     target: { label: string; url: string | null } | null;
@@ -63,21 +64,24 @@ type McpActivity = {
     created_at: string;
 };
 
-const ALL = "__all__";
+type ActivityOptions = {
+    clients: string[];
+    tools: { value: string; label: string }[];
+};
 
-const relative = new Intl.RelativeTimeFormat("fr", { numeric: "auto" });
+const relative = new Intl.RelativeTimeFormat('fr', { numeric: 'auto' });
 
 /** « il y a 5 minutes », « hier »… ; « jamais » sans date. */
 function ago(value: string | null): string {
     if (!value) {
-        return "jamais";
+        return 'jamais';
     }
 
     const seconds = (new Date(value).getTime() - Date.now()) / 1000;
     const units: [Intl.RelativeTimeFormatUnit, number][] = [
-        ["day", 86400],
-        ["hour", 3600],
-        ["minute", 60],
+        ['day', 86400],
+        ['hour', 3600],
+        ['minute', 60],
     ];
 
     for (const [unit, size] of units) {
@@ -150,62 +154,88 @@ function RevokeButton({
     );
 }
 
-function ActivityList({ activities }: { activities: McpActivity[] }) {
-    const [client, setClient] = useState(ALL);
-    const [errorsOnly, setErrorsOnly] = useState(false);
-    const clients = useMemo(
-        () =>
-            [...new Set(activities.map((activity) => activity.client))].sort(),
-        [activities],
-    );
-    const shown = activities.filter(
-        (activity) =>
-            (client === ALL || activity.client === client) &&
-            (!errorsOnly || !activity.success),
-    );
+const PERIODS = [
+    { value: '1', label: '24 heures' },
+    { value: '7', label: '7 jours' },
+    { value: '30', label: '30 jours' },
+];
 
-    if (activities.length === 0) {
-        return <Empty>Aucun appel pour le moment.</Empty>;
-    }
+/** Journal paginé côté serveur ; recherche et filtres vivent dans l'URL. */
+function ActivityList({
+    activities,
+    options,
+    filters,
+}: {
+    activities: Paginated<McpActivity>;
+    options: ActivityOptions;
+    filters: ListFilters;
+}) {
+    const state = useListState(filters);
+    const total = activities.total;
 
     return (
-        <div className="space-y-3">
-            <div className="flex flex-wrap items-center gap-2">
-                <Select value={client} onValueChange={setClient}>
-                    <SelectTrigger className="w-44" aria-label="Client">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value={ALL}>Tous les clients</SelectItem>
-                        {clients.map((name) => (
-                            <SelectItem key={name} value={name}>
-                                {name}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                <Button
-                    variant={errorsOnly ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setErrorsOnly((value) => !value)}
-                >
-                    <CircleAlert /> Erreurs seulement
-                </Button>
-                <span className="ml-auto text-xs text-muted-foreground">
-                    {shown.length} appel{shown.length > 1 ? "s" : ""} · 90 jours
-                    conservés
-                </span>
+        <div className="overflow-hidden rounded-xl border">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3">
+                <ListToolbar state={state} placeholder="Outil ou erreur…">
+                    <FilterSelect
+                        state={state}
+                        name="client"
+                        value={filters.client}
+                        label="Client"
+                        options={options.clients.map((client) => ({
+                            value: client,
+                            label: client,
+                        }))}
+                    />
+                    <FilterSelect
+                        state={state}
+                        name="name"
+                        value={filters.name}
+                        label="Outil"
+                        options={options.tools}
+                    />
+                    <FilterSelect
+                        state={state}
+                        name="status"
+                        value={filters.status}
+                        label="Résultat"
+                        options={[
+                            { value: 'success', label: 'Réussis' },
+                            { value: 'error', label: 'En erreur' },
+                        ]}
+                    />
+                    <FilterSelect
+                        state={state}
+                        name="kind"
+                        value={filters.kind}
+                        label="Type"
+                        options={[
+                            { value: 'tool', label: 'Outils' },
+                            { value: 'prompt', label: 'Commandes' },
+                        ]}
+                    />
+                    <FilterSelect
+                        state={state}
+                        name="days"
+                        value={filters.days}
+                        label="Période"
+                        options={PERIODS}
+                    />
+                </ListToolbar>
+                <div className="flex items-center gap-2">
+                    <Badge variant="outline">
+                        {total} appel{total > 1 ? 's' : ''}
+                    </Badge>
+                    <PerPageSelect paginator={activities} state={state} />
+                </div>
             </div>
 
-            {shown.length === 0 ? (
-                <Empty>Aucun appel ne correspond.</Empty>
+            {activities.data.length === 0 ? (
+                <EmptyList filtered={state.activeFilterCount > 0} />
             ) : (
-                <ul className="divide-y rounded-lg border">
-                    {shown.map((activity) => (
-                        <li
-                            key={activity.id}
-                            className="flex gap-3 px-3 py-2.5"
-                        >
+                <ul className="divide-y">
+                    {activities.data.map((activity) => (
+                        <li key={activity.id} className="flex gap-3 px-4 py-3">
                             {activity.success ? (
                                 <CircleCheck className="mt-0.5 size-4 shrink-0 text-emerald-600" />
                             ) : (
@@ -241,7 +271,7 @@ function ActivityList({ activities }: { activities: McpActivity[] }) {
                                 <p
                                     title={new Date(
                                         activity.created_at,
-                                    ).toLocaleString("fr-FR")}
+                                    ).toLocaleString('fr-FR')}
                                 >
                                     {ago(activity.created_at)}
                                 </p>
@@ -249,6 +279,10 @@ function ActivityList({ activities }: { activities: McpActivity[] }) {
                         </li>
                     ))}
                 </ul>
+            )}
+
+            {total > 0 && (
+                <ListPagination paginator={activities} state={state} />
             )}
         </div>
     );
@@ -262,17 +296,26 @@ export default function McpServerAccess({
     tokens,
     connectors,
     activities,
+    activityOptions,
+    activityFilters,
     serverUrl,
 }: {
     tokens: McpToken[];
     connectors: Connector[];
-    activities?: McpActivity[];
+    activities: Paginated<McpActivity>;
+    activityOptions: ActivityOptions;
+    activityFilters: ListFilters;
     serverUrl: string;
 }) {
+    // Une adresse filtrée ou paginée (lien, rechargement) rouvre l'onglet Activité.
+    const onActivity =
+        new URLSearchParams(
+            typeof window === 'undefined' ? '' : window.location.search,
+        ).size > 0;
     const newToken = usePage().flash.mcpToken as string | undefined;
     const [creating, setCreating] = useState(false);
     const [revealed, setRevealed] = useState(true);
-    const claudeCommand = `claude mcp add --transport http portfolio ${serverUrl} --header "Authorization: Bearer ${newToken ?? "<jeton>"}"`;
+    const claudeCommand = `claude mcp add --transport http portfolio ${serverUrl} --header "Authorization: Bearer ${newToken ?? '<jeton>'}"`;
 
     return (
         <>
@@ -287,7 +330,13 @@ export default function McpServerAccess({
                 />
 
                 <Tabs
-                    defaultValue={newToken ? "tokens" : "connectors"}
+                    defaultValue={
+                        newToken
+                            ? 'tokens'
+                            : onActivity
+                              ? 'activity'
+                              : 'connectors'
+                    }
                     className="space-y-4"
                 >
                     <TabsList>
@@ -321,9 +370,9 @@ export default function McpServerAccess({
                                                 {connector.name}
                                             </p>
                                             <p className="text-xs text-muted-foreground">
-                                                Dernier appel{" "}
+                                                Dernier appel{' '}
                                                 {ago(connector.last_call_at)} ·
-                                                accès renouvelé{" "}
+                                                accès renouvelé{' '}
                                                 {ago(
                                                     connector.last_connected_at,
                                                 )}
@@ -388,8 +437,8 @@ export default function McpServerAccess({
                                                 {token.name}
                                             </p>
                                             <p className="text-xs text-muted-foreground">
-                                                Utilisé{" "}
-                                                {ago(token.last_used_at)} · créé{" "}
+                                                Utilisé{' '}
+                                                {ago(token.last_used_at)} · créé{' '}
                                                 {ago(token.created_at)}
                                             </p>
                                         </div>
@@ -413,21 +462,14 @@ export default function McpServerAccess({
                     </TabsContent>
 
                     <TabsContent value="activity">
-                        <Deferred
-                            data="activities"
-                            fallback={
-                                <div className="space-y-2">
-                                    {[0, 1, 2, 3].map((row) => (
-                                        <Skeleton
-                                            key={row}
-                                            className="h-12 w-full"
-                                        />
-                                    ))}
-                                </div>
-                            }
-                        >
-                            <ActivityList activities={activities ?? []} />
-                        </Deferred>
+                        <ActivityList
+                            activities={activities}
+                            options={activityOptions}
+                            filters={activityFilters}
+                        />
+                        <p className="mt-2 text-xs text-muted-foreground">
+                            90 jours conservés.
+                        </p>
                     </TabsContent>
                 </Tabs>
             </div>
@@ -503,7 +545,7 @@ export default function McpServerAccess({
 
 McpServerAccess.layout = {
     breadcrumbs: [
-        { title: "Serveur MCP", href: serverIndex() },
-        { title: "Accès", href: access() },
+        { title: 'Serveur MCP', href: serverIndex() },
+        { title: 'Accès', href: access() },
     ],
 };

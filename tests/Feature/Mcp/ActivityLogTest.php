@@ -1,5 +1,6 @@
 <?php
 
+use App\Mcp\CommandGuide;
 use App\Models\McpActivity;
 use App\Models\Project;
 use App\Models\User;
@@ -66,12 +67,30 @@ test('the access page loads the activity with links and each client last call', 
 
     $this->actingAs($user)->get(route('admin.mcp-server.access'))
         ->assertInertia(fn ($page) => $page->component('admin/mcp-server/access')
-            ->missing('activities')
-            ->loadDeferredProps(fn ($reload) => $reload
-                ->has('activities', 2)
-                ->where('activities.1.title', 'Lire un projet')
-                ->where('activities.1.target.label', 'App Station')
-                ->where('activities.0.success', false)));
+            ->has('activities.data', 2)
+            ->where('activities.data.1.title', 'Lire un projet')
+            ->where('activities.data.1.target.label', 'App Station')
+            ->where('activities.data.0.success', false)
+            ->where('activityOptions.clients', ['ChatGPT', 'Claude Code'])
+            ->has('activityOptions.tools', 2));
+});
+
+test('the activity is paginated and filtered by client, tool, result, period and search', function () {
+    $user = User::factory()->create();
+    McpActivity::factory()->count(12)->create(['client' => 'Claude']);
+    McpActivity::factory()->failed('Projet introuvable.')->create(['client' => 'Codex', 'name' => 'get-project']);
+    McpActivity::factory()->create(['client' => 'Codex', 'name' => 'get-project', 'created_at' => now()->subDays(10)]);
+
+    $page = fn (array $query) => $this->actingAs($user)->get(route('admin.mcp-server.access', $query));
+
+    $page([])->assertInertia(fn ($page) => $page->has('activities.data', 10)->where('activities.total', 14));
+    $page(['page' => 2])->assertInertia(fn ($page) => $page->has('activities.data', 4));
+    $page(['client' => 'Codex', 'name' => 'get-project'])->assertInertia(fn ($page) => $page->where('activities.total', 2)->where('activityFilters.client', 'Codex'));
+    $page(['status' => 'error'])->assertInertia(fn ($page) => $page->where('activities.total', 1));
+    $page(['days' => 7, 'name' => 'get-project'])->assertInertia(fn ($page) => $page->where('activities.total', 1));
+    // Le titre lisible de l'outil se cherche aussi bien que son nom et que l'erreur.
+    $page(['search' => CommandGuide::title('get-project')])->assertInertia(fn ($page) => $page->where('activities.total', 2));
+    $page(['search' => 'introuvable'])->assertInertia(fn ($page) => $page->where('activities.total', 1));
 });
 
 test('the mobile app reads the activity, filtered by client', function () {
@@ -82,5 +101,7 @@ test('the mobile app reads the activity, filtered by client', function () {
     $this->getJson(route('api.v1.mcp-activity.index', ['client' => 'Codex']))
         ->assertOk()
         ->assertJsonCount(1, 'data')
-        ->assertJsonPath('data.0.client', 'Codex');
+        ->assertJsonPath('data.0.client', 'Codex')
+        ->assertJsonPath('total', 1)
+        ->assertJsonPath('filters.clients', ['Claude', 'Codex']);
 });

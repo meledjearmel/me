@@ -272,7 +272,7 @@ export function ListPagination({
 }
 
 /** Nombre d'éléments affichés par page. */
-function PerPageSelect({
+export function PerPageSelect({
     paginator,
     state,
 }: {

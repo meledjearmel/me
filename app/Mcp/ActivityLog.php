@@ -6,8 +6,10 @@ use App\Models\ContentRevision;
 use App\Models\McpActivity;
 use App\Models\Technology;
 use App\Services\Ai\ContentRevisions;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 /**
  * Le journal d'activité du serveur MCP prêt à afficher (administration, API) : titre de
@@ -21,19 +23,59 @@ class ActivityLog
     public function __construct(private readonly ContentRevisions $revisions) {}
 
     /**
-     * Les appels les plus récents.
+     * Les appels filtrés, du plus récent au plus ancien. La recherche porte sur l'outil (nom
+     * technique ou titre lisible) et le message d'erreur ; « status » vaut `success` ou `error`,
+     * « days » limite aux N derniers jours.
      *
-     * @return Collection<int, array<string, mixed>>
+     * @param  array{search?: string|null, client?: string|null, name?: string|null, kind?: string|null, status?: string|null, days?: int|string|null}  $filters
+     * @return Builder<McpActivity>
      */
-    public function latest(int $limit = 200, ?string $client = null): Collection
+    public function query(array $filters): Builder
     {
+        $term = trim((string) ($filters['search'] ?? ''));
+        $days = (int) ($filters['days'] ?? 0);
+
         return McpActivity::query()
-            ->when($client, fn ($query) => $query->where('client', $client))
+            ->when($term !== '', function (Builder $query) use ($term): void {
+                $like = '%'.addcslashes($term, '%_\\').'%';
+                $titled = $this->names()->filter(fn (string $name): bool => Str::contains(CommandGuide::title($name), $term, ignoreCase: true));
+
+                $query->where(fn (Builder $group) => $group
+                    ->where('name', 'like', $like)
+                    ->orWhere('error', 'like', $like)
+                    ->orWhereIn('name', $titled->all()));
+            })
+            ->when($filters['client'] ?? null, fn (Builder $query, string $client) => $query->where('client', $client))
+            ->when($filters['name'] ?? null, fn (Builder $query, string $name) => $query->where('name', $name))
+            ->when($filters['kind'] ?? null, fn (Builder $query, string $kind) => $query->where('kind', $kind))
+            ->when(($filters['status'] ?? null) === 'success', fn (Builder $query) => $query->where('success', true))
+            ->when(($filters['status'] ?? null) === 'error', fn (Builder $query) => $query->where('success', false))
+            ->when($days > 0, fn (Builder $query) => $query->where('created_at', '>=', now()->subDays($days)))
             ->latest('created_at')
-            ->latest('id')
-            ->limit($limit)
-            ->get()
-            ->map(fn (McpActivity $activity): array => $this->present($activity));
+            ->latest('id');
+    }
+
+    /**
+     * Les choix des filtres : clients et outils présents dans le journal.
+     *
+     * @return array{clients: list<string>, tools: list<array{value: string, label: string}>}
+     */
+    public function filterOptions(): array
+    {
+        return [
+            'clients' => McpActivity::query()->distinct()->orderBy('client')->pluck('client')->all(),
+            'tools' => $this->names()
+                ->map(fn (string $name): array => ['value' => $name, 'label' => CommandGuide::title($name)])
+                ->sortBy('label', SORT_NATURAL | SORT_FLAG_CASE)
+                ->values()
+                ->all(),
+        ];
+    }
+
+    /** @return Collection<int, string> */
+    private function names(): Collection
+    {
+        return McpActivity::query()->distinct()->pluck('name');
     }
 
     /**
