@@ -22,7 +22,7 @@ class DashboardController extends Controller
      * téléchargements du CV (`cv_downloads` : volumes, et sur la période les 5 premiers
      * pays et les 5 premières provenances, sous la forme `{label, count}`).
      *
-     * `visits`, `conversions` et `cv_downloads` rappellent la période : `period_days`
+     * `visits`, `conversions`, `estimator` et `cv_downloads` rappellent la période : `period_days`
      * (`null` pour `all`) et `since`, la date (AAAA-MM-JJ) de son début, celle de la
      * première visite ou du premier téléchargement pour `all`, `null` sans aucune donnée.
      * Avec `all`, `period` est égal à `total`.
@@ -43,6 +43,17 @@ class DashboardController extends Controller
      * `conversions` rapporte aux visiteurs uniques les objectifs atteints sur la période :
      * `goals` liste `{key, count, rate}` pour `cv_downloads`, `contacts`, `engagements`
      * et `appointments`, `rate` étant un pourcentage à une décimale.
+     *
+     * `estimator` suit l'estimateur de projet sur la période : `page_visitors` (visiteurs
+     * uniques de sa page), `requests` (demandes envoyées avec une estimation) et
+     * `conversion_rate` (pourcentage à une décimale) ; `by_currency` liste par devise
+     * `{currency, count, price_min, price_max, average_min, average_max}` (sommes et moyennes
+     * des fourchettes affichées) ; `billing` compte `fixed` et `hourly` ; `project_types`,
+     * `features` et `rate_grids` (grille tarifaire du type de projet, connue pour les demandes
+     * reçues depuis l'ajout des grilles) donnent les 6 premiers en `{label, count}` ;
+     * `ai_gap` compare aux heures affichées celles de l'analyse de l'IA : `analysed` (demandes
+     * analysées) et `hours_gap_percent` (écart moyen des milieux de fourchette, positif quand
+     * l'IA chiffre plus haut ; `null` sans analyse).
      *
      * `todo.appointments` compte les demandes de rendez-vous en attente, `todo.comments`
      * les commentaires du blog à modérer. `todo.project_drafts`, `todo.post_drafts` et

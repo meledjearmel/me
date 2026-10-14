@@ -133,6 +133,34 @@ test('the dashboard ranks posts and projects by visits, both languages together'
         ->where('visits.top_content.1.visits', 1));
 });
 
+test('the dashboard follows the estimator from its page to the amounts and what is asked', function () {
+    foreach (['a', 'b', 'c', 'd'] as $visitor) {
+        PageVisit::factory()->create(['path' => 'fr/estimate', 'visitor_hash' => $visitor]);
+    }
+
+    $estimate = fn (array $overrides): array => [
+        'billing' => 'fixed', 'currency' => 'CHF', 'project_type' => 'Site vitrine', 'rate_grid' => null,
+        'features' => ['Blog'], 'hours_min' => 40, 'hours_max' => 60, 'price_min' => 4000, 'price_max' => 6000, ...$overrides,
+    ];
+    Engagement::factory()->create([
+        'estimate' => $estimate([]),
+        // Milieu à 60 h contre 50 h affichées : l'IA chiffre 20 % plus haut.
+        'ai_analysis' => ['hours_min' => 50, 'hours_max' => 70],
+    ]);
+    Engagement::factory()->create(['estimate' => $estimate(['project_type' => 'App mobile', 'rate_grid' => 'Avancé', 'price_min' => 8000, 'price_max' => 12000])]);
+    Engagement::factory()->create();
+
+    $this->actingAs(User::factory()->create())->get(route('dashboard'))->assertInertia(fn ($page) => $page
+        ->where('estimator.page_visitors', 4)
+        ->where('estimator.requests', 2)
+        ->where('estimator.conversion_rate', 50)
+        ->where('estimator.by_currency', [['currency' => 'CHF', 'count' => 2, 'price_min' => 12000, 'price_max' => 18000, 'average_min' => 6000, 'average_max' => 9000]])
+        ->where('estimator.features', [['label' => 'Blog', 'count' => 2]])
+        ->where('estimator.rate_grids', fn ($grids) => collect($grids)->pluck('label')->contains('Avancé'))
+        ->where('estimator.ai_gap', ['analysed' => 1, 'hours_gap_percent' => 20])
+    );
+});
+
 test('the api dashboard covers thirty days by default', function () {
     Sanctum::actingAs(User::factory()->create());
     PageVisit::factory()->create();

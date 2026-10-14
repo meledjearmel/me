@@ -83,7 +83,7 @@ class ProjectEstimator
 
     /**
      * @param  Collection<int, EstimatorItem>  $features
-     * @return array{billing: string, currency: string, hourly_rate: int, risk_percent: int, project_type: string, features: list<string>, hours_min: int, hours_max: int, price_min: int, price_max: int, weeks_min: int, weeks_max: int}
+     * @return array{billing: string, currency: string, hourly_rate: int, risk_percent: int, project_type: string, rate_grid: string|null, features: list<string>, hours_min: int, hours_max: int, price_min: int, price_max: int, weeks_min: int, weeks_max: int}
      */
     public function estimate(EstimatorItem $projectType, Collection $features, string $currency): array
     {
@@ -117,6 +117,8 @@ class ProjectEstimator
             'hourly_rate' => $rate,
             'risk_percent' => $risk,
             'project_type' => $projectType->getTranslation('name', 'fr'),
+            // Grille tarifaire du type de projet (null : taux propres ou taux global), pour les statistiques.
+            'rate_grid' => $projectType->rate?->getTranslation('name', 'fr'),
             'features' => $features->map(fn (EstimatorItem $item): string => $item->getTranslation('name', 'fr'))->values()->all(),
             'hours_min' => $hoursMin,
             'hours_max' => $hoursMax,

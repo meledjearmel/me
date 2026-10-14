@@ -1,6 +1,7 @@
 @php
     $audience = $report['audience'];
     $requests = $report['requests'];
+    $estimator = $report['estimator'] ?? [];
     $applications = $report['applications'];
     $blog = $report['blog'];
     $change = $audience['change'];
@@ -55,6 +56,11 @@ Aucune nouvelle demande cette semaine.
 @if ($requests['upcoming_appointments'] > 0)
 
 {{ $requests['upcoming_appointments'] }} rendez-vous confirmé{{ $requests['upcoming_appointments'] > 1 ? 's' : '' }} dans les 7 prochains jours.
+@endif
+
+@if (($estimator['page_visitors'] ?? 0) > 0 || ($estimator['requests'] ?? 0) > 0)
+
+Estimateur : {{ $estimator['page_visitors'] }} visiteur{{ $estimator['page_visitors'] > 1 ? 's' : '' }} sur sa page, {{ $estimator['requests'] }} demande{{ $estimator['requests'] > 1 ? 's' : '' }} envoyée{{ $estimator['requests'] > 1 ? 's' : '' }} ({{ str_replace('.', ',', (string) $estimator['conversion_rate']) }} %){{ collect($estimator['by_currency'])->map(fn (array $row): string => ', '.number_format($row['price_min'], 0, ',', ' ').' – '.number_format($row['price_max'], 0, ',', ' ').' '.$row['currency'].' estimés')->implode('') }}{{ $estimator['ai_gap']['hours_gap_percent'] !== null ? ', l’IA chiffre en moyenne '.($estimator['ai_gap']['hours_gap_percent'] > 0 ? '+' : '').str_replace('.', ',', (string) $estimator['ai_gap']['hours_gap_percent']).' % d’heures' : '' }}.
 @endif
 
 @if ($requests['estimates'] !== [])

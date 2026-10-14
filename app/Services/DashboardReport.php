@@ -76,7 +76,94 @@ class DashboardReport
             'recent' => $this->recent(),
             'cv_downloads' => $this->cvDownloads(),
             'conversions' => $this->conversions(),
+            'estimator' => $this->estimator(),
             'blog' => $this->blog(),
+        ];
+    }
+
+    /**
+     * L'estimateur sur la période : de la visite de sa page à la demande envoyée, les montants
+     * estimés par devise, ce qui est demandé (types, options, mode, grille tarifaire) et l'écart
+     * entre les heures affichées au visiteur et celles de l'analyse de l'IA (positif : l'IA
+     * chiffre plus haut, la grille est peut-être trop basse).
+     *
+     * @return array{
+     *     period_days: int|null,
+     *     since: string|null,
+     *     page_visitors: int,
+     *     requests: int,
+     *     conversion_rate: float,
+     *     by_currency: list<array{currency: string, count: int, price_min: int, price_max: int, average_min: int, average_max: int}>,
+     *     billing: array{fixed: int, hourly: int},
+     *     project_types: list<array{label: string, count: int}>,
+     *     features: list<array{label: string, count: int}>,
+     *     rate_grids: list<array{label: string, count: int}>,
+     *     ai_gap: array{analysed: int, hours_gap_percent: float|null},
+     * }
+     */
+    private function estimator(): array
+    {
+        $since = $this->visitsSince();
+        $start = $since ?? $this->dayOf(PageVisit::query()->min('created_at'));
+        $pageVisitors = $this->inPeriod(PageVisit::query(), $since)
+            ->whereIn('path', ['fr/estimate', 'en/estimate'])
+            ->whereNotNull('visitor_hash')
+            ->distinct()
+            ->count('visitor_hash');
+
+        $estimates = $this->inPeriod(Engagement::query(), $since)
+            ->whereNotNull('estimate')
+            ->get(['estimate', 'ai_analysis'])
+            ->filter(fn (Engagement $engagement): bool => isset($engagement->estimate['price_min'], $engagement->estimate['currency']));
+
+        $top = fn (iterable $labels): array => collect($labels)
+            ->countBy()
+            ->sortDesc()
+            ->take(6)
+            ->map(fn (int $count, string $label): array => ['label' => $label, 'count' => $count])
+            ->values()
+            ->all();
+
+        // Écart moyen entre le milieu de la fourchette de l'IA et celui de la fourchette affichée.
+        $gaps = $estimates
+            ->filter(fn (Engagement $engagement): bool => isset($engagement->ai_analysis['hours_min'], $engagement->ai_analysis['hours_max']) && ($engagement->estimate['hours_max'] ?? 0) > 0)
+            ->map(function (Engagement $engagement): float {
+                $shown = ($engagement->estimate['hours_min'] + $engagement->estimate['hours_max']) / 2;
+                $ai = ($engagement->ai_analysis['hours_min'] + $engagement->ai_analysis['hours_max']) / 2;
+
+                return ($ai - $shown) / $shown * 100;
+            });
+
+        return [
+            'period_days' => $this->days,
+            'since' => $start?->toDateString(),
+            'page_visitors' => $pageVisitors,
+            'requests' => $estimates->count(),
+            'conversion_rate' => $pageVisitors > 0 ? round($estimates->count() / $pageVisitors * 100, 1) : 0.0,
+            'by_currency' => $estimates
+                ->groupBy(fn (Engagement $engagement): string => $engagement->estimate['currency'])
+                ->map(fn ($group, string $currency): array => [
+                    'currency' => $currency,
+                    'count' => $group->count(),
+                    'price_min' => (int) $group->sum(fn (Engagement $engagement): int => (int) $engagement->estimate['price_min']),
+                    'price_max' => (int) $group->sum(fn (Engagement $engagement): int => (int) $engagement->estimate['price_max']),
+                    'average_min' => (int) round($group->avg(fn (Engagement $engagement): int => (int) $engagement->estimate['price_min'])),
+                    'average_max' => (int) round($group->avg(fn (Engagement $engagement): int => (int) $engagement->estimate['price_max'])),
+                ])
+                ->sortByDesc('count')
+                ->values()
+                ->all(),
+            'billing' => [
+                'fixed' => $estimates->filter(fn (Engagement $engagement): bool => ($engagement->estimate['billing'] ?? 'fixed') !== 'hourly')->count(),
+                'hourly' => $estimates->filter(fn (Engagement $engagement): bool => ($engagement->estimate['billing'] ?? null) === 'hourly')->count(),
+            ],
+            'project_types' => $top($estimates->map(fn (Engagement $engagement): string => (string) ($engagement->estimate['project_type'] ?? 'Inconnu'))),
+            'features' => $top($estimates->flatMap(fn (Engagement $engagement): array => (array) ($engagement->estimate['features'] ?? []))),
+            'rate_grids' => $top($estimates->map(fn (Engagement $engagement): string => (string) ($engagement->estimate['rate_grid'] ?? 'Taux global ou propre'))),
+            'ai_gap' => [
+                'analysed' => $gaps->count(),
+                'hours_gap_percent' => $gaps->isEmpty() ? null : round($gaps->avg(), 1),
+            ],
         ];
     }
 

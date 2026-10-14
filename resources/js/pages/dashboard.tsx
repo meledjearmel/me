@@ -1,6 +1,7 @@
 import { Head, Link, usePage } from "@inertiajs/react";
 import {
     AlertTriangle,
+    Calculator,
     CheckCircle2,
     Eye,
     FilePen,
@@ -151,6 +152,25 @@ type DashboardProps = {
         period_days: number;
         visitors: number;
         goals: { key: keyof typeof GOALS; count: number; rate: number }[];
+    };
+    estimator: {
+        period_days: number;
+        page_visitors: number;
+        requests: number;
+        conversion_rate: number;
+        by_currency: {
+            currency: string;
+            count: number;
+            price_min: number;
+            price_max: number;
+            average_min: number;
+            average_max: number;
+        }[];
+        billing: { fixed: number; hourly: number };
+        project_types: Bar[];
+        features: Bar[];
+        rate_grids: Bar[];
+        ai_gap: { analysed: number; hours_gap_percent: number | null };
     };
     recent: {
         contacts: {
@@ -540,6 +560,7 @@ export default function Dashboard({
     recent,
     cv_downloads: cvDownloads,
     conversions,
+    estimator,
     blog,
 }: DashboardProps) {
     const { auth } = usePage().props;
@@ -914,6 +935,99 @@ export default function Dashboard({
                                 </li>
                             ))}
                         </ul>
+                    </Section>
+                </div>
+
+                {/* Estimateur de projet */}
+                <div className="grid gap-4 lg:grid-cols-3">
+                    <Link href={engagementsIndex()} className="block">
+                        <StatCard
+                            title={`Estimations envoyées sur ${estimator.period_days} jours`}
+                            value={number.format(estimator.requests)}
+                            hint={`${number.format(estimator.page_visitors)} visiteurs sur l'estimateur · ${estimator.conversion_rate.toLocaleString("fr-FR")} % de conversion`}
+                            icon={Calculator}
+                        />
+                    </Link>
+                    <Section
+                        title="Montants estimés"
+                        description={`Fourchettes affichées · ${estimator.billing.fixed} au forfait, ${estimator.billing.hourly} à l'heure`}
+                    >
+                        {estimator.by_currency.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">
+                                Aucune estimation envoyée.
+                            </p>
+                        ) : (
+                            <ul className="space-y-2.5">
+                                {estimator.by_currency.map((row) => (
+                                    <li
+                                        key={row.currency}
+                                        className="flex items-baseline justify-between gap-3 text-sm"
+                                    >
+                                        <span>
+                                            {row.currency} · {row.count} demande
+                                            {row.count > 1 ? "s" : ""}
+                                        </span>
+                                        <span className="text-right tabular-nums">
+                                            <span className="font-medium">
+                                                {number.format(row.price_min)} –{" "}
+                                                {number.format(row.price_max)}
+                                            </span>
+                                            <span className="block text-xs text-muted-foreground">
+                                                moyenne{" "}
+                                                {number.format(row.average_min)}{" "}
+                                                –{" "}
+                                                {number.format(row.average_max)}
+                                            </span>
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                        {estimator.ai_gap.hours_gap_percent !== null && (
+                            <p className="mt-4 text-xs text-muted-foreground">
+                                Sur {estimator.ai_gap.analysed} demande(s)
+                                analysée(s), l'IA chiffre en moyenne{" "}
+                                <span className="font-medium text-foreground">
+                                    {estimator.ai_gap.hours_gap_percent > 0
+                                        ? "+"
+                                        : ""}
+                                    {estimator.ai_gap.hours_gap_percent.toLocaleString(
+                                        "fr-FR",
+                                    )}{" "}
+                                    %
+                                </span>{" "}
+                                d'heures par rapport à la grille.
+                            </p>
+                        )}
+                    </Section>
+                    <Section
+                        title="Types de projet demandés"
+                        description={`Sur ${estimator.period_days} jours`}
+                    >
+                        <Bars
+                            rows={estimator.project_types}
+                            empty="Aucune estimation envoyée."
+                        />
+                    </Section>
+                </div>
+                <div className="grid gap-4 lg:grid-cols-2">
+                    <Section
+                        title="Options demandées"
+                        description={`Sur ${estimator.period_days} jours`}
+                    >
+                        <Bars
+                            rows={estimator.features}
+                            empty="Aucune option choisie."
+                        />
+                    </Section>
+                    <Section
+                        title="Grilles tarifaires"
+                        description="Celle du type de projet, pour les demandes reçues depuis leur ajout"
+                    >
+                        <Bars
+                            rows={estimator.rate_grids}
+                            empty="Aucune estimation envoyée."
+                        />
                     </Section>
                 </div>
 

@@ -100,7 +100,7 @@ class ProjectEstimateController extends Controller
         return back();
     }
 
-    /** @return array{billing: string, currency: string, hourly_rate: int, risk_percent: int, project_type: string, features: list<string>, hours_min: int, hours_max: int, price_min: int, price_max: int, weeks_min: int, weeks_max: int} */
+    /** @return array{billing: string, currency: string, hourly_rate: int, risk_percent: int, project_type: string, rate_grid: string|null, features: list<string>, hours_min: int, hours_max: int, price_min: int, price_max: int, weeks_min: int, weeks_max: int} */
     private function estimateFor(ProjectEstimateRequest $request): array
     {
         $features = EstimatorItem::query()

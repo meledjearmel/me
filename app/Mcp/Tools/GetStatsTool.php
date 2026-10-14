@@ -13,7 +13,7 @@ use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 
 #[Name('get-stats')]
-#[Description('Les statistiques du portfolio sur une période (7, 30, 90 ou 365 jours) : visites et visiteurs, provenances et appareils, pages et contenus les plus vus, conversions (CV, messages, collaborations, rendez-vous) rapportées aux visiteurs, téléchargements du CV par pays et provenance, et engagement du blog (lectures, réactions, partages, commentaires). Pour le bilan de la semaine avec les demandes et candidatures, préfère get-weekly-report.')]
+#[Description('Les statistiques du portfolio sur une période (7, 30, 90 ou 365 jours) : visites et visiteurs, provenances et appareils, pages et contenus les plus vus, conversions (CV, messages, collaborations, rendez-vous) rapportées aux visiteurs, estimateur de projet (visiteurs de sa page, demandes envoyées et taux de conversion, montants estimés par devise, types, options, mode et grille tarifaire les plus demandés, écart des heures avec l\'analyse de l\'IA), téléchargements du CV par pays et provenance, et engagement du blog (lectures, réactions, partages, commentaires). Pour le bilan de la semaine avec les demandes et candidatures, préfère get-weekly-report.')]
 #[IsReadOnly]
 class GetStatsTool extends Tool
 {
@@ -29,6 +29,7 @@ class GetStatsTool extends Tool
         return Response::json([
             'visits' => $visits,
             'conversions' => $dashboard['conversions'],
+            'estimator' => $dashboard['estimator'],
             'cv_downloads' => $dashboard['cv_downloads'],
             'blog' => $dashboard['blog'],
             'todo' => $dashboard['todo'],
