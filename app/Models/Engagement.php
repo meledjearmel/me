@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EngagementOutcome;
 use App\Enums\EngagementStatus;
 use App\Enums\EngagementType;
 use Database\Factories\EngagementFactory;
@@ -38,6 +39,10 @@ class Engagement extends Model
         'message',
         'locale',
         'status',
+        'outcome',
+        'outcome_amount',
+        'outcome_currency',
+        'outcome_at',
         'cv_sent_at',
         'ip_address',
         'user_agent',
@@ -47,6 +52,9 @@ class Engagement extends Model
     protected $casts = [
         'type' => EngagementType::class,
         'status' => EngagementStatus::class,
+        'outcome' => EngagementOutcome::class,
+        'outcome_amount' => 'integer',
+        'outcome_at' => 'datetime',
         'cv_sent_at' => 'datetime',
         'estimate' => 'array',
         'ai_analysis' => 'array',
@@ -55,6 +63,23 @@ class Engagement extends Model
 
     /** @var list<string> */
     protected $appends = ['budget_label', 'estimate_label'];
+
+    /**
+     * Enregistre l'issue de la demande : signée (avec le montant et la devise signés), perdue,
+     * ou aucune (null efface l'issue). Une issue range aussi la demande parmi les traitées.
+     */
+    public function recordOutcome(?EngagementOutcome $outcome, ?int $amount = null, ?string $currency = null): void
+    {
+        $isWon = $outcome === EngagementOutcome::Won;
+
+        $this->update([
+            'outcome' => $outcome,
+            'outcome_amount' => $isWon ? $amount : null,
+            'outcome_currency' => $isWon ? $currency : null,
+            'outcome_at' => $outcome === null ? null : now(),
+            ...($outcome === null ? [] : ['status' => EngagementStatus::Handled]),
+        ]);
+    }
 
     /** Budget lisible : « 5 000 CHF (forfait) » ou « 80 EUR / heure ». */
     protected function budgetLabel(): Attribute

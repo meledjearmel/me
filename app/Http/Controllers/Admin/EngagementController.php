@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Concerns\PaginatesAdminLists;
 use App\Enums\EngagementStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\EngagementOutcomeRequest;
 use App\Models\Engagement;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -40,6 +41,16 @@ class EngagementController extends Controller
         ]);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Demande mise à jour.')]);
+
+        return back();
+    }
+
+    /** Enregistre l'issue de la demande : signée avec son montant, perdue, ou aucune. */
+    public function outcome(EngagementOutcomeRequest $request, Engagement $engagement): RedirectResponse
+    {
+        $engagement->recordOutcome($request->outcome(), $request->validated('outcome_amount'), $request->validated('outcome_currency'));
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Issue de la demande enregistrée.')]);
 
         return back();
     }

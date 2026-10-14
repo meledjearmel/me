@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Concerns\PaginatesAdminLists;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\EngagementOutcomeRequest;
 use App\Http\Requests\Api\V1\EngagementRequest;
 use App\Http\Resources\Api\V1\EngagementResource;
 use App\Models\Engagement;
@@ -50,6 +51,21 @@ class EngagementController extends Controller
     public function update(EngagementRequest $request, Engagement $engagement): EngagementResource
     {
         $engagement->update($request->validated());
+
+        return new EngagementResource($engagement->load('jobProfile'));
+    }
+
+    /**
+     * Enregistrer l'issue d'une demande
+     *
+     * `won` (signée, avec `outcome_amount` hors taxes et `outcome_currency`), `lost` (perdue),
+     * ou `outcome` vide pour effacer l'issue. Une issue range aussi la demande parmi les
+     * traitées. Alimente `outcomes` du tableau de bord (taux de signature, montants signés et
+     * écart avec l'estimation).
+     */
+    public function outcome(EngagementOutcomeRequest $request, Engagement $engagement): EngagementResource
+    {
+        $engagement->recordOutcome($request->outcome(), $request->validated('outcome_amount'), $request->validated('outcome_currency'));
 
         return new EngagementResource($engagement->load('jobProfile'));
     }

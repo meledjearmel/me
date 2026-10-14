@@ -95,6 +95,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::apiResource('contacts', ContactController::class)->except('store');
         Route::apiResource('cv-downloads', CvDownloadController::class)->only(['index', 'show', 'destroy']);
         Route::apiResource('engagements', EngagementController::class)->except('store');
+        Route::put('engagements/{engagement}/outcome', [EngagementController::class, 'outcome'])->name('engagements.outcome');
         Route::apiResource('appointments', AppointmentController::class)->only(['index', 'show', 'destroy']);
         Route::post('appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
         Route::post('appointments/{appointment}/decline', [AppointmentController::class, 'decline'])->name('appointments.decline');

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\AppointmentStatus;
 use App\Enums\CommentStatus;
 use App\Enums\ContactStatus;
+use App\Enums\EngagementOutcome;
 use App\Enums\EngagementStatus;
 use App\Enums\EngagementType;
 use App\Enums\PostReactionType;
@@ -77,7 +78,116 @@ class DashboardReport
             'cv_downloads' => $this->cvDownloads(),
             'conversions' => $this->conversions(),
             'estimator' => $this->estimator(),
+            'outcomes' => $this->outcomes(),
+            'appointments' => $this->appointments(),
             'blog' => $this->blog(),
+        ];
+    }
+
+    /**
+     * Ce qui a été gagné sur la période (issues enregistrées dans la période) : demandes
+     * signées et perdues, taux de signature, montants signés par devise, et l'écart entre le
+     * montant signé et le milieu de la fourchette estimée (positif : signé au-dessus).
+     *
+     * @return array{
+     *     period_days: int|null,
+     *     won: int,
+     *     lost: int,
+     *     win_rate: float|null,
+     *     by_currency: list<array{currency: string, count: int, amount: int, average: int}>,
+     *     estimate_gap: array{compared: int, gap_percent: float|null},
+     * }
+     */
+    private function outcomes(): array
+    {
+        $since = $this->visitsSince();
+        $decided = Engagement::query()
+            ->whereNotNull('outcome')
+            ->when($since, fn (Builder $query) => $query->where('outcome_at', '>=', $since))
+            ->get(['outcome', 'outcome_amount', 'outcome_currency', 'estimate']);
+        $won = $decided->where('outcome', EngagementOutcome::Won);
+        $lost = $decided->where('outcome', EngagementOutcome::Lost)->count();
+
+        // Seulement les demandes signées dans la devise de leur estimation.
+        $gaps = $won
+            ->filter(fn (Engagement $engagement): bool => isset($engagement->estimate['price_min'], $engagement->estimate['price_max'])
+                && ($engagement->estimate['currency'] ?? null) === $engagement->outcome_currency
+                && $engagement->estimate['price_max'] > 0)
+            ->map(function (Engagement $engagement): float {
+                $estimated = ($engagement->estimate['price_min'] + $engagement->estimate['price_max']) / 2;
+
+                return ($engagement->outcome_amount - $estimated) / $estimated * 100;
+            });
+
+        return [
+            'period_days' => $this->days,
+            'won' => $won->count(),
+            'lost' => $lost,
+            'win_rate' => $decided->isEmpty() ? null : round($won->count() / $decided->count() * 100, 1),
+            'by_currency' => $won
+                ->groupBy('outcome_currency')
+                ->map(fn ($group, string $currency): array => [
+                    'currency' => $currency,
+                    'count' => $group->count(),
+                    'amount' => (int) $group->sum('outcome_amount'),
+                    'average' => (int) round($group->avg('outcome_amount')),
+                ])
+                ->sortByDesc('amount')
+                ->values()
+                ->all(),
+            'estimate_gap' => [
+                'compared' => $gaps->count(),
+                'gap_percent' => $gaps->isEmpty() ? null : round($gaps->avg(), 1),
+            ],
+        ];
+    }
+
+    /**
+     * Les demandes de rendez-vous reçues sur la période : par statut, par type et par lieu,
+     * taux de confirmation (parmi celles confirmées ou refusées) et délai moyen entre la
+     * demande et la confirmation, en heures.
+     *
+     * @return array{
+     *     period_days: int|null,
+     *     total: int,
+     *     by_status: array{pending: int, confirmed: int, declined: int, cancelled: int},
+     *     confirmation_rate: float|null,
+     *     response_hours: float|null,
+     *     by_type: list<array{label: string, count: int}>,
+     *     by_location: list<array{label: string, count: int}>,
+     * }
+     */
+    private function appointments(): array
+    {
+        $appointments = $this->inPeriod(Appointment::query(), $this->visitsSince())
+            ->with('appointmentType:id,name')
+            ->get(['id', 'appointment_type_id', 'status', 'location', 'created_at', 'confirmed_at']);
+        $count = fn (AppointmentStatus $status): int => $appointments->where('status', $status)->count();
+        $confirmed = $count(AppointmentStatus::Confirmed);
+        $declined = $count(AppointmentStatus::Declined);
+        $delays = $appointments
+            ->filter(fn (Appointment $appointment): bool => $appointment->confirmed_at !== null)
+            ->map(fn (Appointment $appointment): float => $appointment->created_at->diffInMinutes($appointment->confirmed_at) / 60);
+        $top = fn ($labels): array => collect($labels)
+            ->countBy()
+            ->sortDesc()
+            ->map(fn (int $total, string $label): array => ['label' => $label, 'count' => $total])
+            ->values()
+            ->all();
+
+        return [
+            'period_days' => $this->days,
+            'total' => $appointments->count(),
+            'by_status' => [
+                'pending' => $count(AppointmentStatus::Pending),
+                'confirmed' => $confirmed,
+                'declined' => $declined,
+                'cancelled' => $count(AppointmentStatus::Cancelled),
+            ],
+            'confirmation_rate' => $confirmed + $declined > 0 ? round($confirmed / ($confirmed + $declined) * 100, 1) : null,
+            'response_hours' => $delays->isEmpty() ? null : round($delays->avg(), 1),
+            'by_type' => $top($appointments->map(fn (Appointment $appointment): string => $appointment->appointmentType?->getTranslation('name', 'fr') ?? 'Type supprimé')),
+            'by_location' => $top($appointments->map(fn (Appointment $appointment): string => $appointment->location?->value ?? 'inconnu')),
         ];
     }
 

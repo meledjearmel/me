@@ -1,10 +1,11 @@
-import { router } from '@inertiajs/react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import EngagementAiAnalysis from '@/components/admin/engagement-ai-analysis';
-import ShowPage, { formatDate } from '@/components/admin/show-page';
-import { index as engagementsIndex, update } from '@/routes/admin/engagements';
-import type { Engagement } from '@/types';
+import { router } from "@inertiajs/react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import EngagementAiAnalysis from "@/components/admin/engagement-ai-analysis";
+import EngagementOutcomeForm from "@/components/admin/engagement-outcome-form";
+import ShowPage, { formatDate } from "@/components/admin/show-page";
+import { index as engagementsIndex, update } from "@/routes/admin/engagements";
+import type { Engagement } from "@/types";
 
 export default function EngagementShow({
     engagement: row,
@@ -14,12 +15,12 @@ export default function EngagementShow({
     return (
         <ShowPage
             title={row.name}
-            description={[row.company, row.email].filter(Boolean).join(' · ')}
+            description={[row.company, row.email].filter(Boolean).join(" · ")}
             badge={
                 <Badge
-                    variant={row.type === 'hiring' ? 'default' : 'secondary'}
+                    variant={row.type === "hiring" ? "default" : "secondary"}
                 >
-                    {row.type === 'hiring' ? 'Embauche' : 'Freelance'}
+                    {row.type === "hiring" ? "Embauche" : "Freelance"}
                 </Badge>
             }
             backHref={engagementsIndex()}
@@ -35,52 +36,52 @@ export default function EngagementShow({
                         )
                     }
                 >
-                    {row.status === 'new'
-                        ? 'Marquer comme traité'
-                        : 'Remettre en nouveau'}
+                    {row.status === "new"
+                        ? "Marquer comme traité"
+                        : "Remettre en nouveau"}
                 </Button>
             }
             sections={[
                 {
-                    title: 'Demande',
+                    title: "Demande",
                     items: [
-                        { label: 'Poste / projet', value: row.subject },
+                        { label: "Poste / projet", value: row.subject },
                         {
-                            label: 'Statut',
-                            value: row.status === 'new' ? 'Nouveau' : 'Traité',
+                            label: "Statut",
+                            value: row.status === "new" ? "Nouveau" : "Traité",
                         },
                         {
-                            label: 'Profil demandé',
+                            label: "Profil demandé",
                             value: row.job_profile?.label.fr,
                         },
-                        { label: 'Contrat', value: row.contract },
-                        { label: 'Estimation', value: row.estimate_label },
+                        { label: "Contrat", value: row.contract },
+                        { label: "Estimation", value: row.estimate_label },
                         {
-                            label: 'Options choisies',
+                            label: "Options choisies",
                             value: row.estimate?.features.length
-                                ? row.estimate.features.join(', ')
+                                ? row.estimate.features.join(", ")
                                 : null,
                         },
-                        { label: 'Budget', value: row.budget_label },
-                        { label: 'Délai', value: row.timeline },
+                        { label: "Budget", value: row.budget_label },
+                        { label: "Délai", value: row.timeline },
                         {
-                            label: 'Langue',
-                            value: row.locale === 'fr' ? 'Français' : 'Anglais',
+                            label: "Langue",
+                            value: row.locale === "fr" ? "Français" : "Anglais",
                         },
                         {
-                            label: 'Reçue le',
+                            label: "Reçue le",
                             value: formatDate(row.created_at),
                         },
                         {
-                            label: 'CV envoyé',
+                            label: "CV envoyé",
                             value:
-                                row.type === 'hiring'
+                                row.type === "hiring"
                                     ? row.cv_sent_at
                                         ? `Oui, le ${formatDate(row.cv_sent_at)}`
-                                        : 'Non'
+                                        : "Non"
                                     : null,
                         },
-                        { label: 'Message', value: row.message, wide: true },
+                        { label: "Message", value: row.message, wide: true },
                     ],
                 },
                 ...(row.estimate
@@ -88,7 +89,7 @@ export default function EngagementShow({
                           {
                               title: "Analyse de l'IA",
                               description:
-                                  'Pour chiffrer sans sous-estimer : risques, points flous, questions à poser.',
+                                  "Pour chiffrer sans sous-estimer : risques, points flous, questions à poser.",
                               content: (
                                   <EngagementAiAnalysis engagement={row} />
                               ),
@@ -96,11 +97,18 @@ export default function EngagementShow({
                       ]
                     : []),
                 {
-                    title: 'Contact',
+                    title: "Issue",
+                    description: row.outcome_at
+                        ? `Enregistrée le ${formatDate(row.outcome_at)}`
+                        : "Signée ou perdue : pour suivre ce qui est réellement gagné.",
+                    content: <EngagementOutcomeForm engagement={row} />,
+                },
+                {
+                    title: "Contact",
                     items: [
-                        { label: 'Nom', value: row.name },
+                        { label: "Nom", value: row.name },
                         {
-                            label: 'Email',
+                            label: "Email",
                             value: (
                                 <a
                                     href={`mailto:${row.email}`}
@@ -110,7 +118,7 @@ export default function EngagementShow({
                                 </a>
                             ),
                         },
-                        { label: 'Société', value: row.company },
+                        { label: "Société", value: row.company },
                     ],
                 },
             ]}
@@ -120,7 +128,7 @@ export default function EngagementShow({
 
 EngagementShow.layout = {
     breadcrumbs: [
-        { title: 'Collaborations', href: engagementsIndex() },
-        { title: 'Détail', href: '' },
+        { title: "Collaborations", href: engagementsIndex() },
+        { title: "Détail", href: "" },
     ],
 };

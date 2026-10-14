@@ -53,6 +53,8 @@ class WeeklyReport
             'audience' => $this->audience($dashboard['visits'], $since, $before),
             'requests' => $this->requests($since),
             // L'estimateur de la semaine : de la visite de sa page à la demande, et les montants.
+            // Les demandes signées ou perdues dans la semaine.
+            'outcomes' => collect($dashboard['outcomes'])->only(['won', 'lost', 'by_currency'])->all(),
             'estimator' => collect($dashboard['estimator'])->only(['page_visitors', 'requests', 'conversion_rate', 'by_currency', 'ai_gap'])->all(),
             'applications' => $this->applications($since),
             'cv_downloads' => $dashboard['cv_downloads']['period'] + JobApplicationEvent::query()

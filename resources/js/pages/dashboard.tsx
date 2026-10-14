@@ -15,6 +15,7 @@ import {
     PartyPopper,
     Share2,
     Sparkles,
+    Trophy,
 } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
 import {
@@ -171,6 +172,33 @@ type DashboardProps = {
         features: Bar[];
         rate_grids: Bar[];
         ai_gap: { analysed: number; hours_gap_percent: number | null };
+    };
+    outcomes: {
+        period_days: number;
+        won: number;
+        lost: number;
+        win_rate: number | null;
+        by_currency: {
+            currency: string;
+            count: number;
+            amount: number;
+            average: number;
+        }[];
+        estimate_gap: { compared: number; gap_percent: number | null };
+    };
+    appointments: {
+        period_days: number;
+        total: number;
+        by_status: {
+            pending: number;
+            confirmed: number;
+            declined: number;
+            cancelled: number;
+        };
+        confirmation_rate: number | null;
+        response_hours: number | null;
+        by_type: Bar[];
+        by_location: Bar[];
     };
     recent: {
         contacts: {
@@ -561,6 +589,8 @@ export default function Dashboard({
     cv_downloads: cvDownloads,
     conversions,
     estimator,
+    outcomes,
+    appointments,
     blog,
 }: DashboardProps) {
     const { auth } = usePage().props;
@@ -1027,6 +1057,82 @@ export default function Dashboard({
                         <Bars
                             rows={estimator.rate_grids}
                             empty="Aucune estimation envoyée."
+                        />
+                    </Section>
+                </div>
+
+                {/* Valeur gagnée et rendez-vous */}
+                <div className="grid gap-4 lg:grid-cols-3">
+                    <Link href={engagementsIndex()} className="block">
+                        <StatCard
+                            title={`Demandes signées sur ${outcomes.period_days} jours`}
+                            value={number.format(outcomes.won)}
+                            hint={`${number.format(outcomes.lost)} perdue(s)${outcomes.win_rate !== null ? ` · ${outcomes.win_rate.toLocaleString("fr-FR")} % de signature` : ""}`}
+                            icon={Trophy}
+                        />
+                    </Link>
+                    <Section
+                        title="Montants signés"
+                        description="Hors taxes, d'après les issues enregistrées sur les demandes"
+                    >
+                        {outcomes.by_currency.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">
+                                Aucune demande signée.
+                            </p>
+                        ) : (
+                            <ul className="space-y-2.5">
+                                {outcomes.by_currency.map((row) => (
+                                    <li
+                                        key={row.currency}
+                                        className="flex items-baseline justify-between gap-3 text-sm"
+                                    >
+                                        <span>
+                                            {row.currency} · {row.count} signée
+                                            {row.count > 1 ? "s" : ""}
+                                        </span>
+                                        <span className="text-right tabular-nums">
+                                            <span className="font-medium">
+                                                {number.format(row.amount)}
+                                            </span>
+                                            <span className="block text-xs text-muted-foreground">
+                                                moyenne{" "}
+                                                {number.format(row.average)}
+                                            </span>
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                        {outcomes.estimate_gap.gap_percent !== null && (
+                            <p className="mt-4 text-xs text-muted-foreground">
+                                Sur {outcomes.estimate_gap.compared} demande(s)
+                                estimée(s), signé en moyenne{" "}
+                                <span className="font-medium text-foreground">
+                                    {outcomes.estimate_gap.gap_percent > 0
+                                        ? "+"
+                                        : ""}
+                                    {outcomes.estimate_gap.gap_percent.toLocaleString(
+                                        "fr-FR",
+                                    )}{" "}
+                                    %
+                                </span>{" "}
+                                par rapport au milieu de la fourchette estimée.
+                            </p>
+                        )}
+                    </Section>
+                    <Section
+                        title="Rendez-vous"
+                        description={`${number.format(appointments.total)} demande(s) sur ${appointments.period_days} jours${appointments.confirmation_rate !== null ? ` · ${appointments.confirmation_rate.toLocaleString("fr-FR")} % confirmées` : ""}${appointments.response_hours !== null ? ` · réponse en ${appointments.response_hours.toLocaleString("fr-FR")} h en moyenne` : ""}`}
+                    >
+                        <p className="mb-3 text-xs text-muted-foreground">
+                            {appointments.by_status.confirmed} confirmé(s) ·{" "}
+                            {appointments.by_status.pending} en attente ·{" "}
+                            {appointments.by_status.declined} refusé(s) ·{" "}
+                            {appointments.by_status.cancelled} annulé(s)
+                        </p>
+                        <Bars
+                            rows={appointments.by_type}
+                            empty="Aucune demande de rendez-vous."
                         />
                     </Section>
                 </div>

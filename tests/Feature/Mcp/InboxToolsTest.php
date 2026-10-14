@@ -25,6 +25,18 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
 
+test('mark-handled records that a request was signed, with its amount', function () {
+    $engagement = Engagement::factory()->create();
+
+    $this->server->tool(MarkHandledTool::class, ['type' => 'engagement', 'id' => $engagement->id, 'outcome' => 'won'])->assertHasErrors();
+    $this->server->tool(MarkHandledTool::class, ['type' => 'engagement', 'id' => $engagement->id, 'outcome' => 'won', 'amount' => 7000, 'currency' => 'EUR'])
+        ->assertOk()
+        ->assertSee('signée');
+
+    expect($engagement->refresh()->outcome_amount)->toBe(7000)
+        ->and($engagement->status)->toBe(EngagementStatus::Handled);
+});
+
 beforeEach(function () {
     $this->travelTo(CarbonImmutable::parse('2026-10-05 08:00'));
     Mail::fake();

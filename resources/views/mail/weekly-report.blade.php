@@ -2,6 +2,7 @@
     $audience = $report['audience'];
     $requests = $report['requests'];
     $estimator = $report['estimator'] ?? [];
+    $outcomes = $report['outcomes'] ?? [];
     $applications = $report['applications'];
     $blog = $report['blog'];
     $change = $audience['change'];
@@ -61,6 +62,11 @@ Aucune nouvelle demande cette semaine.
 @if (($estimator['page_visitors'] ?? 0) > 0 || ($estimator['requests'] ?? 0) > 0)
 
 Estimateur : {{ $estimator['page_visitors'] }} visiteur{{ $estimator['page_visitors'] > 1 ? 's' : '' }} sur sa page, {{ $estimator['requests'] }} demande{{ $estimator['requests'] > 1 ? 's' : '' }} envoyée{{ $estimator['requests'] > 1 ? 's' : '' }} ({{ str_replace('.', ',', (string) $estimator['conversion_rate']) }} %){{ collect($estimator['by_currency'])->map(fn (array $row): string => ', '.number_format($row['price_min'], 0, ',', ' ').' – '.number_format($row['price_max'], 0, ',', ' ').' '.$row['currency'].' estimés')->implode('') }}{{ $estimator['ai_gap']['hours_gap_percent'] !== null ? ', l’IA chiffre en moyenne '.($estimator['ai_gap']['hours_gap_percent'] > 0 ? '+' : '').str_replace('.', ',', (string) $estimator['ai_gap']['hours_gap_percent']).' % d’heures' : '' }}.
+@endif
+
+@if (($outcomes['won'] ?? 0) > 0 || ($outcomes['lost'] ?? 0) > 0)
+
+Issues : {{ $outcomes['won'] }} demande{{ $outcomes['won'] > 1 ? 's' : '' }} signée{{ $outcomes['won'] > 1 ? 's' : '' }}{{ collect($outcomes['by_currency'])->map(fn (array $row): string => ', '.number_format($row['amount'], 0, ',', ' ').' '.$row['currency'])->implode('') }}, {{ $outcomes['lost'] }} perdue{{ $outcomes['lost'] > 1 ? 's' : '' }}.
 @endif
 
 @if ($requests['estimates'] !== [])

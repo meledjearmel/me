@@ -358,7 +358,17 @@ export type Engagement = {
     contract: string | null;
     budget_label: string | null;
     estimate_label: string | null;
-    estimate: { features: string[] } | null;
+    estimate: {
+        features: string[];
+        currency: EstimatorCurrency;
+        price_min: number;
+        price_max: number;
+    } | null;
+    /** Issue : signée (avec le montant signé) ou perdue ; null sans issue. */
+    outcome: "won" | "lost" | null;
+    outcome_amount: number | null;
+    outcome_currency: EstimatorCurrency | null;
+    outcome_at: string | null;
     ai_analysis: EngagementAiAnalysis | null;
     ai_analyzed_at: string | null;
     timeline: string | null;

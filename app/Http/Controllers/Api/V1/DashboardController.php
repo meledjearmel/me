@@ -55,6 +55,19 @@ class DashboardController extends Controller
      * analysées) et `hours_gap_percent` (écart moyen des milieux de fourchette, positif quand
      * l'IA chiffre plus haut ; `null` sans analyse).
      *
+     * `outcomes` résume les issues enregistrées sur la période (voir
+     * `PUT /engagements/{id}/outcome`) : `won`, `lost`, `win_rate` (part des signées parmi
+     * les issues, `null` sans issue), `by_currency` (`{currency, count, amount, average}`
+     * des montants signés) et `estimate_gap` : `compared` (signées dans la devise de leur
+     * estimation) et `gap_percent` (écart moyen entre le montant signé et le milieu de la
+     * fourchette estimée, positif quand c'est signé au-dessus ; `null` sans comparaison).
+     *
+     * `appointments` porte sur les demandes de rendez-vous reçues sur la période : `total`,
+     * `by_status` (`pending`, `confirmed`, `declined`, `cancelled`), `confirmation_rate`
+     * (confirmées parmi les confirmées et refusées, `null` sinon), `response_hours` (délai
+     * moyen entre la demande et la confirmation, `null` sans confirmation), `by_type` et
+     * `by_location` (`video`, `phone`, `whatsapp`, `in_person`) en `{label, count}`.
+     *
      * `todo.appointments` compte les demandes de rendez-vous en attente, `todo.comments`
      * les commentaires du blog à modérer. `todo.project_drafts`, `todo.post_drafts` et
      * `todo.content_drafts` (expériences, formations, certifications, page « Uses »,

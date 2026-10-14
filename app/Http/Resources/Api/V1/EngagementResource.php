@@ -54,6 +54,14 @@ class EngagementResource extends JsonResource
             'message' => $this->message,
             'locale' => $this->locale,
             'cv_sent_at' => $this->cv_sent_at,
+            /** Issue de la demande : `won` (signée), `lost` (perdue), null tant qu'elle n'en a pas. */
+            'outcome' => $this->outcome,
+            /** Montant signé hors taxes (seulement pour `won`). */
+            'outcome_amount' => $this->outcome_amount,
+            /** Devise du montant signé : `CHF`, `EUR`, `USD` ou `XOF`. */
+            'outcome_currency' => $this->outcome_currency,
+            /** Date à laquelle l'issue a été enregistrée. */
+            'outcome_at' => $this->outcome_at,
             'created_at' => $this->created_at,
         ];
     }
