@@ -16,7 +16,7 @@ use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 
 #[Name('list-commercial-documents')]
-#[Description('Liste les devis, factures proforma et factures, les plus récents d\'abord : numéro (ADEV-DEV, ADEV-PRO, ADEV-FAC), statut, client (sans email), projet, lignes, total, acompte, dates et demande liée. Pour suivre ce qui est envoyé, accepté ou à encaisser.')]
+#[Description('Liste les devis, factures proforma et factures, les plus récents d\'abord : numéro (ADEV-DEV, ADEV-PRO, ADEV-FAC), statut, client (sans email), projet, lignes, total, acompte, dates et demande liée. Pour suivre ce qui est envoyé, accepté ou à encaisser, et ce qui est à relancer (la relance elle-même se fait depuis l\'administration).')]
 #[IsReadOnly]
 class ListCommercialDocumentsTool extends Tool
 {
@@ -26,6 +26,7 @@ class ListCommercialDocumentsTool extends Tool
             'id' => ['nullable', 'integer'],
             'type' => ['nullable', Rule::enum(CommercialDocumentType::class)],
             'status' => ['nullable', Rule::enum(CommercialDocumentStatus::class)],
+            'to_remind' => ['nullable', 'boolean'],
             'limit' => ['nullable', 'integer', 'min:1', 'max:50'],
         ]);
 
@@ -33,6 +34,7 @@ class ListCommercialDocumentsTool extends Tool
             ->when($data['id'] ?? null, fn ($query, int $id) => $query->whereKey($id))
             ->when($data['type'] ?? null, fn ($query, string $type) => $query->where('type', $type))
             ->when($data['status'] ?? null, fn ($query, string $status) => $query->where('status', $status))
+            ->when($data['to_remind'] ?? false, fn ($query) => $query->whereNotNull('reminder_due_at'))
             ->latest()
             ->limit($data['limit'] ?? 10)
             ->get();
@@ -52,6 +54,8 @@ class ListCommercialDocumentsTool extends Tool
             'valid_until' => $document->valid_until?->toDateString(),
             'due_at' => $document->due_at?->toDateString(),
             'sent_at' => $document->sent_at?->toIso8601String(),
+            'reminders_count' => $document->reminders_count,
+            'reminder_suggested' => $document->reminder_due_at !== null,
             'engagement_id' => $document->engagement_id,
             'admin_url' => route('admin.commercial-documents.show', $document),
         ])->all());
@@ -66,6 +70,7 @@ class ListCommercialDocumentsTool extends Tool
             'id' => $schema->integer()->description('Un seul document, par son identifiant.'),
             'type' => $schema->string()->enum(['quote', 'proforma', 'invoice'])->description('Seulement les devis, les proformas ou les factures.'),
             'status' => $schema->string()->enum(['draft', 'issued', 'accepted', 'declined', 'paid', 'cancelled'])->description('Seulement ce statut (issued : émis, en attente de réponse ou de paiement).'),
+            'to_remind' => $schema->boolean()->description('Seulement les documents à relancer (devis sans réponse, factures en retard).'),
             'limit' => $schema->integer()->description('Nombre de documents (10 par défaut, 50 max.).'),
         ];
     }

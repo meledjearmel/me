@@ -452,6 +452,8 @@ class DashboardReport
                 ->sum(fn (array $type): int => $type['model']::query()->where('status', PublicationStatus::Draft)->count()),
             // Modifications de contenus en ligne proposées par l'IA, en attente.
             'revisions' => ContentRevision::query()->pending()->count(),
+            // Relances suggérées (devis sans réponse, factures en retard), à envoyer ou écarter.
+            'document_reminders' => CommercialDocument::query()->whereNotNull('reminder_due_at')->count(),
             // Factures émises dont l'échéance est passée, à relancer.
             'overdue_invoices' => CommercialDocument::query()
                 ->where('type', CommercialDocumentType::Invoice)

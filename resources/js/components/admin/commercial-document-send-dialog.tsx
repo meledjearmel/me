@@ -1,5 +1,5 @@
 import { Form } from "@inertiajs/react";
-import { Loader2, Send, Sparkles } from "lucide-react";
+import { BellRing, Loader2, Send, Sparkles } from "lucide-react";
 import { useState } from "react";
 import CommercialDocumentController from "@/actions/App/Http/Controllers/Admin/CommercialDocumentController";
 import { Button } from "@/components/ui/button";
@@ -22,15 +22,18 @@ import type { CommercialDocument } from "@/types";
 /**
  * Envoi du document au client : objet et message à relire (proposés par l'IA sur demande),
  * PDF joint et, pour un devis, lien pour l'accepter en ligne. Un brouillon est émis à l'envoi.
+ * En mode « relance », le message proposé relance un devis sans réponse ou une facture en retard.
  */
 export default function CommercialDocumentSendDialog({
     document,
+    reminder = false,
 }: {
     document: CommercialDocument;
+    reminder?: boolean;
 }) {
     const [open, setOpen] = useState(false);
     const [subject, setSubject] = useState(
-        `${DOCUMENT_TYPES[document.type]} ${document.number ?? ""} — ${document.title}`.replace(
+        `${reminder ? "Relance : " : ""}${DOCUMENT_TYPES[document.type]} ${document.number ?? ""} — ${document.title}`.replace(
             "  ",
             " ",
         ),
@@ -45,7 +48,9 @@ export default function CommercialDocumentSendDialog({
 
         try {
             const mail = await post<{ subject: string; message: string }>(
-                CommercialDocumentController.suggestMail.url(document.id),
+                CommercialDocumentController.suggestMail.url(document.id, {
+                    query: reminder ? { reminder: 1 } : {},
+                }),
                 {},
             );
             setSubject(mail.subject);
@@ -60,13 +65,34 @@ export default function CommercialDocumentSendDialog({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button disabled={!document.client_email}>
-                    <Send data-icon="inline-start" /> Envoyer au client
+                <Button
+                    variant={
+                        reminder
+                            ? "default"
+                            : document.sent_at
+                              ? "outline"
+                              : "default"
+                    }
+                    disabled={!document.client_email}
+                >
+                    {reminder ? (
+                        <BellRing data-icon="inline-start" />
+                    ) : (
+                        <Send data-icon="inline-start" />
+                    )}
+                    {reminder
+                        ? "Relancer"
+                        : document.sent_at
+                          ? "Renvoyer"
+                          : "Envoyer au client"}
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-xl">
                 <DialogHeader>
-                    <DialogTitle>Envoyer à {document.client_email}</DialogTitle>
+                    <DialogTitle>
+                        {reminder ? "Relancer" : "Envoyer à"}{" "}
+                        {document.client_email}
+                    </DialogTitle>
                     <DialogDescription>
                         Le PDF est joint
                         {document.type === "quote" &&
@@ -78,7 +104,9 @@ export default function CommercialDocumentSendDialog({
                 </DialogHeader>
 
                 <Form
-                    {...CommercialDocumentController.send.form(document.id)}
+                    {...(reminder
+                        ? CommercialDocumentController.remind.form(document.id)
+                        : CommercialDocumentController.send.form(document.id))}
                     options={{ preserveScroll: true }}
                     onSuccess={() => setOpen(false)}
                     className="space-y-4"

@@ -106,6 +106,38 @@ export default function CommercialDocumentShow({
                     ))}
                 </div>
 
+                {document.reminder_due_at && (
+                    <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm dark:border-amber-800 dark:bg-amber-950/40">
+                        <p>
+                            <strong>Relance suggérée</strong> :{" "}
+                            {isQuote
+                                ? "le devis est toujours sans réponse."
+                                : "l'échéance de paiement est dépassée."}
+                            {document.reminders_count > 0 &&
+                                ` ${document.reminders_count} relance(s) déjà envoyée(s).`}
+                        </p>
+                        <div className="flex gap-2">
+                            <CommercialDocumentSendDialog
+                                document={document}
+                                reminder
+                            />
+                            <Button
+                                variant="ghost"
+                                onClick={() =>
+                                    router.delete(
+                                        CommercialDocumentController.dismissReminder.url(
+                                            document.id,
+                                        ),
+                                        { preserveScroll: true },
+                                    )
+                                }
+                            >
+                                Ignorer
+                            </Button>
+                        </div>
+                    </div>
+                )}
+
                 <div className="flex flex-wrap gap-2">
                     {isDraft && (
                         <Button variant="outline" asChild>
@@ -138,6 +170,14 @@ export default function CommercialDocumentShow({
                     {document.status !== "cancelled" && (
                         <CommercialDocumentSendDialog document={document} />
                     )}
+                    {!document.reminder_due_at &&
+                        document.status === "issued" &&
+                        document.sent_at && (
+                            <CommercialDocumentSendDialog
+                                document={document}
+                                reminder
+                            />
+                        )}
                     <Button variant="outline" asChild>
                         <a href={`${pdfUrl}?download=1`}>
                             <Download data-icon="inline-start" /> PDF

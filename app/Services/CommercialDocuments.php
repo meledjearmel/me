@@ -209,10 +209,12 @@ class CommercialDocuments
      *
      * @return array{subject: string, message: string}|null
      */
-    public function suggestMail(CommercialDocument $document): ?array
+    public function suggestMail(CommercialDocument $document, bool $reminder = false): ?array
     {
         $isQuote = $document->type === CommercialDocumentType::Quote;
         $prompt = implode("\n", array_filter([
+            $reminder ? 'Type d\'email : relance n° '.($document->reminders_count + 1).', document envoyé le '.$document->sent_at?->format('d.m.Y')
+                .($isQuote ? ', toujours sans réponse' : ', échéance dépassée de '.(int) $document->due_at?->diffInDays(now()).' jour(s)') : 'Type d\'email : premier envoi',
             'Document : '.$document->type->label($document->locale).($document->number ? " {$document->number}" : ''),
             "Client : {$document->client_name}".($document->client_company ? " ({$document->client_company})" : ''),
             "Projet : {$document->title}",
@@ -260,27 +262,104 @@ class CommercialDocuments
         return $document;
     }
 
+    /**
+     * Signale les documents à relancer : un devis envoyé, toujours valable et sans réponse depuis
+     * le délai des réglages ; une proforma ou une facture dont l'échéance est dépassée de ce délai.
+     * Entre deux relances, le même délai s'écoule ; au-delà du maximum, plus rien n'est signalé.
+     *
+     * @return list<CommercialDocument> les documents nouvellement signalés
+     */
+    public function flagReminders(): array
+    {
+        $settings = SiteSetting::current();
+        $max = (int) $settings->billing_max_reminders;
+
+        if ($max === 0) {
+            return [];
+        }
+
+        $quoteDays = max(1, (int) $settings->billing_quote_reminder_days);
+        $invoiceDays = max(0, (int) $settings->billing_invoice_reminder_days);
+        $waited = fn ($query, int $days) => $query->where(fn ($inner) => $inner
+            ->where('last_reminded_at', '<=', now()->subDays(max(1, $days)))
+            ->orWhere(fn ($first) => $first->whereNull('last_reminded_at')->where('sent_at', '<=', now()->subDays($days))));
+
+        $quotes = CommercialDocument::query()
+            ->where('type', CommercialDocumentType::Quote)
+            ->where('status', CommercialDocumentStatus::Issued)
+            ->whereNotNull('sent_at')
+            ->where(fn ($query) => $query->whereNull('valid_until')->orWhere('valid_until', '>=', now()->toDateString()))
+            ->tap(fn ($query) => $waited($query, $quoteDays));
+
+        $invoices = CommercialDocument::query()
+            ->whereIn('type', [CommercialDocumentType::Proforma, CommercialDocumentType::Invoice])
+            ->where('status', CommercialDocumentStatus::Issued)
+            ->where('due_at', '<=', now()->subDays($invoiceDays)->toDateString())
+            ->where(fn ($query) => $query->whereNull('last_reminded_at')->orWhere('last_reminded_at', '<=', now()->subDays(max(1, $invoiceDays))));
+
+        $flagged = [];
+
+        foreach ([$quotes, $invoices] as $query) {
+            foreach ($query->whereNull('reminder_due_at')->where('reminders_count', '<', $max)->get() as $document) {
+                $document->forceFill(['reminder_due_at' => now()])->save();
+                $flagged[] = $document;
+            }
+        }
+
+        return $flagged;
+    }
+
+    /** Relance le client par email (PDF joint, lien d'acceptation pour un devis). */
+    public function remind(CommercialDocument $document, string $subject, string $message): CommercialDocument
+    {
+        if (blank($document->client_email)) {
+            throw ValidationException::withMessages(['client_email' => 'Le client n\'a pas d\'adresse email.']);
+        }
+
+        Mail::to($document->client_email, $document->client_name)->send(new CommercialDocumentMail(
+            $document,
+            $subject,
+            $message,
+            $this->pdf($document),
+            $document->type === CommercialDocumentType::Quote ? $this->publicUrl($document) : null,
+        ));
+
+        $document->forceFill([
+            'reminders_count' => $document->reminders_count + 1,
+            'last_reminded_at' => now(),
+            'reminder_due_at' => null,
+        ])->save();
+
+        return $document;
+    }
+
+    /** Retire la relance suggérée sans l'envoyer (elle pourra revenir après le délai). */
+    public function dismissReminder(CommercialDocument $document): void
+    {
+        $document->forceFill(['reminder_due_at' => null, 'last_reminded_at' => now()])->save();
+    }
+
     /** Le client accepte le devis : la demande liée est signée pour son montant. */
     public function accept(CommercialDocument $document): void
     {
-        $document->forceFill(['status' => CommercialDocumentStatus::Accepted, 'accepted_at' => now()])->save();
+        $document->forceFill(['status' => CommercialDocumentStatus::Accepted, 'accepted_at' => now(), 'reminder_due_at' => null])->save();
         $document->engagement?->recordOutcome(EngagementOutcome::Won, $document->total, $document->currency);
     }
 
     /** Le client refuse le devis : la demande liée est perdue. */
     public function decline(CommercialDocument $document): void
     {
-        $document->forceFill(['status' => CommercialDocumentStatus::Declined, 'declined_at' => now()])->save();
+        $document->forceFill(['status' => CommercialDocumentStatus::Declined, 'declined_at' => now(), 'reminder_due_at' => null])->save();
         $document->engagement?->recordOutcome(EngagementOutcome::Lost);
     }
 
     public function markPaid(CommercialDocument $document): void
     {
-        $document->forceFill(['status' => CommercialDocumentStatus::Paid, 'paid_at' => now()])->save();
+        $document->forceFill(['status' => CommercialDocumentStatus::Paid, 'paid_at' => now(), 'reminder_due_at' => null])->save();
     }
 
     public function cancel(CommercialDocument $document): void
     {
-        $document->forceFill(['status' => CommercialDocumentStatus::Cancelled])->save();
+        $document->forceFill(['status' => CommercialDocumentStatus::Cancelled, 'reminder_due_at' => null])->save();
     }
 }

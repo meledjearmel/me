@@ -491,6 +491,10 @@ export type CommercialDocument = {
     accepted_at: string | null;
     declined_at: string | null;
     paid_at: string | null;
+    reminders_count: number;
+    last_reminded_at: string | null;
+    /** Relance suggérée (devis sans réponse, facture en retard). */
+    reminder_due_at: string | null;
     created_at: string;
     /** Fiche : acompte, lien du client (devis), demande et document d'origine. */
     deposit_amount?: number;
@@ -511,6 +515,9 @@ export type BillingSettings = {
     billing_quote_validity_days: number;
     billing_invoice_due_days: number;
     billing_deposit_percent: number;
+    billing_quote_reminder_days: number;
+    billing_invoice_reminder_days: number;
+    billing_max_reminders: number;
 };
 
 export type Service = {

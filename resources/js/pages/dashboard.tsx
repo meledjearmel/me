@@ -1,6 +1,7 @@
 import { Head, Link, usePage } from "@inertiajs/react";
 import {
     AlertTriangle,
+    BellRing,
     Calculator,
     ReceiptText,
     CheckCircle2,
@@ -73,6 +74,7 @@ type DashboardProps = {
         content_drafts: number;
         revisions: number;
         overdue_invoices: number;
+        document_reminders: number;
     };
     blog: {
         period_days: number | null;
@@ -712,6 +714,13 @@ export default function Dashboard({
                         })}
                         icon={ReceiptText}
                         done="Aucune facture en retard"
+                    />
+                    <TodoCard
+                        title="Relances à envoyer"
+                        count={todo.document_reminders}
+                        href={documentsIndex({ query: { reminder: "1" } })}
+                        icon={BellRing}
+                        done="Aucune relance en attente"
                     />
                 </div>
 

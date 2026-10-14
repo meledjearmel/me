@@ -215,6 +215,57 @@ export default function BillingSettingsEdit({
                                 </Field>
                             </div>
 
+                            <div className="space-y-2">
+                                <p className="text-sm font-medium">Relances</p>
+                                <p className="text-sm text-muted-foreground">
+                                    Chaque matin, les devis sans réponse et les
+                                    factures en retard sont signalés ; vous
+                                    relancez avec un message relu, rien ne part
+                                    tout seul.
+                                </p>
+                                <div className="grid gap-4 sm:grid-cols-3">
+                                    {(
+                                        [
+                                            [
+                                                "billing_quote_reminder_days",
+                                                "Devis sans réponse depuis (jours)",
+                                                1,
+                                            ],
+                                            [
+                                                "billing_invoice_reminder_days",
+                                                "Facture en retard depuis (jours)",
+                                                0,
+                                            ],
+                                            [
+                                                "billing_max_reminders",
+                                                "Relances au plus (0 : aucune)",
+                                                0,
+                                            ],
+                                        ] as const
+                                    ).map(([name, label, min]) => (
+                                        <Field
+                                            key={name}
+                                            data-invalid={!!errors[name]}
+                                        >
+                                            <FieldLabel htmlFor={name}>
+                                                {label}
+                                            </FieldLabel>
+                                            <Input
+                                                id={name}
+                                                name={name}
+                                                type="number"
+                                                min={min}
+                                                required
+                                                defaultValue={settings[name]}
+                                            />
+                                            <FieldError>
+                                                {errors[name]}
+                                            </FieldError>
+                                        </Field>
+                                    ))}
+                                </div>
+                            </div>
+
                             <Button disabled={processing}>Enregistrer</Button>
                         </FieldGroup>
                     )}

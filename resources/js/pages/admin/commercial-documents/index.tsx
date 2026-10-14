@@ -129,9 +129,16 @@ export default function CommercialDocumentsIndex({
                         {
                             header: "Statut",
                             cell: (row) => (
-                                <Badge variant={STATUS_VARIANT[row.status]}>
-                                    {DOCUMENT_STATUSES[row.status]}
-                                </Badge>
+                                <span className="flex flex-wrap gap-1">
+                                    <Badge variant={STATUS_VARIANT[row.status]}>
+                                        {DOCUMENT_STATUSES[row.status]}
+                                    </Badge>
+                                    {row.reminder_due_at && (
+                                        <Badge variant="destructive">
+                                            À relancer
+                                        </Badge>
+                                    )}
+                                </span>
                             ),
                         },
                     ]}

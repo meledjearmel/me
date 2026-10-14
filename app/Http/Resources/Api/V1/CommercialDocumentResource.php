@@ -59,6 +59,11 @@ class CommercialDocumentResource extends JsonResource
             'accepted_at' => $this->accepted_at,
             'declined_at' => $this->declined_at,
             'paid_at' => $this->paid_at,
+            /** Relances déjà envoyées. */
+            'reminders_count' => $this->reminders_count,
+            'last_reminded_at' => $this->last_reminded_at,
+            /** Relance suggérée depuis cette date (devis sans réponse, facture en retard) ; null sinon. */
+            'reminder_due_at' => $this->reminder_due_at,
             'created_at' => $this->created_at,
         ];
     }

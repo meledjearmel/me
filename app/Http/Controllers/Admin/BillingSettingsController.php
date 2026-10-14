@@ -25,6 +25,9 @@ class BillingSettingsController extends Controller
         'billing_quote_validity_days',
         'billing_invoice_due_days',
         'billing_deposit_percent',
+        'billing_quote_reminder_days',
+        'billing_invoice_reminder_days',
+        'billing_max_reminders',
     ];
 
     public function edit(): Response

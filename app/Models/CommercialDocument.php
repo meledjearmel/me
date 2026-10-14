@@ -60,6 +60,9 @@ class CommercialDocument extends Model
         'accepted_at' => 'datetime',
         'declined_at' => 'datetime',
         'paid_at' => 'datetime',
+        'reminders_count' => 'integer',
+        'last_reminded_at' => 'datetime',
+        'reminder_due_at' => 'datetime',
     ];
 
     protected static function booted(): void

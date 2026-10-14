@@ -23,6 +23,7 @@ Schedule::command('posts:syndicate')->everyFifteenMinutes();
 
 // Rapport de la semaine, par email, chaque lundi matin.
 Schedule::command('report:weekly')->weekly()->mondays()->at('07:00');
+Schedule::command('documents:flag-reminders')->dailyAt('08:00');
 
 // Activité GitHub de la page À propos.
 Schedule::command('github:sync')->hourly();

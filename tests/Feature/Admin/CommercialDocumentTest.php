@@ -4,6 +4,7 @@ use App\Ai\Agents\CommercialDocumentMailWriter;
 use App\Enums\CommercialDocumentStatus;
 use App\Enums\CommercialDocumentType;
 use App\Enums\EngagementOutcome;
+use App\Jobs\SendPushNotification;
 use App\Mail\CommercialDocumentMail;
 use App\Mcp\Servers\PortfolioServer;
 use App\Mcp\Tools\DraftQuoteTool;
@@ -259,6 +260,62 @@ test('the dashboard follows what is invoiced, collected, outstanding and overdue
         ->where('billing.overdue_invoices.0.days_late', 5)
         ->where('todo.overdue_invoices', 1)
     );
+});
+
+test('quotes without answer and overdue invoices are flagged each day, up to the maximum', function () {
+    SiteSetting::current()->update(['billing_quote_reminder_days' => 7, 'billing_invoice_reminder_days' => 3, 'billing_max_reminders' => 2]);
+    $documents = app(CommercialDocuments::class);
+    $quote = $documents->issue(CommercialDocument::factory()->create());
+    $quote->forceFill(['sent_at' => now()->subDays(8)])->save();
+    $recentQuote = $documents->issue(CommercialDocument::factory()->create());
+    $recentQuote->forceFill(['sent_at' => now()->subDays(2)])->save();
+    $lateInvoice = $documents->issue(CommercialDocument::factory()->invoice()->create(['due_at' => now()->subDays(4)]));
+    $documents->issue(CommercialDocument::factory()->invoice()->create(['due_at' => now()->subDay()]));
+
+    $this->artisan('documents:flag-reminders')->assertSuccessful();
+
+    expect($quote->refresh()->reminder_due_at)->not->toBeNull()
+        ->and($lateInvoice->refresh()->reminder_due_at)->not->toBeNull()
+        ->and(CommercialDocument::query()->whereNotNull('reminder_due_at')->count())->toBe(2);
+    Queue::assertPushed(SendPushNotification::class);
+
+    // Relancé : la suggestion disparaît, et revient après le délai, jusqu'au maximum.
+    $this->actingAs($this->user)
+        ->post(route('admin.commercial-documents.remind', $quote), ['subject' => 'Relance', 'message' => 'Avez-vous pu regarder ?'])
+        ->assertRedirect();
+    expect($quote->refresh()->reminders_count)->toBe(1)->and($quote->reminder_due_at)->toBeNull();
+    Mail::assertSent(CommercialDocumentMail::class);
+
+    $this->travel(8)->days();
+    $documents->flagReminders();
+    expect($quote->refresh()->reminder_due_at)->not->toBeNull();
+
+    $documents->remind($quote, 'Relance', 'Dernière relance.');
+    $this->travel(8)->days();
+    $documents->flagReminders();
+    expect($quote->refresh()->reminder_due_at)->toBeNull();
+
+    // Écartée, la relance de la facture ne part pas ; une facture payée n'est plus suivie.
+    $this->actingAs($this->user)->delete(route('admin.commercial-documents.dismiss-reminder', $lateInvoice))->assertRedirect();
+    expect($lateInvoice->refresh()->reminder_due_at)->toBeNull()->and($lateInvoice->reminders_count)->toBe(0);
+    $documents->markPaid($lateInvoice);
+    $this->travel(10)->days();
+    $documents->flagReminders();
+    expect($lateInvoice->refresh()->reminder_due_at)->toBeNull();
+});
+
+test('the AI writes a reminder rather than a first email when asked', function () {
+    CommercialDocumentMailWriter::fake([json_encode(['subject' => 'Relance : votre devis', 'message' => 'Je reviens vers vous.'])]);
+    $documents = app(CommercialDocuments::class);
+    $quote = $documents->issue($documents->draftFromEngagement($this->engagement));
+    $quote->forceFill(['sent_at' => now()->subDays(8)])->save();
+
+    $this->actingAs($this->user)
+        ->postJson(route('admin.commercial-documents.suggest-mail', ['commercial_document' => $quote, 'reminder' => 1]))
+        ->assertOk()
+        ->assertJsonPath('subject', 'Relance : votre devis');
+
+    CommercialDocumentMailWriter::assertPrompted(fn ($prompt): bool => str_contains($prompt->prompt, 'relance n° 1'));
 });
 
 test('the MCP server drafts a quote from a request but never sends it', function () {

@@ -16,6 +16,7 @@
         'post_drafts' => 'articles en brouillon',
         'content_drafts' => 'autres contenus en brouillon',
         'revisions' => 'modifications proposées par l’IA',
+        'document_reminders' => 'relances de devis ou factures à envoyer',
         'overdue_invoices' => 'factures en retard de paiement',
     ];
 @endphp

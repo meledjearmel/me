@@ -33,7 +33,7 @@ class CommercialDocumentController extends Controller
     {
         return Inertia::render('admin/commercial-documents/index', [
             'documents' => $this->paginateList(
-                CommercialDocument::query()->latest(),
+                CommercialDocument::query()->when($request->boolean('reminder'), fn ($query) => $query->whereNotNull('reminder_due_at'))->latest(),
                 $request,
                 ['number', 'client_name', 'client_company', 'title'],
                 ['type', 'status'],
@@ -132,9 +132,9 @@ class CommercialDocumentController extends Controller
     }
 
     /** L'objet et le message proposés par l'IA pour l'envoi. */
-    public function suggestMail(CommercialDocument $commercialDocument): JsonResponse
+    public function suggestMail(Request $request, CommercialDocument $commercialDocument): JsonResponse
     {
-        $mail = $this->documents->suggestMail($commercialDocument);
+        $mail = $this->documents->suggestMail($commercialDocument, $request->boolean('reminder'));
 
         return $mail === null
             ? response()->json(['message' => __('L\'assistance IA est momentanément indisponible.')], 503)
@@ -152,6 +152,33 @@ class CommercialDocumentController extends Controller
         $this->documents->send($commercialDocument, $data['subject'], $data['message']);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Document envoyé à :email.', ['email' => $commercialDocument->client_email])]);
+
+        return back();
+    }
+
+    /** Relance le client (devis sans réponse, facture en retard) avec le message relu. */
+    public function remind(Request $request, CommercialDocument $commercialDocument): RedirectResponse
+    {
+        abort_if($commercialDocument->isDraft(), 422, 'Envoyez le document d\'abord.');
+
+        $data = $request->validate([
+            'subject' => ['required', 'string', 'max:150'],
+            'message' => ['required', 'string', 'max:5000'],
+        ]);
+
+        $this->documents->remind($commercialDocument, $data['subject'], $data['message']);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Relance envoyée à :email.', ['email' => $commercialDocument->client_email])]);
+
+        return back();
+    }
+
+    /** Écarte la relance suggérée sans rien envoyer. */
+    public function dismissReminder(CommercialDocument $commercialDocument): RedirectResponse
+    {
+        $this->documents->dismissReminder($commercialDocument);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Relance écartée.')]);
 
         return back();
     }

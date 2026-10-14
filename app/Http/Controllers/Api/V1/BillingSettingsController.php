@@ -17,9 +17,10 @@ class BillingSettingsController extends Controller
      * Réglages de facturation
      *
      * L'émetteur des documents (nom, statut, adresse, numéro d'entreprise, IBAN, banque), la
-     * mention de TVA (vide : « TVA non applicable ») et les valeurs par défaut d'un document.
+     * mention de TVA (vide : « TVA non applicable »), les valeurs par défaut d'un document et les
+     * relances (jours sans réponse pour un devis, jours après l'échéance pour une facture, nombre au plus).
      *
-     * @response array{billing_business_name: string|null, billing_legal_form: string|null, billing_address: string|null, billing_registration_number: string|null, billing_iban: string|null, billing_bank: string|null, billing_vat_mention: string|null, billing_payment_terms: string|null, billing_quote_validity_days: int, billing_invoice_due_days: int, billing_deposit_percent: int}
+     * @response array{billing_business_name: string|null, billing_legal_form: string|null, billing_address: string|null, billing_registration_number: string|null, billing_iban: string|null, billing_bank: string|null, billing_vat_mention: string|null, billing_payment_terms: string|null, billing_quote_validity_days: int, billing_invoice_due_days: int, billing_deposit_percent: int, billing_quote_reminder_days: int, billing_invoice_reminder_days: int, billing_max_reminders: int}
      */
     public function show(): JsonResponse
     {
@@ -29,7 +30,7 @@ class BillingSettingsController extends Controller
     /**
      * Modifier les réglages de facturation
      *
-     * @response array{billing_business_name: string|null, billing_legal_form: string|null, billing_address: string|null, billing_registration_number: string|null, billing_iban: string|null, billing_bank: string|null, billing_vat_mention: string|null, billing_payment_terms: string|null, billing_quote_validity_days: int, billing_invoice_due_days: int, billing_deposit_percent: int}
+     * @response array{billing_business_name: string|null, billing_legal_form: string|null, billing_address: string|null, billing_registration_number: string|null, billing_iban: string|null, billing_bank: string|null, billing_vat_mention: string|null, billing_payment_terms: string|null, billing_quote_validity_days: int, billing_invoice_due_days: int, billing_deposit_percent: int, billing_quote_reminder_days: int, billing_invoice_reminder_days: int, billing_max_reminders: int}
      */
     public function update(BillingSettingsRequest $request): JsonResponse
     {

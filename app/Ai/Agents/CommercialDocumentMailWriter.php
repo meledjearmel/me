@@ -37,6 +37,10 @@ class CommercialDocumentMailWriter implements Agent
         en 2 ou 3 paragraphes séparés par une ligne vide, sans Markdown. Rappelle le projet et ce que
         contient le document ; pour un devis, invite à l'accepter par le lien (ajouté automatiquement
         sous le message, ne l'écris pas) et propose d'en parler ; pour une facture, rappelle l'échéance.
+        Pour une relance : plus court (3 à 5 phrases), courtois et sans reproche ; pour un devis, demande
+        simplement s'il a des questions ou si le projet tient toujours ; pour une facture en retard, rappelle
+        le montant dû et l'échéance passée, propose de vérifier si le paiement est en cours, et reste ferme
+        mais cordial (plus direct à partir de la deuxième relance).
         N'invente aucun montant, date ni engagement qui ne figure pas dans les informations fournies.
         Pas de formule de signature : elle est ajoutée automatiquement.
 

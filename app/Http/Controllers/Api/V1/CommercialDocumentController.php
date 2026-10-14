@@ -35,12 +35,13 @@ class CommercialDocumentController extends Controller
     #[QueryParameter('search', description: 'Recherche dans le numéro, le client et le projet.', type: 'string')]
     #[QueryParameter('type', description: '`quote`, `proforma` ou `invoice`.', type: 'string')]
     #[QueryParameter('status', description: '`draft`, `issued`, `accepted`, `declined`, `paid` ou `cancelled`.', type: 'string')]
+    #[QueryParameter('reminder', description: '`1` : seulement les documents dont une relance est suggérée.', type: 'boolean')]
     #[QueryParameter('page', description: 'Numéro de page.', type: 'integer', default: 1)]
     #[QueryParameter('per_page', description: 'Éléments par page : `10`, `25` ou `50`.', type: 'integer', default: 10)]
     public function index(Request $request): AnonymousResourceCollection
     {
         return CommercialDocumentResource::collection(
-            $this->paginateList(CommercialDocument::query()->latest(), $request, ['number', 'client_name', 'client_company', 'title'], ['type', 'status'])
+            $this->paginateList(CommercialDocument::query()->when($request->boolean('reminder'), fn ($query) => $query->whereNotNull('reminder_due_at'))->latest(), $request, ['number', 'client_name', 'client_company', 'title'], ['type', 'status'])
         );
     }
 
@@ -118,9 +119,10 @@ class CommercialDocumentController extends Controller
      *
      * @response array{subject: string, message: string}
      */
-    public function suggestMail(CommercialDocument $commercialDocument): JsonResponse
+    #[QueryParameter('reminder', description: '`1` pour une relance (devis sans réponse, facture en retard) plutôt qu\'un premier envoi.', type: 'boolean')]
+    public function suggestMail(Request $request, CommercialDocument $commercialDocument): JsonResponse
     {
-        $mail = $this->documents->suggestMail($commercialDocument);
+        $mail = $this->documents->suggestMail($commercialDocument, $request->boolean('reminder'));
 
         return $mail === null
             ? response()->json(['message' => 'L\'assistance IA est momentanément indisponible.'], 503)
@@ -141,6 +143,36 @@ class CommercialDocumentController extends Controller
         ]);
 
         return new CommercialDocumentResource($this->documents->send($commercialDocument, $data['subject'], $data['message']));
+    }
+
+    /**
+     * Relancer le client
+     *
+     * Envoie à nouveau le PDF avec le message de relance relu (devis sans réponse, facture en
+     * retard) ; `reminders_count` augmente et la relance suggérée (`reminder_due_at`) disparaît.
+     */
+    public function remind(Request $request, CommercialDocument $commercialDocument): CommercialDocumentResource
+    {
+        abort_if($commercialDocument->isDraft(), 409, 'Envoyez le document d\'abord.');
+
+        $data = $request->validate([
+            'subject' => ['required', 'string', 'max:150'],
+            'message' => ['required', 'string', 'max:5000'],
+        ]);
+
+        return new CommercialDocumentResource($this->documents->remind($commercialDocument, $data['subject'], $data['message']));
+    }
+
+    /**
+     * Écarter une relance suggérée
+     *
+     * Rien n'est envoyé ; la relance pourra être suggérée à nouveau après le délai des réglages.
+     */
+    public function dismissReminder(CommercialDocument $commercialDocument): CommercialDocumentResource
+    {
+        $this->documents->dismissReminder($commercialDocument);
+
+        return new CommercialDocumentResource($commercialDocument);
     }
 
     /**

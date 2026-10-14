@@ -74,7 +74,8 @@ class DashboardController extends Controller
      * toutes périodes confondues ; `quotes` donne les devis émis sur la période (`issued`,
      * `accepted`, `declined`, `acceptance_rate` parmi ceux qui ont une réponse, `null` sinon) ;
      * `overdue_invoices` les 5 factures en retard les plus anciennes :
-     * `{id, number, client, total, currency, due_at, days_late}`. `todo.overdue_invoices` les compte.
+     * `{id, number, client, total, currency, due_at, days_late}`. `todo.overdue_invoices` les compte,
+     * `todo.document_reminders` compte les relances suggérées (devis sans réponse, factures en retard).
      *
      * `todo.appointments` compte les demandes de rendez-vous en attente, `todo.comments`
      * les commentaires du blog à modérer. `todo.project_drafts`, `todo.post_drafts` et

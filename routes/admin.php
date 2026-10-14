@@ -179,6 +179,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::post('issue', [CommercialDocumentController::class, 'issue'])->name('issue');
         Route::post('suggest-mail', [CommercialDocumentController::class, 'suggestMail'])->name('suggest-mail');
         Route::post('send', [CommercialDocumentController::class, 'send'])->name('send');
+        Route::post('remind', [CommercialDocumentController::class, 'remind'])->name('remind');
+        Route::delete('reminder', [CommercialDocumentController::class, 'dismissReminder'])->name('dismiss-reminder');
         Route::post('convert', [CommercialDocumentController::class, 'convert'])->name('convert');
         Route::patch('status', [CommercialDocumentController::class, 'status'])->name('status');
     });
