@@ -268,6 +268,36 @@ class CommandGuide
             ],
             'example' => 'Republie mon dernier article sur dev.to.',
         ],
+        'get-inbox' => [
+            'usage' => 'Voir ce qui attend une réponse : messages, demandes de collaboration, rendez-vous à confirmer, avis et commentaires à modérer.',
+            'tips' => ['Sans emails ni téléphones ; chaque élément a le lien de sa fiche dans l\'admin.'],
+            'example' => 'Qu\'est-ce qui m\'attend sur le portfolio ?',
+        ],
+        'get-stats' => [
+            'usage' => 'Les statistiques sur 7, 30, 90 ou 365 jours : audience, provenances, contenus les plus vus, conversions, CV et blog.',
+            'tips' => ['Pour le bilan de la semaine avec demandes et candidatures, get-weekly-report est plus complet.'],
+            'example' => 'Quels contenus ont le mieux marché ce trimestre, et d\'où viennent mes visiteurs ?',
+        ],
+        'decide-appointment' => [
+            'usage' => 'Confirmer un rendez-vous (avec les détails pratiques) ou le refuser (avec une raison).',
+            'tips' => ['Le visiteur reçoit l\'email aussitôt : l\'agent ne le fait que si vous le demandez pour ce rendez-vous.'],
+            'example' => 'Confirme le rendez-vous de demain avec Claire, en visio sur mon lien habituel.',
+        ],
+        'moderate-testimonial' => [
+            'usage' => 'Publier ou refuser un avis client, et le mettre en avant.',
+            'tips' => ['Un avis publié s\'affiche aussitôt sur le site.'],
+            'example' => 'Publie l\'avis de Marc et mets-le en avant.',
+        ],
+        'moderate-comment' => [
+            'usage' => 'Publier ou masquer un commentaire du blog.',
+            'tips' => ['Un commentaire publié s\'affiche aussitôt sous l\'article.'],
+            'example' => 'Publie les commentaires en attente qui ne sont pas du spam.',
+        ],
+        'mark-handled' => [
+            'usage' => 'Ranger un message (lu ou répondu) ou une demande de collaboration (traitée).',
+            'tips' => ['Rien n\'est envoyé au visiteur.'],
+            'example' => 'J\'ai répondu à Awa, range son message.',
+        ],
     ];
 
     /**
@@ -310,6 +340,12 @@ class CommandGuide
         'get-weekly-report' => 'Bilan de la semaine',
         'save-post-social-texts' => 'Textes de partage',
         'syndicate-post' => 'Republier un article',
+        'get-inbox' => 'À traiter',
+        'get-stats' => 'Statistiques',
+        'decide-appointment' => 'Décider d\'un rendez-vous',
+        'moderate-testimonial' => 'Modérer un avis',
+        'moderate-comment' => 'Modérer un commentaire',
+        'mark-handled' => 'Ranger un message',
     ];
 
     /** Titre court d'une commande ou d'un outil (son nom s'il n'en a pas). */
