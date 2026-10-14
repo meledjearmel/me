@@ -24,6 +24,13 @@ const dictionaries = {
             step1: 'Le rendez-vous',
             step2: 'Le créneau',
             step3: 'Vos coordonnées',
+            stepSlot: 'Le rendez-vous et le créneau',
+            progress: (step: number, total: number) =>
+                `Étape ${step} sur ${total}`,
+            next: 'Continuer',
+            back: 'Retour',
+            chooseSlot: 'Choisissez un créneau pour continuer.',
+            chooseType: 'Choisissez un type de rendez-vous pour continuer.',
             minutes: (count: number) => `${count} min`,
             loading: 'Recherche des créneaux…',
             noSlots:
@@ -753,6 +760,13 @@ const dictionaries = {
             step1: 'The meeting',
             step2: 'The time slot',
             step3: 'Your details',
+            stepSlot: 'Meeting and time slot',
+            progress: (step: number, total: number) =>
+                `Step ${step} of ${total}`,
+            next: 'Continue',
+            back: 'Back',
+            chooseSlot: 'Pick a time slot to continue.',
+            chooseType: 'Pick a kind of meeting to continue.',
             minutes: (count: number) => `${count} min`,
             loading: 'Looking for time slots…',
             noSlots:

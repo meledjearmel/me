@@ -7739,11 +7739,13 @@ html.pub-scroll {
     animation: pub-estimate-in 0.35s var(--pub-ease-smooth);
 }
 
-.pub-estimate__panel h2:focus {
+.pub-estimate__panel h2:focus,
+.pub-estimate__panel legend:focus {
     outline: none;
 }
 
-.pub-estimate__panel h2:focus-visible {
+.pub-estimate__panel h2:focus-visible,
+.pub-estimate__panel legend:focus-visible {
     outline: 2px solid var(--pub-gold);
     outline-offset: 4px;
 }

@@ -1,5 +1,5 @@
 import { Form, useHttp } from '@inertiajs/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import AppointmentBookingController from '@/actions/App/Http/Controllers/AppointmentBookingController';
 import PageHero from '@/components/public/page-hero';
 import PublicShell from '@/components/public/public-shell';
@@ -47,6 +47,103 @@ export default function Appointments({
         types.length === 1 ? types[0].locations[0] : null,
     );
     const [sent, setSent] = useState(false);
+    // Trois étapes : le rendez-vous (déjà choisi s'il n'y en a qu'un), le créneau, les coordonnées.
+    const steps = ['type', 'slot', 'details'] as const;
+    const [stepIndex, setStepIndex] = useState(0);
+    const [blocked, setBlocked] = useState(false);
+    const headingRef = useRef<HTMLElement>(null);
+    const hasNavigated = useRef(false);
+    const setHeading = (element: HTMLElement | null) => {
+        headingRef.current = element;
+    };
+    const step = steps[stepIndex];
+    const stepTitles = {
+        type: t.booking.step1,
+        slot: t.booking.step2,
+        details: t.booking.step3,
+    };
+
+    // Le titre de l'étape prend le focus à chaque changement, pour les lecteurs d'écran.
+    useEffect(() => {
+        if (hasNavigated.current) {
+            headingRef.current?.focus();
+        }
+    }, [stepIndex]);
+
+    const goTo = (index: number) => {
+        hasNavigated.current = true;
+        setBlocked(false);
+        setStepIndex(Math.max(0, Math.min(index, steps.length - 1)));
+    };
+
+    /** « Continuer » : refusé tant que l'étape n'a pas son choix (type, puis créneau). */
+    const next = () => {
+        if (
+            (step === 'type' && typeId === null) ||
+            (step === 'slot' && startsAt === null)
+        ) {
+            setBlocked(true);
+
+            return;
+        }
+
+        goTo(stepIndex + 1);
+    };
+
+    /** Barre « Étape 2 sur 3 » : les étapes faites restent cliquables. */
+    const progress = (
+        <div className="pub-estimate__progress">
+            <p className="pub-booking__label">
+                {t.booking.progress(stepIndex + 1, steps.length)}
+                <span className="pub-estimate__current">
+                    {` · ${stepTitles[step]}`}
+                </span>
+            </p>
+            <ol>
+                {steps.map((key, index) => (
+                    <li
+                        key={key}
+                        data-state={
+                            index < stepIndex
+                                ? 'done'
+                                : index === stepIndex
+                                  ? 'current'
+                                  : 'todo'
+                        }
+                        aria-current={index === stepIndex ? 'step' : undefined}
+                    >
+                        {index < stepIndex ? (
+                            <button type="button" onClick={() => goTo(index)}>
+                                {stepTitles[key]}
+                            </button>
+                        ) : (
+                            <span>{stepTitles[key]}</span>
+                        )}
+                    </li>
+                ))}
+            </ol>
+        </div>
+    );
+
+    const navigation = (
+        <div className="pub-estimate__nav">
+            {stepIndex > 0 ? (
+                <button
+                    type="button"
+                    className="pub-booking__link"
+                    onClick={() => goTo(stepIndex - 1)}
+                >
+                    ← {t.booking.back}
+                </button>
+            ) : (
+                <span />
+            )}
+            <button type="button" className="pub-drawer__send" onClick={next}>
+                {t.booking.next}
+                <span aria-hidden="true">→</span>
+            </button>
+        </div>
+    );
 
     const type = types.find((candidate) => candidate.id === typeId) ?? null;
 
@@ -132,6 +229,7 @@ export default function Appointments({
 
     const chooseType = (chosen: PublicAppointmentType) => {
         setTypeId(chosen.id);
+        setBlocked(false);
         setDay(null);
         setStartsAt(null);
         setLocation(chosen.locations[0] ?? null);
@@ -141,6 +239,7 @@ export default function Appointments({
         setSent(false);
         setDay(null);
         setStartsAt(null);
+        goTo(0);
 
         if (typeId !== null) {
             void loadSlots(typeId);
@@ -195,47 +294,75 @@ export default function Appointments({
                                 </div>
                             ) : (
                                 <>
-                                    <fieldset className="pub-booking__step">
-                                        <legend>
-                                            <span>01</span> {t.booking.step1}
-                                        </legend>
-                                        <div className="pub-booking__types">
-                                            {types.map((candidate) => (
-                                                <button
-                                                    key={candidate.id}
-                                                    type="button"
-                                                    className="pub-booking__type"
-                                                    aria-pressed={
-                                                        candidate.id === typeId
-                                                    }
-                                                    onClick={() =>
-                                                        chooseType(candidate)
-                                                    }
-                                                >
-                                                    <strong>
-                                                        {candidate.name}
-                                                    </strong>
-                                                    <em>
-                                                        {t.booking.minutes(
-                                                            candidate.duration_minutes,
-                                                        )}
-                                                    </em>
-                                                    {candidate.description && (
-                                                        <span>
-                                                            {
-                                                                candidate.description
-                                                            }
-                                                        </span>
-                                                    )}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </fieldset>
+                                    {progress}
 
-                                    {type && (
-                                        <fieldset className="pub-booking__step">
-                                            <legend>
-                                                <span>02</span>{' '}
+                                    {step === 'type' && (
+                                        <fieldset className="pub-booking__step pub-estimate__panel">
+                                            <legend
+                                                ref={setHeading}
+                                                tabIndex={-1}
+                                            >
+                                                <span>
+                                                    {String(
+                                                        stepIndex + 1,
+                                                    ).padStart(2, '0')}
+                                                </span>{' '}
+                                                {t.booking.step1}
+                                            </legend>
+                                            <div className="pub-booking__types">
+                                                {types.map((candidate) => (
+                                                    <button
+                                                        key={candidate.id}
+                                                        type="button"
+                                                        className="pub-booking__type"
+                                                        aria-pressed={
+                                                            candidate.id ===
+                                                            typeId
+                                                        }
+                                                        onClick={() =>
+                                                            chooseType(
+                                                                candidate,
+                                                            )
+                                                        }
+                                                    >
+                                                        <strong>
+                                                            {candidate.name}
+                                                        </strong>
+                                                        <em>
+                                                            {t.booking.minutes(
+                                                                candidate.duration_minutes,
+                                                            )}
+                                                        </em>
+                                                        {candidate.description && (
+                                                            <span>
+                                                                {
+                                                                    candidate.description
+                                                                }
+                                                            </span>
+                                                        )}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                            {blocked && (
+                                                <small className="pub-booking__error">
+                                                    {t.booking.chooseType}
+                                                </small>
+                                            )}
+                                            {navigation}
+                                        </fieldset>
+                                    )}
+
+                                    {step === 'slot' && type && (
+                                        <fieldset className="pub-booking__step pub-estimate__panel">
+                                            <legend
+                                                ref={setHeading}
+                                                tabIndex={-1}
+                                            >
+                                                <span>
+                                                    {String(
+                                                        stepIndex + 1,
+                                                    ).padStart(2, '0')}
+                                                </span>{' '}
                                                 {t.booking.step2}
                                             </legend>
 
@@ -339,11 +466,14 @@ export default function Appointments({
                                                                     slot ===
                                                                     startsAt
                                                                 }
-                                                                onClick={() =>
+                                                                onClick={() => {
                                                                     setStartsAt(
                                                                         slot,
-                                                                    )
-                                                                }
+                                                                    );
+                                                                    setBlocked(
+                                                                        false,
+                                                                    );
+                                                                }}
                                                             >
                                                                 {timeLabel.format(
                                                                     new Date(
@@ -361,31 +491,46 @@ export default function Appointments({
                                                     </p>
                                                 </>
                                             )}
+                                            {blocked && (
+                                                <small className="pub-booking__error">
+                                                    {t.booking.chooseSlot}
+                                                </small>
+                                            )}
+                                            {navigation}
                                         </fieldset>
                                     )}
 
-                                    {type && startsAt && (
+                                    {step === 'details' && type && startsAt && (
                                         <Form
                                             {...AppointmentBookingController.store.form(
                                                 locale,
                                             )}
-                                            className="pub-booking__step pub-contact__form"
+                                            className="pub-booking__step pub-contact__form pub-estimate__panel"
                                             options={{ preserveScroll: true }}
                                             onSuccess={() => setSent(true)}
                                             onError={(errors) => {
-                                                // Le créneau a été pris entre-temps : on recharge les disponibilités.
+                                                // Le créneau a été pris entre-temps : on recharge les disponibilités et on y retourne.
                                                 if (errors.starts_at) {
                                                     setStartsAt(null);
                                                     void loadSlots(type.id);
+                                                    goTo(steps.indexOf('slot'));
                                                 }
                                             }}
                                         >
                                             {({ processing, errors }) => (
                                                 <>
-                                                    <h3 className="pub-booking__legend">
-                                                        <span>03</span>{' '}
+                                                    <h2
+                                                        ref={setHeading}
+                                                        tabIndex={-1}
+                                                        className="pub-booking__legend"
+                                                    >
+                                                        <span>
+                                                            {String(
+                                                                stepIndex + 1,
+                                                            ).padStart(2, '0')}
+                                                        </span>{' '}
                                                         {t.booking.step3}
-                                                    </h3>
+                                                    </h2>
 
                                                     <input
                                                         type="text"
@@ -580,21 +725,38 @@ export default function Appointments({
                                                         </label>
                                                     </div>
 
-                                                    <button
-                                                        type="submit"
-                                                        className="pub-drawer__send"
-                                                        disabled={
-                                                            processing ||
-                                                            location === null
-                                                        }
-                                                    >
-                                                        {processing
-                                                            ? t.booking.sending
-                                                            : t.booking.submit}
-                                                        <span aria-hidden="true">
-                                                            →
-                                                        </span>
-                                                    </button>
+                                                    <div className="pub-estimate__nav">
+                                                        <button
+                                                            type="button"
+                                                            className="pub-booking__link"
+                                                            onClick={() =>
+                                                                goTo(
+                                                                    stepIndex -
+                                                                        1,
+                                                                )
+                                                            }
+                                                        >
+                                                            ← {t.booking.back}
+                                                        </button>
+                                                        <button
+                                                            type="submit"
+                                                            className="pub-drawer__send"
+                                                            disabled={
+                                                                processing ||
+                                                                location ===
+                                                                    null
+                                                            }
+                                                        >
+                                                            {processing
+                                                                ? t.booking
+                                                                      .sending
+                                                                : t.booking
+                                                                      .submit}
+                                                            <span aria-hidden="true">
+                                                                →
+                                                            </span>
+                                                        </button>
+                                                    </div>
                                                 </>
                                             )}
                                         </Form>
