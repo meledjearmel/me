@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\V1\EducationController;
 use App\Http\Controllers\Api\V1\EngagementController;
 use App\Http\Controllers\Api\V1\EstimatorConfigurationController;
 use App\Http\Controllers\Api\V1\EstimatorItemController;
+use App\Http\Controllers\Api\V1\EstimatorRateController;
 use App\Http\Controllers\Api\V1\EstimatorSettingsController;
 use App\Http\Controllers\Api\V1\ExperienceController;
 use App\Http\Controllers\Api\V1\GitHubController;
@@ -99,6 +100,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::post('appointments/{appointment}/decline', [AppointmentController::class, 'decline'])->name('appointments.decline');
         Route::apiResource('appointment-types', AppointmentTypeController::class);
         Route::apiResource('estimator-items', EstimatorItemController::class);
+        Route::apiResource('estimator-rates', EstimatorRateController::class);
         Route::get('estimator-settings', [EstimatorSettingsController::class, 'show'])->name('estimator-settings.show');
         Route::put('estimator-settings', [EstimatorSettingsController::class, 'update'])->name('estimator-settings.update');
         Route::post('estimator-configuration', [EstimatorConfigurationController::class, 'store'])->name('estimator-configuration.store');

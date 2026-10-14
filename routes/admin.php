@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\EngagementAnalysisController;
 use App\Http\Controllers\Admin\EngagementController;
 use App\Http\Controllers\Admin\EstimatorConfigurationController;
 use App\Http\Controllers\Admin\EstimatorItemController;
+use App\Http\Controllers\Admin\EstimatorRateController;
 use App\Http\Controllers\Admin\EstimatorSettingsController;
 use App\Http\Controllers\Admin\ExperienceController;
 use App\Http\Controllers\Admin\GitHubController;
@@ -171,6 +172,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('appointment-types', AppointmentTypeController::class)->except('show');
     Route::resource('estimator-items', EstimatorItemController::class)->except('show');
     Route::get('estimator-options', [EstimatorItemController::class, 'options'])->name('estimator-options.index');
+    Route::resource('estimator-rates', EstimatorRateController::class)->except('show');
     Route::get('estimator-settings', [EstimatorSettingsController::class, 'edit'])->name('estimator-settings.edit');
     Route::put('estimator-settings', [EstimatorSettingsController::class, 'update'])->name('estimator-settings.update');
     Route::post('estimator-configuration', [EstimatorConfigurationController::class, 'store'])->name('estimator-configuration.store');

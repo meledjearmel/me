@@ -315,10 +315,11 @@ class EstimateAssistant
         $settings = SiteSetting::current();
         $rates = collect($settings->estimatorRates())->map(fn (int $rate, string $currency): string => "{$rate} {$currency}/h")->implode(', ');
 
-        $items = EstimatorItem::query()->active()->with('projectTypes')->get();
+        $globalRates = $settings->estimatorRates();
+        $items = EstimatorItem::query()->active()->with(['projectTypes', 'rate'])->get();
 
         $lines = $items->map(fn (EstimatorItem $item): string => sprintf(
-            '- %s #%d « %s » : %s%s',
+            '- %s #%d « %s » : %s%s%s',
             $item->kind === EstimatorItemKind::ProjectType ? 'Type de projet' : 'Option',
             $item->id,
             $item->getTranslation('name', 'fr'),
@@ -328,12 +329,27 @@ class EstimateAssistant
                 $item->projectTypes->isNotEmpty() => ' (seulement pour : '.$item->projectTypes->map(fn (EstimatorItem $type): string => $type->getTranslation('name', 'fr'))->implode(', ').')',
                 default => ' (pour tous les types)',
             },
+            $item->pricing === EstimatorPricing::Percent ? '' : $this->describeItemRates($item, $globalRates),
         ));
 
         return "Grille de l'estimateur (heures hors marge) :\n".($lines->isEmpty() ? '(vide)' : $lines->implode("\n"))
-            ."\nTaux horaires : ".($rates !== '' ? $rates : 'non renseignés')
+            ."\nTaux horaires globaux : ".($rates !== '' ? $rates : 'non renseignés')
             ."\nMarge pour imprévus : {$settings->estimator_risk_percent} %"
             ."\nHeures facturables par semaine : {$settings->estimator_hours_per_week}";
+    }
+
+    /**
+     * Le taux d'un élément quand il diffère du taux global (ses taux ou sa grille).
+     *
+     * @param  array<string, int>  $globalRates
+     */
+    private function describeItemRates(EstimatorItem $item, array $globalRates): string
+    {
+        $rates = collect($globalRates)
+            ->map(fn (int $rate, string $currency): int => $item->hourlyRate($currency, $globalRates))
+            ->filter(fn (int $rate, string $currency): bool => $rate !== $globalRates[$currency]);
+
+        return $rates->isEmpty() ? '' : ', taux '.$rates->map(fn (int $rate, string $currency): string => "{$rate} {$currency}/h")->implode(', ');
     }
 
     private function describeEngagement(Engagement $engagement): string

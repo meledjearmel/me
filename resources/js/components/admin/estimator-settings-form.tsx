@@ -1,21 +1,15 @@
-import { Form } from '@inertiajs/react';
-import EstimatorSettingsController from '@/actions/App/Http/Controllers/Admin/EstimatorSettingsController';
-import { Button } from '@/components/ui/button';
+import { Form } from "@inertiajs/react";
+import EstimatorSettingsController from "@/actions/App/Http/Controllers/Admin/EstimatorSettingsController";
+import EstimatorRateInputs from "@/components/admin/estimator-rate-inputs";
+import { Button } from "@/components/ui/button";
 import {
     Field,
     FieldDescription,
     FieldError,
     FieldLabel,
-} from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import type { EstimatorCurrency, EstimatorSettings } from '@/types';
-
-const CURRENCIES: { value: EstimatorCurrency; label: string }[] = [
-    { value: 'CHF', label: 'CHF' },
-    { value: 'EUR', label: 'EUR' },
-    { value: 'USD', label: 'USD' },
-    { value: 'XOF', label: 'FCFA' },
-];
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import type { EstimatorSettings } from "@/types";
 
 /** Taux horaire par devise, marge pour imprévus et heures facturables par semaine. */
 export default function EstimatorSettingsForm({
@@ -35,45 +29,18 @@ export default function EstimatorSettingsForm({
                         <h2 className="font-medium">Réglages du calcul</h2>
                         <p className="text-sm text-muted-foreground">
                             Prix = heures × (1 + options en %) × (1 + marge) ×
-                            taux horaire. Une devise sans taux n'est pas
-                            proposée ; sans aucun taux, la page est masquée.
+                            taux horaire. Taux global : celui des éléments sans
+                            taux propre ni grille tarifaire. Une devise sans
+                            taux global n'est pas proposée ; sans aucun taux, la
+                            page est masquée.
                         </p>
                     </div>
 
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                        {CURRENCIES.map((currency) => (
-                            <Field
-                                key={currency.value}
-                                data-invalid={
-                                    !!errors[
-                                        `estimator_hourly_rates.${currency.value}`
-                                    ]
-                                }
-                            >
-                                <FieldLabel htmlFor={`rate-${currency.value}`}>
-                                    Taux horaire ({currency.label})
-                                </FieldLabel>
-                                <Input
-                                    id={`rate-${currency.value}`}
-                                    name={`estimator_hourly_rates[${currency.value}]`}
-                                    type="number"
-                                    min={0}
-                                    defaultValue={
-                                        settings.estimator_hourly_rates[
-                                            currency.value
-                                        ] ?? ''
-                                    }
-                                />
-                                <FieldError>
-                                    {
-                                        errors[
-                                            `estimator_hourly_rates.${currency.value}`
-                                        ]
-                                    }
-                                </FieldError>
-                            </Field>
-                        ))}
-                    </div>
+                    <EstimatorRateInputs
+                        name="estimator_hourly_rates"
+                        defaultValues={settings.estimator_hourly_rates}
+                        errors={errors}
+                    />
 
                     <div className="grid gap-4 sm:grid-cols-2">
                         <Field data-invalid={!!errors.estimator_risk_percent}>

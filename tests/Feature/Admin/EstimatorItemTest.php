@@ -7,6 +7,7 @@ use App\Enums\EstimatorBilling;
 use App\Enums\EstimatorItemKind;
 use App\Models\Engagement;
 use App\Models\EstimatorItem;
+use App\Models\EstimatorRate;
 use App\Models\SiteSetting;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
@@ -158,6 +159,54 @@ test('the AI analysis of a request can be rerun from its page', function () {
         ->assertRedirect();
 
     expect($engagement->refresh()->ai_analysis['price_min'])->toBe(4000);
+});
+
+test('a rate grid is managed and an item follows it with its own rates on top', function () {
+    $this->actingAs($this->user)->get(route('admin.estimator-rates.index'))->assertOk();
+    $this->actingAs($this->user)->get(route('admin.estimator-rates.create'))->assertOk();
+
+    $this->actingAs($this->user)->post(route('admin.estimator-rates.store'), [
+        'name' => ['fr' => 'Développement avancé', 'en' => 'Advanced development'],
+        'hourly_rates' => ['CHF' => 150, 'EUR' => '', 'USD' => 0, 'XOF' => ''],
+    ])->assertRedirect(route('admin.estimator-rates.index'));
+
+    $rate = EstimatorRate::query()->firstOrFail();
+    expect($rate->hourly_rates)->toBe(['CHF' => 150]);
+
+    $this->actingAs($this->user)
+        ->post(route('admin.estimator-items.store'), estimatorItemPayload([
+            'estimator_rate_id' => $rate->id,
+            'hourly_rates' => ['CHF' => '', 'EUR' => 130, 'USD' => '', 'XOF' => ''],
+        ]))
+        ->assertRedirect(route('admin.estimator-items.index'));
+
+    $item = EstimatorItem::query()->firstOrFail();
+    expect($item->hourly_rates)->toBe(['EUR' => 130])
+        ->and($item->hourlyRate('CHF', ['CHF' => 100, 'USD' => 90]))->toBe(150)
+        ->and($item->hourlyRate('EUR', ['CHF' => 100, 'USD' => 90]))->toBe(130)
+        ->and($item->hourlyRate('USD', ['CHF' => 100, 'USD' => 90]))->toBe(90);
+
+    $this->actingAs($this->user)->get(route('admin.estimator-items.edit', $item))->assertOk();
+    $this->actingAs($this->user)->delete(route('admin.estimator-rates.destroy', $rate))->assertRedirect();
+
+    expect($item->refresh()->estimator_rate_id)->toBeNull();
+});
+
+test('rate grids are managed through the API', function () {
+    Sanctum::actingAs($this->user);
+
+    $id = $this->postJson('/api/v1/estimator-rates', [
+        'name' => ['fr' => 'Conseil', 'en' => 'Consulting'],
+        'hourly_rates' => ['CHF' => 180],
+    ])->assertCreated()->assertJsonPath('hourly_rates', ['CHF' => 180])->json('id');
+
+    $this->postJson('/api/v1/estimator-items', estimatorItemPayload(['estimator_rate_id' => $id, 'hourly_rates' => ['EUR' => 160]]))
+        ->assertCreated()
+        ->assertJsonPath('estimator_rate_id', $id)
+        ->assertJsonPath('hourly_rates', ['EUR' => 160]);
+
+    $this->getJson('/api/v1/estimator-rates')->assertOk()->assertJsonPath('data.0.items_count', 1);
+    $this->deleteJson("/api/v1/estimator-rates/{$id}")->assertNoContent();
 });
 
 test('estimator items and settings are managed through the API', function () {

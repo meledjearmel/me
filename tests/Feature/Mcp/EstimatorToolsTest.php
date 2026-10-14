@@ -66,6 +66,25 @@ test('configure-estimator sets the settings and a linked grid in one call', func
         ->and(SiteSetting::current()->estimatorRates()['CHF'])->toBe(100);
 });
 
+test('configure-estimator creates a rate grid that items follow by ref', function () {
+    $this->server->tool(ConfigureEstimatorTool::class, [
+        'rates' => [['ref' => 'advanced', 'name_fr' => 'Avancé', 'name_en' => 'Advanced', 'hourly_rates' => ['CHF' => 150]]],
+        'items' => [
+            ['kind' => 'project_type', 'name_fr' => 'App mobile', 'name_en' => 'Mobile app', 'hours_min' => 100, 'hours_max' => 200, 'rate' => 'advanced', 'hourly_rates' => ['EUR' => 140]],
+        ],
+    ])->assertOk();
+
+    $item = EstimatorItem::query()->firstOrFail();
+
+    expect($item->rate->getTranslation('name', 'fr'))->toBe('Avancé')
+        ->and($item->hourly_rates)->toBe(['EUR' => 140]);
+
+    $this->server->tool(GetEstimatorTool::class)->assertOk()->assertSee('"rate":'.$item->estimator_rate_id);
+    $this->server->tool(SaveEstimatorItemTool::class, ['id' => $item->id, 'rate' => 0])->assertOk();
+
+    expect($item->refresh()->estimator_rate_id)->toBeNull();
+});
+
 test('configure-estimator writes nothing when a reference is unknown', function () {
     $this->server->tool(ConfigureEstimatorTool::class, [
         'items' => [

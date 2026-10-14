@@ -6,6 +6,7 @@ use App\Enums\EstimatorBilling;
 use App\Enums\EstimatorItemKind;
 use App\Enums\EstimatorPricing;
 use App\Models\EstimatorItem;
+use App\Models\EstimatorRate;
 use App\Models\SiteSetting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -16,13 +17,15 @@ use Illuminate\Validation\ValidationException;
  * Configure l'estimateur en une fois, pour le serveur MCP et la proposition de l'IA de
  * l'administration : réglages (taux, marge, rythme) et éléments à créer ou modifier. Une
  * option peut viser des types de projet existants (identifiant) ou créés dans le même
- * envoi (leur « ref »). Tout est validé avant d'écrire, et appliqué d'un bloc.
+ * envoi (leur « ref »). Les grilles tarifaires se créent dans le même envoi, et un élément
+ * peut suivre une grille (identifiant ou ref) et porter ses propres taux. Tout est validé
+ * avant d'écrire, et appliqué d'un bloc.
  */
 class EstimatorConfigurator
 {
     /**
-     * @param  array<string, mixed>  $input  {settings?: {...}, items?: list<{...}>}
-     * @return array{settings_updated: bool, created: list<array{id: int, name: string}>, updated: list<array{id: int, name: string}>}
+     * @param  array<string, mixed>  $input  {settings?: {...}, rates?: list<{...}>, items?: list<{...}>}
+     * @return array{settings_updated: bool, rates: list<array{id: int, name: string}>, created: list<array{id: int, name: string}>, updated: list<array{id: int, name: string}>}
      *
      * @throws ValidationException
      */
@@ -43,10 +46,11 @@ class EstimatorConfigurator
             return $entry;
         })->all();
 
-        $this->checkReferences($items, $refs);
+        $this->checkReferences($items, $refs, $data['rates'] ?? []);
 
         return DB::transaction(function () use ($data, $items, $activateNew): array {
             $settingsUpdated = $this->applySettings($data['settings'] ?? null);
+            $rates = $this->applyRates($data['rates'] ?? []);
             $saved = [];
             $created = [];
             $updated = [];
@@ -57,6 +61,19 @@ class EstimatorConfigurator
                 $isNew = ! $item->exists;
 
                 $this->fill($item, $entry);
+
+                if (array_key_exists('rate', $entry)) {
+                    $item->estimator_rate_id = match (true) {
+                        is_string($entry['rate']) && isset($rates['refs'][$entry['rate']]) => $rates['refs'][$entry['rate']],
+                        (int) $entry['rate'] > 0 => (int) $entry['rate'],
+                        default => null,
+                    };
+                }
+
+                if (array_key_exists('hourly_rates', $entry)) {
+                    // Les devises envoyées remplacent les siennes ; 0 en retire une.
+                    $item->hourly_rates = [...EstimatorItem::filterRates($item->hourly_rates), ...($entry['hourly_rates'] ?? [])];
+                }
 
                 // Une modification partielle ne doit pas inverser la fourchette déjà enregistrée.
                 if ($item->hours_max < $item->hours_min) {
@@ -88,8 +105,44 @@ class EstimatorConfigurator
                     ->all());
             }
 
-            return ['settings_updated' => $settingsUpdated, 'created' => $created, 'updated' => $updated];
+            return ['settings_updated' => $settingsUpdated, 'rates' => $rates['summary'], 'created' => $created, 'updated' => $updated];
         });
+    }
+
+    /**
+     * Crée ou modifie les grilles tarifaires envoyées.
+     *
+     * @param  list<array<string, mixed>>  $entries
+     * @return array{refs: array<string, int>, summary: list<array{id: int, name: string}>}
+     */
+    private function applyRates(array $entries): array
+    {
+        $refs = [];
+        $summary = [];
+
+        foreach ($entries as $entry) {
+            $rate = isset($entry['id']) ? EstimatorRate::query()->findOrFail($entry['id']) : new EstimatorRate(['hourly_rates' => []]);
+
+            foreach (['fr', 'en'] as $locale) {
+                if (isset($entry["name_{$locale}"])) {
+                    $rate->setTranslation('name', $locale, $entry["name_{$locale}"]);
+                }
+            }
+
+            if (array_key_exists('hourly_rates', $entry)) {
+                $rate->hourly_rates = EstimatorItem::filterRates([...$rate->rates(), ...($entry['hourly_rates'] ?? [])]);
+            }
+
+            $rate->save();
+
+            if (isset($entry['ref'])) {
+                $refs[$entry['ref']] = $rate->id;
+            }
+
+            $summary[] = ['id' => $rate->id, 'name' => $rate->getTranslation('name', 'fr')];
+        }
+
+        return ['refs' => $refs, 'summary' => $summary];
     }
 
     /** @return array<string, mixed> */
@@ -101,6 +154,13 @@ class EstimatorConfigurator
             'settings.hourly_rates.*' => ['nullable', 'integer', 'min:0', 'max:10000000'],
             'settings.risk_percent' => ['nullable', 'integer', 'min:0', 'max:200'],
             'settings.hours_per_week' => ['nullable', 'integer', 'min:1', 'max:80'],
+            'rates' => ['nullable', 'array', 'max:20'],
+            'rates.*.id' => ['nullable', 'integer', Rule::exists('estimator_rates', 'id')],
+            'rates.*.ref' => ['nullable', 'string', 'max:60', 'distinct'],
+            'rates.*.name_fr' => ['required_without:rates.*.id', 'string', 'max:255'],
+            'rates.*.name_en' => ['required_without:rates.*.id', 'string', 'max:255'],
+            'rates.*.hourly_rates' => ['nullable', 'array:'.implode(',', EstimatorItem::CURRENCIES)],
+            'rates.*.hourly_rates.*' => ['nullable', 'integer', 'min:0', 'max:10000000'],
             'items' => ['nullable', 'array', 'max:100'],
             'items.*.id' => ['nullable', 'integer', Rule::exists('estimator_items', 'id')->whereNull('deleted_at')],
             'items.*.ref' => ['nullable', 'string', 'max:60', 'distinct'],
@@ -116,6 +176,10 @@ class EstimatorConfigurator
             'items.*.billing' => ['nullable', Rule::enum(EstimatorBilling::class)],
             'items.*.project_types' => ['nullable', 'array'],
             'items.*.project_types.*' => ['required'],
+            // Identifiant d'une grille existante, ref d'une grille créée dans l'envoi, ou 0 pour n'en suivre aucune.
+            'items.*.rate' => ['nullable'],
+            'items.*.hourly_rates' => ['nullable', 'array:'.implode(',', EstimatorItem::CURRENCIES)],
+            'items.*.hourly_rates.*' => ['nullable', 'integer', 'min:0', 'max:10000000'],
             'items.*.is_active' => ['nullable', 'boolean'],
         ];
     }
@@ -126,12 +190,26 @@ class EstimatorConfigurator
      *
      * @param  list<array<string, mixed>>  $items
      * @param  list<string>  $refs
+     * @param  list<array<string, mixed>>  $rates
      *
      * @throws ValidationException
      */
-    private function checkReferences(array $items, array $refs): void
+    private function checkReferences(array $items, array $refs, array $rates): void
     {
         $errors = [];
+        $rateRefs = collect($rates)->pluck('ref')->filter()->all();
+        $existingRates = EstimatorRate::query()->pluck('id')->all();
+
+        foreach ($items as $index => $entry) {
+            $rate = $entry['rate'] ?? null;
+            $valid = $rate === null
+                || in_array($rate, $rateRefs, true)
+                || (is_numeric($rate) && ((int) $rate === 0 || in_array((int) $rate, $existingRates, true)));
+
+            if (! $valid) {
+                $errors["items.{$index}.rate"] = "« {$rate} » n'est ni une grille tarifaire existante, ni la ref d'une grille créée dans cet envoi.";
+            }
+        }
         $projectTypeRefs = collect($items)
             ->filter(fn (array $entry): bool => ($entry['kind'] ?? null) === EstimatorItemKind::ProjectType->value && isset($entry['ref']))
             ->pluck('ref')

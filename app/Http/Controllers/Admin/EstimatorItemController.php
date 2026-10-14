@@ -7,6 +7,8 @@ use App\Enums\EstimatorItemKind;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\EstimatorItemRequest;
 use App\Models\EstimatorItem;
+use App\Models\EstimatorRate;
+use App\Models\SiteSetting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -34,7 +36,7 @@ class EstimatorItemController extends Controller
         return Inertia::render('admin/estimator-items/index', [
             'kind' => $kind->value,
             'estimatorItems' => $this->paginateList(
-                EstimatorItem::query()->where('kind', $kind)->with('projectTypes:id,name')->orderBy('sort_order'),
+                EstimatorItem::query()->where('kind', $kind)->with(['projectTypes:id,name', 'rate:id,name'])->orderBy('sort_order'),
                 $request,
                 ['name->fr', 'name->en'],
             ),
@@ -46,6 +48,8 @@ class EstimatorItemController extends Controller
     {
         return Inertia::render('admin/estimator-items/create', [
             'projectTypes' => $this->projectTypeOptions(),
+            'rates' => $this->rateOptions(),
+            'globalRates' => SiteSetting::current()->estimatorRates(),
             // « Nouvelle option » ouvre le formulaire sur une option.
             'kind' => (EstimatorItemKind::tryFrom((string) $request->query('kind')) ?? EstimatorItemKind::ProjectType)->value,
         ]);
@@ -69,6 +73,8 @@ class EstimatorItemController extends Controller
                 'project_type_ids' => $estimatorItem->projectTypes()->pluck('estimator_items.id')->all(),
             ],
             'projectTypes' => $this->projectTypeOptions(),
+            'rates' => $this->rateOptions(),
+            'globalRates' => SiteSetting::current()->estimatorRates(),
         ]);
     }
 
@@ -94,6 +100,20 @@ class EstimatorItemController extends Controller
             ->orderBy('sort_order')
             ->get()
             ->map(fn (EstimatorItem $item): array => ['id' => $item->id, 'label' => $item->getTranslation('name', 'fr')])
+            ->all();
+    }
+
+    /**
+     * Les grilles tarifaires qu'un élément peut suivre, avec leurs taux.
+     *
+     * @return list<array{id: int, label: string, rates: array<string, int>}>
+     */
+    private function rateOptions(): array
+    {
+        return EstimatorRate::query()
+            ->orderBy('sort_order')
+            ->get()
+            ->map(fn (EstimatorRate $rate): array => ['id' => $rate->id, 'label' => $rate->getTranslation('name', 'fr'), 'rates' => $rate->rates()])
             ->all();
     }
 

@@ -5,6 +5,7 @@ namespace App\Http\Requests\Admin;
 use App\Enums\EstimatorBilling;
 use App\Enums\EstimatorItemKind;
 use App\Enums\EstimatorPricing;
+use App\Models\EstimatorItem;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -36,6 +37,10 @@ class EstimatorItemRequest extends FormRequest
             // Option : réservée à ces types de projet (aucun : proposée pour tous).
             'project_type_ids' => ['nullable', 'array'],
             'project_type_ids.*' => ['integer', Rule::exists('estimator_items', 'id')->where('kind', EstimatorItemKind::ProjectType->value)->whereNull('deleted_at')],
+            // Taux : ceux de l'élément, sinon ceux de sa grille, sinon le taux global.
+            'estimator_rate_id' => ['nullable', 'integer', Rule::exists('estimator_rates', 'id')],
+            'hourly_rates' => ['nullable', 'array:'.implode(',', EstimatorItem::CURRENCIES)],
+            'hourly_rates.*' => ['nullable', 'integer', 'min:0', 'max:10000000'],
             'is_active' => ['boolean'],
             'sort_order' => ['integer', 'min:0'],
         ];

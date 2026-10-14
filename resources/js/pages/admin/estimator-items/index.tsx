@@ -1,17 +1,17 @@
-import { Head, Link } from '@inertiajs/react';
-import { ExternalLink, Plus, SquarePen } from 'lucide-react';
-import EstimatorItemController from '@/actions/App/Http/Controllers/Admin/EstimatorItemController';
-import ActionTooltip from '@/components/admin/action-tooltip';
-import { ResourceList } from '@/components/admin/data-list';
-import DeleteButton from '@/components/admin/delete-button';
-import EstimatorAiGrid from '@/components/admin/estimator-ai-grid';
-import { ESTIMATOR_BILLINGS } from '@/components/admin/estimator-item-fields';
-import Heading from '@/components/heading';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { index as projectTypesIndex } from '@/routes/admin/estimator-items';
-import { index as publicEstimate } from '@/routes/estimate';
-import type { EstimatorItem, ListFilters, Paginated } from '@/types';
+import { Head, Link } from "@inertiajs/react";
+import { ExternalLink, Plus, SquarePen } from "lucide-react";
+import EstimatorItemController from "@/actions/App/Http/Controllers/Admin/EstimatorItemController";
+import ActionTooltip from "@/components/admin/action-tooltip";
+import { ResourceList } from "@/components/admin/data-list";
+import DeleteButton from "@/components/admin/delete-button";
+import EstimatorAiGrid from "@/components/admin/estimator-ai-grid";
+import { ESTIMATOR_BILLINGS } from "@/components/admin/estimator-item-fields";
+import Heading from "@/components/heading";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { index as projectTypesIndex } from "@/routes/admin/estimator-items";
+import { index as publicEstimate } from "@/routes/estimate";
+import type { EstimatorItem, ListFilters, Paginated } from "@/types";
 
 /**
  * La grille de l'estimateur, une page par nature (entrées du menu « Estimateur ») :
@@ -22,20 +22,35 @@ export default function EstimatorItemsIndex({
     estimatorItems,
     filters,
 }: {
-    kind: EstimatorItem['kind'];
+    kind: EstimatorItem["kind"];
     estimatorItems: Paginated<EstimatorItem>;
     filters: ListFilters;
 }) {
-    const isFeature = kind === 'feature';
-    const title = isFeature ? 'Options' : 'Types de projet';
+    const isFeature = kind === "feature";
+    const title = isFeature ? "Options" : "Types de projet";
 
     const statusColumn = {
-        header: 'Statut',
+        header: "Statut",
         cell: (row: EstimatorItem) => (
-            <Badge variant={row.is_active ? 'default' : 'secondary'}>
-                {row.is_active ? 'Proposé' : 'Masqué'}
+            <Badge variant={row.is_active ? "default" : "secondary"}>
+                {row.is_active ? "Proposé" : "Masqué"}
             </Badge>
         ),
+    };
+
+    const rateColumn = {
+        header: "Tarif",
+        cell: (row: EstimatorItem) =>
+            row.pricing === "percent"
+                ? "Celui du type"
+                : [
+                      row.hourly_rates && Object.keys(row.hourly_rates).length
+                          ? "Taux propres"
+                          : null,
+                      row.rate?.name.fr ?? null,
+                  ]
+                      .filter(Boolean)
+                      .join(" + ") || "Taux global",
     };
 
     return (
@@ -49,13 +64,13 @@ export default function EstimatorItemsIndex({
                         description={
                             isFeature
                                 ? "Ce qui s'ajoute à un type de projet : des heures ou un pourcentage, pour tous les types ou certains seulement"
-                                : 'La base de chaque estimation, chiffrée en heures, en forfait ou à l’heure'
+                                : "La base de chaque estimation, chiffrée en heures, en forfait ou à l’heure"
                         }
                     />
                     <div className="flex flex-wrap gap-2">
                         <Button variant="outline" asChild>
                             <a
-                                href={publicEstimate.url('fr')}
+                                href={publicEstimate.url("fr")}
                                 target="_blank"
                                 rel="noreferrer"
                             >
@@ -70,8 +85,8 @@ export default function EstimatorItemsIndex({
                                     query: { kind },
                                 })}
                             >
-                                <Plus data-icon="inline-start" />{' '}
-                                {isFeature ? 'Nouvelle option' : 'Nouveau type'}
+                                <Plus data-icon="inline-start" />{" "}
+                                {isFeature ? "Nouvelle option" : "Nouveau type"}
                             </Link>
                         </Button>
                     </div>
@@ -84,47 +99,49 @@ export default function EstimatorItemsIndex({
                     columns={
                         isFeature
                             ? [
-                                  { header: 'Nom', cell: (row) => row.name.fr },
+                                  { header: "Nom", cell: (row) => row.name.fr },
                                   {
-                                      header: 'Ajoute',
+                                      header: "Ajoute",
                                       cell: (row) =>
-                                          row.pricing === 'percent'
+                                          row.pricing === "percent"
                                               ? `+${row.percent} %`
                                               : `${row.hours_min} – ${row.hours_max} h`,
                                   },
                                   {
-                                      header: 'Pour',
+                                      header: "Pour",
                                       cell: (row) =>
                                           row.project_types?.length
                                               ? row.project_types
                                                     .map((type) => type.name.fr)
-                                                    .join(', ')
-                                              : 'Tous les types',
+                                                    .join(", ")
+                                              : "Tous les types",
                                   },
+                                  rateColumn,
                                   statusColumn,
                                   {
-                                      header: 'Ordre',
+                                      header: "Ordre",
                                       cell: (row) => row.sort_order,
                                   },
                               ]
                             : [
-                                  { header: 'Nom', cell: (row) => row.name.fr },
+                                  { header: "Nom", cell: (row) => row.name.fr },
                                   {
-                                      header: 'Heures',
+                                      header: "Heures",
                                       cell: (row) =>
                                           `${row.hours_min} – ${row.hours_max} h`,
                                   },
                                   {
-                                      header: 'Facturation',
+                                      header: "Facturation",
                                       cell: (row) =>
                                           ESTIMATOR_BILLINGS.find(
                                               (billing) =>
                                                   billing.value === row.billing,
-                                          )?.label ?? '—',
+                                          )?.label ?? "—",
                                   },
+                                  rateColumn,
                                   statusColumn,
                                   {
-                                      header: 'Ordre',
+                                      header: "Ordre",
                                       cell: (row) => row.sort_order,
                                   },
                               ]
@@ -158,5 +175,5 @@ export default function EstimatorItemsIndex({
 }
 
 EstimatorItemsIndex.layout = {
-    breadcrumbs: [{ title: 'Estimateur de projet', href: projectTypesIndex() }],
+    breadcrumbs: [{ title: "Estimateur de projet", href: projectTypesIndex() }],
 };

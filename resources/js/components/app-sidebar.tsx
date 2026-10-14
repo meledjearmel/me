@@ -17,6 +17,7 @@ import {
     Handshake,
     Heart,
     Calculator,
+    Coins,
     ListPlus,
     Store,
     Send,
@@ -69,6 +70,7 @@ import { index as jobApplicationsIndex } from "@/routes/admin/job-applications";
 import { show as weeklyReportShow } from "@/routes/admin/weekly-report";
 import { edit as syndicationEdit } from "@/routes/admin/syndication";
 import { index as estimatorOptionsIndex } from "@/routes/admin/estimator-options";
+import { index as estimatorRatesIndex } from "@/routes/admin/estimator-rates";
 import { edit as estimatorSettingsEdit } from "@/routes/admin/estimator-settings";
 import { index as domainsIndex } from "@/routes/admin/domains";
 import { index as educationsIndex } from "@/routes/admin/educations";
@@ -171,6 +173,7 @@ const inboxNavItems: NavItem[] = [
 const estimatorNavItems: NavItem[] = [
     { title: "Types de projet", href: estimatorItemsIndex(), icon: Calculator },
     { title: "Options", href: estimatorOptionsIndex(), icon: ListPlus },
+    { title: "Grilles tarifaires", href: estimatorRatesIndex(), icon: Coins },
     {
         title: "Tarifs et calcul",
         href: estimatorSettingsEdit(),

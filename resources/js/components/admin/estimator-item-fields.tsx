@@ -1,41 +1,46 @@
-import { Loader2, Sparkles } from 'lucide-react';
-import { useState } from 'react';
-import AiAssistController from '@/actions/App/Http/Controllers/Admin/AiAssistController';
-import CheckboxGroup from '@/components/admin/checkbox-group';
-import FormSelect from '@/components/admin/form-select';
-import TranslatableField from '@/components/translatable-field';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Loader2, Sparkles } from "lucide-react";
+import { useState } from "react";
+import AiAssistController from "@/actions/App/Http/Controllers/Admin/AiAssistController";
+import CheckboxGroup from "@/components/admin/checkbox-group";
+import EstimatorRateInputs from "@/components/admin/estimator-rate-inputs";
+import FormSelect from "@/components/admin/form-select";
+import TranslatableField from "@/components/translatable-field";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
     Field,
     FieldDescription,
     FieldError,
     FieldLabel,
-} from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { post } from '@/hooks/use-ai-text-assist';
-import type { EstimatorItem } from '@/types';
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { post } from "@/hooks/use-ai-text-assist";
+import type {
+    EstimatorCurrency,
+    EstimatorItem,
+    EstimatorRateOption,
+} from "@/types";
 
 export const ESTIMATOR_KINDS = [
-    { value: 'project_type', label: 'Type de projet' },
-    { value: 'feature', label: 'Option' },
+    { value: "project_type", label: "Type de projet" },
+    { value: "feature", label: "Option" },
 ] as const;
 
 export const ESTIMATOR_BILLINGS = [
-    { value: 'fixed', label: 'Forfait estimé' },
-    { value: 'hourly', label: "Facturé à l'heure" },
+    { value: "fixed", label: "Forfait estimé" },
+    { value: "hourly", label: "Facturé à l'heure" },
 ] as const;
 
 export const ESTIMATOR_PRICINGS = [
-    { value: 'hours', label: 'Des heures en plus' },
-    { value: 'percent', label: 'Un pourcentage des heures du projet' },
+    { value: "hours", label: "Des heures en plus" },
+    { value: "percent", label: "Un pourcentage des heures du projet" },
 ] as const;
 
 type Suggestion = {
     name: { fr: string; en: string };
     description: { fr: string | null; en: string | null };
-    pricing: EstimatorItem['pricing'];
+    pricing: EstimatorItem["pricing"];
     percent: number | null;
     hours_min: number;
     hours_max: number;
@@ -50,37 +55,48 @@ type Suggestion = {
 export default function EstimatorItemFields({
     estimatorItem,
     projectTypes,
-    defaultKind = 'project_type',
+    rates,
+    globalRates,
+    defaultKind = "project_type",
     errors,
 }: {
     estimatorItem?: EstimatorItem;
     projectTypes: { id: number; label: string }[];
-    defaultKind?: EstimatorItem['kind'];
+    rates: EstimatorRateOption[];
+    globalRates: Partial<Record<EstimatorCurrency, number>>;
+    defaultKind?: EstimatorItem["kind"];
     errors: Record<string, string | undefined>;
 }) {
-    const [kind, setKind] = useState<EstimatorItem['kind']>(
+    const [kind, setKind] = useState<EstimatorItem["kind"]>(
         estimatorItem?.kind ?? defaultKind,
     );
-    const [pricing, setPricing] = useState<EstimatorItem['pricing']>(
-        estimatorItem?.pricing ?? 'hours',
+    const [pricing, setPricing] = useState<EstimatorItem["pricing"]>(
+        estimatorItem?.pricing ?? "hours",
     );
-    const [subject, setSubject] = useState(estimatorItem?.name.fr ?? '');
-    const [notes, setNotes] = useState('');
+    const [subject, setSubject] = useState(estimatorItem?.name.fr ?? "");
+    const [notes, setNotes] = useState("");
     const [pending, setPending] = useState(false);
     const [aiError, setAiError] = useState<string | null>(null);
     const [suggestion, setSuggestion] = useState<Suggestion | null>(null);
     // Une suggestion change les valeurs par défaut : on recrée les champs pour les afficher.
     const [version, setVersion] = useState(0);
 
-    const isFeature = kind === 'feature';
-    const isPercent = isFeature && pricing === 'percent';
+    const [rateId, setRateId] = useState(
+        estimatorItem?.estimator_rate_id
+            ? String(estimatorItem.estimator_rate_id)
+            : "",
+    );
+
+    const isFeature = kind === "feature";
+    const isPercent = isFeature && pricing === "percent";
+    const selectedRate = rates.find((rate) => String(rate.id) === rateId);
 
     const values = {
         name: suggestion?.name ?? estimatorItem?.name,
         description: suggestion
             ? {
-                  fr: suggestion.description.fr ?? '',
-                  en: suggestion.description.en ?? '',
+                  fr: suggestion.description.fr ?? "",
+                  en: suggestion.description.en ?? "",
               }
             : (estimatorItem?.description ?? undefined),
         hours_min: suggestion?.hours_min ?? estimatorItem?.hours_min ?? 8,
@@ -89,7 +105,7 @@ export default function EstimatorItemFields({
     };
 
     async function suggest() {
-        if (subject.trim() === '') {
+        if (subject.trim() === "") {
             setAiError("Indiquez d'abord ce qu'il faut chiffrer.");
 
             return;
@@ -108,7 +124,7 @@ export default function EstimatorItemFields({
             setPricing(response.item.pricing);
             setVersion((current) => current + 1);
         } catch {
-            setAiError('Suggestion indisponible pour le moment, réessayez.');
+            setAiError("Suggestion indisponible pour le moment, réessayez.");
         } finally {
             setPending(false);
         }
@@ -124,7 +140,7 @@ export default function EstimatorItemFields({
                     required
                     defaultValue={kind}
                     onValueChange={(value) =>
-                        setKind(value as EstimatorItem['kind'])
+                        setKind(value as EstimatorItem["kind"])
                     }
                 >
                     {ESTIMATOR_KINDS.map((option) => (
@@ -179,7 +195,7 @@ export default function EstimatorItemFields({
                 </div>
                 {suggestion?.reasoning && (
                     <p className="text-sm text-muted-foreground">
-                        <strong>Raisonnement de l'IA :</strong>{' '}
+                        <strong>Raisonnement de l'IA :</strong>{" "}
                         {suggestion.reasoning} Relisez avant d'enregistrer.
                     </p>
                 )}
@@ -191,7 +207,7 @@ export default function EstimatorItemFields({
                     label="Nom"
                     required
                     defaultValue={values.name}
-                    errors={{ fr: errors['name.fr'], en: errors['name.en'] }}
+                    errors={{ fr: errors["name.fr"], en: errors["name.en"] }}
                 />
 
                 <TranslatableField
@@ -200,8 +216,8 @@ export default function EstimatorItemFields({
                     textarea
                     defaultValue={values.description}
                     errors={{
-                        fr: errors['description.fr'],
-                        en: errors['description.en'],
+                        fr: errors["description.fr"],
+                        en: errors["description.en"],
                     }}
                 />
 
@@ -216,7 +232,7 @@ export default function EstimatorItemFields({
                             required
                             defaultValue={pricing}
                             onValueChange={(value) =>
-                                setPricing(value as EstimatorItem['pricing'])
+                                setPricing(value as EstimatorItem["pricing"])
                             }
                         >
                             {ESTIMATOR_PRICINGS.map((option) => (
@@ -250,7 +266,8 @@ export default function EstimatorItemFields({
                         />
                         <FieldDescription>
                             Appliqué aux heures du type de projet et des options
-                            en heures, avant la marge pour imprévus.
+                            en heures, avant la marge pour imprévus, et payé au
+                            taux du type de projet.
                         </FieldDescription>
                         <FieldError>{errors.percent}</FieldError>
                     </Field>
@@ -312,12 +329,12 @@ export default function EstimatorItemFields({
                     </FieldDescription>
                     <FieldError>
                         {errors.project_type_ids ??
-                            errors['project_type_ids.0']}
+                            errors["project_type_ids.0"]}
                     </FieldError>
                 </div>
             )}
 
-            {kind === 'project_type' && (
+            {kind === "project_type" && (
                 <Field data-invalid={!!errors.billing}>
                     <FieldLabel htmlFor="billing">
                         Présenté au visiteur *
@@ -326,7 +343,7 @@ export default function EstimatorItemFields({
                         id="billing"
                         name="billing"
                         required
-                        defaultValue={estimatorItem?.billing ?? 'fixed'}
+                        defaultValue={estimatorItem?.billing ?? "fixed"}
                     >
                         {ESTIMATOR_BILLINGS.map((option) => (
                             <option key={option.value} value={option.value}>
@@ -341,6 +358,47 @@ export default function EstimatorItemFields({
                     </FieldDescription>
                     <FieldError>{errors.billing}</FieldError>
                 </Field>
+            )}
+
+            {!isPercent && (
+                <div className="space-y-4 rounded-lg border p-4">
+                    <div>
+                        <p className="text-sm font-medium">Tarif</p>
+                        <p className="text-sm text-muted-foreground">
+                            Les taux de l'élément, sinon ceux de sa grille,
+                            sinon le taux global des réglages.
+                        </p>
+                    </div>
+                    <Field data-invalid={!!errors.estimator_rate_id}>
+                        <FieldLabel htmlFor="estimator_rate_id">
+                            Grille tarifaire
+                        </FieldLabel>
+                        <FormSelect
+                            id="estimator_rate_id"
+                            name="estimator_rate_id"
+                            defaultValue={String(rateId)}
+                            onValueChange={(value) => setRateId(value)}
+                        >
+                            <option value="">Aucune (taux global)</option>
+                            {rates.map((rate) => (
+                                <option key={rate.id} value={String(rate.id)}>
+                                    {rate.label}
+                                </option>
+                            ))}
+                        </FormSelect>
+                        <FieldError>{errors.estimator_rate_id}</FieldError>
+                    </Field>
+                    <EstimatorRateInputs
+                        name="hourly_rates"
+                        defaultValues={estimatorItem?.hourly_rates}
+                        fallbacks={{ ...globalRates, ...selectedRate?.rates }}
+                        errors={errors}
+                    />
+                    <FieldDescription>
+                        Laissez vide pour suivre la grille ou le taux global
+                        (rappelé en gris).
+                    </FieldDescription>
+                </div>
             )}
 
             <Field orientation="horizontal">

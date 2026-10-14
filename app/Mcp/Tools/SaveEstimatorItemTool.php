@@ -20,7 +20,7 @@ class SaveEstimatorItemTool extends Tool
     {
         $entry = $request->only([
             'id', 'kind', 'name_fr', 'name_en', 'description_fr', 'description_en',
-            'hours_min', 'hours_max', 'pricing', 'percent', 'billing', 'project_types',
+            'hours_min', 'hours_max', 'pricing', 'percent', 'billing', 'project_types', 'rate', 'hourly_rates',
         ]);
 
         try {
@@ -53,6 +53,13 @@ class SaveEstimatorItemTool extends Tool
             'percent' => $schema->integer()->description('Options en pourcentage : ce qui s\'ajoute aux heures du projet, en %.'),
             'billing' => $schema->string()->enum(['fixed', 'hourly'])->description('Types de projet : fixed (forfait estimé) ou hourly (facturé à l\'heure, pour un périmètre flou ou évolutif).'),
             'project_types' => $schema->array()->items($schema->integer())->description('Options : identifiants des types de projet auxquels l\'option est réservée ; vide pour tous.'),
+            'rate' => $schema->integer()->description('Grille tarifaire suivie (voir get-estimator) ; 0 pour n\'en suivre aucune. Pour créer une grille, utilise configure-estimator.'),
+            'hourly_rates' => $schema->object([
+                'CHF' => $schema->integer(),
+                'EUR' => $schema->integer(),
+                'USD' => $schema->integer(),
+                'XOF' => $schema->integer(),
+            ])->description('Taux propres à l\'élément, prioritaires sur sa grille et le taux global ; 0 retire une devise.'),
         ];
     }
 }

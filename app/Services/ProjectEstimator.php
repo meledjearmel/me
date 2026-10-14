@@ -16,7 +16,8 @@ use Illuminate\Support\Collection;
  * chaque option s'y ajoute (en heures, ou en pourcentage des heures du projet), puis la
  * marge de risque couvre les imprévus (une estimation
  * trop basse coûte cher à celui qui la donne). Le prix vaut heures × taux horaire de la
- * devise, arrondi pour rester lisible ; le délai découle des heures facturables par semaine.
+ * devise, ligne par ligne (le taux de chaque élément : le sien, sa grille ou le taux global),
+ * arrondi pour rester lisible ; le délai découle des heures facturables par semaine.
  */
 class ProjectEstimator
 {
@@ -87,17 +88,28 @@ class ProjectEstimator
     public function estimate(EstimatorItem $projectType, Collection $features, string $currency): array
     {
         $settings = SiteSetting::current();
-        $rate = $settings->estimatorRates()[$currency] ?? 0;
+        $globalRates = $settings->estimatorRates();
         $risk = max(0, (int) $settings->estimator_risk_percent);
         $hoursPerWeek = max(1, (int) $settings->estimator_hours_per_week);
         // Les options en heures s'ajoutent à la base ; celles en pourcentage s'appliquent
         // ensuite à ce total, puis la marge pour imprévus couvre le tout.
         $items = collect([$projectType])->merge($features->where('pricing', '!==', EstimatorPricing::Percent));
-        $percent = (int) $features->where('pricing', EstimatorPricing::Percent)->sum('percent');
-        $multiplier = (1 + $percent / 100) * (1 + $risk / 100);
+        $items->each(fn (EstimatorItem $item) => $item->loadMissing('rate'));
+        $percentShare = (int) $features->where('pricing', EstimatorPricing::Percent)->sum('percent') / 100;
+        $riskMultiplier = 1 + $risk / 100;
+        $rate = $projectType->hourlyRate($currency, $globalRates);
 
-        $hoursMin = (int) ceil($items->sum('hours_min') * $multiplier);
-        $hoursMax = max($hoursMin, (int) ceil($items->sum('hours_max') * $multiplier));
+        $hoursMin = (int) ceil($items->sum('hours_min') * (1 + $percentShare) * $riskMultiplier);
+        $hoursMax = max($hoursMin, (int) ceil($items->sum('hours_max') * (1 + $percentShare) * $riskMultiplier));
+
+        // Chaque ligne au taux de son élément ; les heures des options en pourcentage au
+        // taux du type de projet.
+        $price = fn (string $bound): float => (
+            $items->sum(fn (EstimatorItem $item): int => $item->{$bound} * $item->hourlyRate($currency, $globalRates))
+            + $items->sum($bound) * $percentShare * $rate
+        ) * $riskMultiplier;
+        $priceMin = $this->round((int) ceil($price('hours_min')), $currency);
+        $priceMax = max($priceMin, $this->round((int) ceil($price('hours_max')), $currency));
 
         return [
             'billing' => ($projectType->billing ?? EstimatorBilling::Fixed)->value,
@@ -108,8 +120,8 @@ class ProjectEstimator
             'features' => $features->map(fn (EstimatorItem $item): string => $item->getTranslation('name', 'fr'))->values()->all(),
             'hours_min' => $hoursMin,
             'hours_max' => $hoursMax,
-            'price_min' => $this->round($hoursMin * $rate, $currency),
-            'price_max' => $this->round($hoursMax * $rate, $currency),
+            'price_min' => $priceMin,
+            'price_max' => $priceMax,
             'weeks_min' => max(1, (int) ceil($hoursMin / $hoursPerWeek)),
             'weeks_max' => max(1, (int) ceil($hoursMax / $hoursPerWeek)),
         ];

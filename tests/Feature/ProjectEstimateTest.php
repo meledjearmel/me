@@ -7,6 +7,7 @@ use App\Jobs\AnalyzeEngagement;
 use App\Mail\EngagementReceivedMail;
 use App\Models\Engagement;
 use App\Models\EstimatorItem;
+use App\Models\EstimatorRate;
 use App\Models\Profile;
 use App\Models\SiteSetting;
 use App\Services\GeoLocator;
@@ -99,6 +100,29 @@ test('a percentage option grows the project hours before the risk margin', funct
         ->assertJsonPath('hours_min', 44)
         ->assertJsonPath('hours_max', 72)
         ->assertJsonPath('price_max', 7200);
+});
+
+test('each line is priced at its own rate, else its rate grid, else the global rate', function () {
+    $this->projectType->update(['hourly_rates' => ['CHF' => 150]]);
+    $this->feature->rate()->associate(EstimatorRate::factory()->create(['hourly_rates' => ['CHF' => 120]]))->save();
+
+    // (30 h × 150 + 10 h × 120) × 1,2 = 6840 ; (50 h × 150 + 20 h × 120) × 1,2 = 11 880.
+    $this->getJson('/fr/estimate/quote?'.http_build_query(estimateChoices()))
+        ->assertOk()
+        ->assertJsonPath('hourly_rate', 150)
+        ->assertJsonPath('hours_min', 48)
+        ->assertJsonPath('price_min', 6850)
+        ->assertJsonPath('price_max', 11900);
+});
+
+test('a percentage option is priced at the rate of the project type', function () {
+    $this->projectType->update(['hourly_rates' => ['CHF' => 150]]);
+    $multilingual = EstimatorItem::factory()->percent(20)->create(['hourly_rates' => ['CHF' => 999]]);
+
+    // (30 h + 20 %) × 150 × 1,2 = 6480.
+    $this->getJson('/fr/estimate/quote?'.http_build_query(estimateChoices(['feature_ids' => [$multilingual->id]])))
+        ->assertOk()
+        ->assertJsonPath('price_min', 6500);
 });
 
 test('an option reserved to other project types is refused', function () {

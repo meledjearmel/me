@@ -408,12 +408,33 @@ export type EstimatorItem = {
     pricing: "hours" | "percent";
     percent: number | null;
     billing: EstimatorBilling | null;
+    /** Grille tarifaire suivie (aucune : taux propres ou taux global). */
+    estimator_rate_id: number | null;
+    /** Taux propres, prioritaires sur la grille et le taux global. */
+    hourly_rates: Partial<Record<EstimatorCurrency, number>> | null;
+    /** Grille tarifaire (liste). */
+    rate?: { id: number; name: Translatable } | null;
     is_active: boolean;
     sort_order: number;
     /** Options : types de projet visés (édition). */
     project_type_ids?: number[];
     /** Options : types de projet visés (liste). */
     project_types?: { id: number; name: Translatable }[];
+};
+
+export type EstimatorRate = {
+    id: number;
+    name: Translatable;
+    hourly_rates: Partial<Record<EstimatorCurrency, number>>;
+    sort_order: number;
+    items_count?: number;
+};
+
+/** Grille tarifaire proposée dans le formulaire d'un élément. */
+export type EstimatorRateOption = {
+    id: number;
+    label: string;
+    rates: Partial<Record<EstimatorCurrency, number>>;
 };
 
 export type Service = {

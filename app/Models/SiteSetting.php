@@ -109,17 +109,7 @@ class SiteSetting extends Model
      */
     public function estimatorRates(): array
     {
-        $rates = [];
-
-        foreach (EstimatorItem::CURRENCIES as $currency) {
-            $rate = (int) ($this->estimator_hourly_rates[$currency] ?? 0);
-
-            if ($rate > 0) {
-                $rates[$currency] = $rate;
-            }
-        }
-
-        return $rates;
+        return EstimatorItem::filterRates($this->estimator_hourly_rates);
     }
 
     /**

@@ -40,6 +40,15 @@ class EstimatorItemResource extends JsonResource
              * @var list<int>
              */
             'project_type_ids' => $this->whenLoaded('projectTypes', fn (): array => $this->projectTypes->modelKeys(), []),
+            /** Grille tarifaire suivie (voir `/estimator-rates`) ; null : taux propres ou taux global. */
+            'estimator_rate_id' => $this->estimator_rate_id,
+            /**
+             * Taux horaires propres par devise, prioritaires sur la grille puis sur le taux global ;
+             * null si aucun. Ignorés pour une option en pourcentage (taux du type de projet).
+             *
+             * @var array{CHF?: int, EUR?: int, USD?: int, XOF?: int}|null
+             */
+            'hourly_rates' => $this->hourly_rates,
             'is_active' => $this->is_active,
             'sort_order' => $this->sort_order,
         ];
