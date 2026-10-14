@@ -1,6 +1,7 @@
 import { Head, Link } from "@inertiajs/react";
-import { Eye, Plus, Settings } from "lucide-react";
+import { Eye, Palette, Plus, Settings } from "lucide-react";
 import CommercialDocumentController from "@/actions/App/Http/Controllers/Admin/CommercialDocumentController";
+import DocumentTemplateController from "@/actions/App/Http/Controllers/Admin/DocumentTemplateController";
 import ActionTooltip from "@/components/admin/action-tooltip";
 import { FilterSelect, ResourceList } from "@/components/admin/data-list";
 import Heading from "@/components/heading";
@@ -43,6 +44,13 @@ export default function CommercialDocumentsIndex({
                         description="Numérotés à l'émission (ADEV-DEV, ADEV-PRO, ADEV-FAC), puis figés"
                     />
                     <div className="flex flex-wrap gap-2">
+                        <Button variant="outline" asChild>
+                            <Link
+                                href={DocumentTemplateController.edit("quote")}
+                            >
+                                <Palette data-icon="inline-start" /> Modèles
+                            </Link>
+                        </Button>
                         <Button variant="outline" asChild>
                             <Link href={billingSettingsEdit()}>
                                 <Settings data-icon="inline-start" /> Réglages

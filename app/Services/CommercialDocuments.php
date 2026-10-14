@@ -8,6 +8,7 @@ use App\Enums\CommercialDocumentType;
 use App\Enums\EngagementOutcome;
 use App\Mail\CommercialDocumentMail;
 use App\Models\CommercialDocument;
+use App\Models\DocumentTemplate;
 use App\Models\Engagement;
 use App\Models\Profile;
 use App\Models\SiteSetting;
@@ -127,14 +128,20 @@ class CommercialDocuments
         ]);
     }
 
-    /** Le PDF du document, avec l'émetteur des réglages. */
-    public function pdf(CommercialDocument $document): string
+    /**
+     * Le PDF du document, avec l'émetteur des réglages et le design de son type. L'aperçu de
+     * l'éditeur de modèle passe un modèle non enregistré et, le cas échéant, le logo choisi.
+     */
+    public function pdf(CommercialDocument $document, ?DocumentTemplate $template = null, ?string $logoDataUri = null): string
     {
         $settings = SiteSetting::current();
         $profile = Profile::query()->first();
+        $template ??= DocumentTemplate::for($document->type);
 
         return Pdf::loadView('documents.commercial', [
             'document' => $document,
+            'template' => $template,
+            'logo' => $template->show_logo ? ($logoDataUri ?? $template->logoDataUri()) : null,
             'issuer' => [
                 'name' => $settings->billing_business_name ?: $profile?->name,
                 'legal_form' => $settings->billing_legal_form,
@@ -148,6 +155,43 @@ class CommercialDocuments
             'vatMention' => $settings->billing_vat_mention ?: ($document->locale === 'en' ? 'VAT not applicable' : 'TVA non applicable'),
             'acceptUrl' => $document->type === CommercialDocumentType::Quote ? $this->publicUrl($document) : null,
         ])->setPaper('a4')->output();
+    }
+
+    /**
+     * Un document d'exemple, non enregistré, pour prévisualiser le design d'un type.
+     */
+    public function sample(CommercialDocumentType $type, string $locale = 'fr'): CommercialDocument
+    {
+        $en = $locale === 'en';
+        $document = new CommercialDocument([
+            'type' => $type,
+            'status' => CommercialDocumentStatus::Issued,
+            'locale' => $locale,
+            'client_name' => 'Awa Koné',
+            'client_company' => 'Atelier Koné',
+            'client_email' => 'awa@example.com',
+            'client_address' => "Rue du Lac 12\n1003 Lausanne",
+            'title' => $en ? 'Online shop' : 'Boutique en ligne',
+            'currency' => 'CHF',
+            'lines' => [
+                ['label' => $en ? 'Online shop' : 'Boutique en ligne', 'description' => $en ? 'Catalogue, cart and customer account' : 'Catalogue, panier et compte client', 'quantity' => 48, 'unit' => 'hour', 'unit_price' => 100],
+                ['label' => $en ? 'Online payment' : 'Paiement en ligne', 'description' => null, 'quantity' => 18, 'unit' => 'hour', 'unit_price' => 120],
+                ['label' => $en ? 'Hosting, first year' : 'Hébergement, première année', 'description' => null, 'quantity' => 1, 'unit' => 'flat', 'unit_price' => 300],
+            ],
+            'deposit_percent' => $type === CommercialDocumentType::Invoice ? 0 : (int) SiteSetting::current()->billing_deposit_percent,
+            'payment_terms' => SiteSetting::current()->billing_payment_terms,
+            'notes' => $en ? 'Includes two rounds of revisions.' : 'Comprend deux séries de retouches.',
+            'valid_until' => $type === CommercialDocumentType::Quote ? now()->addDays(30) : null,
+            'due_at' => $type === CommercialDocumentType::Quote ? null : now()->addDays(30),
+        ]);
+        $document->total = CommercialDocument::totalOf($document->lines);
+        $document->forceFill([
+            'number' => sprintf('%s-%d-001', $type->prefix(), now()->year),
+            'issued_at' => now(),
+            'token' => 'exemple',
+        ]);
+
+        return $document;
     }
 
     /** Le lien privé du client vers le document. */

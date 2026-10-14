@@ -4,7 +4,7 @@ import AiAssistController from "@/actions/App/Http/Controllers/Admin/AiAssistCon
 export type Locale = "fr" | "en";
 export type TextTone = "formal" | "friendly" | "concise" | "enthusiastic";
 
-function csrfToken(): string {
+export function csrfToken(): string {
     const match = document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]*)/);
 
     return match ? decodeURIComponent(match[1]) : "";

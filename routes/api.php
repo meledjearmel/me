@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\V1\ContentRevisionController;
 use App\Http\Controllers\Api\V1\ContentStatusController;
 use App\Http\Controllers\Api\V1\CvDownloadController;
 use App\Http\Controllers\Api\V1\DashboardController;
+use App\Http\Controllers\Api\V1\DocumentTemplateController;
 use App\Http\Controllers\Api\V1\DomainController;
 use App\Http\Controllers\Api\V1\EducationController;
 use App\Http\Controllers\Api\V1\EngagementController;
@@ -108,6 +109,9 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             Route::post('convert', [CommercialDocumentController::class, 'convert'])->name('convert');
             Route::put('status', [CommercialDocumentController::class, 'status'])->name('status');
         });
+        Route::get('document-templates/{type}', [DocumentTemplateController::class, 'show'])->name('document-templates.show');
+        Route::post('document-templates/{type}', [DocumentTemplateController::class, 'update'])->name('document-templates.update');
+        Route::post('document-templates/{type}/preview', [DocumentTemplateController::class, 'preview'])->name('document-templates.preview');
         Route::get('billing-settings', [BillingSettingsController::class, 'show'])->name('billing-settings.show');
         Route::put('billing-settings', [BillingSettingsController::class, 'update'])->name('billing-settings.update');
         Route::apiResource('appointments', AppointmentController::class)->only(['index', 'show', 'destroy']);

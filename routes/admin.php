@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\ContentRevisionController;
 use App\Http\Controllers\Admin\ContentStatusController;
 use App\Http\Controllers\Admin\CvDownloadController;
+use App\Http\Controllers\Admin\DocumentTemplateController;
 use App\Http\Controllers\Admin\DomainController;
 use App\Http\Controllers\Admin\EducationController;
 use App\Http\Controllers\Admin\EngagementAnalysisController;
@@ -168,6 +169,9 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::put('engagements/{engagement}/outcome', [EngagementController::class, 'outcome'])->name('engagements.outcome');
     Route::post('engagements/{engagement}/documents', [CommercialDocumentController::class, 'fromEngagement'])->name('engagements.documents.store');
     Route::resource('commercial-documents', CommercialDocumentController::class);
+    Route::get('document-templates/{type}', [DocumentTemplateController::class, 'edit'])->name('document-templates.edit');
+    Route::post('document-templates/{type}', [DocumentTemplateController::class, 'update'])->name('document-templates.update');
+    Route::post('document-templates/{type}/preview', [DocumentTemplateController::class, 'preview'])->name('document-templates.preview');
     Route::get('billing-settings', [BillingSettingsController::class, 'edit'])->name('billing-settings.edit');
     Route::put('billing-settings', [BillingSettingsController::class, 'update'])->name('billing-settings.update');
     Route::prefix('commercial-documents/{commercial_document}')->name('commercial-documents.')->group(function () {

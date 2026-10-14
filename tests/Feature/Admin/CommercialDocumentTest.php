@@ -9,11 +9,13 @@ use App\Mcp\Servers\PortfolioServer;
 use App\Mcp\Tools\DraftQuoteTool;
 use App\Mcp\Tools\ListCommercialDocumentsTool;
 use App\Models\CommercialDocument;
+use App\Models\DocumentTemplate;
 use App\Models\Engagement;
 use App\Models\Profile;
 use App\Models\SiteSetting;
 use App\Models\User;
 use App\Services\CommercialDocuments;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
@@ -188,6 +190,55 @@ test('documents and billing settings are managed through the API', function () {
         'billing_invoice_due_days' => 10,
         'billing_deposit_percent' => 50,
     ])->assertOk()->assertJsonPath('billing_deposit_percent', 50);
+});
+
+test('a template is previewed unsaved, then saved with its logo, and shapes the PDF of its type', function () {
+    $this->actingAs($this->user)->get(route('admin.document-templates.edit', 'invoice'))->assertOk();
+
+    $settings = [
+        'layout' => 'modern',
+        'primary_color' => '#112233',
+        'accent_color' => '#ff8800',
+        'font' => 'serif',
+        'title' => ['fr' => 'Note d’honoraires', 'en' => ''],
+        'intro' => ['fr' => 'Merci pour votre confiance.'],
+        'footer' => ['fr' => 'Paiement à 30 jours.'],
+        'show_logo' => '1',
+        'show_bank_details' => '0',
+        'show_signature' => '1',
+        'logo' => UploadedFile::fake()->image('logo.png', 200, 60),
+    ];
+
+    $this->actingAs($this->user)
+        ->post(route('admin.document-templates.preview', 'invoice'), $settings)
+        ->assertOk()
+        ->assertHeader('Content-Type', 'application/pdf');
+    expect(DocumentTemplate::query()->where('type', 'invoice')->value('layout'))->toBe('classic');
+
+    $this->actingAs($this->user)->post(route('admin.document-templates.update', 'invoice'), $settings)->assertRedirect();
+
+    $template = DocumentTemplate::for(CommercialDocumentType::Invoice);
+    expect($template->layout)->toBe('modern')
+        ->and($template->getTranslation('title', 'fr'))->toBe('Note d’honoraires')
+        ->and($template->getTranslations('title'))->not->toHaveKey('en')
+        ->and($template->show_bank_details)->toBeFalse()
+        ->and($template->logoDataUri())->toStartWith('data:image/png;base64,');
+
+    $this->actingAs($this->user)
+        ->post(route('admin.document-templates.preview', 'invoice'), [...$settings, 'logo' => null, 'primary_color' => 'rouge'])
+        ->assertSessionHasErrors('primary_color');
+});
+
+test('templates are read, saved and previewed through the API', function () {
+    Sanctum::actingAs($this->user);
+
+    $this->getJson('/api/v1/document-templates/quote')->assertOk()->assertJsonPath('show_signature', true);
+    $this->postJson('/api/v1/document-templates/quote', ['layout' => 'minimal', 'primary_color' => '#000000', 'accent_color' => '#cccccc', 'font' => 'mono'])
+        ->assertOk()
+        ->assertJsonPath('layout', 'minimal');
+    $this->postJson('/api/v1/document-templates/quote/preview', ['layout' => 'classic', 'primary_color' => '#000000', 'accent_color' => '#cccccc', 'font' => 'sans', 'preview_locale' => 'en'])
+        ->assertOk();
+    $this->getJson('/api/v1/document-templates/receipt')->assertNotFound();
 });
 
 test('the MCP server drafts a quote from a request but never sends it', function () {
