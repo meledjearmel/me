@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\EstimateSimulation;
 use App\Models\McpActivity;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -23,11 +24,13 @@ Schedule::command('posts:syndicate')->everyFifteenMinutes();
 
 // Rapport de la semaine, par email, chaque lundi matin.
 Schedule::command('report:weekly')->weekly()->mondays()->at('07:00');
+
+// Devis sans réponse et factures en retard à relancer, signalés chaque matin.
 Schedule::command('documents:flag-reminders')->dailyAt('08:00');
 
 // Activité GitHub de la page À propos.
 Schedule::command('github:sync')->hourly();
 
-// Journal d'activité du serveur MCP (90 jours) et jetons OAuth expirés des connecteurs.
-Schedule::command('model:prune', ['--model' => [McpActivity::class]])->daily()->at('03:30');
+// Journal d'activité du serveur MCP (90 jours), simulations de l'estimateur (un an) et jetons OAuth expirés des connecteurs.
+Schedule::command('model:prune', ['--model' => [McpActivity::class, EstimateSimulation::class]])->daily()->at('03:30');
 Schedule::command('passport:purge')->daily()->at('03:45');

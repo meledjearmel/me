@@ -12,10 +12,12 @@ use App\Jobs\AnalyzeEngagement;
 use App\Jobs\SendEngagementMails;
 use App\Jobs\SendPushNotification;
 use App\Models\Engagement;
+use App\Models\EstimateSimulation;
 use App\Models\EstimatorItem;
 use App\Services\Ai\EstimateAssistant;
 use App\Services\GeoLocator;
 use App\Services\ProjectEstimator;
+use App\Services\VisitorContext;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -51,9 +53,12 @@ class ProjectEstimateController extends Controller
     }
 
     /** L'estimation pour les choix en cours, recalculée côté serveur à chaque changement. */
-    public function quote(ProjectEstimateRequest $request): JsonResponse
+    public function quote(ProjectEstimateRequest $request, VisitorContext $visitor): JsonResponse
     {
-        return response()->json(Arr::only($this->estimateFor($request), [
+        $estimate = $this->estimateFor($request);
+        $this->recordSimulation($request, $visitor, $estimate);
+
+        return response()->json(Arr::only($estimate, [
             'billing', 'currency', 'hourly_rate', 'hours_min', 'hours_max', 'price_min', 'price_max', 'weeks_min', 'weeks_max',
         ]));
     }
@@ -70,6 +75,36 @@ class ProjectEstimateController extends Controller
         }
 
         return response()->json($match);
+    }
+
+    /**
+     * Garde la simulation pour l'entonnoir : une par visiteur anonyme, jour et configuration (le
+     * changement de devise n'en crée pas d'autre), avec la dernière fourchette vue. Sans robots.
+     *
+     * @param  array<string, mixed>  $estimate
+     */
+    private function recordSimulation(ProjectEstimateRequest $request, VisitorContext $visitor, array $estimate): void
+    {
+        if ($visitor->isBot($request)) {
+            return;
+        }
+
+        $featureIds = collect($request->validated('feature_ids') ?? [])->map(fn (mixed $id): int => (int) $id)->sort()->values()->all();
+
+        EstimateSimulation::query()->updateOrCreate(
+            [
+                'visitor_hash' => $visitor->dailyHash($request),
+                'signature' => md5($request->validated('project_type_id').'|'.implode(',', $featureIds)),
+            ],
+            [
+                'project_type_id' => (int) $request->validated('project_type_id'),
+                'project_type' => $estimate['project_type'],
+                'features' => $estimate['features'],
+                'currency' => $estimate['currency'],
+                'price_min' => $estimate['price_min'],
+                'price_max' => $estimate['price_max'],
+            ],
+        );
     }
 
     public function store(ProjectEstimateRequest $request): RedirectResponse

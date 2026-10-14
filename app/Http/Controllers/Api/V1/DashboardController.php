@@ -46,7 +46,11 @@ class DashboardController extends Controller
      *
      * `estimator` suit l'estimateur de projet sur la période : `page_visitors` (visiteurs
      * uniques de sa page), `requests` (demandes envoyées avec une estimation) et
-     * `conversion_rate` (pourcentage à une décimale) ; `by_currency` liste par devise
+     * `conversion_rate` (pourcentage à une décimale) ; entre les deux, `simulators` (visiteurs
+     * qui ont fait au moins une simulation) et `simulations` (une par visiteur, jour et
+     * configuration), avec `simulation_rate` (simulé / visité) et `request_rate` (demandé /
+     * simulé) ; `project_type_funnel` donne, pour les 6 types les plus simulés,
+     * `{label, simulators, requests}` ; `by_currency` liste par devise
      * `{currency, count, price_min, price_max, average_min, average_max}` (sommes et moyennes
      * des fourchettes affichées) ; `billing` compte `fixed` et `hourly` ; `project_types`,
      * `features` et `rate_grids` (grille tarifaire du type de projet, connue pour les demandes

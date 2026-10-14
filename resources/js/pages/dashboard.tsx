@@ -167,6 +167,15 @@ type DashboardProps = {
         page_visitors: number;
         requests: number;
         conversion_rate: number;
+        simulators: number;
+        simulations: number;
+        simulation_rate: number;
+        request_rate: number;
+        project_type_funnel: {
+            label: string;
+            simulators: number;
+            requests: number;
+        }[];
         by_currency: {
             currency: string;
             count: number;
@@ -1024,7 +1033,7 @@ export default function Dashboard({
                         <StatCard
                             title={`Estimations envoyées sur ${estimator.period_days} jours`}
                             value={number.format(estimator.requests)}
-                            hint={`${number.format(estimator.page_visitors)} visiteurs sur l'estimateur · ${estimator.conversion_rate.toLocaleString("fr-FR")} % de conversion`}
+                            hint={`${number.format(estimator.page_visitors)} visiteurs → ${number.format(estimator.simulators)} ont simulé (${estimator.simulation_rate.toLocaleString("fr-FR")} %) → ${number.format(estimator.requests)} demandes (${estimator.request_rate.toLocaleString("fr-FR")} %)`}
                             icon={Calculator}
                         />
                     </Link>
@@ -1090,7 +1099,36 @@ export default function Dashboard({
                         />
                     </Section>
                 </div>
-                <div className="grid gap-4 lg:grid-cols-2">
+                <div className="grid gap-4 lg:grid-cols-3">
+                    <Section
+                        title="Simulé ou demandé"
+                        description="Par type de projet : visiteurs qui l'ont simulé, puis demandes envoyées"
+                    >
+                        {estimator.project_type_funnel.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">
+                                Aucune simulation enregistrée.
+                            </p>
+                        ) : (
+                            <ul className="space-y-2.5">
+                                {estimator.project_type_funnel.map((row) => (
+                                    <li
+                                        key={row.label}
+                                        className="flex items-baseline justify-between gap-3 text-sm"
+                                    >
+                                        <span className="truncate">
+                                            {row.label}
+                                        </span>
+                                        <span className="shrink-0 tabular-nums">
+                                            {number.format(row.simulators)} →{" "}
+                                            <span className="font-medium">
+                                                {number.format(row.requests)}
+                                            </span>
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </Section>
                     <Section
                         title="Options demandées"
                         description={`Sur ${estimator.period_days} jours`}

@@ -24,6 +24,7 @@ use App\Models\CvDownload;
 use App\Models\Domain;
 use App\Models\Education;
 use App\Models\Engagement;
+use App\Models\EstimateSimulation;
 use App\Models\Experience;
 use App\Models\PageVisit;
 use App\Models\Post;
@@ -266,7 +267,8 @@ class DashboardReport
     }
 
     /**
-     * L'estimateur sur la période : de la visite de sa page à la demande envoyée, les montants
+     * L'estimateur sur la période : de la visite de sa page à la simulation puis à la demande
+     * envoyée (et, par type de projet, les simulations face aux demandes), les montants
      * estimés par devise, ce qui est demandé (types, options, mode, grille tarifaire) et l'écart
      * entre les heures affichées au visiteur et celles de l'analyse de l'IA (positif : l'IA
      * chiffre plus haut, la grille est peut-être trop basse).
@@ -275,8 +277,13 @@ class DashboardReport
      *     period_days: int|null,
      *     since: string|null,
      *     page_visitors: int,
+     *     simulators: int,
+     *     simulations: int,
      *     requests: int,
      *     conversion_rate: float,
+     *     simulation_rate: float,
+     *     request_rate: float,
+     *     project_type_funnel: list<array{label: string, simulators: int, requests: int}>,
      *     by_currency: list<array{currency: string, count: int, price_min: int, price_max: int, average_min: int, average_max: int}>,
      *     billing: array{fixed: int, hourly: int},
      *     project_types: list<array{label: string, count: int}>,
@@ -318,12 +325,32 @@ class DashboardReport
                 return ($ai - $shown) / $shown * 100;
             });
 
+        $simulations = $this->inPeriod(EstimateSimulation::query(), $since)->get(['visitor_hash', 'project_type']);
+        $simulators = $simulations->pluck('visitor_hash')->unique()->count();
+        $requestedTypes = $estimates->countBy(fn (Engagement $engagement): string => (string) ($engagement->estimate['project_type'] ?? ''));
+
         return [
             'period_days' => $this->days,
             'since' => $start?->toDateString(),
             'page_visitors' => $pageVisitors,
+            'simulators' => $simulators,
+            'simulations' => $simulations->count(),
             'requests' => $estimates->count(),
             'conversion_rate' => $pageVisitors > 0 ? round($estimates->count() / $pageVisitors * 100, 1) : 0.0,
+            'simulation_rate' => $pageVisitors > 0 ? round(min($simulators, $pageVisitors) / $pageVisitors * 100, 1) : 0.0,
+            'request_rate' => $simulators > 0 ? round(min($estimates->count(), $simulators) / $simulators * 100, 1) : 0.0,
+            // Par type de projet : visiteurs qui l'ont simulé, et demandes envoyées.
+            'project_type_funnel' => $simulations
+                ->groupBy('project_type')
+                ->map(fn ($group, string $label): array => [
+                    'label' => $label,
+                    'simulators' => $group->pluck('visitor_hash')->unique()->count(),
+                    'requests' => $requestedTypes->get($label, 0),
+                ])
+                ->sortByDesc('simulators')
+                ->take(6)
+                ->values()
+                ->all(),
             'by_currency' => $estimates
                 ->groupBy(fn (Engagement $engagement): string => $engagement->estimate['currency'])
                 ->map(fn ($group, string $currency): array => [

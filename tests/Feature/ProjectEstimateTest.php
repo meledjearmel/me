@@ -6,10 +6,13 @@ use App\Enums\EngagementType;
 use App\Jobs\AnalyzeEngagement;
 use App\Mail\EngagementReceivedMail;
 use App\Models\Engagement;
+use App\Models\EstimateSimulation;
 use App\Models\EstimatorItem;
 use App\Models\EstimatorRate;
+use App\Models\PageVisit;
 use App\Models\Profile;
 use App\Models\SiteSetting;
+use App\Models\User;
 use App\Services\GeoLocator;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
@@ -123,6 +126,36 @@ test('a percentage option is priced at the rate of the project type', function (
     $this->getJson('/fr/estimate/quote?'.http_build_query(estimateChoices(['feature_ids' => [$multilingual->id]])))
         ->assertOk()
         ->assertJsonPath('price_min', 6500);
+});
+
+test('each configuration a visitor tries is kept once a day, whatever the currency', function () {
+    SiteSetting::current()->update(['estimator_hourly_rates' => ['CHF' => 100, 'EUR' => 90]]);
+
+    $this->getJson('/fr/estimate/quote?'.http_build_query(estimateChoices()))->assertOk();
+    $this->getJson('/fr/estimate/quote?'.http_build_query(estimateChoices(['currency' => 'EUR'])))->assertOk();
+    $this->getJson('/fr/estimate/quote?'.http_build_query(estimateChoices(['feature_ids' => []])))->assertOk();
+    $this->withHeader('User-Agent', 'Googlebot/2.1')->getJson('/fr/estimate/quote?'.http_build_query(estimateChoices(['feature_ids' => []])))->assertOk();
+
+    expect(EstimateSimulation::query()->count())->toBe(2)
+        ->and(EstimateSimulation::query()->where('features', '!=', '[]')->value('currency'))->toBe('EUR');
+});
+
+test('the dashboard follows visitors from the estimator page to a simulation and a request', function () {
+    foreach (['a', 'b', 'c', 'd'] as $visitor) {
+        PageVisit::factory()->create(['path' => 'fr/estimate', 'visitor_hash' => $visitor]);
+    }
+    EstimateSimulation::factory()->create(['visitor_hash' => 'a', 'project_type' => 'Site vitrine']);
+    EstimateSimulation::factory()->create(['visitor_hash' => 'a', 'project_type' => 'Boutique']);
+    EstimateSimulation::factory()->create(['visitor_hash' => 'b', 'project_type' => 'Site vitrine']);
+    Engagement::factory()->create(['estimate' => ['currency' => 'CHF', 'price_min' => 1, 'price_max' => 2, 'hours_min' => 1, 'hours_max' => 2, 'weeks_min' => 1, 'weeks_max' => 1, 'project_type' => 'Site vitrine', 'features' => []]]);
+
+    $this->actingAs(User::factory()->create())->get(route('dashboard'))->assertInertia(fn ($page) => $page
+        ->where('estimator.simulators', 2)
+        ->where('estimator.simulations', 3)
+        ->where('estimator.simulation_rate', 50)
+        ->where('estimator.request_rate', 50)
+        ->where('estimator.project_type_funnel.0', ['label' => 'Site vitrine', 'simulators' => 2, 'requests' => 1])
+    );
 });
 
 test('an option reserved to other project types is refused', function () {
