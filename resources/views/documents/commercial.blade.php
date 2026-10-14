@@ -46,7 +46,10 @@
         .layout-classic .lines th, .layout-modern .lines th { background: {{ $primary }}; color: #fff; }
         .layout-minimal .lines th { color: {{ $primary }}; border-bottom: 1.5px solid {{ $primary }}; }
         .layout-minimal .client { border-left: 0; padding-left: 0; }
-        .num { text-align: right; white-space: nowrap; }
+        .num, .lines th.num { text-align: right; white-space: nowrap; }
+        .lines .col-label { width: 52%; }
+        .lines .col-qty { width: 12%; }
+        .lines .col-price, .lines .col-amount { width: 18%; }
         .desc { color: #666; font-size: 8.5px; }
         .totals { width: 45%; margin: 12px 0 0 55%; }
         .totals td { padding: 4px 8px; }
@@ -117,10 +120,10 @@
         <table class="lines">
             <thead>
                 <tr>
-                    <th>{{ $en ? 'Description' : 'Désignation' }}</th>
-                    <th class="num">{{ $en ? 'Qty' : 'Qté' }}</th>
-                    <th class="num">{{ $en ? 'Unit price' : 'Prix unitaire' }}</th>
-                    <th class="num">{{ $en ? 'Amount' : 'Montant' }}</th>
+                    <th class="col-label">{{ $en ? 'Description' : 'Désignation' }}</th>
+                    <th class="num col-qty">{{ $en ? 'Qty' : 'Qté' }}</th>
+                    <th class="num col-price">{{ $en ? 'Unit price' : 'Prix unitaire' }}</th>
+                    <th class="num col-amount">{{ $en ? 'Amount' : 'Montant' }}</th>
                 </tr>
             </thead>
             <tbody>

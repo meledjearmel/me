@@ -154,7 +154,11 @@ class CommercialDocuments
             ],
             'vatMention' => $settings->billing_vat_mention ?: ($document->locale === 'en' ? 'VAT not applicable' : 'TVA non applicable'),
             'acceptUrl' => $document->type === CommercialDocumentType::Quote ? $this->publicUrl($document) : null,
-        ])->setPaper('a4')->output();
+        ])
+            // Seuls les caractères utilisés de la police sont embarqués : un PDF léger à envoyer.
+            ->setOption('isFontSubsettingEnabled', true)
+            ->setPaper('a4')
+            ->output();
     }
 
     /**
