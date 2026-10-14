@@ -36,10 +36,10 @@
         .band .muted { color: rgba(255, 255, 255, 0.75); }
         .band-accent { height: 5px; background: {{ $accent }}; margin: -26px 0 26px; }
         .parties { margin-top: 26px; }
-        /* Le client s'aligne sur le bloc du total (55 % / 45 %). */
+        /* Le client s'aligne sur le bloc du total, dans la colonne de droite (60 % / 40 %). */
         .parties td { vertical-align: top; }
-        .parties td:first-child { width: 55%; }
-        .parties td:last-child { width: 45%; }
+        .parties td:first-child { width: 60%; }
+        .parties td:last-child { width: 40%; }
         .label { font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 3px; }
         .client { border-left: 3px solid {{ $accent }}; padding-left: 10px; }
         .title { margin: 24px 0 10px; font-size: 12px; font-weight: bold; color: {{ $primary }}; }
@@ -54,7 +54,7 @@
         .lines .col-qty { width: 12%; }
         .lines .col-price, .lines .col-amount { width: 18%; }
         .desc { color: #666; font-size: 8.5px; }
-        .totals { width: 45%; margin: 12px 0 0 55%; }
+        .totals { width: 40%; margin: 12px 0 0 60%; }
         .totals td { padding: 4px 8px; }
         .grand td { border-top: 2px solid {{ $primary }}; font-size: 12px; font-weight: bold; color: {{ $primary }}; padding-top: 7px; }
         .layout-modern .grand td { background: {{ $accent }}; border-top: 0; color: #1c1c1c; padding: 7px 8px; }
