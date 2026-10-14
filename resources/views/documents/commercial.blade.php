@@ -41,14 +41,14 @@
         .parties td:first-child { width: 60%; }
         .parties td:last-child { width: 40%; }
         .label { font-size: 8px; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 3px; }
-        .client { border-left: 3px solid {{ $accent }}; padding-left: 10px; }
+        .client { text-align: right; border-right: 3px solid {{ $accent }}; padding-right: 10px; }
         .title { margin: 24px 0 10px; font-size: 12px; font-weight: bold; color: {{ $primary }}; }
         .intro { margin: 0 0 12px; }
         .lines th { text-align: left; padding: 6px 8px; font-size: 8.5px; text-transform: uppercase; letter-spacing: 0.5px; }
         .lines td { padding: 7px 8px; border-bottom: 1px solid #e5e5e5; vertical-align: top; }
         .layout-classic .lines th, .layout-modern .lines th { background: {{ $primary }}; color: #fff; }
         .layout-minimal .lines th { color: {{ $primary }}; border-bottom: 1.5px solid {{ $primary }}; }
-        .layout-minimal .client { border-left: 0; padding-left: 0; }
+        .layout-minimal .client { border-right: 0; padding-right: 0; }
         .num, .lines th.num { text-align: right; white-space: nowrap; }
         .lines .col-label { width: 52%; }
         .lines .col-qty { width: 12%; }
