@@ -16,6 +16,7 @@
         'post_drafts' => 'articles en brouillon',
         'content_drafts' => 'autres contenus en brouillon',
         'revisions' => 'modifications proposées par l’IA',
+        'overdue_invoices' => 'factures en retard de paiement',
     ];
 @endphp
 <x-mail::message>

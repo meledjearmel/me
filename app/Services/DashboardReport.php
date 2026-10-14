@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Enums\AppointmentStatus;
 use App\Enums\CommentStatus;
+use App\Enums\CommercialDocumentStatus;
+use App\Enums\CommercialDocumentType;
 use App\Enums\ContactStatus;
 use App\Enums\EngagementOutcome;
 use App\Enums\EngagementStatus;
@@ -14,6 +16,7 @@ use App\Enums\ProjectStatus;
 use App\Enums\PublicationStatus;
 use App\Enums\TestimonialStatus;
 use App\Models\Appointment;
+use App\Models\CommercialDocument;
 use App\Models\Contact;
 use App\Models\ContentRevision;
 use App\Models\Counter;
@@ -35,6 +38,7 @@ use App\Models\Technology;
 use App\Models\TechnologyCategory;
 use App\Models\Testimonial;
 use App\Services\Ai\ContentTypes;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -80,7 +84,77 @@ class DashboardReport
             'estimator' => $this->estimator(),
             'outcomes' => $this->outcomes(),
             'appointments' => $this->appointments(),
+            'billing' => $this->billing(),
             'blog' => $this->blog(),
+        ];
+    }
+
+    /**
+     * Devis et factures : par devise, ce qui a été facturé et encaissé sur la période, ce qui
+     * reste à encaisser et ce qui est en retard (toutes périodes) ; la réponse aux devis émis
+     * sur la période ; et les factures en retard, les plus anciennes d'abord. Les proformas ne
+     * comptent pas : seule la facture vaut créance.
+     *
+     * @return array{
+     *     period_days: int|null,
+     *     by_currency: list<array{currency: string, invoiced: int, collected: int, outstanding: int, overdue: int}>,
+     *     quotes: array{issued: int, accepted: int, declined: int, acceptance_rate: float|null},
+     *     overdue_invoices: list<array{id: int, number: string|null, client: string, total: int, currency: string, due_at: string|null, days_late: int}>,
+     * }
+     */
+    private function billing(): array
+    {
+        $since = $this->visitsSince();
+        $invoices = CommercialDocument::query()
+            ->where('type', CommercialDocumentType::Invoice)
+            ->whereIn('status', [CommercialDocumentStatus::Issued, CommercialDocumentStatus::Paid])
+            ->get(['id', 'number', 'client_name', 'client_company', 'status', 'currency', 'total', 'issued_at', 'due_at', 'paid_at']);
+        $inPeriod = fn (?CarbonInterface $date): bool => $date !== null && ($since === null || $date->greaterThanOrEqualTo($since));
+        $unpaid = $invoices->where('status', CommercialDocumentStatus::Issued);
+        $overdue = $unpaid->filter(fn (CommercialDocument $invoice): bool => $invoice->due_at !== null && $invoice->due_at->lt(Carbon::today()));
+
+        $quotes = CommercialDocument::query()
+            ->where('type', CommercialDocumentType::Quote)
+            ->whereNotIn('status', [CommercialDocumentStatus::Draft, CommercialDocumentStatus::Cancelled])
+            ->when($since, fn (Builder $query) => $query->where('issued_at', '>=', $since->toDateString()))
+            ->get(['status']);
+        $accepted = $quotes->where('status', CommercialDocumentStatus::Accepted)->count();
+        $declined = $quotes->where('status', CommercialDocumentStatus::Declined)->count();
+
+        return [
+            'period_days' => $this->days,
+            'by_currency' => $invoices
+                ->groupBy('currency')
+                ->map(fn ($group, string $currency): array => [
+                    'currency' => $currency,
+                    'invoiced' => (int) $group->filter(fn (CommercialDocument $invoice): bool => $inPeriod($invoice->issued_at))->sum('total'),
+                    'collected' => (int) $group->filter(fn (CommercialDocument $invoice): bool => $inPeriod($invoice->paid_at))->sum('total'),
+                    'outstanding' => (int) $group->where('status', CommercialDocumentStatus::Issued)->sum('total'),
+                    'overdue' => (int) $overdue->where('currency', $currency)->sum('total'),
+                ])
+                ->sortByDesc('outstanding')
+                ->values()
+                ->all(),
+            'quotes' => [
+                'issued' => $quotes->count(),
+                'accepted' => $accepted,
+                'declined' => $declined,
+                'acceptance_rate' => $accepted + $declined > 0 ? round($accepted / ($accepted + $declined) * 100, 1) : null,
+            ],
+            'overdue_invoices' => $overdue
+                ->sortBy('due_at')
+                ->take(5)
+                ->map(fn (CommercialDocument $invoice): array => [
+                    'id' => $invoice->id,
+                    'number' => $invoice->number,
+                    'client' => $invoice->client_company ?? $invoice->client_name,
+                    'total' => $invoice->total,
+                    'currency' => $invoice->currency,
+                    'due_at' => $invoice->due_at?->toDateString(),
+                    'days_late' => (int) $invoice->due_at->diffInDays(Carbon::today()),
+                ])
+                ->values()
+                ->all(),
         ];
     }
 
@@ -378,6 +452,12 @@ class DashboardReport
                 ->sum(fn (array $type): int => $type['model']::query()->where('status', PublicationStatus::Draft)->count()),
             // Modifications de contenus en ligne proposées par l'IA, en attente.
             'revisions' => ContentRevision::query()->pending()->count(),
+            // Factures émises dont l'échéance est passée, à relancer.
+            'overdue_invoices' => CommercialDocument::query()
+                ->where('type', CommercialDocumentType::Invoice)
+                ->where('status', CommercialDocumentStatus::Issued)
+                ->where('due_at', '<', Carbon::today()->toDateString())
+                ->count(),
         ];
     }
 

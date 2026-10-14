@@ -2,6 +2,7 @@ import { Head, Link, usePage } from "@inertiajs/react";
 import {
     AlertTriangle,
     Calculator,
+    ReceiptText,
     CheckCircle2,
     Eye,
     FilePen,
@@ -48,6 +49,10 @@ import { index as contactsIndex } from "@/routes/admin/contacts";
 import { index as postCommentsIndex } from "@/routes/admin/post-comments";
 import { index as postsIndex, show as postShow } from "@/routes/admin/posts";
 import { index as cvDownloadsIndex } from "@/routes/admin/cv-downloads";
+import {
+    index as documentsIndex,
+    show as documentShow,
+} from "@/routes/admin/commercial-documents";
 import { index as engagementsIndex } from "@/routes/admin/engagements";
 import { index as referencesIndex } from "@/routes/admin/professional-references";
 import { edit as profileEdit } from "@/routes/admin/profile";
@@ -67,6 +72,7 @@ type DashboardProps = {
         post_drafts: number;
         content_drafts: number;
         revisions: number;
+        overdue_invoices: number;
     };
     blog: {
         period_days: number | null;
@@ -199,6 +205,31 @@ type DashboardProps = {
         response_hours: number | null;
         by_type: Bar[];
         by_location: Bar[];
+    };
+    billing: {
+        period_days: number;
+        by_currency: {
+            currency: string;
+            invoiced: number;
+            collected: number;
+            outstanding: number;
+            overdue: number;
+        }[];
+        quotes: {
+            issued: number;
+            accepted: number;
+            declined: number;
+            acceptance_rate: number | null;
+        };
+        overdue_invoices: {
+            id: number;
+            number: string | null;
+            client: string;
+            total: number;
+            currency: string;
+            due_at: string | null;
+            days_late: number;
+        }[];
     };
     recent: {
         contacts: {
@@ -591,6 +622,7 @@ export default function Dashboard({
     estimator,
     outcomes,
     appointments,
+    billing,
     blog,
 }: DashboardProps) {
     const { auth } = usePage().props;
@@ -671,6 +703,15 @@ export default function Dashboard({
                         href={revisionsIndex()}
                         icon={GitCompare}
                         done="Aucune révision proposée"
+                    />
+                    <TodoCard
+                        title="Factures en retard"
+                        count={todo.overdue_invoices}
+                        href={documentsIndex({
+                            query: { type: "invoice", status: "issued" },
+                        })}
+                        icon={ReceiptText}
+                        done="Aucune facture en retard"
                     />
                 </div>
 
@@ -1134,6 +1175,103 @@ export default function Dashboard({
                             rows={appointments.by_type}
                             empty="Aucune demande de rendez-vous."
                         />
+                    </Section>
+                </div>
+
+                {/* Devis et factures */}
+                <div className="grid gap-4 lg:grid-cols-3">
+                    <Section
+                        title="Facturation"
+                        description={`Facturé et encaissé sur ${billing.period_days} jours ; à encaisser et en retard, au total`}
+                    >
+                        {billing.by_currency.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">
+                                Aucune facture émise.
+                            </p>
+                        ) : (
+                            <ul className="space-y-4">
+                                {billing.by_currency.map((row) => (
+                                    <li key={row.currency} className="text-sm">
+                                        <p className="mb-1.5 font-medium">
+                                            {row.currency}
+                                        </p>
+                                        <dl className="grid grid-cols-2 gap-x-4 gap-y-1 tabular-nums">
+                                            <dt className="text-muted-foreground">
+                                                Facturé
+                                            </dt>
+                                            <dd className="text-right">
+                                                {number.format(row.invoiced)}
+                                            </dd>
+                                            <dt className="text-muted-foreground">
+                                                Encaissé
+                                            </dt>
+                                            <dd className="text-right">
+                                                {number.format(row.collected)}
+                                            </dd>
+                                            <dt className="text-muted-foreground">
+                                                À encaisser
+                                            </dt>
+                                            <dd className="text-right font-medium">
+                                                {number.format(row.outstanding)}
+                                            </dd>
+                                            <dt className="text-muted-foreground">
+                                                En retard
+                                            </dt>
+                                            <dd
+                                                className={`text-right ${row.overdue > 0 ? "font-medium text-destructive" : ""}`}
+                                            >
+                                                {number.format(row.overdue)}
+                                            </dd>
+                                        </dl>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </Section>
+                    <Link
+                        href={documentsIndex({ query: { type: "quote" } })}
+                        className="block"
+                    >
+                        <StatCard
+                            title={`Devis émis sur ${billing.period_days} jours`}
+                            value={number.format(billing.quotes.issued)}
+                            hint={`${billing.quotes.accepted} accepté(s) · ${billing.quotes.declined} refusé(s)${billing.quotes.acceptance_rate !== null ? ` · ${billing.quotes.acceptance_rate.toLocaleString("fr-FR")} % d'acceptation` : ""}`}
+                            icon={ReceiptText}
+                        />
+                    </Link>
+                    <Section
+                        title="Factures en retard"
+                        description="Échéance dépassée, les plus anciennes d'abord"
+                    >
+                        {billing.overdue_invoices.length === 0 ? (
+                            <p className="text-sm text-muted-foreground">
+                                Aucune facture en retard.
+                            </p>
+                        ) : (
+                            <ul className="space-y-2.5">
+                                {billing.overdue_invoices.map((invoice) => (
+                                    <li key={invoice.id}>
+                                        <Link
+                                            href={documentShow(invoice.id)}
+                                            className="flex items-baseline justify-between gap-3 text-sm hover:underline"
+                                        >
+                                            <span className="truncate">
+                                                {invoice.number} ·{" "}
+                                                {invoice.client}
+                                            </span>
+                                            <span className="shrink-0 text-right tabular-nums">
+                                                {number.format(invoice.total)}{" "}
+                                                {invoice.currency}
+                                                <span className="block text-xs text-destructive">
+                                                    {invoice.days_late} j de
+                                                    retard
+                                                </span>
+                                            </span>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </Section>
                 </div>
 

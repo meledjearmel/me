@@ -68,6 +68,14 @@ class DashboardController extends Controller
      * moyen entre la demande et la confirmation, `null` sans confirmation), `by_type` et
      * `by_location` (`video`, `phone`, `whatsapp`, `in_person`) en `{label, count}`.
      *
+     * `billing` suit les devis et factures (les proformas ne comptent pas) : `by_currency` liste
+     * `{currency, invoiced, collected, outstanding, overdue}` — facturé (émis sur la période),
+     * encaissé (payé sur la période), à encaisser et en retard (échéance passée), ces deux-là
+     * toutes périodes confondues ; `quotes` donne les devis émis sur la période (`issued`,
+     * `accepted`, `declined`, `acceptance_rate` parmi ceux qui ont une réponse, `null` sinon) ;
+     * `overdue_invoices` les 5 factures en retard les plus anciennes :
+     * `{id, number, client, total, currency, due_at, days_late}`. `todo.overdue_invoices` les compte.
+     *
      * `todo.appointments` compte les demandes de rendez-vous en attente, `todo.comments`
      * les commentaires du blog à modérer. `todo.project_drafts`, `todo.post_drafts` et
      * `todo.content_drafts` (expériences, formations, certifications, page « Uses »,

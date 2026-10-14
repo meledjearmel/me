@@ -241,6 +241,26 @@ test('templates are read, saved and previewed through the API', function () {
     $this->getJson('/api/v1/document-templates/receipt')->assertNotFound();
 });
 
+test('the dashboard follows what is invoiced, collected, outstanding and overdue', function () {
+    $documents = app(CommercialDocuments::class);
+    $paid = $documents->issue(CommercialDocument::factory()->invoice()->create());
+    $documents->markPaid($paid);
+    $late = $documents->issue(CommercialDocument::factory()->invoice()->create(['due_at' => now()->subDays(5)]));
+    $documents->issue(CommercialDocument::factory()->invoice()->create());
+    $documents->issue(CommercialDocument::factory()->invoice()->create(['type' => CommercialDocumentType::Proforma]));
+    $documents->accept($documents->issue(CommercialDocument::factory()->create()));
+    $documents->issue(CommercialDocument::factory()->create());
+
+    // Chaque facture vaut 40 h × 100 + 1 500 = 5 500 CHF.
+    $this->actingAs($this->user)->get(route('dashboard'))->assertInertia(fn ($page) => $page
+        ->where('billing.by_currency', [['currency' => 'CHF', 'invoiced' => 16500, 'collected' => 5500, 'outstanding' => 11000, 'overdue' => 5500]])
+        ->where('billing.quotes', ['issued' => 2, 'accepted' => 1, 'declined' => 0, 'acceptance_rate' => 100])
+        ->where('billing.overdue_invoices.0.id', $late->id)
+        ->where('billing.overdue_invoices.0.days_late', 5)
+        ->where('todo.overdue_invoices', 1)
+    );
+});
+
 test('the MCP server drafts a quote from a request but never sends it', function () {
     $server = PortfolioServer::actingAs($this->user);
 
