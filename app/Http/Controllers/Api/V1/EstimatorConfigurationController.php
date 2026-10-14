@@ -22,7 +22,13 @@ class EstimatorConfigurationController extends Controller
      * en heures (`pricing` = `hours`) ou en pourcentage des heures du projet (`percent`).
      * Les éléments créés sont masqués, sauf `is_active` à true.
      *
-     * @response array{settings_updated: bool, created: list<array{id: int, name: string}>, updated: list<array{id: int, name: string}>}
+     * Grilles tarifaires (`rates`) à créer ou modifier dans le même envoi, chacune avec
+     * `name_fr`, `name_en`, `hourly_rates` et une `ref` facultative. Un élément suit une grille
+     * avec `rate` (identifiant, `ref` d'une grille de l'envoi, ou `0` pour aucune) et peut porter
+     * ses propres `hourly_rates` (0 retire une devise). Taux appliqué : ceux de l'élément, sinon
+     * sa grille, sinon le taux global ; une option en pourcentage suit le taux du type de projet.
+     *
+     * @response array{settings_updated: bool, rates: list<array{id: int, name: string}>, created: list<array{id: int, name: string}>, updated: list<array{id: int, name: string}>}
      */
     public function store(EstimatorConfigurationRequest $request, EstimatorConfigurator $configurator): JsonResponse
     {

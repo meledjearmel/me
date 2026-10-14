@@ -40,6 +40,8 @@ class EstimatorItemController extends Controller
      *
      * Une option peut ajouter des heures (`pricing` = `hours`) ou un pourcentage des heures
      * du projet (`percent`), et être réservée à certains types de projet (`project_type_ids`).
+     * Le taux horaire d'un élément : ses `hourly_rates` (par devise), sinon sa grille tarifaire
+     * (`estimator_rate_id`, voir `/estimator-rates`), sinon le taux global des réglages.
      * Pour configurer toute la grille d'un coup, voir l'outil MCP `configure-estimator`.
      */
     public function store(EstimatorItemRequest $request): EstimatorItemResource
