@@ -96,6 +96,14 @@ class DashboardController extends Controller
      * 5 articles qui ont suscité le plus d'engagement sur la période (un partage pèse comme deux
      * réactions, un commentaire comme trois) : `{id, title, url, views, reactions, shares, comments}`,
      * `views` étant le total des lectures depuis le début.
+     *
+     * `trends` compare la période à la précédente de même durée (`null` avec `all`) :
+     * `period_days`, `previous_since` (début de la période précédente) et `metrics`, qui donne
+     * `{current, previous}` pour `visits`, `visitors`, `contacts`, `engagements`,
+     * `appointments` et `cv_downloads` (éléments reçus).
+     *
+     * `agenda` liste les 5 prochains rendez-vous en attente ou confirmés, les plus proches
+     * d'abord : `{id, name, company, type, location, status, starts_at, ends_at}` (ISO 8601).
      */
     #[QueryParameter('days', description: 'Période : `7`, `30`, `90`, `365` ou `all` (depuis la toute première donnée). Ne dépendent pas de la période : `visits.total`, `visits.today`, `cv_downloads.total`, `cv_downloads.with_email`, `blog.views_total`, `blog.reactions.total`, `blog.shares.total`, `blog.comments.total` et ses statuts, `todo`, `content`, `distribution`, `health` et `recent`.', type: 'string', default: '30')]
     #[QueryParameter('type', description: 'Ne garde dans `visits.top_content` que les articles (`post`) ou que les projets (`project`), le top 8 étant calculé après le filtre. Absent : les deux mélangés.', type: 'string')]

@@ -87,7 +87,76 @@ class DashboardReport
             'appointments' => $this->appointments(),
             'billing' => $this->billing(),
             'blog' => $this->blog(),
+            'trends' => $this->trends(),
+            'agenda' => $this->agenda(),
         ];
+    }
+
+    /**
+     * Les volumes de la période face à ceux de la période précédente de même durée, pour
+     * afficher une tendance ; `null` sur `all`, qui n'a pas de période précédente.
+     *
+     * @return array{period_days: int, previous_since: string, metrics: array<string, array{current: int, previous: int}>}|null
+     */
+    private function trends(): ?array
+    {
+        $since = $this->visitsSince();
+
+        if ($since === null) {
+            return null;
+        }
+
+        $previousSince = $since->copy()->subDays($this->days);
+        $compare = function (Builder $query, ?string $distinct = null) use ($since, $previousSince): array {
+            $count = fn (Builder $query): int => $distinct === null
+                ? $query->count()
+                : $query->whereNotNull($distinct)->distinct()->count($distinct);
+
+            return [
+                'current' => $count((clone $query)->where('created_at', '>=', $since)),
+                'previous' => $count((clone $query)->where('created_at', '>=', $previousSince)->where('created_at', '<', $since)),
+            ];
+        };
+
+        return [
+            'period_days' => $this->days,
+            'previous_since' => $previousSince->toDateString(),
+            'metrics' => [
+                'visits' => $compare(PageVisit::query()),
+                'visitors' => $compare(PageVisit::query(), 'visitor_hash'),
+                'contacts' => $compare(Contact::query()),
+                'engagements' => $compare(Engagement::query()),
+                'appointments' => $compare(Appointment::query()),
+                'cv_downloads' => $compare(CvDownload::query()),
+            ],
+        ];
+    }
+
+    /**
+     * Les 5 prochains rendez-vous en attente ou confirmés, les plus proches d'abord.
+     *
+     * @return list<array{id: int, name: string, company: string|null, type: string|null, location: string|null, status: string, starts_at: string, ends_at: string|null}>
+     */
+    private function agenda(): array
+    {
+        return Appointment::query()
+            ->whereIn('status', [AppointmentStatus::Pending, AppointmentStatus::Confirmed])
+            ->where('starts_at', '>=', now())
+            ->with('appointmentType:id,name')
+            ->orderBy('starts_at')
+            ->limit(5)
+            ->get()
+            ->map(fn (Appointment $appointment): array => [
+                'id' => $appointment->id,
+                'name' => $appointment->name,
+                'company' => $appointment->company,
+                'type' => $appointment->appointmentType?->getTranslation('name', 'fr'),
+                'location' => $appointment->location?->value,
+                'status' => $appointment->status->value,
+                'starts_at' => $appointment->starts_at->toIso8601String(),
+                'ends_at' => $appointment->ends_at?->toIso8601String(),
+            ])
+            ->all();
     }
 
     /**

@@ -247,3 +247,37 @@ test('the api dashboard rejects an unknown period or content type', function (ar
     'days' => [['days' => '14'], 'days'],
     'type' => [['type' => 'page'], 'type'],
 ]);
+
+test('the API compares the period with the previous one', function () {
+    Sanctum::actingAs(User::factory()->create());
+    PageVisit::query()->create(['path' => 'fr/about']);
+    PageVisit::query()->create(['path' => 'fr/about'])->forceFill(['created_at' => now()->subDays(10)])->save();
+    PageVisit::query()->create(['path' => 'fr/about'])->forceFill(['created_at' => now()->subDays(12)])->save();
+    PageVisit::query()->create(['path' => 'fr/about'])->forceFill(['created_at' => now()->subDays(30)])->save();
+    Contact::factory()->create();
+
+    $this->getJson(route('api.v1.dashboard', ['days' => '7']))
+        ->assertOk()
+        ->assertJsonPath('trends.period_days', 7)
+        ->assertJsonPath('trends.metrics.visits.current', 1)
+        ->assertJsonPath('trends.metrics.visits.previous', 2)
+        ->assertJsonPath('trends.metrics.contacts.current', 1)
+        ->assertJsonPath('trends.metrics.contacts.previous', 0);
+
+    $this->getJson(route('api.v1.dashboard', ['days' => 'all']))->assertJsonPath('trends', null);
+});
+
+test('the API lists the upcoming appointments', function () {
+    Sanctum::actingAs(User::factory()->create());
+    $later = Appointment::factory()->create(['starts_at' => now()->addDays(3), 'status' => AppointmentStatus::Confirmed]);
+    $sooner = Appointment::factory()->create(['starts_at' => now()->addDay(), 'status' => AppointmentStatus::Pending]);
+    Appointment::factory()->create(['starts_at' => now()->addDays(2), 'status' => AppointmentStatus::Declined]);
+    Appointment::factory()->create(['starts_at' => now()->subDay(), 'status' => AppointmentStatus::Confirmed]);
+
+    $this->getJson(route('api.v1.dashboard'))
+        ->assertOk()
+        ->assertJsonCount(2, 'agenda')
+        ->assertJsonPath('agenda.0.id', $sooner->id)
+        ->assertJsonPath('agenda.0.status', 'pending')
+        ->assertJsonPath('agenda.1.id', $later->id);
+});
