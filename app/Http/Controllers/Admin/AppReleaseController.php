@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AppRelease;
+use App\Models\SigningKeyBackup;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -27,6 +28,7 @@ class AppReleaseController extends Controller
                 ->orderByDesc('build_number')
                 ->get()
                 ->map(fn (AppRelease $release): array => $release->summary()),
+            'signingKeyBackup' => SigningKeyBackup::current()?->only(['created_at', 'key_fingerprint']),
         ]);
     }
 

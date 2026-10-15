@@ -43,6 +43,7 @@ use App\Http\Controllers\Api\V1\ProjectController;
 use App\Http\Controllers\Api\V1\PushTokenController;
 use App\Http\Controllers\Api\V1\ReviewInvitationController;
 use App\Http\Controllers\Api\V1\ServiceController;
+use App\Http\Controllers\Api\V1\SigningKeyBackupController;
 use App\Http\Controllers\Api\V1\SiteSettingController;
 use App\Http\Controllers\Api\V1\SkillController;
 use App\Http\Controllers\Api\V1\SubscriberController;
@@ -73,6 +74,12 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::get('app-releases/{app_release}/download', [AppReleaseController::class, 'download'])
         ->middleware(['signed', 'throttle:20,1'])
         ->name('app-releases.download');
+    Route::put('signing-key-backups/{backup}/file', [SigningKeyBackupController::class, 'upload'])
+        ->middleware(['signed', 'throttle:10,1'])
+        ->name('signing-key-backups.upload');
+    Route::get('signing-key-backups/{backup}/download', [SigningKeyBackupController::class, 'download'])
+        ->middleware(['signed', 'throttle:10,1'])
+        ->name('signing-key-backups.download');
 
     Route::middleware(['auth:sanctum', RejectMcpTokens::class])->group(function (): void {
         Route::get('auth/me', [AuthController::class, 'me'])->name('auth.me');

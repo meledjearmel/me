@@ -20,6 +20,7 @@ use App\Mcp\Tools\GetEstimatorTool;
 use App\Mcp\Tools\GetInboxTool;
 use App\Mcp\Tools\GetPostTool;
 use App\Mcp\Tools\GetProjectTool;
+use App\Mcp\Tools\GetSigningKeyBackupTool;
 use App\Mcp\Tools\GetStatsTool;
 use App\Mcp\Tools\GetWeeklyReportTool;
 use App\Mcp\Tools\ListAppReleasesTool;
@@ -32,6 +33,7 @@ use App\Mcp\Tools\MarkHandledTool;
 use App\Mcp\Tools\ModerateCommentTool;
 use App\Mcp\Tools\ModerateTestimonialTool;
 use App\Mcp\Tools\PrepareAppReleaseTool;
+use App\Mcp\Tools\PrepareSigningKeyBackupTool;
 use App\Mcp\Tools\ProposeRevisionTool;
 use App\Mcp\Tools\PublishAppReleaseTool;
 use App\Mcp\Tools\ReadWebPageTool;
@@ -82,6 +84,7 @@ Faire connaître un article : save-post-social-texts enregistre ses textes de pa
 Suivi du site : get-inbox liste ce qui attend une réponse (messages, demandes, rendez-vous, avis, commentaires), get-stats et get-weekly-report donnent les chiffres. decide-appointment (le visiteur reçoit un email), moderate-testimonial et moderate-comment (publication immédiate) agissent pour de vrai : seulement sur demande explicite, élément par élément ; mark-handled range ce dont le développeur dit s'être occupé, et enregistre qu'une demande est signée (avec le montant qu'il donne) ou perdue.
 Devis et factures : list-commercial-documents suit les devis, proformas et factures (émis, acceptés, à encaisser). draft-quote prépare un devis en brouillon depuis une demande, avec les lignes de son estimation ou celles que le développeur valide ; tu n'émets ni n'envoies jamais un document : il le fait lui-même depuis l'administration.
 Application mobile (APK Android, privée) : après flutter build apk --release, prepare-app-release enregistre la version de pubspec.yaml et renvoie une commande curl qui envoie l'APK ; list-app-releases donne le prochain build_number. publish-app-release la propose en mise à jour à l'app installée : seulement quand le développeur le demande.
+Clé de signature de l'app : prepare-signing-key-backup enregistre une sauvegarde déjà chiffrée sur le poste du développeur (phrase secrète qu'il saisit lui-même, jamais transmise au serveur) et renvoie une commande curl d'envoi ; get-signing-key-backup donne la sauvegarde courante et son adresse de téléchargement.
 N'invente rien : client, dates, chiffres ou taille d'équipe absents de la source restent vides. Ne cite ni secret ni donnée confidentielle d'un client. Rien n'est jamais publié par toi : ce sont toujours des brouillons.
 TEXT)]
 class PortfolioServer extends Server
@@ -129,6 +132,8 @@ class PortfolioServer extends Server
         ListAppReleasesTool::class,
         PrepareAppReleaseTool::class,
         PublishAppReleaseTool::class,
+        GetSigningKeyBackupTool::class,
+        PrepareSigningKeyBackupTool::class,
     ];
 
     protected array $prompts = [

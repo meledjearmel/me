@@ -326,6 +326,19 @@ class CommandGuide
             'tips' => ['Tous les APK doivent être signés avec la même clé, sinon Android refuse l\'installation par-dessus.'],
             'example' => 'Publie le build 12 de mon app mobile.',
         ],
+        'get-signing-key-backup' => [
+            'usage' => 'Récupérer la sauvegarde chiffrée de la clé de signature de l\'app mobile.',
+            'tips' => ['Le fichier se déchiffre sur votre poste, avec votre phrase secrète : le serveur ne la connaît jamais.'],
+            'example' => 'Récupère la sauvegarde de ma clé de signature et vérifie qu\'elle correspond à ma clé locale.',
+        ],
+        'prepare-signing-key-backup' => [
+            'usage' => 'Sauvegarder la clé de signature de l\'app, chiffrée sur votre poste avant l\'envoi.',
+            'tips' => [
+                'Sans cette clé, plus aucune mise à jour de l\'app ne peut être installée.',
+                'Ne donnez jamais la phrase secrète ni le mot de passe du keystore : saisissez-les vous-même au chiffrement.',
+            ],
+            'example' => 'Chiffre ma clé de signature avec age et sauvegarde-la sur mon portfolio.',
+        ],
     ];
 
     /**
@@ -379,6 +392,8 @@ class CommandGuide
         'list-app-releases' => 'Builds de l\'app mobile',
         'prepare-app-release' => 'Envoyer un build de l\'app',
         'publish-app-release' => 'Publier un build de l\'app',
+        'get-signing-key-backup' => 'Récupérer la clé de signature',
+        'prepare-signing-key-backup' => 'Sauvegarder la clé de signature',
     ];
 
     /** Titre court d'une commande ou d'un outil (son nom s'il n'en a pas). */

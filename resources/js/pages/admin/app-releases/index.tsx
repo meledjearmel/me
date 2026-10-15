@@ -1,10 +1,11 @@
 import { Head, Link } from "@inertiajs/react";
-import { Download, Plus, Rocket } from "lucide-react";
+import { Download, KeyRound, Plus, Rocket, TriangleAlert } from "lucide-react";
 import AppReleaseController from "@/actions/App/Http/Controllers/Admin/AppReleaseController";
 import ActionTooltip from "@/components/admin/action-tooltip";
 import DeleteButton from "@/components/admin/delete-button";
 import { formatDate } from "@/components/admin/show-page";
 import Heading from "@/components/heading";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,14 +27,21 @@ type AppRelease = {
     created_at: string | null;
 };
 
+type SigningKeyBackup = {
+    created_at: string;
+    key_fingerprint: string;
+};
+
 function formatSize(bytes: number | null): string {
     return bytes === null ? "—" : `${(bytes / 1_048_576).toFixed(1)} Mo`;
 }
 
 export default function AppReleasesIndex({
     releases,
+    signingKeyBackup,
 }: {
     releases: AppRelease[];
+    signingKeyBackup: SigningKeyBackup | null;
 }) {
     const latestPublished = releases.find((release) => release.published_at);
 
@@ -53,6 +61,31 @@ export default function AppReleasesIndex({
                         </Link>
                     </Button>
                 </div>
+
+                {signingKeyBackup ? (
+                    <Alert>
+                        <KeyRound />
+                        <AlertTitle>Clé de signature</AlertTitle>
+                        <AlertDescription>
+                            <p className="break-all">
+                                Sauvegardée le{" "}
+                                {formatDate(signingKeyBackup.created_at)}{" "}
+                                (empreinte {signingKeyBackup.key_fingerprint})
+                            </p>
+                        </AlertDescription>
+                    </Alert>
+                ) : (
+                    <Alert variant="destructive">
+                        <TriangleAlert />
+                        <AlertTitle>Clé de signature</AlertTitle>
+                        <AlertDescription>
+                            Aucune sauvegarde : sans cette clé, plus aucune mise
+                            à jour de l'app ne pourra être installée.
+                            Sauvegardez-la chiffrée depuis Claude Code
+                            (prepare-signing-key-backup).
+                        </AlertDescription>
+                    </Alert>
+                )}
 
                 {releases.length === 0 && (
                     <p className="text-sm text-muted-foreground">
