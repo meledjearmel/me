@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AiAssistController;
 use App\Http\Controllers\Admin\AppointmentController;
 use App\Http\Controllers\Admin\AppointmentTypeController;
+use App\Http\Controllers\Admin\AppReleaseController;
 use App\Http\Controllers\Admin\AvailabilityController;
 use App\Http\Controllers\Admin\BillingSettingsController;
 use App\Http\Controllers\Admin\CelebrationController;
@@ -71,6 +72,14 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::get('revisions/{revision}', [ContentRevisionController::class, 'show'])->name('revisions.show');
     Route::post('revisions/{revision}/apply', [ContentRevisionController::class, 'apply'])->name('revisions.apply');
     Route::post('revisions/{revision}/reject', [ContentRevisionController::class, 'reject'])->name('revisions.reject');
+    Route::prefix('app-releases')->name('app-releases.')->group(function () {
+        Route::get('/', [AppReleaseController::class, 'index'])->name('index');
+        Route::get('create', [AppReleaseController::class, 'create'])->name('create');
+        Route::post('/', [AppReleaseController::class, 'store'])->name('store');
+        Route::post('{app_release}/publish', [AppReleaseController::class, 'publish'])->name('publish');
+        Route::get('{app_release}/download', [AppReleaseController::class, 'download'])->name('download');
+        Route::delete('{app_release}', [AppReleaseController::class, 'destroy'])->name('destroy');
+    });
     Route::prefix('mcp-server')->name('mcp-server.')->group(function () {
         Route::get('/', McpServerController::class)->name('index');
         Route::get('access', [McpTokenController::class, 'index'])->name('access');

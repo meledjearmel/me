@@ -308,6 +308,24 @@ class CommandGuide
             'tips' => ['Le brouillon n\'a pas de numéro et n\'est jamais envoyé : vous le relisez, l\'émettez et l\'envoyez depuis l\'administration.'],
             'example' => 'Prépare le devis de la demande de la boutique en ligne, avec un forfait de 7 500 CHF.',
         ],
+        'list-app-releases' => [
+            'usage' => 'Voir les builds de l\'application mobile et le prochain numéro de build à utiliser.',
+            'tips' => ['Le numéro de build (après le « + » dans pubspec.yaml) doit toujours augmenter, sinon Android refuse la mise à jour.'],
+            'example' => 'Quelle est la dernière version publiée de mon app mobile ?',
+        ],
+        'prepare-app-release' => [
+            'usage' => 'Envoyer au serveur l\'APK que Claude Code vient de compiler, avec sa version et ses notes.',
+            'tips' => [
+                'Depuis Claude Code, dans le projet de l\'app : l\'agent compile, appelle l\'outil puis envoie le fichier avec curl.',
+                'Le build reste privé et non publié tant que vous ne le demandez pas.',
+            ],
+            'example' => 'Compile l\'app en release et envoie le build sur mon portfolio.',
+        ],
+        'publish-app-release' => [
+            'usage' => 'Publier un build envoyé : l\'app installée le proposera en mise à jour.',
+            'tips' => ['Tous les APK doivent être signés avec la même clé, sinon Android refuse l\'installation par-dessus.'],
+            'example' => 'Publie le build 12 de mon app mobile.',
+        ],
     ];
 
     /**
@@ -358,6 +376,9 @@ class CommandGuide
         'mark-handled' => 'Ranger un message',
         'list-commercial-documents' => 'Suivre devis et factures',
         'draft-quote' => 'Préparer un devis',
+        'list-app-releases' => 'Builds de l\'app mobile',
+        'prepare-app-release' => 'Envoyer un build de l\'app',
+        'publish-app-release' => 'Publier un build de l\'app',
     ];
 
     /** Titre court d'une commande ou d'un outil (son nom s'il n'en a pas). */

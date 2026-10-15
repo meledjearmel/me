@@ -130,7 +130,7 @@ export default function ReviewVideoField({ error }: { error?: string }) {
         setSelected(null);
     };
 
-    // Refusée dans le navigateur avant tout envoi : inutile de téléverser 200 Mo
+    // Refusée dans le navigateur avant tout envoi : inutile de téléverser 128 Mo
     // pour se voir répondre « trop lourd ».
     const accept = async (file: File): Promise<boolean> => {
         setLocalError(null);

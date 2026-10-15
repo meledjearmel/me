@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AiController;
 use App\Http\Controllers\Api\V1\AppointmentController;
 use App\Http\Controllers\Api\V1\AppointmentTypeController;
+use App\Http\Controllers\Api\V1\AppReleaseController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AvailabilityController;
 use App\Http\Controllers\Api\V1\BillingSettingsController;
@@ -65,6 +66,13 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::post('auth/two-factor-challenge', [AuthController::class, 'twoFactorChallenge'])
         ->middleware('throttle:5,1')
         ->name('auth.two-factor-challenge');
+
+    Route::put('app-releases/{app_release}/file', [AppReleaseController::class, 'upload'])
+        ->middleware(['signed', 'throttle:10,1'])
+        ->name('app-releases.upload');
+    Route::get('app-releases/{app_release}/download', [AppReleaseController::class, 'download'])
+        ->middleware(['signed', 'throttle:20,1'])
+        ->name('app-releases.download');
 
     Route::middleware(['auth:sanctum', RejectMcpTokens::class])->group(function (): void {
         Route::get('auth/me', [AuthController::class, 'me'])->name('auth.me');
@@ -213,6 +221,8 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::get('profile', [ProfileController::class, 'show'])->name('profile.show');
         Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('profile/music', [ProfileController::class, 'destroyMusic'])->name('profile.music.destroy');
+
+        Route::get('app/latest', [AppReleaseController::class, 'latest'])->name('app.latest');
 
         Route::post('push-tokens', [PushTokenController::class, 'store'])->name('push-tokens.store');
         Route::delete('push-tokens', [PushTokenController::class, 'destroy'])->name('push-tokens.destroy');

@@ -1,5 +1,12 @@
 import { Link, router } from "@inertiajs/react";
-import { Bot, LogOut, Settings, Settings2, Trash2 } from "lucide-react";
+import {
+    Bot,
+    LogOut,
+    Settings,
+    Settings2,
+    Smartphone,
+    Trash2,
+} from "lucide-react";
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
@@ -9,6 +16,7 @@ import {
 import { UserInfo } from "@/components/user-info";
 import { useMobileNavigation } from "@/hooks/use-mobile-navigation";
 import { logout } from "@/routes";
+import { index as appReleasesIndex } from "@/routes/admin/app-releases";
 import { index as mcpServerIndex } from "@/routes/admin/mcp-server";
 import { edit as siteSettingsEdit } from "@/routes/admin/site-settings";
 import { index as trashIndex } from "@/routes/admin/trash";
@@ -45,6 +53,17 @@ export function UserMenuContent({ user }: Props) {
                     >
                         <Bot className="mr-2" />
                         Serveur MCP
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                    <Link
+                        className="block w-full cursor-pointer"
+                        href={appReleasesIndex()}
+                        prefetch
+                        onClick={cleanup}
+                    >
+                        <Smartphone className="mr-2" />
+                        Application mobile
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
