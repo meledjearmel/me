@@ -32,8 +32,12 @@ class ChatController extends Controller
             if (filled($reply)) {
                 return response()->json([
                     'reply' => $reply,
-                    // Pages de projet ou d'article citées : le chat les montre en mentions avec leur carte.
-                    'mentions' => (object) $mentions->cardsForUrls($reply, app()->getLocale()),
+                    // Pages de projet ou d'article citées par adresse, et jetons de mention (« type:id ») :
+                    // le chat les montre en mentions avec leur carte.
+                    'mentions' => (object) [
+                        ...$mentions->cardsForUrls($reply, app()->getLocale()),
+                        ...$mentions->cardsInText(app()->getLocale(), $reply),
+                    ],
                 ]);
             }
 

@@ -1,14 +1,30 @@
 import type { ReactNode } from 'react';
+import { MentionLink, splitMentions } from '@/components/public/mention-text';
 import type { PublicPostMention } from '@/types';
 
 const TOKEN =
-    /(\*\*[^*]+\*\*|https?:\/\/[^\s)]*[^\s).,;:!?]|[\w.+-]+@[\w-]+\.[\w.-]*\w)/g;
+    /(@\[[^\]\n]{1,120}\]\((?:project|post|technology|experience):\d+\)|\*\*[^*]+\*\*|https?:\/\/[^\s)]*[^\s).,;:!?]|[\w.+-]+@[\w-]+\.[\w.-]*\w)/gu;
 const LIST_ITEM = /^\s*(?:[-*•]|\d+[.)])\s+(.*)$/;
 
 type Mentions = Record<string, PublicPostMention>;
 
 function inline(text: string, mentions: Mentions): ReactNode[] {
     return text.split(TOKEN).map((part, index) => {
+        // Jeton de mention `@[libellé](type:id)` : lien avec la carte au survol, ou son libellé.
+        if (part.startsWith('@[')) {
+            const [segment] = splitMentions(part);
+
+            if (typeof segment !== 'string') {
+                return (
+                    <MentionLink
+                        key={index}
+                        segment={segment}
+                        mentions={mentions}
+                    />
+                );
+            }
+        }
+
         const key = part in mentions ? part : part.replace(/\/$/, '');
         const mention = mentions[key];
 
@@ -96,7 +112,9 @@ export default function ChatRichText({
 
         if (line.trim() !== '') {
             blocks.push(
-                <p key={`p-${blocks.length}`}>{inline(line.trim(), mentions)}</p>,
+                <p key={`p-${blocks.length}`}>
+                    {inline(line.trim(), mentions)}
+                </p>,
             );
         }
     }

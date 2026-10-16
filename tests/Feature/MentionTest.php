@@ -9,6 +9,7 @@ use App\Models\Profile;
 use App\Models\Project;
 use App\Models\SiteSetting;
 use App\Services\PortfolioKnowledge;
+use App\Services\PostMentions;
 use Illuminate\Support\Facades\Cache;
 
 beforeEach(function () {
@@ -54,7 +55,7 @@ test('an experience and the now page get the cards of their mentions', function 
         ->where("mentions.project:{$project->id}.title", 'App Station'));
 });
 
-test('the assistant knowledge keeps only the name of a mention', function () {
+test('the assistant knowledge keeps only the name of a mention written in a text', function () {
     $project = appStation();
     Project::factory()->create([
         'status' => ProjectStatus::Published,
@@ -63,7 +64,7 @@ test('the assistant knowledge keeps only the name of a mention', function () {
 
     expect(app(PortfolioKnowledge::class)->build('fr'))
         ->toContain('Suite de App Station.')
-        ->not->toContain('(project:');
+        ->not->toContain('Suite de @[');
 });
 
 test('the assistant reply comes with the cards of the project and article pages it links to', function () {
@@ -80,4 +81,19 @@ test('the assistant reply comes with the cards of the project and article pages 
     expect($mentions[$projectUrl]['title'])->toBe('App Station')
         ->and($mentions[$postUrl]['title'])->toBe('Mon article')
         ->and($mentions)->not->toHaveKey($draftUrl);
+});
+
+test('the assistant can cite site content with mention tokens taken from its knowledge', function () {
+    $project = appStation();
+    $draft = Project::factory()->create(['status' => ProjectStatus::Draft]);
+    $token = PostMentions::token('project', $project->id, 'App Station');
+
+    expect((string) (new PortfolioAssistant)->instructions())->toContain($token);
+
+    PortfolioAssistant::fake(["J'ai conçu {$token} et @[Brouillon](project:{$draft->id})."]);
+
+    $mentions = $this->postJson('/fr/chat', ['message' => 'Un projet ?'])->assertOk()->json('mentions');
+
+    expect($mentions["project:{$project->id}"]['url'])->toBe(route('projects.show', ['locale' => 'fr', 'project' => 'app-station']))
+        ->and($mentions)->not->toHaveKey("project:{$draft->id}");
 });

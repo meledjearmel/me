@@ -1,13 +1,20 @@
 <?php
 
 use App\Ai\Agents\PortfolioAssistant;
+use App\Enums\AvailabilityStatus;
 use App\Enums\ProjectStatus;
 use App\Enums\PublicationStatus;
+use App\Enums\TestimonialStatus;
+use App\Models\AppointmentType;
+use App\Models\Certification;
+use App\Models\Distinction;
 use App\Models\Experience;
 use App\Models\Post;
 use App\Models\Profile;
 use App\Models\Project;
+use App\Models\Service;
 use App\Models\SiteSetting;
+use App\Models\Testimonial;
 use App\Services\PortfolioKnowledge;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -135,7 +142,7 @@ test('the knowledge lists the published blog posts with their url, unless the bl
     Post::factory()->draft()->create(['title' => ['fr' => 'Brouillon caché']]);
 
     expect(app(PortfolioKnowledge::class)->build('fr'))
-        ->toContain('Mon article publié : Le résumé')
+        ->toContain("Mon article publié](post:{$post->id}) : Le résumé")
         ->toContain(route('blog.show', ['locale' => 'fr', 'post' => $post->slug]))
         ->toContain(route('blog.index', ['locale' => 'fr']))
         ->not->toContain('Brouillon caché');
@@ -143,4 +150,54 @@ test('the knowledge lists the published blog posts with their url, unless the bl
     SiteSetting::current()->update(['blog_enabled' => false]);
 
     expect(app(PortfolioKnowledge::class)->build('fr'))->not->toContain('Mon article publié');
+});
+
+test('the knowledge gives my availability as the site shows it', function () {
+    SiteSetting::current()->update(['availability_status' => AvailabilityStatus::From, 'available_from' => now()->addMonth()]);
+
+    expect(app(PortfolioKnowledge::class)->build('fr'))->toContain('disponible pour de nouvelles missions à partir du');
+
+    SiteSetting::current()->update(['availability_status' => AvailabilityStatus::Unavailable]);
+
+    expect(app(PortfolioKnowledge::class)->build('fr'))->toContain('pas disponible pour de nouvelles missions');
+});
+
+test('the knowledge lists the published services with their starting price, but not the drafts', function () {
+    Service::factory()->manual(['CHF' => 2500])->create(['title' => ['fr' => 'Application mobile']]);
+    Service::factory()->draft()->create(['title' => ['fr' => 'Offre cachée']]);
+
+    expect(app(PortfolioKnowledge::class)->build('fr'))
+        ->toContain('Application mobile')
+        ->toContain('Prix à partir de : 2500 CHF')
+        ->toContain(route('services', ['locale' => 'fr']))
+        ->not->toContain('Offre cachée');
+});
+
+test('the knowledge points to the booking page and its appointment types only when booking is open', function () {
+    AppointmentType::factory()->create(['name' => ['fr' => 'Appel découverte']]);
+
+    expect(app(PortfolioKnowledge::class)->build('fr'))
+        ->not->toContain('Appel découverte')
+        ->not->toContain(route('appointments.index', ['locale' => 'fr']));
+
+    SiteSetting::current()->update(['booking_enabled' => true]);
+
+    expect(app(PortfolioKnowledge::class)->build('fr'))
+        ->toContain('Appel découverte (30 min)')
+        ->toContain(route('appointments.index', ['locale' => 'fr']));
+});
+
+test('the knowledge includes certifications, distinctions and approved testimonials only', function () {
+    Certification::factory()->create(['name' => ['fr' => 'AWS Developer']]);
+    Distinction::factory()->create(['title' => ['fr' => 'Prix de l\'innovation']]);
+    Distinction::factory()->draft()->create(['title' => ['fr' => 'Distinction brouillon']]);
+    Testimonial::factory()->create(['status' => TestimonialStatus::Approved, 'author_name' => 'Awa Koné']);
+    Testimonial::factory()->create(['author_name' => 'Avis en attente']);
+
+    expect(app(PortfolioKnowledge::class)->build('fr'))
+        ->toContain('AWS Developer')
+        ->toContain('Prix de l\'innovation')
+        ->toContain('Awa Koné')
+        ->not->toContain('Distinction brouillon')
+        ->not->toContain('Avis en attente');
 });
