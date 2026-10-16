@@ -417,13 +417,13 @@ test('a project draft receives a cover and gallery images', function () {
         ->assertSee('"gallery_count":1');
 });
 
-test('a published project or a non image is refused', function () {
+test('an image of a published project needs a summary, and a non image is refused', function () {
     $published = Project::factory()->create(['status' => ProjectStatus::Published]);
     $draft = Project::factory()->create(['status' => ProjectStatus::Draft]);
 
     PortfolioServer::actingAs(User::factory()->create())
         ->tool(AddProjectImageTool::class, ['id' => $published->id, 'role' => 'cover', 'data' => base64_encode('x')])
-        ->assertHasErrors(['Seul un brouillon de projet existant peut recevoir des images.']);
+        ->assertHasErrors(['Projet publié : l\'image sera proposée comme une révision, décris-la dans summary (ce qu\'elle montre et pourquoi).']);
 
     PortfolioServer::actingAs(User::factory()->create())
         ->tool(AddProjectImageTool::class, ['id' => $draft->id, 'role' => 'gallery', 'data' => base64_encode('<svg onload="alert(1)"/>')])

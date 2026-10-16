@@ -195,7 +195,7 @@ test('only images reach a draft', function () {
 
     PortfolioServer::actingAs(User::factory()->create())
         ->tool(AddPostImageTool::class, ['id' => $published->id, 'role' => 'cover', 'data' => TINY_PNG])
-        ->assertHasErrors(["Seul un brouillon d'article existant peut recevoir des images."]);
+        ->assertHasErrors(["Article publié : la couverture sera proposée comme une révision, décris-la dans summary (ce qu'elle montre et pourquoi)."]);
 });
 
 test('the image plan prompt asks for placements and generation prompts', function () {

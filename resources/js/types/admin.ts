@@ -777,4 +777,10 @@ export type ContentRevisionDetail = ContentRevisionSummary & {
         after: unknown;
         current: unknown;
     }[];
+    /** Révision d'image : l'image proposée et, pour une couverture, l'actuelle. */
+    image: {
+        role: "cover" | "gallery";
+        url: string | null;
+        current_url: string | null;
+    } | null;
 };

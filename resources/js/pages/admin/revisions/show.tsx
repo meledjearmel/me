@@ -79,6 +79,48 @@ export default function RevisionShow({
                     <p>{revision.summary}</p>
                 </section>
 
+                {revision.image && (
+                    <section className="space-y-3 rounded-md border p-4">
+                        <span className="font-medium">
+                            {revision.image.role === "cover"
+                                ? "Nouvelle couverture"
+                                : "Image ajoutée à la galerie"}
+                        </span>
+                        <div className="grid gap-3 md:grid-cols-2">
+                            {revision.image.role === "cover" && (
+                                <div className="space-y-1 rounded-md bg-muted/50 p-3">
+                                    <p className="text-xs font-medium text-muted-foreground uppercase">
+                                        Avant
+                                    </p>
+                                    {revision.image.current_url ? (
+                                        <img
+                                            src={revision.image.current_url}
+                                            alt="Couverture actuelle"
+                                            className="aspect-video w-full rounded object-cover"
+                                        />
+                                    ) : (
+                                        <Value value={null} />
+                                    )}
+                                </div>
+                            )}
+                            <div className="space-y-1 rounded-md border border-primary/40 p-3">
+                                <p className="text-xs font-medium text-muted-foreground uppercase">
+                                    Proposé
+                                </p>
+                                {revision.image.url ? (
+                                    <img
+                                        src={revision.image.url}
+                                        alt="Image proposée"
+                                        className="aspect-video w-full rounded object-cover"
+                                    />
+                                ) : (
+                                    <Value value={null} />
+                                )}
+                            </div>
+                        </div>
+                    </section>
+                )}
+
                 <div className="space-y-4">
                     {revision.fields.map((change) => (
                         <section

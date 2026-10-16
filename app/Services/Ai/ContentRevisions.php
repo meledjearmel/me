@@ -12,14 +12,17 @@ use App\Models\SiteSetting;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Spatie\MediaLibrary\HasMedia;
 
 /**
  * Révisions d'un contenu publié (ou de la page « Now ») proposées par l'IA : rien ne change
  * sur le site avant qu'elles soient appliquées depuis l'administration ou l'API.
  *
  * Une révision ne garde que les champs modifiés, en français (fr) et en anglais (en), et leur
- * valeur au moment de la proposition (before) pour montrer l'avant/après.
+ * valeur au moment de la proposition (before) pour montrer l'avant/après. Une révision d'image
+ * (changes.image) joint l'image proposée à la révision, copiée vers le contenu à l'application.
  */
 class ContentRevisions
 {
@@ -158,6 +161,42 @@ class ContentRevisions
     }
 
     /**
+     * Enregistre une révision d'image en attente pour un projet ou un article publié : la
+     * nouvelle couverture (qui remplacera l'ancienne) ou une image ajoutée à la galerie d'un projet.
+     *
+     * @throws ValidationException
+     */
+    public function proposeImage(Project|Post $content, string $role, string $bytes, string $extension, string $summary, ?string $draftedBy): ContentRevision
+    {
+        $type = $content instanceof Project ? 'project' : 'post';
+
+        if (! in_array($role, self::IMAGE_ROLES[$type], true)) {
+            throw ValidationException::withMessages(['role' => 'Rôle d\'image inconnu pour ce contenu.']);
+        }
+
+        if (in_array($content->status, [ProjectStatus::Draft, PublicationStatus::Draft], true)) {
+            throw ValidationException::withMessages(['changes' => 'Ce contenu est un brouillon : ajoute l\'image directement.']);
+        }
+
+        return DB::transaction(function () use ($content, $type, $role, $bytes, $extension, $summary, $draftedBy): ContentRevision {
+            $revision = ContentRevision::query()->create([
+                'content_type' => $type,
+                'content_id' => $content->getKey(),
+                'changes' => ['fr' => [], 'en' => [], 'image' => ['role' => $role], 'before' => ['fr' => [], 'en' => []]],
+                'summary' => $summary,
+                'drafted_by' => $draftedBy,
+                'status' => RevisionStatus::Pending,
+            ]);
+
+            $revision->addMediaFromString($bytes)
+                ->usingFileName("{$content->slug}-{$role}-".Str::random(6).".{$extension}")
+                ->toMediaCollection('image');
+
+            return $revision;
+        });
+    }
+
+    /**
      * Applique la révision au contenu tel qu'il est maintenant (les champs non concernés
      * gardent leurs modifications éventuelles depuis la proposition).
      *
@@ -176,7 +215,11 @@ class ContentRevisions
         $english = $revision->changes['en'] ?? [];
 
         DB::transaction(function () use ($type, $content, $french, $english, $revision): void {
-            if ($content instanceof SiteSetting) {
+            if (isset($revision->changes['image']) && $content instanceof HasMedia) {
+                $image = $revision->getFirstMedia('image')
+                    ?? throw ValidationException::withMessages(['revision' => __('L\'image de cette révision est introuvable.')]);
+                $image->copy($content, $revision->changes['image']['role']);
+            } elseif ($content instanceof SiteSetting) {
                 $content->updateNowContent([
                     'fr' => $french['now_content'] ?? ($content->now_content['fr'] ?? null),
                     'en' => $english['now_content'] ?? ($content->now_content['en'] ?? null),
@@ -234,6 +277,17 @@ class ContentRevisions
             return $summary;
         }
 
+        $image = null;
+
+        if (isset($revision->changes['image'])) {
+            $role = $revision->changes['image']['role'];
+            $image = [
+                'role' => $role,
+                'url' => $revision->getFirstMediaUrl('image') ?: null,
+                'current_url' => $role === 'cover' && $content instanceof HasMedia ? ($content->getFirstMediaUrl('cover') ?: null) : null,
+            ];
+        }
+
         $current = $content === null ? ['fr' => [], 'en' => []] : $this->snapshot($type, $content);
         $fields = [];
 
@@ -249,8 +303,15 @@ class ContentRevisions
             }
         }
 
-        return [...$summary, 'fields' => $fields];
+        return [...$summary, 'fields' => $fields, 'image' => $image];
     }
+
+    /**
+     * Collections qu'une révision d'image peut remplir, par type de contenu.
+     *
+     * @var array<string, list<string>>
+     */
+    private const array IMAGE_ROLES = ['project' => ['cover', 'gallery'], 'post' => ['cover']];
 
     /** @var array<string, string> */
     private const array TYPE_LABELS = [

@@ -4,6 +4,8 @@ use App\Enums\ProjectStatus;
 use App\Enums\PublicationStatus;
 use App\Enums\RevisionStatus;
 use App\Mcp\Servers\PortfolioServer;
+use App\Mcp\Tools\AddPostImageTool;
+use App\Mcp\Tools\AddProjectImageTool;
 use App\Mcp\Tools\ListRevisionsTool;
 use App\Mcp\Tools\ProposeRevisionTool;
 use App\Models\ContentRevision;
@@ -12,7 +14,12 @@ use App\Models\Post;
 use App\Models\Project;
 use App\Models\SiteSetting;
 use App\Models\User;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Sanctum\Sanctum;
+
+const REVISION_PNG = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
 
 function publishedProject(): Project
 {
@@ -186,4 +193,59 @@ test('the agent sees pending revisions', function () {
         ->tool(ListRevisionsTool::class)
         ->assertOk()
         ->assertSee('Accroche plus courte.');
+});
+
+test('an image of a published project is proposed, shown and copied only when applied', function () {
+    Storage::fake(config('media-library.disk_name'));
+    $project = publishedProject();
+
+    PortfolioServer::actingAs(User::factory()->create())
+        ->tool(AddProjectImageTool::class, ['id' => $project->id, 'role' => 'gallery', 'data' => REVISION_PNG, 'summary' => 'Capture du tableau de bord.'])
+        ->assertOk()
+        ->assertSee("rien n'a changé sur le site");
+
+    $revision = ContentRevision::query()->sole();
+    expect($project->fresh()->getMedia('gallery'))->toHaveCount(0);
+
+    $this->actingAs(User::factory()->create())
+        ->get(route('admin.revisions.show', $revision))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('revision.image.role', 'gallery')
+            ->where('revision.image.url', fn (?string $url) => filled($url)));
+
+    $this->actingAs(User::factory()->create())->post(route('admin.revisions.apply', $revision));
+
+    expect($project->fresh()->getMedia('gallery'))->toHaveCount(1)
+        ->and($revision->fresh()->status)->toBe(RevisionStatus::Applied);
+});
+
+test('the cover of a published post is replaced through a revision', function () {
+    Storage::fake(config('media-library.disk_name'));
+    $post = Post::factory()->create(['status' => PublicationStatus::Published]);
+
+    PortfolioServer::actingAs(User::factory()->create())
+        ->tool(AddPostImageTool::class, ['id' => $post->id, 'role' => 'cover', 'data' => REVISION_PNG])
+        ->assertHasErrors();
+
+    PortfolioServer::actingAs(User::factory()->create())
+        ->tool(AddPostImageTool::class, ['id' => $post->id, 'role' => 'cover', 'data' => REVISION_PNG, 'summary' => 'Couverture plus lisible.'])
+        ->assertOk();
+
+    expect($post->fresh()->hasMedia('cover'))->toBeFalse();
+
+    $this->actingAs(User::factory()->create())->post(route('admin.revisions.apply', ContentRevision::query()->sole()));
+
+    expect($post->fresh()->hasMedia('cover'))->toBeTrue();
+});
+
+test('an image fetched by url is recognised from its content, not its content type', function () {
+    Storage::fake(config('media-library.disk_name'));
+    Http::fake(['93.184.216.34/*' => Http::response(base64_decode(REVISION_PNG), 200, ['Content-Type' => 'application/octet-stream'])]);
+    $project = publishedProject();
+
+    PortfolioServer::actingAs(User::factory()->create())
+        ->tool(AddProjectImageTool::class, ['id' => $project->id, 'role' => 'cover', 'url' => 'https://93.184.216.34/cover', 'summary' => 'Nouvelle couverture.'])
+        ->assertOk();
+
+    expect(ContentRevision::query()->sole()->getFirstMedia('image')->file_name)->toEndWith('.png');
 });

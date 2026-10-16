@@ -43,9 +43,12 @@ class ContentRevisionController extends Controller
      *
      * Avec `fields` : chaque champ modifié (`field`, `locale` fr ou en), sa valeur au moment de
      * la proposition (`before`), la valeur proposée (`after`) et la valeur actuelle (`current`,
-     * différente de `before` si le contenu a changé depuis).
+     * différente de `before` si le contenu a changé depuis). Avec `image` pour une révision
+     * d'image d'un projet ou d'un article publié : `role` (`cover` remplace la couverture,
+     * `gallery` ajoute une image à la galerie), l'image proposée (`url`) et, pour une couverture,
+     * l'actuelle (`current_url`) ; `null` sinon.
      *
-     * @response array{data: array{id: int, content_type: string, content_type_label: string, content_id: int|null, title: string, edit_url: string|null, summary: string, drafted_by: string|null, status: string, created_at: string|null, decided_at: string|null, fields: array<int, array{field: string, locale: string, before: mixed, after: mixed, current: mixed}>}}
+     * @response array{data: array{id: int, content_type: string, content_type_label: string, content_id: int|null, title: string, edit_url: string|null, summary: string, drafted_by: string|null, status: string, created_at: string|null, decided_at: string|null, fields: array<int, array{field: string, locale: string, before: mixed, after: mixed, current: mixed}>, image: array{role: string, url: string|null, current_url: string|null}|null}}
      */
     public function show(ContentRevision $revision): JsonResponse
     {
