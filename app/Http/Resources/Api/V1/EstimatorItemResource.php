@@ -24,12 +24,19 @@ class EstimatorItemResource extends JsonResource
             'name' => $this->getTranslations('name'),
             /** @var array{fr?: string, en?: string} */
             'description' => $this->getTranslations('description'),
-            /** Heures de travail au minimum, hors marge pour imprévus. */
+            /** Heures de travail au minimum, hors marge pour imprévus (par mois pour une option récurrente). */
             'hours_min' => $this->hours_min,
-            /** Heures de travail au maximum, hors marge pour imprévus. */
+            /** Heures de travail au maximum, hors marge pour imprévus (par mois pour une option récurrente). */
             'hours_max' => $this->hours_max,
-            /** Options : `hours` (heures min/max) ou `percent` (pourcentage des heures du projet). */
+            /** Options : `hours` (heures min/max), `percent` (pourcentage des heures du projet) ou `recurring` (heures par mois, facturées à chaque période, hors total du projet). */
             'pricing' => $this->pricing,
+            /**
+             * Options récurrentes : périodes proposées (`monthly`, `quarterly`, `semiannual`, `yearly`)
+             * avec leur remise en % ; null pour les autres éléments.
+             *
+             * @var array{monthly?: int, quarterly?: int, semiannual?: int, yearly?: int}|null
+             */
+            'periods' => $this->periods,
             /** Options en pourcentage : ce qu'elles ajoutent aux heures du projet, en %. */
             'percent' => $this->percent,
             /** Types de projet : `fixed` (forfait estimé) ou `hourly` (facturé à l'heure) ; null pour une option. */

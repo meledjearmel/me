@@ -84,6 +84,24 @@ test('a percentage option reserved to a project type can be created', function (
         ->and($feature->projectTypes->modelKeys())->toBe([$projectType->id]);
 });
 
+test('a recurring option keeps only its offered periods and their discount', function () {
+    $this->actingAs($this->user)->post(route('admin.estimator-items.store'), estimatorItemPayload([
+        'kind' => 'feature',
+        'pricing' => 'recurring',
+        'hours_min' => 2,
+        'hours_max' => 4,
+        'periods' => ['monthly' => 0, 'yearly' => 15],
+    ]))->assertRedirect(route('admin.estimator-options.index'));
+
+    $feature = EstimatorItem::query()->where('kind', 'feature')->firstOrFail();
+
+    expect($feature->periods)->toBe(['monthly' => 0, 'yearly' => 15]);
+
+    $feature->update(['pricing' => 'hours']);
+
+    expect($feature->fresh()->periods)->toBeNull();
+});
+
 test('the AI proposes a whole grid, which is applied at once', function () {
     EstimatorGridDesigner::fake([json_encode([
         'settings' => ['hourly_rates' => ['CHF' => 120, 'GBP' => 90], 'risk_percent' => 25],

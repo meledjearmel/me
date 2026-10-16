@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use App\Enums\EstimatorBilling;
 use App\Enums\EstimatorItemKind;
+use App\Enums\EstimatorPeriod;
 use App\Enums\EstimatorPricing;
 use App\Models\EstimatorItem;
 use Illuminate\Foundation\Http\FormRequest;
@@ -32,6 +33,9 @@ class EstimatorItemRequest extends FormRequest
             'hours_max' => [$isPercent ? 'nullable' : 'required', 'integer', $isPercent ? 'min:0' : 'gte:hours_min', 'max:5000'],
             'pricing' => [$isFeature ? 'required' : 'nullable', Rule::enum(EstimatorPricing::class)],
             'percent' => [$isPercent ? 'required' : 'nullable', 'integer', 'min:1', 'max:500'],
+            // Option récurrente : heures par mois ; périodes proposées avec leur remise en % (vide : non proposée).
+            'periods' => ['nullable', 'array:'.implode(',', array_column(EstimatorPeriod::cases(), 'value'))],
+            'periods.*' => ['nullable', 'integer', 'min:0', 'max:90'],
             // Ignoré pour une option, qui suit le mode du type de projet.
             'billing' => ['nullable', 'required_if:kind,'.EstimatorItemKind::ProjectType->value, Rule::enum(EstimatorBilling::class)],
             // Option : réservée à ces types de projet (aucun : proposée pour tous).

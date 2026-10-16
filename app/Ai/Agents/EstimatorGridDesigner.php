@@ -40,6 +40,10 @@ class EstimatorGridDesigner implements Agent
           ex. multilingue +20). Réserve une option à certains types quand elle n'a de sens que pour
           eux (ex. « publication sur les stores » pour une application mobile) via "project_types",
           la liste des "ref" de ces types ; laisse-la vide pour une option valable partout.
+        - Un service payé à chaque période (maintenance, hébergement, support, suivi SEO…) est une
+          option récurrente ("pricing": "recurring") : "hours_min"/"hours_max" sont des heures par
+          mois, et "periods" donne les périodes proposées avec leur remise en %, ex.
+          {"monthly": 0, "quarterly": 5, "yearly": 15}. Elle reste hors du total du projet.
         - Pour garder un élément existant en le corrigeant, mets son "id" ; sinon donne un "ref"
           court et unique (ex. "vitrine", "app-mobile").
         - Noms courts, descriptions d'une phrase pour le visiteur, en français et en anglais.
@@ -55,7 +59,8 @@ class EstimatorGridDesigner implements Agent
               "kind": "project_type" ou "feature",
               "name_fr": "…", "name_en": "…", "description_fr": "…", "description_en": "…",
               "hours_min": nombre, "hours_max": nombre,
-              "pricing": "hours" ou "percent", "percent": nombre ou null,
+              "pricing": "hours", "percent" ou "recurring", "percent": nombre ou null,
+              "periods": null ou {"monthly": remise, "quarterly": remise, "semiannual": remise, "yearly": remise} (récurrent seulement),
               "billing": "fixed" ou "hourly" (types de projet seulement),
               "project_types": ["ref d'un type"]
             }

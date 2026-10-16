@@ -19,6 +19,7 @@ import { post } from "@/hooks/use-ai-text-assist";
 import type {
     EstimatorCurrency,
     EstimatorItem,
+    EstimatorPeriod,
     EstimatorRateOption,
 } from "@/types";
 
@@ -35,13 +36,25 @@ export const ESTIMATOR_BILLINGS = [
 export const ESTIMATOR_PRICINGS = [
     { value: "hours", label: "Des heures en plus" },
     { value: "percent", label: "Un pourcentage des heures du projet" },
+    {
+        value: "recurring",
+        label: "Un service récurrent (heures par mois, payé à chaque période)",
+    },
 ] as const;
+
+export const ESTIMATOR_PERIODS: { value: EstimatorPeriod; label: string }[] = [
+    { value: "monthly", label: "Mensuel" },
+    { value: "quarterly", label: "Trimestriel" },
+    { value: "semiannual", label: "Semestriel" },
+    { value: "yearly", label: "Annuel" },
+];
 
 type Suggestion = {
     name: { fr: string; en: string };
     description: { fr: string | null; en: string | null };
     pricing: EstimatorItem["pricing"];
     percent: number | null;
+    periods: EstimatorItem["periods"];
     hours_min: number;
     hours_max: number;
     reasoning: string | null;
@@ -89,6 +102,7 @@ export default function EstimatorItemFields({
 
     const isFeature = kind === "feature";
     const isPercent = isFeature && pricing === "percent";
+    const isRecurring = isFeature && pricing === "recurring";
     const selectedRate = rates.find((rate) => String(rate.id) === rateId);
 
     const values = {
@@ -102,6 +116,8 @@ export default function EstimatorItemFields({
         hours_min: suggestion?.hours_min ?? estimatorItem?.hours_min ?? 8,
         hours_max: suggestion?.hours_max ?? estimatorItem?.hours_max ?? 16,
         percent: suggestion?.percent ?? estimatorItem?.percent ?? 15,
+        periods: suggestion?.periods ??
+            estimatorItem?.periods ?? { monthly: 0, yearly: 10 },
     };
 
     async function suggest() {
@@ -276,7 +292,8 @@ export default function EstimatorItemFields({
                         <div className="grid gap-4 sm:grid-cols-2">
                             <Field data-invalid={!!errors.hours_min}>
                                 <FieldLabel htmlFor="hours_min">
-                                    Heures de travail (min) *
+                                    Heures de travail (min)
+                                    {isRecurring ? " par mois" : ""} *
                                 </FieldLabel>
                                 <Input
                                     id="hours_min"
@@ -290,7 +307,8 @@ export default function EstimatorItemFields({
                             </Field>
                             <Field data-invalid={!!errors.hours_max}>
                                 <FieldLabel htmlFor="hours_max">
-                                    Heures de travail (max) *
+                                    Heures de travail (max)
+                                    {isRecurring ? " par mois" : ""} *
                                 </FieldLabel>
                                 <Input
                                     id="hours_max"
@@ -304,10 +322,36 @@ export default function EstimatorItemFields({
                             </Field>
                         </div>
                         <FieldDescription>
-                            Heures réelles, sans marge : le site ajoute la marge
-                            pour imprévus et applique votre taux horaire.
+                            {isRecurring
+                                ? "Heures réelles par mois, sans marge (un abonnement est un engagement fixe), à votre taux horaire. Hors du total et du délai du projet."
+                                : "Heures réelles, sans marge : le site ajoute la marge pour imprévus et applique votre taux horaire."}
                         </FieldDescription>
                     </>
+                )}
+
+                {isRecurring && (
+                    <div className="space-y-3 rounded-lg border p-4">
+                        <div>
+                            <p className="text-sm font-medium">
+                                Périodes proposées
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                                Le visiteur choisit parmi les périodes cochées ;
+                                la remise s'applique au prix de la période
+                                (heures par mois × nombre de mois).
+                            </p>
+                        </div>
+                        {ESTIMATOR_PERIODS.map((period) => (
+                            <PeriodRow
+                                key={period.value}
+                                period={period.value}
+                                label={period.label}
+                                defaultDiscount={values.periods?.[period.value]}
+                                error={errors[`periods.${period.value}`]}
+                            />
+                        ))}
+                        <FieldError>{errors.periods}</FieldError>
+                    </div>
                 )}
             </div>
 
@@ -426,5 +470,45 @@ export default function EstimatorItemFields({
                 <FieldError>{errors.sort_order}</FieldError>
             </Field>
         </>
+    );
+}
+
+/** Une période d'une option récurrente : cochée, elle est proposée avec sa remise. */
+function PeriodRow({
+    period,
+    label,
+    defaultDiscount,
+    error,
+}: {
+    period: EstimatorPeriod;
+    label: string;
+    defaultDiscount: number | undefined;
+    error: string | undefined;
+}) {
+    const [offered, setOffered] = useState(defaultDiscount !== undefined);
+
+    return (
+        <Field orientation="horizontal" data-invalid={!!error}>
+            <Checkbox
+                id={`period_${period}`}
+                checked={offered}
+                onCheckedChange={(checked) => setOffered(checked === true)}
+            />
+            <FieldLabel htmlFor={`period_${period}`} className="min-w-28">
+                {label}
+            </FieldLabel>
+            <Input
+                name={`periods[${period}]`}
+                type="number"
+                min={0}
+                max={90}
+                disabled={!offered}
+                defaultValue={defaultDiscount ?? 0}
+                aria-label={`Remise ${label.toLowerCase()} (%)`}
+                className="w-24"
+            />
+            <span className="text-sm text-muted-foreground">% de remise</span>
+            <FieldError>{error}</FieldError>
+        </Field>
     );
 }

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\EstimatorBilling;
 use App\Enums\EstimatorItemKind;
+use App\Enums\EstimatorPeriod;
 use App\Enums\EstimatorPricing;
 use App\Models\EstimatorItem;
 use App\Models\EstimatorRate;
@@ -173,6 +174,9 @@ class EstimatorConfigurator
             'items.*.hours_max' => ['nullable', 'integer', 'min:0', 'max:5000'],
             'items.*.pricing' => ['nullable', Rule::enum(EstimatorPricing::class)],
             'items.*.percent' => ['nullable', 'integer', 'min:1', 'max:500'],
+            // Options récurrentes : périodes proposées avec leur remise en %, ex. {"monthly": 0, "yearly": 15}.
+            'items.*.periods' => ['nullable', 'array:'.implode(',', array_column(EstimatorPeriod::cases(), 'value'))],
+            'items.*.periods.*' => ['nullable', 'integer', 'min:0', 'max:90'],
             'items.*.billing' => ['nullable', Rule::enum(EstimatorBilling::class)],
             'items.*.project_types' => ['nullable', 'array'],
             'items.*.project_types.*' => ['required'],
@@ -276,7 +280,7 @@ class EstimatorConfigurator
     /** @param  array<string, mixed>  $entry */
     private function fill(EstimatorItem $item, array $entry): void
     {
-        foreach (['kind', 'hours_min', 'hours_max', 'pricing', 'percent', 'billing', 'is_active'] as $field) {
+        foreach (['kind', 'hours_min', 'hours_max', 'pricing', 'percent', 'periods', 'billing', 'is_active'] as $field) {
             if (array_key_exists($field, $entry) && $entry[$field] !== null) {
                 $item->{$field} = $entry[$field];
             }

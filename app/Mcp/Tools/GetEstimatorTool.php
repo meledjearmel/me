@@ -44,6 +44,8 @@ class GetEstimatorTool extends Tool
                 'hours_max' => $item->hours_max,
                 'pricing' => $item->pricing->value,
                 'percent' => $item->percent,
+                // Options récurrentes : périodes proposées et leur remise en % (heures par mois).
+                'periods' => $item->periods,
                 'billing' => $item->billing?->value,
                 // Options : types de projet auxquels elles sont réservées (vide : tous).
                 'project_types' => $item->projectTypes->modelKeys(),

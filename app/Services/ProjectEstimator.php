@@ -82,15 +82,20 @@ class ProjectEstimator
     }
 
     /**
+     * Les options récurrentes (maintenance, hébergement…) restent hors du total, du délai et des
+     * pourcentages : elles forment le bloc « recurring », facturé à la période choisie.
+     *
      * @param  Collection<int, EstimatorItem>  $features
-     * @return array{billing: string, currency: string, hourly_rate: int, risk_percent: int, project_type: string, rate_grid: string|null, features: list<string>, hours_min: int, hours_max: int, price_min: int, price_max: int, weeks_min: int, weeks_max: int, lines: list<array{label: string, hours_min: int, hours_max: int, rate: int}>}
+     * @param  array<int|string, string>  $periods  Période choisie par option récurrente (id => période).
+     * @return array{billing: string, currency: string, hourly_rate: int, risk_percent: int, project_type: string, rate_grid: string|null, features: list<string>, hours_min: int, hours_max: int, price_min: int, price_max: int, weeks_min: int, weeks_max: int, lines: list<array{label: string, hours_min: int, hours_max: int, rate: int}>, recurring: list<array{id: int, label: string, period: string, months: int, discount_percent: int, hours_min: int, hours_max: int, rate: int, price_min: int, price_max: int}>}
      */
-    public function estimate(EstimatorItem $projectType, Collection $features, string $currency): array
+    public function estimate(EstimatorItem $projectType, Collection $features, string $currency, array $periods = []): array
     {
         $settings = SiteSetting::current();
         $globalRates = $settings->estimatorRates();
         $risk = max(0, (int) $settings->estimator_risk_percent);
         $hoursPerWeek = max(1, (int) $settings->estimator_hours_per_week);
+        [$recurring, $features] = $features->partition(fn (EstimatorItem $item): bool => $item->pricing === EstimatorPricing::Recurring);
         // Les options en heures s'ajoutent à la base ; celles en pourcentage s'appliquent
         // ensuite à ce total, puis la marge pour imprévus couvre le tout.
         $items = collect([$projectType])->merge($features->where('pricing', '!==', EstimatorPricing::Percent));
@@ -119,7 +124,7 @@ class ProjectEstimator
             'project_type' => $projectType->getTranslation('name', 'fr'),
             // Grille tarifaire du type de projet (null : taux propres ou taux global), pour les statistiques.
             'rate_grid' => $projectType->rate?->getTranslation('name', 'fr'),
-            'features' => $features->map(fn (EstimatorItem $item): string => $item->getTranslation('name', 'fr'))->values()->all(),
+            'features' => $features->merge($recurring)->map(fn (EstimatorItem $item): string => $item->getTranslation('name', 'fr'))->values()->all(),
             'hours_min' => $hoursMin,
             'hours_max' => $hoursMax,
             'price_min' => $priceMin,
@@ -127,7 +132,42 @@ class ProjectEstimator
             'weeks_min' => max(1, (int) ceil($hoursMin / $hoursPerWeek)),
             'weeks_max' => max(1, (int) ceil($hoursMax / $hoursPerWeek)),
             'lines' => $this->lines($items, $features->where('pricing', EstimatorPricing::Percent), $currency, $globalRates, $riskMultiplier, $rate),
+            'recurring' => $this->recurring($recurring, $periods, $currency, $globalRates),
         ];
+    }
+
+    /**
+     * Les options récurrentes, au prix de la période choisie : heures par mois × taux × nombre
+     * de mois, moins la remise de la période. Sans marge pour imprévus : c'est un engagement fixe.
+     *
+     * @param  Collection<int, EstimatorItem>  $recurring
+     * @param  array<int|string, string>  $periods
+     * @param  array<string, int>  $globalRates
+     * @return list<array{id: int, label: string, period: string, months: int, discount_percent: int, hours_min: int, hours_max: int, rate: int, price_min: int, price_max: int}>
+     */
+    private function recurring(Collection $recurring, array $periods, string $currency, array $globalRates): array
+    {
+        return $recurring->map(function (EstimatorItem $item) use ($periods, $currency, $globalRates): array {
+            $item->loadMissing('rate');
+            $period = $item->periodFor($periods[$item->id] ?? null);
+            $discount = EstimatorItem::filterPeriods($item->periods)[$period->value] ?? 0;
+            $rate = $item->hourlyRate($currency, $globalRates);
+            $price = fn (int $hours): int => $this->round((int) ceil($hours * $rate * $period->months() * (1 - $discount / 100)), $currency);
+            $priceMin = $price($item->hours_min);
+
+            return [
+                'id' => $item->id,
+                'label' => $item->getTranslation('name', 'fr'),
+                'period' => $period->value,
+                'months' => $period->months(),
+                'discount_percent' => $discount,
+                'hours_min' => $item->hours_min,
+                'hours_max' => $item->hours_max,
+                'rate' => $rate,
+                'price_min' => $priceMin,
+                'price_max' => max($priceMin, $price($item->hours_max)),
+            ];
+        })->values()->all();
     }
 
     /**

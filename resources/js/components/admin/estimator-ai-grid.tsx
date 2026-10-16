@@ -19,7 +19,9 @@ import type { EstimatorProposal, EstimatorProposalItem } from '@/types';
 const describe = (item: EstimatorProposalItem): string =>
     item.pricing === 'percent'
         ? `+${item.percent} % des heures du projet`
-        : `${item.hours_min ?? 0} – ${item.hours_max ?? 0} h`;
+        : item.pricing === 'recurring'
+          ? `${item.hours_min ?? 0} – ${item.hours_max ?? 0} h / mois, récurrent`
+          : `${item.hours_min ?? 0} – ${item.hours_max ?? 0} h`;
 
 /**
  * « Configurer avec l'IA » : le développeur décrit son activité, l'IA propose toute la

@@ -46,7 +46,7 @@ const COPY = {
         expired:
             "Ce devis n’est plus valable : contactez-moi pour en recevoir un à jour.",
         paid: "Ce document est réglé, merci.",
-        units: { hour: "h", day: "j", flat: "forfait" } as Record<
+        units: { hour: "h", day: "j", flat: "forfait", month: "mois", quarter: "trimestre", semester: "semestre", year: "an" } as Record<
             string,
             string
         >,
@@ -68,7 +68,7 @@ const COPY = {
         expired:
             "This quote has expired: contact me to receive an updated one.",
         paid: "This document has been paid, thank you.",
-        units: { hour: "h", day: "d", flat: "flat" } as Record<string, string>,
+        units: { hour: "h", day: "d", flat: "flat", month: "month", quarter: "quarter", semester: "half-year", year: "year" } as Record<string, string>,
     },
 };
 

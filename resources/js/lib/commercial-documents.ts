@@ -23,6 +23,10 @@ export const LINE_UNITS: Record<CommercialDocumentLine["unit"], string> = {
     hour: "Heures",
     day: "Jours",
     flat: "Forfait",
+    month: "Par mois",
+    quarter: "Par trimestre",
+    semester: "Par semestre",
+    year: "Par an",
 };
 
 const amount = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });

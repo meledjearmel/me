@@ -59,7 +59,7 @@ class ProjectEstimateController extends Controller
         $this->recordSimulation($request, $visitor, $estimate);
 
         return response()->json(Arr::only($estimate, [
-            'billing', 'currency', 'hourly_rate', 'hours_min', 'hours_max', 'price_min', 'price_max', 'weeks_min', 'weeks_max',
+            'billing', 'currency', 'hourly_rate', 'hours_min', 'hours_max', 'price_min', 'price_max', 'weeks_min', 'weeks_max', 'recurring',
         ]));
     }
 
@@ -135,7 +135,7 @@ class ProjectEstimateController extends Controller
         return back();
     }
 
-    /** @return array{billing: string, currency: string, hourly_rate: int, risk_percent: int, project_type: string, rate_grid: string|null, features: list<string>, hours_min: int, hours_max: int, price_min: int, price_max: int, weeks_min: int, weeks_max: int, lines: list<array{label: string, hours_min: int, hours_max: int, rate: int}>} */
+    /** @return array{billing: string, currency: string, hourly_rate: int, risk_percent: int, project_type: string, rate_grid: string|null, features: list<string>, hours_min: int, hours_max: int, price_min: int, price_max: int, weeks_min: int, weeks_max: int, lines: list<array{label: string, hours_min: int, hours_max: int, rate: int}>, recurring: list<array{id: int, label: string, period: string, months: int, discount_percent: int, hours_min: int, hours_max: int, rate: int, price_min: int, price_max: int}>} */
     private function estimateFor(ProjectEstimateRequest $request): array
     {
         $features = EstimatorItem::query()
@@ -147,6 +147,7 @@ class ProjectEstimateController extends Controller
             EstimatorItem::query()->findOrFail($request->validated('project_type_id')),
             $features,
             $request->validated('currency'),
+            $request->validated('periods') ?? [],
         );
     }
 }

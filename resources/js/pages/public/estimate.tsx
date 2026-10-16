@@ -18,6 +18,14 @@ type Quote = {
     price_max: number;
     weeks_min: number;
     weeks_max: number;
+    /** Options récurrentes, hors total : le prix de la période choisie. */
+    recurring: {
+        id: number;
+        period: string;
+        discount_percent: number;
+        price_min: number;
+        price_max: number;
+    }[];
 };
 
 type StepKey = 'project' | 'options' | 'estimate' | 'contact';
@@ -53,6 +61,8 @@ export default function Estimate({
             (projectTypes.length === 1 ? projectTypes[0].id : null),
     );
     const [featureIds, setFeatureIds] = useState<number[]>([]);
+    /** Option récurrente → période choisie (à défaut, la première proposée). */
+    const [periods, setPeriods] = useState<Record<number, string>>({});
 
     // Une option peut être réservée à certains types : seules celles du type choisi sont proposées.
     const isOffered = (feature: PublicEstimatorItem, typeId: number | null) =>
@@ -134,6 +144,7 @@ export default function Estimate({
                 query: {
                     project_type_id: projectTypeId,
                     feature_ids: featureIds,
+                    periods,
                     currency,
                 },
             }),
@@ -152,7 +163,7 @@ export default function Estimate({
         return () => {
             cancelled = true;
         };
-    }, [projectTypeId, featureIds, currency, locale, submit]);
+    }, [projectTypeId, featureIds, periods, currency, locale, submit]);
 
     const money = (amount: number) =>
         new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(
@@ -167,6 +178,13 @@ export default function Estimate({
             ? `${t.estimate.hourlyPrice(`${currentQuote.hours_min} – ${currentQuote.hours_max} h`, money(currentQuote.hourly_rate))} · ${t.estimate.weeks(currentQuote.weeks_min, currentQuote.weeks_max)}`
             : `${money(currentQuote.price_min)} – ${money(currentQuote.price_max)} · ${t.estimate.weeks(currentQuote.weeks_min, currentQuote.weeks_max)}`
         : t.estimate.calculating;
+    // « + 150 – 250 CHF / mois » par option récurrente, à côté de la fourchette du projet.
+    const recurringLabel = (currentQuote?.recurring ?? [])
+        .map(
+            (line) =>
+                ` + ${money(line.price_min)} – ${money(line.price_max)} ${t.estimate.perPeriod[line.period] ?? ''}`,
+        )
+        .join('');
 
     const toggleFeature = (id: number) =>
         setFeatureIds((current) =>
@@ -193,6 +211,7 @@ export default function Estimate({
     const restart = () => {
         setSent(false);
         setFeatureIds([]);
+        setPeriods({});
         setProjectTypeId(projectTypes.length === 1 ? projectTypes[0].id : null);
         setQuote(null);
         setDescription('');
@@ -324,6 +343,7 @@ export default function Estimate({
                                             >
                                                 <span>{t.estimate.result}</span>{' '}
                                                 {quoteLabel}
+                                                {recurringLabel}
                                             </p>
                                         )}
 
@@ -467,6 +487,15 @@ export default function Estimate({
                                                                     {
                                                                         candidate.name
                                                                     }
+                                                                    {candidate.periods && (
+                                                                        <em className="pub-estimate__tag">
+                                                                            {
+                                                                                t
+                                                                                    .estimate
+                                                                                    .recurringTag
+                                                                            }
+                                                                        </em>
+                                                                    )}
                                                                 </strong>
                                                                 {candidate.description && (
                                                                     <span>
@@ -552,6 +581,112 @@ export default function Estimate({
                                                         </span>
                                                     )}
                                                 </p>
+                                                {currentQuote &&
+                                                    currentQuote.recurring
+                                                        .length > 0 && (
+                                                        <div className="pub-estimate__recurring">
+                                                            <p className="pub-booking__label">
+                                                                {
+                                                                    t.estimate
+                                                                        .recurringTitle
+                                                                }
+                                                            </p>
+                                                            {currentQuote.recurring.map(
+                                                                (line) => {
+                                                                    const feature =
+                                                                        features.find(
+                                                                            (
+                                                                                candidate,
+                                                                            ) =>
+                                                                                candidate.id ===
+                                                                                line.id,
+                                                                        );
+                                                                    const offered =
+                                                                        Object.entries(
+                                                                            feature?.periods ??
+                                                                                {},
+                                                                        );
+
+                                                                    return (
+                                                                        <div
+                                                                            key={
+                                                                                line.id
+                                                                            }
+                                                                            className="pub-estimate__recurring-line"
+                                                                        >
+                                                                            <p className="pub-booking__summary">
+                                                                                <span>
+                                                                                    {
+                                                                                        feature?.name
+                                                                                    }
+                                                                                </span>
+                                                                                <strong>
+                                                                                    {`${money(line.price_min)} – ${money(line.price_max)} ${t.estimate.perPeriod[line.period] ?? ''}`}
+                                                                                </strong>
+                                                                            </p>
+                                                                            {offered.length >
+                                                                                1 && (
+                                                                                <div
+                                                                                    className="pub-booking__times"
+                                                                                    role="group"
+                                                                                    aria-label={
+                                                                                        feature?.name
+                                                                                    }
+                                                                                >
+                                                                                    {offered.map(
+                                                                                        ([
+                                                                                            period,
+                                                                                            discount,
+                                                                                        ]) => (
+                                                                                            <button
+                                                                                                key={
+                                                                                                    period
+                                                                                                }
+                                                                                                type="button"
+                                                                                                className="pub-filter"
+                                                                                                aria-pressed={
+                                                                                                    period ===
+                                                                                                    line.period
+                                                                                                }
+                                                                                                onClick={() =>
+                                                                                                    setPeriods(
+                                                                                                        (
+                                                                                                            current,
+                                                                                                        ) => ({
+                                                                                                            ...current,
+                                                                                                            [line.id]:
+                                                                                                                period,
+                                                                                                        }),
+                                                                                                    )
+                                                                                                }
+                                                                                            >
+                                                                                                {
+                                                                                                    t
+                                                                                                        .estimate
+                                                                                                        .periods[
+                                                                                                        period
+                                                                                                    ]
+                                                                                                }
+                                                                                                {discount
+                                                                                                    ? ` ${t.estimate.discount(discount)}`
+                                                                                                    : ''}
+                                                                                            </button>
+                                                                                        ),
+                                                                                    )}
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                    );
+                                                                },
+                                                            )}
+                                                            <p className="pub-booking__note">
+                                                                {
+                                                                    t.estimate
+                                                                        .recurringNote
+                                                                }
+                                                            </p>
+                                                        </div>
+                                                    )}
                                                 <p className="pub-booking__note">
                                                     {currentQuote?.billing ===
                                                     'hourly'
@@ -613,6 +748,34 @@ export default function Estimate({
                                                                     />
                                                                 ),
                                                             )}
+                                                            {Object.entries(
+                                                                periods,
+                                                            )
+                                                                .filter(
+                                                                    ([id]) =>
+                                                                        featureIds.includes(
+                                                                            Number(
+                                                                                id,
+                                                                            ),
+                                                                        ),
+                                                                )
+                                                                .map(
+                                                                    ([
+                                                                        id,
+                                                                        period,
+                                                                    ]) => (
+                                                                        <input
+                                                                            key={
+                                                                                id
+                                                                            }
+                                                                            type="hidden"
+                                                                            name={`periods[${id}]`}
+                                                                            value={
+                                                                                period
+                                                                            }
+                                                                        />
+                                                                    ),
+                                                                )}
                                                             <input
                                                                 type="hidden"
                                                                 name="currency"

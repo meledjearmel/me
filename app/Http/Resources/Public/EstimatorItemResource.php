@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Public;
 
+use App\Enums\EstimatorPricing;
 use App\Models\EstimatorItem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -20,6 +21,8 @@ class EstimatorItemResource extends JsonResource
             'description' => $this->getTranslation('description', app()->getLocale()) ?: null,
             // Types de projet : forfait estimé ou facturation à l'heure.
             'billing' => $this->billing?->value,
+            // Options récurrentes : les périodes proposées et leur remise en % (null : option ponctuelle).
+            'periods' => $this->pricing === EstimatorPricing::Recurring ? EstimatorItem::filterPeriods($this->periods) : null,
             // Options : types de projet auxquels elles sont réservées (vide : tous).
             'project_type_ids' => $this->whenLoaded('projectTypes', fn (): array => $this->projectTypes->modelKeys(), []),
         ];

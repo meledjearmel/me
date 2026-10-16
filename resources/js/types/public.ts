@@ -230,6 +230,10 @@ export type PublicEstimatorItem = {
     name: string;
     description: string | null;
     billing: 'fixed' | 'hourly' | null;
+    /** Options récurrentes : périodes proposées et leur remise en % (null : option ponctuelle). */
+    periods: Partial<
+        Record<'monthly' | 'quarterly' | 'semiannual' | 'yearly', number>
+    > | null;
     /** Options : types de projet auxquels elles sont réservées (vide : tous). */
     project_type_ids: number[];
 };

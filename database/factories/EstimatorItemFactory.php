@@ -64,6 +64,22 @@ class EstimatorItemFactory extends Factory
         ]);
     }
 
+    /**
+     * Option récurrente, ex. la maintenance : des heures par mois, facturées à la période choisie.
+     *
+     * @param  array<string, int>  $periods
+     */
+    public function recurring(array $periods = ['monthly' => 0, 'yearly' => 10]): static
+    {
+        return $this->feature()->state(fn (): array => [
+            'name' => ['fr' => 'Maintenance', 'en' => 'Maintenance'],
+            'pricing' => EstimatorPricing::Recurring,
+            'periods' => $periods,
+            'hours_min' => 2,
+            'hours_max' => 4,
+        ]);
+    }
+
     public function inactive(): static
     {
         return $this->state(fn (): array => ['is_active' => false]);

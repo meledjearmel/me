@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Concerns\PlacesNewAtEnd;
 use App\Enums\EstimatorBilling;
 use App\Enums\EstimatorItemKind;
+use App\Enums\EstimatorPeriod;
 use App\Enums\EstimatorPricing;
 use Database\Factories\EstimatorItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -18,8 +19,8 @@ use Spatie\Translatable\HasTranslations;
 
 /**
  * Un élément de l'estimateur de projet : un type de projet (le socle, chiffré en heures,
- * avec son mode de facturation) ou une option qui s'y ajoute, en heures ou en pourcentage
- * des heures du projet. Une option peut être réservée à certains types de projet.
+ * avec son mode de facturation) ou une option qui s'y ajoute, en heures, en pourcentage
+ * des heures du projet, ou en heures par mois facturées à chaque période (maintenance…). Une option peut être réservée à certains types de projet.
  * Son taux horaire : ses propres taux s'il en a, sinon sa grille tarifaire, sinon le taux global.
  */
 class EstimatorItem extends Model
@@ -42,6 +43,7 @@ class EstimatorItem extends Model
         'hours_max',
         'pricing',
         'percent',
+        'periods',
         'billing',
         'estimator_rate_id',
         'hourly_rates',
@@ -57,6 +59,7 @@ class EstimatorItem extends Model
         'hours_min' => 'integer',
         'hours_max' => 'integer',
         'percent' => 'integer',
+        'periods' => 'array',
         'hourly_rates' => 'array',
         'is_active' => 'boolean',
     ];
@@ -123,6 +126,35 @@ class EstimatorItem extends Model
         return $filtered;
     }
 
+    /**
+     * Option récurrente : les périodes proposées, avec leur remise en %, dans l'ordre des périodes.
+     *
+     * @param  array<string, mixed>|null  $periods
+     * @return array<string, int>
+     */
+    public static function filterPeriods(?array $periods): array
+    {
+        $filtered = [];
+
+        foreach (EstimatorPeriod::cases() as $period) {
+            $discount = $periods[$period->value] ?? null;
+
+            if ($discount !== null && $discount !== '') {
+                $filtered[$period->value] = max(0, min(90, (int) $discount));
+            }
+        }
+
+        return $filtered;
+    }
+
+    /** La période retenue pour une option récurrente : celle demandée si elle est proposée, sinon la première. */
+    public function periodFor(?string $requested): EstimatorPeriod
+    {
+        $periods = self::filterPeriods($this->periods);
+
+        return EstimatorPeriod::from($requested !== null && isset($periods[$requested]) ? $requested : (array_key_first($periods) ?? EstimatorPeriod::Monthly->value));
+    }
+
     /** Une option est-elle proposée pour ce type de projet ? */
     public function isAvailableFor(int $projectTypeId): bool
     {
@@ -136,7 +168,7 @@ class EstimatorItem extends Model
     /**
      * Garde des données cohérentes : seule une option a un mode de prix (un type de projet
      * se chiffre en heures) et seul un type de projet a un mode de facturation ; une option
-     * en pourcentage n'a pas d'heures.
+     * en pourcentage n'a pas d'heures ; seule une option récurrente a des périodes (au moins le mois).
      */
     protected static function booted(): void
     {
@@ -156,6 +188,10 @@ class EstimatorItem extends Model
             } else {
                 $item->percent = null;
             }
+
+            $item->periods = $item->pricing === EstimatorPricing::Recurring
+                ? (self::filterPeriods($item->periods) ?: [EstimatorPeriod::Monthly->value => 0])
+                : null;
 
             $item->hourly_rates = self::filterRates($item->hourly_rates) ?: null;
         });

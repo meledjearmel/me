@@ -113,7 +113,9 @@ export default function EstimatorItemsIndex({
                                       cell: (row) =>
                                           row.pricing === "percent"
                                               ? `+${row.percent} %`
-                                              : `${row.hours_min} – ${row.hours_max} h`,
+                                              : row.pricing === "recurring"
+                                                ? `${row.hours_min} – ${row.hours_max} h / mois`
+                                                : `${row.hours_min} – ${row.hours_max} h`,
                                   },
                                   {
                                       header: "Pour",

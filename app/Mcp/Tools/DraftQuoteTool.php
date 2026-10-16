@@ -28,7 +28,7 @@ class DraftQuoteTool extends Tool
             'lines.*.label' => ['required', 'string', 'max:255'],
             'lines.*.description' => ['nullable', 'string', 'max:1000'],
             'lines.*.quantity' => ['required', 'numeric', 'min:0', 'max:100000'],
-            'lines.*.unit' => ['required', 'in:hour,day,flat'],
+            'lines.*.unit' => ['required', 'in:hour,day,flat,month,quarter,semester,year'],
             'lines.*.unit_price' => ['required', 'integer', 'min:0', 'max:100000000'],
             'notes' => ['nullable', 'string', 'max:2000'],
         ]);
@@ -69,7 +69,7 @@ class DraftQuoteTool extends Tool
                 'label' => $schema->string()->required(),
                 'description' => $schema->string(),
                 'quantity' => $schema->number()->required(),
-                'unit' => $schema->string()->enum(['hour', 'day', 'flat'])->required(),
+                'unit' => $schema->string()->enum(['hour', 'day', 'flat', 'month', 'quarter', 'semester', 'year'])->required()->description('hour, day, flat (forfait), ou une période pour un service récurrent (prix par mois, trimestre, semestre ou an).'),
                 'unit_price' => $schema->integer()->description('Prix unitaire dans la devise de la demande.')->required(),
             ]))->description('Lignes à la place de celles de l\'estimation ; seulement si le développeur les donne ou les valide.'),
             'notes' => $schema->string()->description('Remarques : ce qui est compris ou non, planning, livrables.'),

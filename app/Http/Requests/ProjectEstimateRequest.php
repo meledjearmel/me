@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\EstimatorItemKind;
+use App\Enums\EstimatorPeriod;
 use App\Models\EstimatorItem;
 use App\Services\ProjectEstimator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -24,6 +25,9 @@ class ProjectEstimateRequest extends FormRequest
             'project_type_id' => ['required', 'integer', $this->activeItem(EstimatorItemKind::ProjectType)],
             'feature_ids' => ['nullable', 'array', 'max:50'],
             'feature_ids.*' => ['integer', 'distinct', $this->activeItem(EstimatorItemKind::Feature)],
+            // Options récurrentes : la période choisie par option (id => période) ; à défaut, la première proposée.
+            'periods' => ['nullable', 'array', 'max:50'],
+            'periods.*' => [Rule::enum(EstimatorPeriod::class)],
             // Seules les devises qui ont un taux horaire sont proposées.
             'currency' => ['required', Rule::in(app(ProjectEstimator::class)->currencies())],
         ];

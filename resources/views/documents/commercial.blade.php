@@ -3,7 +3,9 @@
     $money = fn (int|float $amount): string => number_format($amount, 0, ',', ' ').' '.$document->currency;
     $date = fn ($value): string => $value ? $value->format('d.m.Y') : '';
     $quantity = fn (int|float|string $value): string => rtrim(rtrim(number_format((float) $value, 2, ',', ' '), '0'), ',');
-    $units = $en ? ['hour' => 'h', 'day' => 'day', 'flat' => 'flat'] : ['hour' => 'h', 'day' => 'jour', 'flat' => 'forfait'];
+    $units = $en
+        ? ['hour' => 'h', 'day' => 'day', 'flat' => 'flat', 'month' => 'month', 'quarter' => 'quarter', 'semester' => 'half-year', 'year' => 'year']
+        : ['hour' => 'h', 'day' => 'jour', 'flat' => 'forfait', 'month' => 'mois', 'quarter' => 'trimestre', 'semester' => 'semestre', 'year' => 'an'];
     $isQuote = $document->type === \App\Enums\CommercialDocumentType::Quote;
     $layout = in_array($template->layout, \App\Models\DocumentTemplate::LAYOUTS, true) ? $template->layout : 'classic';
     $primary = $template->primary_color ?: '#0f2747';

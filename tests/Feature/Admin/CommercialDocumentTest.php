@@ -61,6 +61,17 @@ test('a quote draft is prefilled from the request and its estimate lines', funct
     $this->actingAs($this->user)->get(route('admin.commercial-documents.show', $document))->assertOk();
 });
 
+test('a recurring option of the estimate becomes a line priced for its period', function () {
+    $this->engagement->update(['estimate' => [
+        ...$this->engagement->estimate,
+        'recurring' => [['id' => 1, 'label' => 'Maintenance', 'period' => 'quarterly', 'months' => 3, 'discount_percent' => 5, 'hours_min' => 2, 'hours_max' => 4, 'rate' => 100, 'price_min' => 550, 'price_max' => 1150]],
+    ]]);
+
+    $document = app(CommercialDocuments::class)->draftFromEngagement($this->engagement);
+
+    expect($document->lines[2])->toMatchArray(['label' => 'Maintenance', 'quantity' => 1, 'unit' => 'quarter', 'unit_price' => 1150]);
+});
+
 test('issuing numbers each type continuously per year, then freezes the document', function () {
     $documents = app(CommercialDocuments::class);
     $first = $documents->issue(CommercialDocument::factory()->create());

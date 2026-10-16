@@ -91,7 +91,59 @@ test('the quote prices the hours with the risk margin at the hourly rate', funct
             'price_max' => 8400,
             'weeks_min' => 2,
             'weeks_max' => 3,
+            'recurring' => [],
         ]);
+});
+
+test('a recurring option stays out of the project total and is priced for the chosen period without margin', function () {
+    $maintenance = EstimatorItem::factory()->recurring(['monthly' => 0, 'yearly' => 10])->create();
+
+    // Projet inchangé : 48 – 84 h. Maintenance 2 – 4 h/mois × 100 × 12 × 0,9 = 2160 – 4320, arrondis à 50.
+    $this->getJson('/fr/estimate/quote?'.http_build_query(estimateChoices([
+        'feature_ids' => [$this->feature->id, $maintenance->id],
+        'periods' => [$maintenance->id => 'yearly'],
+    ])))
+        ->assertOk()
+        ->assertJsonPath('hours_max', 84)
+        ->assertJsonPath('price_max', 8400)
+        ->assertJsonPath('weeks_max', 3)
+        ->assertJsonPath('recurring.0.period', 'yearly')
+        ->assertJsonPath('recurring.0.discount_percent', 10)
+        ->assertJsonPath('recurring.0.price_min', 2150)
+        ->assertJsonPath('recurring.0.price_max', 4300);
+});
+
+test('a recurring option falls back to its first period when none or an unoffered one is chosen', function () {
+    $maintenance = EstimatorItem::factory()->recurring(['monthly' => 0, 'yearly' => 10])->create();
+
+    $this->getJson('/fr/estimate/quote?'.http_build_query(estimateChoices([
+        'feature_ids' => [$maintenance->id],
+        'periods' => [$maintenance->id => 'quarterly'],
+    ])))
+        ->assertOk()
+        ->assertJsonPath('price_max', 6000)
+        ->assertJsonPath('recurring.0.period', 'monthly')
+        ->assertJsonPath('recurring.0.price_min', 200)
+        ->assertJsonPath('recurring.0.price_max', 400);
+
+    $this->getJson('/fr/estimate/quote?'.http_build_query(estimateChoices(['periods' => [$maintenance->id => 'weekly']])))
+        ->assertJsonValidationErrors('periods.'.$maintenance->id);
+});
+
+test('a sent estimate keeps its recurring options in the label', function () {
+    Queue::fake([AnalyzeEngagement::class]);
+    $maintenance = EstimatorItem::factory()->recurring()->create();
+
+    $this->post('/fr/estimate', [
+        ...estimateChoices(['feature_ids' => [$maintenance->id], 'periods' => [$maintenance->id => 'monthly']]),
+        'name' => 'Awa Client',
+        'email' => 'awa@example.test',
+    ])->assertRedirect();
+
+    $engagement = Engagement::query()->firstOrFail();
+
+    expect($engagement->estimate['recurring'][0]['label'])->toBe('Maintenance')
+        ->and($engagement->estimate_label)->toEndWith(' + Maintenance 200 – 400 CHF/mois');
 });
 
 test('a percentage option grows the project hours before the risk margin', function () {

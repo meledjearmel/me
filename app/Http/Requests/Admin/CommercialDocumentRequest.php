@@ -34,7 +34,7 @@ class CommercialDocumentRequest extends FormRequest
             'lines.*.description' => ['nullable', 'string', 'max:1000'],
             'lines.*.quantity' => ['required', 'numeric', 'min:0', 'max:100000'],
             // hour (heures), day (jours) ou flat (forfait).
-            'lines.*.unit' => ['required', 'in:hour,day,flat'],
+            'lines.*.unit' => ['required', 'in:hour,day,flat,month,quarter,semester,year'],
             'lines.*.unit_price' => ['required', 'integer', 'min:0', 'max:100000000'],
             'deposit_percent' => ['required', 'integer', 'min:0', 'max:100'],
             'payment_terms' => ['nullable', 'string', 'max:2000'],

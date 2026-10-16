@@ -20,7 +20,7 @@ class SaveEstimatorItemTool extends Tool
     {
         $entry = $request->only([
             'id', 'kind', 'name_fr', 'name_en', 'description_fr', 'description_en',
-            'hours_min', 'hours_max', 'pricing', 'percent', 'billing', 'project_types', 'rate', 'hourly_rates',
+            'hours_min', 'hours_max', 'pricing', 'percent', 'periods', 'billing', 'project_types', 'rate', 'hourly_rates',
         ]);
 
         try {
@@ -49,8 +49,14 @@ class SaveEstimatorItemTool extends Tool
             'description_en' => $schema->string()->description('La même en anglais.'),
             'hours_min' => $schema->integer()->description('Heures de travail réelles au minimum, hors marge (le site l\'ajoute) ; 0 pour une option en pourcentage.'),
             'hours_max' => $schema->integer()->description('Heures de travail réelles au maximum, hors marge.'),
-            'pricing' => $schema->string()->enum(['hours', 'percent'])->description('Options : heures fixes, ou pourcentage des heures du projet.'),
+            'pricing' => $schema->string()->enum(['hours', 'percent', 'recurring'])->description('Options : heures fixes, pourcentage des heures du projet, ou recurring (heures par mois facturées à chaque période, hors total du projet : maintenance, hébergement, support…).'),
             'percent' => $schema->integer()->description('Options en pourcentage : ce qui s\'ajoute aux heures du projet, en %.'),
+            'periods' => $schema->object([
+                'monthly' => $schema->integer(),
+                'quarterly' => $schema->integer(),
+                'semiannual' => $schema->integer(),
+                'yearly' => $schema->integer(),
+            ])->description('Options récurrentes : périodes proposées au visiteur, chacune avec sa remise en % (0 sans remise) ; une période absente n\'est pas proposée. Ex. {"monthly": 0, "yearly": 15}. hours_min/hours_max sont alors des heures par mois, sans marge.'),
             'billing' => $schema->string()->enum(['fixed', 'hourly'])->description('Types de projet : fixed (forfait estimé) ou hourly (facturé à l\'heure, pour un périmètre flou ou évolutif).'),
             'project_types' => $schema->array()->items($schema->integer())->description('Options : identifiants des types de projet auxquels l\'option est réservée ; vide pour tous.'),
             'rate' => $schema->integer()->description('Grille tarifaire suivie (voir get-estimator) ; 0 pour n\'en suivre aucune. Pour créer une grille, utilise configure-estimator.'),

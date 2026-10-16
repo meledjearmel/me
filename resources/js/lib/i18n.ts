@@ -104,6 +104,23 @@ const dictionaries = {
             hourlyPrice: (hours: string, rate: string) =>
                 `${hours} à ${rate} de l'heure`,
             hourlyTotal: (total: string) => `soit environ ${total}`,
+            recurringTitle: 'Ensuite, en continu',
+            recurringTag: 'Récurrent',
+            recurringNote:
+                'Ces services sont facturés à chaque période choisie, en plus du projet.',
+            periods: {
+                monthly: 'Mensuel',
+                quarterly: 'Trimestriel',
+                semiannual: 'Semestriel',
+                yearly: 'Annuel',
+            } as Record<string, string>,
+            perPeriod: {
+                monthly: '/ mois',
+                quarterly: '/ trimestre',
+                semiannual: '/ semestre',
+                yearly: '/ an',
+            } as Record<string, string>,
+            discount: (percent: number) => `−${percent} %`,
             hourlyNote:
                 'Ce type de projet est facturé au temps passé : vous ne payez que les heures réellement travaillées.',
             aiTitle: 'Pas sûr de quoi choisir ?',
@@ -853,6 +870,23 @@ const dictionaries = {
             hourlyPrice: (hours: string, rate: string) =>
                 `${hours} at ${rate} per hour`,
             hourlyTotal: (total: string) => `about ${total}`,
+            recurringTitle: 'Then, ongoing',
+            recurringTag: 'Recurring',
+            recurringNote:
+                'These services are billed every chosen period, on top of the project.',
+            periods: {
+                monthly: 'Monthly',
+                quarterly: 'Quarterly',
+                semiannual: 'Half-yearly',
+                yearly: 'Yearly',
+            } as Record<string, string>,
+            perPeriod: {
+                monthly: '/ month',
+                quarterly: '/ quarter',
+                semiannual: '/ half-year',
+                yearly: '/ year',
+            } as Record<string, string>,
+            discount: (percent: number) => `−${percent}%`,
             hourlyNote:
                 'This type of project is billed by the hour: you only pay for the hours actually worked.',
             aiTitle: 'Not sure what to pick?',

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\EngagementOutcome;
 use App\Enums\EngagementStatus;
 use App\Enums\EngagementType;
+use App\Enums\EstimatorPeriod;
 use Database\Factories\EngagementFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -126,7 +127,12 @@ class Engagement extends Model
                 ? "{$hours} × {$number($estimate['hourly_rate'])} {$currency}/h ≈ {$prices}"
                 : "{$prices} (forfait, {$hours})";
 
-            return "{$amount} · {$weeks}";
+            // Options récurrentes, hors total : « + Maintenance 300 – 450 CHF/mois ».
+            $recurring = collect($estimate['recurring'] ?? [])
+                ->map(fn (array $line): string => " + {$line['label']} {$number($line['price_min'])} – {$number($line['price_max'])} {$currency}/".(EstimatorPeriod::tryFrom($line['period'])?->label() ?? $line['period']))
+                ->implode('');
+
+            return "{$amount} · {$weeks}{$recurring}";
         });
     }
 

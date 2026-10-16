@@ -8,6 +8,7 @@ use App\Ai\Agents\EstimatorGridDesigner;
 use App\Ai\Agents\EstimatorItemAdvisor;
 use App\Enums\EstimatorBilling;
 use App\Enums\EstimatorItemKind;
+use App\Enums\EstimatorPeriod;
 use App\Enums\EstimatorPricing;
 use App\Models\Engagement;
 use App\Models\EstimatorItem;
@@ -122,6 +123,7 @@ class EstimateAssistant
                 ],
                 'pricing' => $pricing->value,
                 'percent' => $pricing === EstimatorPricing::Percent ? self::percent($data['percent'] ?? null) : null,
+                'periods' => self::periods($pricing, $data['periods'] ?? null),
                 'hours_min' => min($hoursMin, $hoursMax),
                 'hours_max' => max($hoursMin, $hoursMax),
                 'reasoning' => self::text($data['reasoning'] ?? null, 2000),
@@ -179,6 +181,7 @@ class EstimateAssistant
                     'hours_max' => max($hoursMin, $hoursMax),
                     'pricing' => $kind === EstimatorItemKind::Feature ? $pricing->value : null,
                     'percent' => $pricing === EstimatorPricing::Percent ? self::percent($entry['percent'] ?? null) : null,
+                    'periods' => self::periods($pricing, $entry['periods'] ?? null),
                     'billing' => $kind === EstimatorItemKind::ProjectType
                         ? (EstimatorBilling::tryFrom((string) ($entry['billing'] ?? ''))?->value ?? EstimatorBilling::Fixed->value)
                         : null,
@@ -224,9 +227,28 @@ class EstimateAssistant
     {
         $pricing = EstimatorPricing::tryFrom((string) ($data['pricing'] ?? '')) ?? EstimatorPricing::Hours;
 
-        return $kind === EstimatorItemKind::Feature && $pricing === EstimatorPricing::Percent && self::percent($data['percent'] ?? null) !== null
-            ? EstimatorPricing::Percent
-            : EstimatorPricing::Hours;
+        return match (true) {
+            $kind !== EstimatorItemKind::Feature => EstimatorPricing::Hours,
+            $pricing === EstimatorPricing::Percent && self::percent($data['percent'] ?? null) !== null => EstimatorPricing::Percent,
+            $pricing === EstimatorPricing::Recurring => EstimatorPricing::Recurring,
+            default => EstimatorPricing::Hours,
+        };
+    }
+
+    /**
+     * Les périodes d'une option récurrente (remises ramenées entre 0 et 90 %), le mois à défaut.
+     *
+     * @return array<string, int>|null
+     */
+    private static function periods(EstimatorPricing $pricing, mixed $value): ?array
+    {
+        if ($pricing !== EstimatorPricing::Recurring) {
+            return null;
+        }
+
+        $periods = EstimatorItem::filterPeriods(is_array($value) ? array_map(fn (mixed $discount): mixed => is_numeric($discount) ? (int) $discount : null, $value) : null);
+
+        return $periods ?: [EstimatorPeriod::Monthly->value => 0];
     }
 
     private static function percent(mixed $value): ?int
@@ -323,7 +345,11 @@ class EstimateAssistant
             $item->kind === EstimatorItemKind::ProjectType ? 'Type de projet' : 'Option',
             $item->id,
             $item->getTranslation('name', 'fr'),
-            $item->pricing === EstimatorPricing::Percent ? "+{$item->percent} % des heures du projet" : "{$item->hours_min} à {$item->hours_max} h",
+            match ($item->pricing) {
+                EstimatorPricing::Percent => "+{$item->percent} % des heures du projet",
+                EstimatorPricing::Recurring => "{$item->hours_min} à {$item->hours_max} h par mois, récurrent hors total du projet (".collect(EstimatorItem::filterPeriods($item->periods))->map(fn (int $discount, string $period): string => EstimatorPeriod::from($period)->label().($discount > 0 ? " −{$discount} %" : ''))->implode(', ').')',
+                default => "{$item->hours_min} à {$item->hours_max} h",
+            },
             match (true) {
                 $item->kind === EstimatorItemKind::ProjectType => ' ('.($item->billing === EstimatorBilling::Hourly ? 'à l\'heure' : 'forfait').')',
                 $item->projectTypes->isNotEmpty() => ' (seulement pour : '.$item->projectTypes->map(fn (EstimatorItem $type): string => $type->getTranslation('name', 'fr'))->implode(', ').')',

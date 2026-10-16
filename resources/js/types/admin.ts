@@ -435,6 +435,8 @@ export type EstimatorCurrency = "CHF" | "EUR" | "USD" | "XOF";
 
 export type EstimatorBilling = "fixed" | "hourly";
 
+export type EstimatorPeriod = "monthly" | "quarterly" | "semiannual" | "yearly";
+
 export type EstimatorItem = {
     id: number;
     kind: "project_type" | "feature";
@@ -442,8 +444,10 @@ export type EstimatorItem = {
     description: Partial<Translatable> | null;
     hours_min: number;
     hours_max: number;
-    pricing: "hours" | "percent";
+    pricing: "hours" | "percent" | "recurring";
     percent: number | null;
+    /** Options récurrentes : périodes proposées et leur remise en %. */
+    periods: Partial<Record<EstimatorPeriod, number>> | null;
     billing: EstimatorBilling | null;
     /** Grille tarifaire suivie (aucune : taux propres ou taux global). */
     estimator_rate_id: number | null;
@@ -488,7 +492,7 @@ export type CommercialDocumentLine = {
     label: string;
     description: string | null;
     quantity: number;
-    unit: "hour" | "day" | "flat";
+    unit: "hour" | "day" | "flat" | "month" | "quarter" | "semester" | "year";
     unit_price: number;
 };
 
@@ -619,8 +623,9 @@ export type EstimatorProposalItem = {
     description_en?: string;
     hours_min?: number;
     hours_max?: number;
-    pricing?: "hours" | "percent";
+    pricing?: "hours" | "percent" | "recurring";
     percent?: number;
+    periods?: Partial<Record<EstimatorPeriod, number>>;
     billing?: EstimatorBilling;
     project_types?: (string | number)[];
 };

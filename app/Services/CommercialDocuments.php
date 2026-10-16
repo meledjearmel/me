@@ -6,6 +6,7 @@ use App\Ai\Agents\CommercialDocumentMailWriter;
 use App\Enums\CommercialDocumentStatus;
 use App\Enums\CommercialDocumentType;
 use App\Enums\EngagementOutcome;
+use App\Enums\EstimatorPeriod;
 use App\Mail\CommercialDocumentMail;
 use App\Models\CommercialDocument;
 use App\Models\DocumentTemplate;
@@ -31,7 +32,8 @@ class CommercialDocuments
 
     /**
      * Un brouillon prérempli depuis une demande : le client, et les lignes de l'estimation (heures
-     * marge comprise × taux de chaque élément) ou une ligne au haut de sa fourchette.
+     * marge comprise × taux de chaque élément) ou une ligne au haut de sa fourchette, puis une
+     * ligne par option récurrente, au prix de sa période.
      */
     public function draftFromEngagement(Engagement $engagement, CommercialDocumentType $type = CommercialDocumentType::Quote): CommercialDocument
     {
@@ -48,6 +50,17 @@ class CommercialDocuments
                 'unit' => 'flat',
                 'unit_price' => (int) ($estimate['price_max'] ?? $engagement->budget_amount ?? 0),
             ]];
+        }
+
+        // Options récurrentes : une période au haut de la fourchette, remise de la période comprise.
+        foreach ($estimate['recurring'] ?? [] as $line) {
+            $lines[] = [
+                'label' => $line['label'],
+                'description' => null,
+                'quantity' => 1,
+                'unit' => EstimatorPeriod::tryFrom($line['period'])?->unit() ?? 'month',
+                'unit_price' => (int) $line['price_max'],
+            ];
         }
 
         return $this->draft($type, [
