@@ -297,10 +297,25 @@ html.pub-theming .pub *::after {
         opacity 0.2s ease;
 }
 
-.pub-pill.is-compact .pub-pill__links {
-    max-width: 0;
-    opacity: 0;
+/* compacte : les liens se replient, le bouton Contact reste à portée */
+.pub-link {
+    max-width: 12em;
     overflow: hidden;
+    transition:
+        border-color 0.18s ease,
+        max-width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+        padding 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.2s ease,
+        visibility 0.45s;
+}
+
+/* masqués aussi au clavier tant qu'ils sont repliés */
+.pub-pill.is-compact .pub-link {
+    max-width: 0;
+    padding-inline: 0;
+    border-width: 0;
+    opacity: 0;
+    visibility: hidden;
 }
 
 @media (min-width: 708px) {
@@ -314,7 +329,6 @@ html.pub-theming .pub *::after {
     border: 1px solid transparent;
     border-radius: 99px;
     white-space: nowrap;
-    transition: border-color 0.18s ease;
 }
 
 .pub-link:hover,
