@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ActivityStatus;
 use App\Enums\AppointmentStatus;
 use App\Enums\CommentStatus;
 use App\Enums\CommercialDocumentStatus;
@@ -13,6 +14,8 @@ use App\Enums\PublicationStatus;
 use App\Enums\RevisionStatus;
 use App\Enums\TestimonialStatus;
 use App\Models\Appointment;
+use App\Models\AppointmentType;
+use App\Models\Celebration;
 use App\Models\Certification;
 use App\Models\CommercialDocument;
 use App\Models\Contact;
@@ -21,6 +24,7 @@ use App\Models\Distinction;
 use App\Models\Domain;
 use App\Models\Education;
 use App\Models\Engagement;
+use App\Models\EstimatorItem;
 use App\Models\Experience;
 use App\Models\JobApplication;
 use App\Models\JobProfile;
@@ -66,6 +70,9 @@ class ContentStatus
         'appointment' => ['model' => Appointment::class, 'enum' => AppointmentStatus::class, 'english' => []],
         'commercial_document' => ['model' => CommercialDocument::class, 'enum' => CommercialDocumentStatus::class, 'english' => []],
         'revision' => ['model' => ContentRevision::class, 'enum' => RevisionStatus::class, 'english' => []],
+        'estimator_item' => ['model' => EstimatorItem::class, 'enum' => ActivityStatus::class, 'english' => []],
+        'appointment_type' => ['model' => AppointmentType::class, 'enum' => ActivityStatus::class, 'english' => []],
+        'celebration' => ['model' => Celebration::class, 'enum' => ActivityStatus::class, 'english' => []],
         'project' => ['model' => Project::class, 'enum' => ProjectStatus::class, 'english' => ['title', 'context', 'realization', 'result']],
         'post' => ['model' => Post::class, 'enum' => PublicationStatus::class, 'english' => []],
         'experience' => ['model' => Experience::class, 'enum' => PublicationStatus::class, 'english' => ['role']],
@@ -100,7 +107,13 @@ class ContentStatus
             throw ValidationException::withMessages(['status' => __('Statut inconnu.')]);
         }
 
-        if ($newStatus === $content->status) {
+        if ($newStatus === $this->currentStatus($content)) {
+            return;
+        }
+
+        if ($this->hasActivityFlag($content)) {
+            $content->update(['is_active' => $newStatus === ActivityStatus::Active]);
+
             return;
         }
 
@@ -159,8 +172,24 @@ class ContentStatus
             $content instanceof ContentRevision => $content->status === RevisionStatus::Pending
                 ? [RevisionStatus::Applied, RevisionStatus::Rejected]
                 : [],
-            default => $content->status::cases(),
+            default => $this->currentStatus($content)::cases(),
         };
+    }
+
+    /** Le statut actuel ; celui d'une ligne à interrupteur se lit dans `is_active`. */
+    public function currentStatus(Model $content): BackedEnum
+    {
+        if ($this->hasActivityFlag($content)) {
+            return $content->is_active ? ActivityStatus::Active : ActivityStatus::Hidden;
+        }
+
+        return $content->status;
+    }
+
+    /** Élément de l'estimateur, type de rendez-vous ou célébration : un simple `is_active`. */
+    private function hasActivityFlag(Model $content): bool
+    {
+        return $content instanceof EstimatorItem || $content instanceof AppointmentType || $content instanceof Celebration;
     }
 
     /** Les statuts à effets passent par le service métier ; renvoie false pour un simple champ. */

@@ -9,10 +9,13 @@ use App\Enums\RevisionStatus;
 use App\Enums\TestimonialStatus;
 use App\Jobs\SendAppointmentMails;
 use App\Models\Appointment;
+use App\Models\AppointmentType;
+use App\Models\Celebration;
 use App\Models\CommercialDocument;
 use App\Models\Contact;
 use App\Models\ContentRevision;
 use App\Models\Domain;
+use App\Models\EstimatorItem;
 use App\Models\Experience;
 use App\Models\Post;
 use App\Models\Project;
@@ -144,4 +147,18 @@ test('a status that cannot follow the current one is refused', function (string 
     'draft document marked paid' => ['commercial_document', fn () => CommercialDocument::factory()->create(), 'paid'],
     'declined appointment confirmed' => ['appointment', fn () => Appointment::factory()->create(['status' => AppointmentStatus::Declined]), 'confirmed'],
     'applied revision rejected' => ['revision', fn () => ContentRevision::factory()->create(['status' => RevisionStatus::Applied]), 'rejected'],
+]);
+
+test('a row with an active switch is hidden from its list', function (string $type, string $model) {
+    $item = $model::factory()->create(['is_active' => true]);
+
+    $this->actingAs(User::factory()->create())
+        ->patch(route('admin.content-status.update', ['type' => $type, 'id' => $item->id]), ['status' => 'hidden'])
+        ->assertSessionHasNoErrors();
+
+    expect($item->fresh()->is_active)->toBeFalse();
+})->with([
+    'estimator option' => ['estimator_item', EstimatorItem::class],
+    'appointment type' => ['appointment_type', AppointmentType::class],
+    'celebration' => ['celebration', Celebration::class],
 ]);

@@ -28,7 +28,9 @@ class ContentStatusController extends Controller
      *   (email envoyé au visiteur, créneau libéré) ;
      * - `commercial_document` : `issued` depuis `draft` (numéro attribué), puis `accepted`,
      *   `declined`, `paid` ou `cancelled` ;
-     * - `revision` : `applied` ou `rejected` depuis `pending` (appliquer modifie le contenu).
+     * - `revision` : `applied` ou `rejected` depuis `pending` (appliquer modifie le contenu) ;
+     * - `estimator_item` (type de projet ou option de l'estimateur), `appointment_type`,
+     *   `celebration` : `active` (proposé sur le site) ou `hidden` (masqué).
      *
      * Un changement impossible depuis le statut actuel est refusé (422). Publier est refusé tant
      * que l'anglais obligatoire manque ; un article publié sans date paraît tout de suite.
@@ -47,6 +49,6 @@ class ContentStatusController extends Controller
 
         $statuses->change($type, $content, $request->input('status'));
 
-        return response()->json(['data' => ['type' => $type, 'id' => $id, 'status' => $content->refresh()->status->value]]);
+        return response()->json(['data' => ['type' => $type, 'id' => $id, 'status' => $statuses->currentStatus($content->refresh())->value]]);
     }
 }

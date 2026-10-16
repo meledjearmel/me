@@ -1,3 +1,4 @@
+import StatusMenu from "@/components/admin/status-menu";
 import { Head, Link } from "@inertiajs/react";
 import { ExternalLink, Plus, SquarePen } from "lucide-react";
 import EstimatorItemController from "@/actions/App/Http/Controllers/Admin/EstimatorItemController";
@@ -7,7 +8,6 @@ import DeleteButton from "@/components/admin/delete-button";
 import EstimatorAiGrid from "@/components/admin/estimator-ai-grid";
 import { ESTIMATOR_BILLINGS } from "@/components/admin/estimator-item-fields";
 import Heading from "@/components/heading";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { index as projectTypesIndex } from "@/routes/admin/estimator-items";
 import { index as publicEstimate } from "@/routes/estimate";
@@ -31,10 +31,18 @@ export default function EstimatorItemsIndex({
 
     const statusColumn = {
         header: "Statut",
+        fit: true,
         cell: (row: EstimatorItem) => (
-            <Badge variant={row.is_active ? "default" : "secondary"}>
-                {row.is_active ? "Proposé" : "Masqué"}
-            </Badge>
+            <StatusMenu
+                type="estimator_item"
+                id={row.id}
+                status={row.is_active ? "active" : "hidden"}
+                options={[
+                    { value: "active", label: "Proposé" },
+                    { value: "hidden", label: "Masqué" },
+                ]}
+                variants={{ active: "default", hidden: "secondary" }}
+            />
         ),
     };
 

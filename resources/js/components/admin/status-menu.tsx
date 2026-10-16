@@ -42,7 +42,10 @@ export type StatusListType =
     | "testimonial"
     | "appointment"
     | "commercial_document"
-    | "revision";
+    | "revision"
+    | "estimator_item"
+    | "appointment_type"
+    | "celebration";
 
 /**
  * Statuts atteignables depuis le statut actuel, comme le serveur les accepte : un rendez-vous
