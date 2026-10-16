@@ -17,7 +17,12 @@ import Seo from '@/components/public/seo';
 import PublicShell from '@/components/public/public-shell';
 import ReviewInvite from '@/components/public/review-invite';
 import { useLocale, useLocalizedPath, useTranslations } from '@/lib/i18n';
-import type { PublicProfile, PublicProject, PublicTestimonial } from '@/types';
+import type {
+    PublicDistinction,
+    PublicProfile,
+    PublicProject,
+    PublicTestimonial,
+} from '@/types';
 
 /** Première phrase d'un texte : sert de chapô dans le bandeau. */
 const firstSentence = (text: string) => {
@@ -31,11 +36,13 @@ export default function ProjectShow({
     nextProject,
     testimonial,
     github,
+    distinctions,
 }: {
     project: PublicProject;
     nextProject: PublicProject | null;
     testimonial: PublicTestimonial | null;
     github: ProjectGitHubData | null;
+    distinctions: PublicDistinction[];
 }) {
     const t = useTranslations();
     const locale = useLocale();
@@ -85,7 +92,12 @@ export default function ProjectShow({
                             .map((domain) => domain.label)
                             .join(' · ')}
                         title={project.title}
-                        aside={<ProjectMeta project={project} />}
+                        aside={
+                            <ProjectMeta
+                                project={project}
+                                distinctions={distinctions}
+                            />
+                        }
                         lead={
                             <>
                                 <p>
@@ -124,7 +136,12 @@ export default function ProjectShow({
                         mentions={project.mentions}
                     />
                     <ProjectGallery urls={project.gallery_urls} />
-                    {github && <ProjectGitHub github={github} />}
+                    {github && (
+                        <ProjectGitHub
+                            github={github}
+                            startedOn={project.started_on}
+                        />
+                    )}
 
                     {otherRelated.length > 0 && (
                         <section

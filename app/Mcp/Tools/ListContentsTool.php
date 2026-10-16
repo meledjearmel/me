@@ -15,7 +15,7 @@ use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 
 #[Name('list-contents')]
-#[Description('Pour un type de contenu (experience, education, certification, uses_item, skill, service) : la description de ses champs (à utiliser avec save-content-draft) et la liste des contenus existants (identifiant, titre, statut). À appeler avant d\'en créer un, pour éviter les doublons.')]
+#[Description('Pour un type de contenu (experience, education, certification, distinction, uses_item, skill, service) : la description de ses champs (à utiliser avec save-content-draft) et la liste des contenus existants (identifiant, titre, statut). À appeler avant d\'en créer un, pour éviter les doublons.')]
 #[IsReadOnly]
 class ListContentsTool extends Tool
 {

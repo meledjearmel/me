@@ -1,6 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import { motion, useTransform } from 'framer-motion';
 import { useRef } from 'react';
+import AppLogoIcon from '@/components/app-logo-icon';
 import Skyline from '@/components/public/skyline';
 import Letters from '@/components/public/letters';
 import { useViewportProgress } from '@/hooks/use-viewport-progress';
@@ -34,8 +35,12 @@ export default function SiteFooter({
         certificationsEnabled,
         nowEnabled,
         servicesEnabled,
+        estimatorEnabled,
+        bookingOpen,
     } = usePage<{
         servicesEnabled?: boolean;
+        estimatorEnabled?: boolean;
+        bookingOpen?: boolean;
         blogEnabled: boolean;
         usesEnabled: boolean;
         certificationsEnabled: boolean;
@@ -104,6 +109,36 @@ export default function SiteFooter({
                         </button>
                     </motion.h2>
                 </div>
+
+                <div className="pub-footer__actions">
+                    <button
+                        type="button"
+                        className="pub-footer__action pub-footer__action--primary"
+                        onClick={open}
+                    >
+                        {t.footer.ctaWrite}
+                        <span aria-hidden="true">→</span>
+                    </button>
+                    {estimatorEnabled && (
+                        <Link
+                            href={path('estimate')}
+                            className="pub-footer__action"
+                            prefetch
+                        >
+                            {t.footer.ctaEstimate}
+                        </Link>
+                    )}
+                    {bookingOpen && (
+                        <Link
+                            href={path('appointments')}
+                            className="pub-footer__action"
+                            prefetch
+                        >
+                            {t.footer.ctaBooking}
+                        </Link>
+                    )}
+                </div>
+                <p className="pub-footer__note">{t.footer.ctaNote}</p>
             </div>
 
             <div className="pub-footer__hills" aria-hidden="true">
@@ -124,6 +159,13 @@ export default function SiteFooter({
             </div>
 
             <div className="pub-footer__bar">
+                <Link
+                    href={path()}
+                    className="pub-footer__logo"
+                    aria-label={`${name} — ${t.nav.home}`}
+                >
+                    <AppLogoIcon aria-hidden="true" />
+                </Link>
                 <p>
                     © {new Date().getFullYear()} {name}. {t.footer.rights}
                 </p>

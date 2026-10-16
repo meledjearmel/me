@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\ProjectStatus;
 use App\Enums\TestimonialStatus;
+use App\Http\Resources\Public\DistinctionResource;
 use App\Http\Resources\Public\DomainResource;
 use App\Http\Resources\Public\ProjectResource;
 use App\Http\Resources\Public\TestimonialResource;
@@ -50,6 +51,9 @@ class ProjectController extends Controller
             'testimonial' => $testimonial ? new TestimonialResource($testimonial) : null,
             // Lu dans le cache de `github:sync` : null sans dépôt lié.
             'github' => $this->github->forProject($project),
+            'distinctions' => DistinctionResource::collection(
+                $project->distinctions()->published()->orderByDesc('awarded_on')->get(),
+            ),
         ]);
     }
 

@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\Public\DistinctionResource;
 use App\Http\Resources\Public\EducationResource;
 use App\Http\Resources\Public\ExperienceResource;
-use App\Models\Counter;
+use App\Models\Distinction;
 use App\Models\Education;
 use App\Models\Experience;
 use App\Services\GitHubActivity;
@@ -20,12 +21,15 @@ class AboutController extends Controller
     {
         return Inertia::render('public/about', [
             'experiences' => ExperienceResource::collection(
-                Experience::query()->published()->with('highlights')->orderByRaw('end_date is null desc')->orderByDesc('start_date')->get(),
+                Experience::query()->published()->with(['highlights', 'distinctions' => fn ($query) => $query->published()->orderByDesc('awarded_on')])->orderByRaw('end_date is null desc')->orderByDesc('start_date')->get(),
             ),
             'educations' => EducationResource::collection(
-                Education::query()->published()->orderByDesc('end_date')->get(),
+                Education::query()->published()->with(['distinctions' => fn ($query) => $query->published()->orderByDesc('awarded_on')])->orderByDesc('end_date')->get(),
             ),
-            'congratulations' => Counter::total(Counter::CONGRATULATIONS),
+            // Alternent dans la carte « Distinction », chacune avec son compteur de félicitations.
+            'distinctions' => DistinctionResource::collection(
+                Distinction::query()->published()->with('distinguishable')->orderBy('sort_order')->orderByDesc('awarded_on')->get(),
+            ),
             'yearsOfExperience' => $this->yearsOfExperience(),
             // Lu dans le cache tenu par `github:sync` : null tant qu'aucune synchronisation n'a réussi.
             'github' => $this->github->forDisplay(),

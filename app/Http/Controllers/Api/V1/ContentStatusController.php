@@ -16,7 +16,7 @@ class ContentStatusController extends Controller
      * Changer le statut d'un contenu
      *
      * Change seulement le statut, sans renvoyer tout le formulaire. `type` : `project`
-     * (`draft`, `published`, `archived`), `post`, `experience`, `education`, `certification`,
+     * (`draft`, `published`, `archived`), `post`, `experience`, `education`, `certification`, `distinction`,
      * `uses_item`, `skill` ou `service` (`draft` ou `published`). Publier est refusé (422) tant que
      * l'anglais obligatoire manque ; un article publié sans date paraît tout de suite.
      *

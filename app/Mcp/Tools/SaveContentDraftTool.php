@@ -16,7 +16,7 @@ use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 
 #[Name('save-content-draft')]
-#[Description('Crée en brouillon (sans id) ou modifie (avec id, seulement les champs envoyés) une expérience, une formation, une certification, un élément de la page « Uses », une compétence ou une offre de la page « Services », en français. Les champs de chaque type sont décrits par list-contents. Le développeur relit, fait traduire et publie lui-même ; un contenu publié n\'est jamais modifié ici. N\'invente rien : dates, organismes et chiffres viennent de la source ou du développeur.')]
+#[Description('Crée en brouillon (sans id) ou modifie (avec id, seulement les champs envoyés) une expérience, une formation, une certification, une distinction, un élément de la page « Uses », une compétence ou une offre de la page « Services », en français. Les champs de chaque type sont décrits par list-contents. Le développeur relit, fait traduire et publie lui-même ; un contenu publié n\'est jamais modifié ici. N\'invente rien : dates, organismes et chiffres viennent de la source ou du développeur.')]
 class SaveContentDraftTool extends Tool
 {
     use NamesAiClient;

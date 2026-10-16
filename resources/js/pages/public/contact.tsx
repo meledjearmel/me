@@ -1,20 +1,88 @@
-import { Form, usePage } from '@inertiajs/react';
+import { Form, Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import ContactController from '@/actions/App/Http/Controllers/ContactController';
 import CvDownloadCard from '@/components/public/cv-download-card';
-import BookingInvite from '@/components/public/booking-invite';
-import EstimateInvite from '@/components/public/estimate-invite';
 import Seo from '@/components/public/seo';
 import PageHero from '@/components/public/page-hero';
 import PhoneLink from '@/components/public/phone-link';
 import PublicShell from '@/components/public/public-shell';
 import ReviewInvite from '@/components/public/review-invite';
 import { useAvailability } from '@/lib/availability';
-import { useLocale, useTranslations } from '@/lib/i18n';
+import { useLocale, useLocalizedPath, useTranslations } from '@/lib/i18n';
 import type { PublicProfile } from '@/types';
 
-/** Panneau de coordonnées dans le bandeau : email, lieu, délai de réponse, réseaux. */
-function ContactMeta({ profile }: { profile: PublicProfile }) {
+/**
+ * Carte mise en avant dans le bandeau : la prise de rendez-vous (et l'estimateur),
+ * pour qui préfère en parler de vive voix plutôt que d'écrire.
+ */
+function ContactBooking({
+    bookingOpen,
+    estimatorEnabled,
+}: {
+    bookingOpen: boolean;
+    estimatorEnabled: boolean;
+}) {
+    const t = useTranslations();
+    const path = useLocalizedPath();
+
+    return (
+        <div className="pub-meta pub-contact-book pub-reveal pub-reveal--late">
+            {bookingOpen ? (
+                <>
+                    <p className="pub-contact-book__kicker">
+                        {t.booking.kicker}
+                    </p>
+                    <h2 className="pub-contact-book__title">
+                        {t.booking.heading}
+                    </h2>
+                    <p className="pub-contact-book__text">{t.booking.lead}</p>
+                    <Link
+                        href={path('appointments')}
+                        className="pub-contact-book__cta"
+                        prefetch
+                    >
+                        {t.booking.cta} <span aria-hidden="true">→</span>
+                    </Link>
+                </>
+            ) : (
+                <>
+                    <p className="pub-contact-book__kicker">
+                        {t.estimate.kicker}
+                    </p>
+                    <h2 className="pub-contact-book__title">
+                        {t.estimate.heading}
+                    </h2>
+                    <p className="pub-contact-book__text">{t.estimate.lead}</p>
+                </>
+            )}
+            {estimatorEnabled && (
+                <Link
+                    href={path('estimate')}
+                    className={
+                        bookingOpen
+                            ? 'pub-contact-book__alt'
+                            : 'pub-contact-book__cta'
+                    }
+                    prefetch
+                >
+                    {bookingOpen ? `${t.estimate.ctaHint} ` : ''}
+                    <span>{t.estimate.cta}</span>{' '}
+                    <span aria-hidden="true">→</span>
+                </Link>
+            )}
+        </div>
+    );
+}
+
+/** Coordonnées : email, téléphone, lieu, délai de réponse, réseaux. */
+function ContactMeta({
+    profile,
+    plain = false,
+}: {
+    profile: PublicProfile;
+    /** Sur fond clair, dans la colonne latérale, plutôt que sur le ciel du bandeau. */
+    plain?: boolean;
+}) {
     const t = useTranslations();
     const socials = [
         { label: 'GitHub', href: profile.social_links?.github },
@@ -24,7 +92,13 @@ function ContactMeta({ profile }: { profile: PublicProfile }) {
     );
 
     return (
-        <dl className="pub-meta pub-reveal pub-reveal--late">
+        <dl
+            className={
+                plain
+                    ? 'pub-meta pub-meta--plain'
+                    : 'pub-meta pub-reveal pub-reveal--late'
+            }
+        >
             <div>
                 <dt>{t.contact.emailLabel}</dt>
                 <dd className="pub-meta__links">
@@ -81,7 +155,13 @@ export default function Contact() {
     const { props } = usePage<{
         profile: PublicProfile;
         cvAvailable: boolean;
+        bookingOpen?: boolean;
+        estimatorEnabled?: boolean;
     }>();
+    const bookingOpen = Boolean(props.bookingOpen);
+    const estimatorEnabled = Boolean(props.estimatorEnabled);
+    // Le rendez-vous passe en avant dans le bandeau ; les coordonnées vont alors dans la colonne.
+    const hasBookingCard = bookingOpen || estimatorEnabled;
     const [subject, setSubject] = useState('');
     // Changer la clé remonte le formulaire : il repart vide après « envoyer un autre message ».
     const [formKey, setFormKey] = useState(0);
@@ -108,16 +188,28 @@ export default function Contact() {
                     id="pub-contact-title"
                     eyebrow={t.contact.kicker}
                     title={t.contact.heading}
-                    aside={<ContactMeta profile={props.profile} />}
+                    aside={
+                        hasBookingCard ? (
+                            <ContactBooking
+                                bookingOpen={bookingOpen}
+                                estimatorEnabled={estimatorEnabled}
+                            />
+                        ) : (
+                            <ContactMeta profile={props.profile} />
+                        )
+                    }
                     lead={
                         <>
                             <p>{t.contactDrawer.intro}</p>
-                            <p
-                                className={`pub-contact__avail pub-avail--${availability.status}`}
-                            >
-                                <i aria-hidden="true" />
-                                {availability.eyebrow}
-                            </p>
+                            {/* Seule une date de reprise ou une indisponibilité mérite d'être signalée. */}
+                            {availability.status !== 'available' && (
+                                <p
+                                    className={`pub-contact__avail pub-avail--${availability.status}`}
+                                >
+                                    <i aria-hidden="true" />
+                                    {availability.eyebrow}
+                                </p>
+                            )}
                         </>
                     }
                 />
@@ -265,8 +357,6 @@ export default function Contact() {
                                 </Form>
                             )}
 
-                            <EstimateInvite className="pub-review-invite--start pub-review-invite--contact" />
-                            <BookingInvite className="pub-review-invite--start pub-review-invite--contact" />
                             <ReviewInvite
                                 className="pub-review-invite--start pub-review-invite--contact"
                                 text={t.fab.reviewContactHint}
@@ -295,20 +385,16 @@ export default function Contact() {
                                 ))}
                             </ul>
 
-                            <p className="pub-contact__label">
-                                {t.contactDrawer.altLabel}
-                            </p>
-                            <a
-                                className="pub-contact__mail"
-                                href={`mailto:${props.profile.email}`}
-                            >
-                                {props.profile.email}
-                            </a>
-                            {props.profile.phone && (
-                                <PhoneLink
-                                    className="pub-contact__phone"
-                                    phone={props.profile.phone}
-                                />
+                            {hasBookingCard && (
+                                <>
+                                    <p className="pub-contact__label">
+                                        {t.contactDrawer.altLabel}
+                                    </p>
+                                    <ContactMeta
+                                        profile={props.profile}
+                                        plain
+                                    />
+                                </>
                             )}
 
                             {props.cvAvailable && <CvDownloadCard />}

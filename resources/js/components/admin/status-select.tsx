@@ -16,6 +16,7 @@ export type StatusContentType =
     | "experience"
     | "education"
     | "certification"
+    | "distinction"
     | "uses_item"
     | "skill"
     | "service";

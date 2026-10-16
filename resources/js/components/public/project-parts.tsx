@@ -15,6 +15,7 @@ import { useViewportProgress } from '@/hooks/use-viewport-progress';
 import { accentFor, readableTextOn } from '@/lib/accent';
 import { useLocale, useLocalizedPath, useTranslations } from '@/lib/i18n';
 import type {
+    PublicDistinction,
     PublicProject,
     PublicTechnology,
     PublicTestimonial,
@@ -60,8 +61,14 @@ function projectPeriod(
     return `${start} – ${project.ended_on ? format(project.ended_on) : ongoing}`;
 }
 
-/** Panneau de faits dans le bandeau : domaines, technologies, code, démo. */
-export function ProjectMeta({ project }: { project: PublicProject }) {
+/** Panneau de faits dans le bandeau : domaines, distinctions, technologies, code, démo. */
+export function ProjectMeta({
+    project,
+    distinctions = [],
+}: {
+    project: PublicProject;
+    distinctions?: PublicDistinction[];
+}) {
     const t = useTranslations();
     const locale = useLocale();
     const identity = [
@@ -90,6 +97,32 @@ export function ProjectMeta({ project }: { project: PublicProject }) {
                     {project.domains.map((domain) => domain.label).join(' · ')}
                 </dd>
             </div>
+
+            {distinctions.length > 0 && (
+                <div>
+                    <dt>{t.projects.awardsLabel}</dt>
+                    {distinctions.map((distinction) => (
+                        <dd key={distinction.id} className="pub-meta__award">
+                            <span aria-hidden="true">🏆</span>{' '}
+                            {distinction.url ? (
+                                <a
+                                    href={distinction.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    {distinction.title}
+                                </a>
+                            ) : (
+                                distinction.title
+                            )}{' '}
+                            <small>
+                                {distinction.issuer} ·{' '}
+                                {distinction.awarded_on.slice(0, 4)}
+                            </small>
+                        </dd>
+                    ))}
+                </div>
+            )}
 
             {project.is_open_source && (
                 <div>

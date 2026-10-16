@@ -26,6 +26,8 @@ class EducationResource extends JsonResource
             'description' => $this->description !== null
                 ? $this->getTranslation('description', $locale)
                 : null,
+            /** Distinctions publiées obtenues pendant cette formation. */
+            'distinctions' => DistinctionResource::collection($this->whenLoaded('distinctions')),
         ];
     }
 }

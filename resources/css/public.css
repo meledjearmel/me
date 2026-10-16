@@ -144,6 +144,7 @@ html.pub-theming .pub *::after {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
     padding: 24px clamp(16px, 4vw, 60px) 0;
     color: var(--pub-ink);
     transition: color var(--pub-fade) ease;
@@ -180,7 +181,7 @@ html.pub-theming .pub *::after {
     height: 20px;
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1200px) {
     .pub-nav__location {
         display: flex;
     }
@@ -188,13 +189,13 @@ html.pub-theming .pub *::after {
 
 /* pastille en verre */
 .pub-pill {
-    --pub-pill-gap: 16px;
+    --pub-pill-gap: 10px;
 
     display: flex;
     align-items: center;
     gap: var(--pub-pill-gap);
     height: 56px;
-    padding: 0 8px;
+    padding: 0 7px;
     border-radius: 9999px;
     background: rgb(255 255 255 / 0.2);
     border: 1px solid rgb(255 255 255 / 0.5);
@@ -227,6 +228,7 @@ html.pub-theming .pub *::after {
     height: 100%;
     object-fit: cover;
 }
+
 
 .pub-avail {
     display: flex;
@@ -288,9 +290,8 @@ html.pub-theming .pub *::after {
 .pub-pill__links {
     display: none;
     align-items: center;
-    gap: 8px;
-    margin-left: 8px;
-    max-width: 680px;
+    gap: 2px;
+    max-width: 760px;
     transition:
         max-width 0.45s cubic-bezier(0.4, 0, 0.2, 1),
         opacity 0.2s ease;
@@ -300,7 +301,6 @@ html.pub-theming .pub *::after {
     max-width: 0;
     opacity: 0;
     overflow: hidden;
-    margin-left: 0;
 }
 
 @media (min-width: 708px) {
@@ -310,7 +310,7 @@ html.pub-theming .pub *::after {
 }
 
 .pub-link {
-    padding: 8px 12px;
+    padding: 8px 14px;
     border: 1px solid transparent;
     border-radius: 99px;
     white-space: nowrap;
@@ -322,13 +322,16 @@ html.pub-theming .pub *::after {
     border-color: currentColor;
 }
 
-/* page active : le bouton contact garde sa pastille, avec un anneau */
+/* page active : le bouton contact inverse ses couleurs (fond transparent, contour blanc) */
 .pub-cta[aria-current='page'] {
-    box-shadow: 0 0 0 2px var(--pub-gold);
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px currentColor;
+    color: inherit !important;
 }
 
 .pub-cta {
-    padding: 8px 16px;
+    margin-left: 6px;
+    padding: 9px 18px;
     border-radius: 999px;
     background: #fff;
     color: #000 !important;
@@ -341,6 +344,10 @@ html.pub-theming .pub *::after {
 .pub-cta:hover {
     transform: scale(1.03);
     box-shadow: 0 4px 12px -4px rgb(30 58 95 / 0.4);
+}
+
+.pub-cta[aria-current='page']:hover {
+    box-shadow: inset 0 0 0 1.5px currentColor;
 }
 
 /* boutons ronds (langue, musique, thème) */
@@ -1322,8 +1329,9 @@ html:has([data-cursor='native']) :is(.pub-cursor__dot, .pub-cursor__ring) {
 }
 
 /* navigateurs sans backdrop-filter : version encre + liseré crème */
-@supports not
-((backdrop-filter: invert(1)) or (-webkit-backdrop-filter: invert(1))) {
+@supports not (
+    (backdrop-filter: invert(1)) or (-webkit-backdrop-filter: invert(1))
+) {
     .pub-cursor__dot {
         background: #060606;
         box-shadow: 0 0 0 1.5px #fff9e9;
@@ -1532,22 +1540,50 @@ html.pub-scroll {
 }
 
 /* tablette : pastille de navigation resserrée pour laisser la place aux boutons */
-@media (min-width: 708px) and (max-width: 1023px) {
+@media (min-width: 708px) and (max-width: 1199px) {
     .pub-pill {
-        --pub-pill-gap: 10px;
+        --pub-pill-gap: 6px;
+
+        height: 50px;
+        padding: 0 6px;
+    }
+
+    .pub-avatar {
+        width: 36px;
+        height: 36px;
     }
 
     .pub-pill__links {
-        gap: 2px;
-        font-size: 15px;
+        gap: 0;
+        font-size: 14px;
     }
 
     .pub-link {
-        padding: 6px 9px;
+        padding: 6px 8px;
     }
 
     .pub-cta {
-        padding: 6px 12px;
+        margin-left: 4px;
+        padding: 7px 12px;
+    }
+}
+
+/* petite tablette : un cran plus serré pour que la pastille ne touche pas les boutons */
+@media (min-width: 708px) and (max-width: 900px) {
+    .pub-pill__links {
+        font-size: 13.5px;
+    }
+
+    .pub-link {
+        padding: 6px 6px;
+    }
+
+    .pub-cta {
+        padding: 7px 10px;
+    }
+
+    .pub-nav__tools {
+        gap: 6px;
     }
 }
 
@@ -2449,6 +2485,55 @@ html.pub-scroll {
     cursor: pointer;
 }
 
+/* actions explicites sous le titre : le client sait quoi faire ensuite */
+.pub-footer__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: calc(clamp(2rem, 5vw, 4rem) * -0.5);
+}
+
+.pub-footer__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.9rem 1.5rem;
+    border: 1.5px solid currentColor;
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+        transform 0.18s var(--pub-ease-spring),
+        background-color 0.2s,
+        color 0.2s;
+}
+
+.pub-footer__action:hover {
+    transform: translateY(-2px);
+}
+
+.pub-footer__action--primary {
+    border-color: var(--pub-text);
+    background: var(--pub-text);
+    color: var(--pub-bg);
+}
+
+.pub-footer__action:focus-visible {
+    outline: 3px solid var(--pub-text);
+    outline-offset: 4px;
+}
+
+.pub-footer__note {
+    margin: calc(clamp(2rem, 5vw, 4rem) * -0.6) 0 0;
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
 .pub-footer__headline-btn:focus-visible {
     outline: 3px solid var(--pub-text);
     outline-offset: 10px;
@@ -2487,6 +2572,18 @@ html.pub-scroll {
     color: #fff9e9;
     font-size: 15px;
     text-align: center;
+}
+
+/* logo du site au-dessus du copyright : mène à l'accueil */
+.pub-footer__bar .pub-footer__logo {
+    display: inline-flex;
+    padding: 0.25rem;
+}
+
+.pub-footer__logo svg {
+    width: 44px;
+    height: auto;
+    fill: currentColor;
 }
 
 .pub-footer__bar p {
@@ -2967,27 +3064,20 @@ html.pub-scroll {
     user-select: none;
 }
 
-.pub-polaroids__reset {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    z-index: 50;
-    display: grid;
-    place-items: center;
-    width: 40px;
-    height: 40px;
-    border: 1px solid rgb(255 255 255 / 0.5);
-    border-radius: 50%;
-    background: rgb(255 255 255 / 0.2);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-    color: inherit;
-    cursor: pointer;
-    transition: transform 0.2s var(--pub-ease-spring);
+/* les photos glissées passent sous le titre, jamais par-dessus */
+.pub-page-hero:has(.pub-polaroids) .pub-page-hero__copy {
+    position: relative;
+    z-index: 2;
+    /* une photo glissée dessous reste attrapable à travers le texte */
+    pointer-events: none;
 }
 
-.pub-polaroids__reset:hover {
-    transform: rotate(-90deg) scale(1.06);
+.pub-page-hero:has(.pub-polaroids) .pub-page-hero__copy :is(a, button) {
+    pointer-events: auto;
+}
+
+.pub-polaroids {
+    z-index: 1;
 }
 
 @media (max-width: 560px) {
@@ -3502,6 +3592,117 @@ html.pub-scroll {
 .pub-fact__count strong {
     font-size: 1.15em;
     font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Carte « Distinction » : les distinctions alternent ---------- */
+.pub-distinction {
+    position: relative;
+}
+
+.pub-distinction__slide {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+/* toute la carte félicite la distinction affichée ; lien et points passent au-dessus */
+.pub-distinction__congrats {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.pub-distinction__congrats::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+}
+
+.pub-distinction__congrats:focus-visible {
+    outline: none;
+}
+
+.pub-distinction:has(.pub-distinction__congrats:focus-visible) {
+    outline: 3px solid #fff9e9;
+    outline-offset: 4px;
+}
+
+.pub-distinction__context {
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+.pub-distinction__context a,
+.pub-distinction__dots {
+    position: relative;
+    z-index: 1;
+}
+
+.pub-distinction__context a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.pub-distinction__dots {
+    display: flex;
+    gap: 0.45rem;
+}
+
+.pub-distinction__dots button {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: rgb(255 249 233 / 0.45);
+    cursor: pointer;
+    transition:
+        width 0.3s var(--pub-ease-spring),
+        background-color 0.2s;
+}
+
+.pub-distinction__dots button[aria-current='true'] {
+    width: 22px;
+    background: #fff9e9;
+}
+
+/* badges 🏆 dans le parcours et la formation */
+.pub-award-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.45rem;
+}
+
+.pub-award-badge {
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--pub-gold) 28%, transparent);
+    color: var(--pub-text);
+    font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.pub-meta__award small {
+    display: block;
+    margin-top: 0.15rem;
+    font-family: var(--pub-font-body, inherit);
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.pub-meta__award a {
+    color: inherit;
 }
 
 .pub-page-hero__lead {
@@ -5157,6 +5358,85 @@ html.pub-scroll {
     font-size: clamp(1.4rem, 2.6vw, 2rem);
     letter-spacing: -0.02em;
     overflow-wrap: anywhere;
+}
+
+/* Coordonnées dans la colonne, sur fond clair */
+.pub-meta.pub-meta--plain {
+    justify-self: stretch;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+.pub-meta--plain > div {
+    border-top-color: var(--pub-drawer-line);
+}
+
+/* Prise de rendez-vous, mise en avant dans le bandeau */
+.pub-contact-book {
+    display: grid;
+    gap: 0.9rem;
+    width: min(100%, 420px);
+    padding: clamp(1.5rem, 3vw, 2rem);
+}
+
+.pub-contact-book__kicker {
+    margin: 0;
+    font-family: var(--pub-font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.pub-contact-book__title {
+    margin: 0;
+    font-family: var(--pub-font-display);
+    font-size: clamp(1.6rem, 2.8vw, 2.2rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+}
+
+.pub-contact-book__text {
+    margin: 0;
+    font-size: 0.98rem;
+    line-height: 1.5;
+    opacity: 0.9;
+}
+
+.pub-contact-book .pub-contact-book__cta {
+    display: inline-flex;
+    justify-self: start;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 0.3rem;
+    padding: 0.95rem 1.6rem;
+    border-radius: 999px;
+    background: var(--pub-gold);
+    color: #14172e;
+    font-weight: 600;
+    transition: transform 0.2s var(--pub-ease-spring);
+}
+
+.pub-contact-book .pub-contact-book__cta:hover {
+    transform: translateY(-2px);
+}
+
+.pub-contact-book__alt {
+    color: inherit;
+    font-size: 0.92rem;
+    opacity: 0.9;
+}
+
+.pub-contact-book__alt span:first-of-type {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    white-space: nowrap;
 }
 
 @media (max-width: 900px) {
@@ -8704,7 +8984,8 @@ html.pub-scroll {
     display: grid;
     gap: 0.6rem;
     padding-bottom: clamp(1.5rem, 4vw, 2.5rem);
-    border-bottom: 1px solid color-mix(in oklab, var(--pub-text) 18%, transparent);
+    border-bottom: 1px solid
+        color-mix(in oklab, var(--pub-text) 18%, transparent);
     animation: pub-application-in 0.6s var(--pub-ease-smooth) both;
 }
 
@@ -8816,7 +9097,8 @@ html.pub-scroll {
     gap: 0.7rem;
     margin-bottom: 1rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid color-mix(in oklab, var(--pub-text) 14%, transparent);
+    border-bottom: 1px solid
+        color-mix(in oklab, var(--pub-text) 14%, transparent);
 }
 
 .pub-application__actions .pub-drawer__send {
@@ -8871,7 +9153,8 @@ html.pub-scroll {
 }
 
 /* Une carte sur deux, l'image passe à droite. */
-.pub-application__project:nth-child(odd of .pub-application__project) .pub-application__project-media {
+.pub-application__project:nth-child(odd of .pub-application__project)
+    .pub-application__project-media {
     order: 2;
 }
 
@@ -8986,7 +9269,8 @@ html.pub-scroll {
         position: static;
     }
 
-    .pub-application__project:nth-child(odd of .pub-application__project) .pub-application__project-media {
+    .pub-application__project:nth-child(odd of .pub-application__project)
+        .pub-application__project-media {
         order: 0;
     }
 }
@@ -9315,7 +9599,7 @@ html.pub-scroll {
 /* Activité GitHub (page À propos) */
 .pub-github__stats {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
     margin: 0 0 clamp(1.5rem, 4vw, 2.5rem);
 }
@@ -9417,19 +9701,70 @@ html.pub-scroll {
     outline: none;
 }
 
+/* « GitHub ↗ » en haut à droite : apparaît au survol pour annoncer où mène la carte */
+.pub-github__hint {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: var(--pub-gold);
+    color: #14172e;
+    font-size: 0.75rem;
+    font-weight: 600;
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+    pointer-events: none;
+}
+
+.pub-github__repo-link:hover .pub-github__hint,
+.pub-github__repo-link:focus-visible .pub-github__hint {
+    opacity: 1;
+    transform: none;
+}
+
+@media (hover: none) {
+    .pub-github__hint {
+        opacity: 1;
+        transform: none;
+    }
+}
+
 .pub-github__card:has(.pub-github__repo-link:hover),
 .pub-github__card:has(.pub-github__repo-link:focus-visible) {
     border-color: var(--pub-gold);
     transform: translateY(-2px);
 }
 
-.pub-github__case-study {
+/* bouton vers la page du projet : au-dessus du lien étendu du dépôt */
+.pub-github__card .pub-github__case-study {
     position: relative;
     z-index: 1;
-    justify-self: end;
-    color: inherit;
+    display: inline-flex;
+    justify-self: start;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.35rem;
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    background: var(--pub-text);
+    color: var(--pub-bg);
     font-size: 0.9rem;
-    text-underline-offset: 0.25em;
+    font-weight: 500;
+    text-decoration: none;
+    transition: transform 0.2s var(--pub-ease-spring);
+}
+
+.pub-github__card .pub-github__case-study:hover {
+    transform: translateY(-2px);
+}
+
+.pub-github__case-study:focus-visible {
+    outline: 3px solid var(--pub-gold);
+    outline-offset: 3px;
 }
 
 /* Encart GitHub de la page d'un projet */
@@ -9476,6 +9811,28 @@ html.pub-scroll {
     margin: 0;
     font-size: 0.9rem;
     opacity: 0.7;
+}
+
+.pub-project-github__period {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    align-self: center;
+}
+
+.pub-project-github__period span {
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.6;
+}
+
+.pub-project-github__period strong {
+    font-family: var(--pub-font-display);
+    font-size: clamp(1.3rem, 2.6vw, 1.8rem);
+    font-weight: 400;
+    line-height: 1.15;
+    text-transform: capitalize;
 }
 
 .pub-project-github__weeks {
@@ -10096,7 +10453,8 @@ html.pub-scroll {
 .pub-post .post-content .is-speaking {
     border-radius: 6px;
     background: color-mix(in oklab, var(--pub-gold) 18%, transparent);
-    box-shadow: 0 0 0 0.35rem color-mix(in oklab, var(--pub-gold) 18%, transparent);
+    box-shadow: 0 0 0 0.35rem
+        color-mix(in oklab, var(--pub-gold) 18%, transparent);
     transition: background-color 0.3s ease;
 }
 
@@ -10189,7 +10547,8 @@ body:has(.pub-fab.is-open) .pub-listen-mini {
     height: 2.75rem;
     background: var(--pub-gold);
     color: #111;
-    box-shadow: 0 6px 16px -8px color-mix(in oklab, var(--pub-gold) 80%, transparent);
+    box-shadow: 0 6px 16px -8px
+        color-mix(in oklab, var(--pub-gold) 80%, transparent);
 }
 
 .pub-listen-mini .pub-listen-mini__info {

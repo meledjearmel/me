@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\ContentRevisionController;
 use App\Http\Controllers\Admin\ContentStatusController;
 use App\Http\Controllers\Admin\CvDownloadController;
+use App\Http\Controllers\Admin\DistinctionController;
 use App\Http\Controllers\Admin\DocumentTemplateController;
 use App\Http\Controllers\Admin\DomainController;
 use App\Http\Controllers\Admin\EducationController;
@@ -126,6 +127,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
         Route::delete('/', [JobApplicationCvController::class, 'destroy'])->name('destroy');
     });
     Route::resource('certifications', CertificationController::class)->except('show');
+    Route::resource('distinctions', DistinctionController::class)->except('show');
     Route::delete('certifications/{certification}/badge', [CertificationController::class, 'destroyBadge'])->name('certifications.badge.destroy');
     Route::resource('tracks', TrackController::class)->except('show');
     Route::prefix('technology-icons')->name('technology-icons.')->group(function () {

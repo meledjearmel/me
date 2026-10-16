@@ -28,6 +28,23 @@ export type PublicSkill = {
     technologies: PublicTechnology[];
 };
 
+/** Distinction ou prix, avec son contexte publié (expérience, formation ou projet). */
+export type PublicDistinction = {
+    id: number;
+    title: string;
+    issuer: string;
+    description: string | null;
+    /** AAAA-MM-JJ. */
+    awarded_on: string;
+    url: string | null;
+    congratulations: number;
+    context: {
+        type: 'experience' | 'education' | 'project';
+        label: string;
+        url: string;
+    } | null;
+};
+
 export type PublicEducation = {
     id: number;
     institution: string;
@@ -36,6 +53,7 @@ export type PublicEducation = {
     start_date: string;
     end_date: string | null;
     description: string | null;
+    distinctions?: PublicDistinction[];
 };
 
 export type PublicExperience = {
@@ -49,6 +67,7 @@ export type PublicExperience = {
     /** Cartes des mentions `@[…](type:id)` de la description, par « type:id ». */
     mentions: Record<string, PublicPostMention>;
     highlights: string[];
+    distinctions?: PublicDistinction[];
 };
 
 export type PublicTechnology = {

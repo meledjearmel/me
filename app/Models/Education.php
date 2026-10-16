@@ -7,6 +7,7 @@ use App\Concerns\PlacesNewAtEnd;
 use Database\Factories\EducationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Spatie\Translatable\HasTranslations;
@@ -45,4 +46,14 @@ class Education extends Model
         'start_date' => 'date',
         'end_date' => 'date',
     ];
+
+    /**
+     * Distinctions obtenues dans ce contexte.
+     *
+     * @return MorphMany<Distinction, $this>
+     */
+    public function distinctions(): MorphMany
+    {
+        return $this->morphMany(Distinction::class, 'distinguishable');
+    }
 }

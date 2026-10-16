@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { DistinctionBadges } from '@/components/public/distinction-card';
 import MentionText from '@/components/public/mention-text';
 import PostMentionCard from '@/components/public/post-mention-card';
 import ReviewInvite from '@/components/public/review-invite';
@@ -33,6 +34,23 @@ export default function ExperienceList({
         experiences[0]?.id ?? null,
     );
     const sectionRef = useRef<HTMLElement>(null);
+
+    // Arrivé par un lien « #experience-12 » (carte « Distinction ») : ce poste s'ouvre.
+    useEffect(() => {
+        const openFromHash = () => {
+            const match = window.location.hash.match(/^#experience-(\d+)$/);
+
+            if (match) {
+                setOpenId(Number(match[1]));
+            }
+        };
+
+        openFromHash();
+        window.addEventListener('hashchange', openFromHash);
+
+        return () => window.removeEventListener('hashchange', openFromHash);
+    }, []);
+
     const mentions = Object.assign(
         {},
         ...experiences.map((experience) => experience.mentions),
@@ -57,7 +75,11 @@ export default function ExperienceList({
                         const panelId = `pub-exp-panel-${experience.id}`;
 
                         return (
-                            <li key={experience.id} className="pub-exp__item">
+                            <li
+                                key={experience.id}
+                                id={`experience-${experience.id}`}
+                                className="pub-exp__item"
+                            >
                                 <button
                                     type="button"
                                     className="pub-exp__head"
@@ -74,6 +96,11 @@ export default function ExperienceList({
                                         <span className="pub-exp__role">
                                             {experience.role}
                                         </span>
+                                        <DistinctionBadges
+                                            distinctions={
+                                                experience.distinctions
+                                            }
+                                        />
                                     </span>
 
                                     <span className="pub-exp__meta">

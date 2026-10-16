@@ -8,6 +8,7 @@ use App\Mcp\Tools\ListContentsTool;
 use App\Mcp\Tools\SaveContentDraftTool;
 use App\Mcp\Tools\SaveContentTranslationTool;
 use App\Models\Certification;
+use App\Models\Distinction;
 use App\Models\Domain;
 use App\Models\Experience;
 use App\Models\Project;
@@ -114,6 +115,21 @@ test('a certification needs valid dates and kind, and a published one is never c
         ->assertHasErrors(['Seul un brouillon existant peut être modifié.']);
 
     expect(Certification::query()->count())->toBe(1);
+});
+
+test('a distinction draft can be attached to the experience where it was earned', function () {
+    $experience = Experience::factory()->create(['company' => 'CIAPOL']);
+
+    PortfolioServer::actingAs(User::factory()->create())
+        ->tool(SaveContentDraftTool::class, ['type' => 'distinction', 'fields' => [
+            'title' => 'Meilleur agent', 'issuer' => 'CIAPOL', 'awarded_on' => '2025-06-30',
+            'context_type' => 'experience', 'context_id' => $experience->id,
+        ]])
+        ->assertOk();
+
+    $distinction = Distinction::query()->sole();
+    expect($distinction->status)->toBe(PublicationStatus::Draft)
+        ->and($distinction->distinguishable->is($experience))->toBeTrue();
 });
 
 test('an english-less draft can be saved from the admin, but not published', function () {

@@ -259,6 +259,7 @@ class ContentRevisions
         'experience' => 'Expérience',
         'education' => 'Formation',
         'certification' => 'Certification',
+        'distinction' => 'Distinction',
         'uses_item' => 'Page « Uses »',
         'skill' => 'Compétence',
         'service' => 'Offre',

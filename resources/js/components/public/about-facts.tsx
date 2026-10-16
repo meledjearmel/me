@@ -1,9 +1,9 @@
 import { Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { useCongratulations } from '@/hooks/use-congratulations';
-import { burstConfetti } from '@/lib/confetti';
+import DistinctionCard from '@/components/public/distinction-card';
 import { useLocale, useLocalizedPath, useTranslations } from '@/lib/i18n';
+import type { PublicDistinction } from '@/types';
 
 const CITY_TIME_ZONE = 'Africa/Abidjan';
 
@@ -97,22 +97,18 @@ const card = (delay: number) => ({
 });
 
 /**
- * « En bref » : une grille de cartes (heure locale, distinction,
- * langues, lien vers les projets). Les informations viennent de ton CV.
+ * « En bref » : une grille de cartes (heure locale, distinctions,
+ * langues, lien vers les projets). Les distinctions se gèrent dans l'admin.
  */
 export default function AboutFacts({
-    congratulations,
+    distinctions,
 }: {
-    congratulations: number;
+    distinctions: PublicDistinction[];
 }) {
     const t = useTranslations();
     const path = useLocalizedPath();
     const time = useLocalTime();
     const locale = useLocale();
-    const congrats = useCongratulations(
-        congratulations,
-        path('congratulations'),
-    );
     const languages = [
         { name: t.about.langFrench, note: t.about.langFrenchNote, score: 5 },
         {
@@ -162,41 +158,10 @@ export default function AboutFacts({
                         )}
                     </motion.article>
 
-                    <motion.button
-                        type="button"
-                        className="pub-fact pub-fact--coral pub-fact--action"
-                        data-cursor-label={t.about.congrats}
-                        onClick={(event) => {
-                            const box =
-                                event.currentTarget.getBoundingClientRect();
-                            // Au clavier, le clic n'a pas de position : on part du centre de la carte.
-                            const x = event.clientX || box.left + box.width / 2;
-                            const y = event.clientY || box.top + box.height / 2;
-
-                            burstConfetti(x, y);
-                            congrats.add();
-                        }}
-                        {...card(0.08)}
-                    >
-                        <span className="pub-fact__label">
-                            {t.about.distinctionLabel}
-                        </span>
-                        <span className="pub-fact__medium">
-                            {t.about.distinction}
-                        </span>
-                        <span className="pub-fact__count" aria-live="polite">
-                            {congrats.total === 0 ? (
-                                t.about.congratsFirst
-                            ) : (
-                                <>
-                                    <strong>
-                                        {congrats.total.toLocaleString(locale)}
-                                    </strong>{' '}
-                                    {t.about.congratsReceived(congrats.total)}
-                                </>
-                            )}
-                        </span>
-                    </motion.button>
+                    <DistinctionCard
+                        distinctions={distinctions}
+                        motionProps={card(0.08)}
+                    />
 
                     <motion.article
                         className="pub-fact pub-fact--green"

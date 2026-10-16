@@ -129,6 +129,7 @@ const dictionaries = {
             ctaHint: 'Une idée du budget en une minute ?',
         },
         nav: {
+            home: 'Accueil',
             about: 'À propos',
             skills: 'Compétences',
             projects: 'Projets',
@@ -226,7 +227,8 @@ const dictionaries = {
                     `${count} étoile${count > 1 ? 's' : ''}`,
                 updated: 'Mis à jour le',
                 profile: 'Voir mon profil GitHub',
-                caseStudy: "Voir l'étude de cas",
+                caseStudy: 'Découvrir le projet',
+                viewRepository: 'Voir sur GitHub',
                 calendar: {
                     title: 'Mon activité',
                     periods: {
@@ -254,7 +256,6 @@ const dictionaries = {
             heading:
                 'Je conçois des logiciels que les gens utilisent vraiment.',
             cursorDrag: 'Glisse',
-            resetPhotos: 'Remettre les photos en place',
             portraitOrange:
                 "Portrait d'Armel Meledje en noir et blanc sur fond orange",
             portraitSuit: 'Armel Meledje en costume, assis dans un bureau',
@@ -262,7 +263,12 @@ const dictionaries = {
             timeLabel: 'Heure locale',
             timeCity: 'Abidjan',
             distinctionLabel: 'Distinction',
-            distinction: 'Meilleur agent du premier semestre 2025 au CIAPOL',
+            distinctionsLabel: 'Distinctions',
+            distinctionAt: 'chez',
+            distinctionFor: 'pour',
+            distinctionPosition: (index: number, total: number) =>
+                `Distinction ${index} sur ${total}`,
+            distinctionShow: (index: number) => `Voir la distinction ${index}`,
             languagesLabel: 'Langues parlées',
             congrats: 'Féliciter',
             congratsReceived: (count: number) =>
@@ -331,7 +337,8 @@ const dictionaries = {
             contact: 'M’écrire',
             book: 'Prendre rendez-vous',
             testimonials: 'Ils ont travaillé avec moi',
-            closing: 'Merci pour votre temps. Je serais ravi d’en parler de vive voix.',
+            closing:
+                'Merci pour votre temps. Je serais ravi d’en parler de vive voix.',
             forCompany: (company: string) => `Pour ${company}`,
             yourContact: 'Votre contact',
             sticky: 'Pour aller plus loin',
@@ -390,6 +397,7 @@ const dictionaries = {
             periodLabel: 'Période',
             ongoing: 'en cours',
             teamLabel: 'Équipe',
+            awardsLabel: 'Distinctions',
             team: (size: number) =>
                 size === 1 ? 'En solo' : `${size} personnes`,
             testimonialLabel: 'Ce qu’en dit le client',
@@ -407,6 +415,7 @@ const dictionaries = {
                     `${count} contribution${count > 1 ? 's' : ''} cette année`,
                 lastActivity: 'Dernière activité le',
                 weeksLabel: 'Contributions par semaine sur un an',
+                period: "Période d'activité",
             },
             readNext: 'À lire ensuite',
             ctaTitle: "Envie d'en voir plus ?",
@@ -574,6 +583,10 @@ const dictionaries = {
             rights: 'Tous droits réservés.',
             sub: 'Des premières idées aux produits en ligne, je conçois des solutions fiables, sécurisées et faciles à faire évoluer.',
             headline: 'Construisons votre prochain projet',
+            ctaWrite: 'Me parler de votre projet',
+            ctaEstimate: 'Estimer mon projet',
+            ctaBooking: 'Réserver un appel',
+            ctaNote: 'Réponse sous 48 heures, sans engagement.',
             cursorContact: 'Écrivez-moi',
             linksLabel: 'Liens',
         },
@@ -727,7 +740,7 @@ const dictionaries = {
         },
         contactDrawer: {
             close: 'Fermer',
-            eyebrow: 'DISPONIBLE POUR DE NOUVEAUX PROJETS',
+            eyebrow: 'PARLONS DE VOTRE PROJET',
             eyebrowFrom: (date: string) =>
                 `DISPONIBLE POUR DE NOUVEAUX PROJETS À PARTIR DU ${date.toUpperCase()}`,
             eyebrowUnavailable:
@@ -865,6 +878,7 @@ const dictionaries = {
             ctaHint: 'A budget idea in one minute?',
         },
         nav: {
+            home: 'Home',
             about: 'About',
             skills: 'Skills',
             projects: 'Projects',
@@ -962,7 +976,8 @@ const dictionaries = {
                     `${count} star${count > 1 ? 's' : ''}`,
                 updated: 'Updated',
                 profile: 'See my GitHub profile',
-                caseStudy: 'See the case study',
+                caseStudy: 'Explore the project',
+                viewRepository: 'View on GitHub',
                 calendar: {
                     title: 'My activity',
                     periods: {
@@ -988,7 +1003,6 @@ const dictionaries = {
             present: 'present',
             heading: 'I build software people actually use.',
             cursorDrag: 'Drag',
-            resetPhotos: 'Put the photos back',
             portraitOrange:
                 'Black and white portrait of Armel Meledje on an orange background',
             portraitSuit: 'Armel Meledje in a suit, seated in an office',
@@ -996,7 +1010,12 @@ const dictionaries = {
             timeLabel: 'Local time',
             timeCity: 'Abidjan',
             distinctionLabel: 'Award',
-            distinction: 'Best agent of the first half of 2025 at CIAPOL',
+            distinctionsLabel: 'Awards',
+            distinctionAt: 'at',
+            distinctionFor: 'for',
+            distinctionPosition: (index: number, total: number) =>
+                `Award ${index} of ${total}`,
+            distinctionShow: (index: number) => `Show award ${index}`,
             languagesLabel: 'Languages spoken',
             congrats: 'Congrats',
             congratsReceived: (count: number) =>
@@ -1056,7 +1075,8 @@ const dictionaries = {
         jobApplication: {
             title: (company: string) => `Application for ${company}`,
             kicker: 'Application',
-            greeting: (name: string | null) => (name ? `Hello ${name},` : 'Hello,'),
+            greeting: (name: string | null) =>
+                name ? `Hello ${name},` : 'Hello,',
             position: 'Position',
             projects: 'Projects that match your needs',
             readProject: 'Read the project',
@@ -1064,7 +1084,8 @@ const dictionaries = {
             contact: 'Write to me',
             book: 'Book a meeting',
             testimonials: 'People I have worked with',
-            closing: 'Thank you for your time. I would be glad to talk it through.',
+            closing:
+                'Thank you for your time. I would be glad to talk it through.',
             forCompany: (company: string) => `For ${company}`,
             yourContact: 'Your contact',
             sticky: 'Going further',
@@ -1123,6 +1144,7 @@ const dictionaries = {
             periodLabel: 'Period',
             ongoing: 'ongoing',
             teamLabel: 'Team',
+            awardsLabel: 'Awards',
             team: (size: number) => (size === 1 ? 'Solo' : `${size} people`),
             testimonialLabel: 'What the client says',
             code: 'View code',
@@ -1139,6 +1161,7 @@ const dictionaries = {
                     `${count} contribution${count > 1 ? 's' : ''} this year`,
                 lastActivity: 'Last activity',
                 weeksLabel: 'Contributions per week over a year',
+                period: 'Active period',
             },
             readNext: 'Read next',
             ctaTitle: 'Want to see more?',
@@ -1304,6 +1327,10 @@ const dictionaries = {
             rights: 'All rights reserved.',
             sub: 'From first ideas to products in production, I build solutions that are reliable, secure and easy to evolve.',
             headline: "Let's build your next project",
+            ctaWrite: 'Tell me about your project',
+            ctaEstimate: 'Estimate my project',
+            ctaBooking: 'Book a call',
+            ctaNote: 'Reply within 48 hours, no commitment.',
             cursorContact: 'Say hello',
             linksLabel: 'Links',
         },
@@ -1455,7 +1482,7 @@ const dictionaries = {
         },
         contactDrawer: {
             close: 'Close',
-            eyebrow: 'AVAILABLE FOR NEW PROJECTS',
+            eyebrow: "LET'S TALK ABOUT YOUR PROJECT",
             eyebrowFrom: (date: string) =>
                 `AVAILABLE FOR NEW PROJECTS FROM ${date.toUpperCase()}`,
             eyebrowUnavailable: 'CURRENTLY UNAVAILABLE, BUT FEEL FREE TO WRITE',

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\ProjectStatus;
 use App\Enums\PublicationStatus;
 use App\Models\Certification;
+use App\Models\Distinction;
 use App\Models\Education;
 use App\Models\Experience;
 use App\Models\Post;
@@ -34,6 +35,7 @@ class ContentStatus
         'experience' => ['model' => Experience::class, 'enum' => PublicationStatus::class, 'english' => ['role']],
         'education' => ['model' => Education::class, 'enum' => PublicationStatus::class, 'english' => ['degree', 'field']],
         'certification' => ['model' => Certification::class, 'enum' => PublicationStatus::class, 'english' => ['name']],
+        'distinction' => ['model' => Distinction::class, 'enum' => PublicationStatus::class, 'english' => ['title']],
         'uses_item' => ['model' => UsesItem::class, 'enum' => PublicationStatus::class, 'english' => []],
         'skill' => ['model' => Skill::class, 'enum' => PublicationStatus::class, 'english' => ['name']],
         'service' => ['model' => Service::class, 'enum' => PublicationStatus::class, 'english' => ['title']],

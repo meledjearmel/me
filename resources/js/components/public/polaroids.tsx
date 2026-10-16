@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
-import { RotateCcw } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from '@/lib/i18n';
 
 type Polaroid = {
@@ -16,28 +15,30 @@ type Polaroid = {
 };
 
 /**
- * Photos en polaroïd empilées, qu'on peut faire glisser (comme la référence),
- * avec un bouton pour les remettre en place. Toucher une photo la passe au-dessus.
+ * Photos en polaroïd empilées, qu'on peut faire glisser (comme la référence).
+ * Elles passent sous le titre et restent dans le bandeau : pas besoin de les
+ * remettre en place. Toucher une photo la passe au-dessus des autres.
  */
 export default function Polaroids({ photos }: { photos: Polaroid[] }) {
     const t = useTranslations();
+    const containerRef = useRef<HTMLDivElement>(null);
+    // Le bandeau qui les contient : les photos ne peuvent pas en sortir.
+    const boundsRef = useRef<HTMLElement | null>(null);
     const [order, setOrder] = useState(() => photos.map((_, index) => index));
-    // Changer la clé remonte les photos : elles reprennent leur position de départ.
-    const [resetKey, setResetKey] = useState(0);
 
     const bringToFront = (index: number) =>
         setOrder((current) => [...current.filter((i) => i !== index), index]);
 
-    const reset = () => {
-        setOrder(photos.map((_, index) => index));
-        setResetKey((key) => key + 1);
-    };
+    useEffect(() => {
+        boundsRef.current =
+            containerRef.current?.closest('section') ?? containerRef.current;
+    }, []);
 
     return (
-        <div className="pub-polaroids">
+        <div ref={containerRef} className="pub-polaroids">
             {photos.map((photo, index) => (
                 <motion.figure
-                    key={`${resetKey}-${photo.src}`}
+                    key={photo.src}
                     className="pub-polaroid"
                     style={{
                         width: photo.width,
@@ -49,6 +50,8 @@ export default function Polaroids({ photos }: { photos: Polaroid[] }) {
                     transition={{ duration: 0.7, delay: 0.15 * index }}
                     drag
                     dragMomentum={false}
+                    dragConstraints={boundsRef}
+                    dragElastic={0.15}
                     whileDrag={{ scale: 1.04, cursor: 'grabbing' }}
                     onPointerDown={() => bringToFront(index)}
                     data-cursor-label={t.about.cursorDrag}
@@ -70,16 +73,6 @@ export default function Polaroids({ photos }: { photos: Polaroid[] }) {
                     </span>
                 </motion.figure>
             ))}
-
-            <button
-                type="button"
-                className="pub-polaroids__reset"
-                aria-label={t.about.resetPhotos}
-                title={t.about.resetPhotos}
-                onClick={reset}
-            >
-                <RotateCcw size={18} aria-hidden="true" />
-            </button>
         </div>
     );
 }

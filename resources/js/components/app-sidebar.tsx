@@ -7,6 +7,7 @@ import {
     Disc3,
     Laptop,
     BadgeCheck,
+    Trophy,
     Clock,
     FolderGit,
     GitCompare,
@@ -90,6 +91,7 @@ import { index as technologyCategoriesIndex } from "@/routes/admin/technology-ca
 import { index as musicGenresIndex } from "@/routes/admin/music-genres";
 import { index as usesItemsIndex } from "@/routes/admin/uses-items";
 import { index as certificationsIndex } from "@/routes/admin/certifications";
+import { index as distinctionsIndex } from "@/routes/admin/distinctions";
 import { edit as nowPageEdit } from "@/routes/admin/now-page";
 import { edit as githubEdit } from "@/routes/admin/github";
 import { index as revisionsIndex } from "@/routes/admin/revisions";
@@ -130,6 +132,7 @@ const portfolioNavItems: NavItem[] = [
     { title: "Projets", href: projectsIndex(), icon: FolderGit2 },
     { title: "Services", href: servicesIndex(), icon: Store },
     { title: "Certifications", href: certificationsIndex(), icon: BadgeCheck },
+    { title: "Distinctions", href: distinctionsIndex(), icon: Trophy },
     { title: "Avis", href: testimonialsIndex(), icon: MessageSquareQuote },
     {
         title: "Demandes d’avis",

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { DistinctionBadges } from '@/components/public/distinction-card';
 import ReviewInvite from '@/components/public/review-invite';
 import { useTranslations } from '@/lib/i18n';
 import type { PublicEducation } from '@/types';
@@ -32,6 +33,7 @@ export default function EducationList({
                     {educations.map((education, index) => (
                         <motion.li
                             key={education.id}
+                            id={`education-${education.id}`}
                             className="pub-exp__item pub-exp__head pub-exp__head--static"
                             initial={{ opacity: 0, y: 24 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -49,6 +51,9 @@ export default function EducationList({
                                 <span className="pub-exp__role">
                                     {education.institution}
                                 </span>
+                                <DistinctionBadges
+                                    distinctions={education.distinctions}
+                                />
                                 <ReviewInvite
                                     className="pub-review-invite--start pub-review-invite--small"
                                     text={t.fab.reviewEducation}

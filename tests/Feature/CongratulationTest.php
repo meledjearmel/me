@@ -1,23 +1,26 @@
 <?php
 
 use App\Models\Counter;
+use App\Models\Distinction;
 use App\Models\Profile;
 
 beforeEach(function () {
     Profile::factory()->create();
 });
 
-test('the about page exposes the congratulations total', function () {
-    Counter::add(Counter::CONGRATULATIONS, 7);
+test('the about page exposes the congratulations of each distinction', function () {
+    Distinction::factory()->create(['congratulations_count' => 7]);
 
     $this->get('/fr/about')
         ->assertOk()
-        ->assertInertia(fn ($page) => $page->where('congratulations', 7));
+        ->assertInertia(fn ($page) => $page->where('distinctions.0.congratulations', 7));
 });
 
-test('the about page starts at zero congratulations', function () {
+test('a new distinction starts at zero congratulations', function () {
+    Distinction::factory()->create();
+
     $this->get('/fr/about')
-        ->assertInertia(fn ($page) => $page->where('congratulations', 0));
+        ->assertInertia(fn ($page) => $page->where('distinctions.0.congratulations', 0));
 });
 
 test('congratulations are added to the shared total', function () {

@@ -7,6 +7,7 @@ use App\Models\Appointment;
 use App\Models\AppointmentType;
 use App\Models\Certification;
 use App\Models\Contact;
+use App\Models\Distinction;
 use App\Models\Domain;
 use App\Models\Education;
 use App\Models\Engagement;
@@ -44,6 +45,7 @@ class TrashController extends Controller
         'tracks' => ['model' => Track::class, 'label' => 'Piste audio'],
         'uses-items' => ['model' => UsesItem::class, 'label' => 'Élément « Uses »'],
         'certifications' => ['model' => Certification::class, 'label' => 'Certification'],
+        'distinctions' => ['model' => Distinction::class, 'label' => 'Distinction'],
         'technology-categories' => ['model' => TechnologyCategory::class, 'label' => 'Catégorie de technologie'],
         'technologies' => ['model' => Technology::class, 'label' => 'Technologie'],
         'job-profiles' => ['model' => JobProfile::class, 'label' => 'Profil métier'],
@@ -150,6 +152,7 @@ class TrashController extends Controller
             'educations' => trim("{$model->degree} · {$model->institution}"),
             'experiences' => trim("{$model->role} · {$model->company}"),
             'projects', 'posts' => (string) $model->title,
+            'distinctions' => trim("{$model->title} · {$model->issuer}"),
             'testimonials' => (string) $model->author_name,
             'post-comments' => trim($model->author_name.' — '.Str::limit((string) $model->body, 60)),
             'contacts', 'engagements' => trim("{$model->name} — {$model->subject}"),

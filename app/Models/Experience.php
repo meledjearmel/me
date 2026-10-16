@@ -8,6 +8,7 @@ use Database\Factories\ExperienceFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Spatie\Translatable\HasTranslations;
@@ -45,5 +46,15 @@ class Experience extends Model
     public function highlights(): HasMany
     {
         return $this->hasMany(ExperienceHighlight::class);
+    }
+
+    /**
+     * Distinctions obtenues dans ce contexte.
+     *
+     * @return MorphMany<Distinction, $this>
+     */
+    public function distinctions(): MorphMany
+    {
+        return $this->morphMany(Distinction::class, 'distinguishable');
     }
 }

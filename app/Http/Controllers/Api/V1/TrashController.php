@@ -8,6 +8,7 @@ use App\Models\Appointment;
 use App\Models\AppointmentType;
 use App\Models\Certification;
 use App\Models\Contact;
+use App\Models\Distinction;
 use App\Models\Domain;
 use App\Models\Education;
 use App\Models\Engagement;
@@ -48,6 +49,7 @@ class TrashController extends Controller
         'tracks' => ['model' => Track::class, 'label' => 'Piste audio'],
         'uses-items' => ['model' => UsesItem::class, 'label' => 'Élément « Uses »'],
         'certifications' => ['model' => Certification::class, 'label' => 'Certification'],
+        'distinctions' => ['model' => Distinction::class, 'label' => 'Distinction'],
         'technology-categories' => ['model' => TechnologyCategory::class, 'label' => 'Catégorie de technologie'],
         'technologies' => ['model' => Technology::class, 'label' => 'Technologie'],
         'job-profiles' => ['model' => JobProfile::class, 'label' => 'Profil métier'],
@@ -75,7 +77,7 @@ class TrashController extends Controller
      * triée par date de suppression décroissante.
      */
     #[QueryParameter('search', description: 'Recherche dans le titre affiché de l’élément.', type: 'string')]
-    #[QueryParameter('type', description: 'Type d’élément : `domains`, `music-genres`, `tracks`, `uses-items`, `technology-categories`, `technologies`, `job-profiles`, `skills`, `educations`, `experiences`, `projects`, `posts`, `professional-references`, `testimonials`, `post-comments`, `contacts`, `engagements`, `appointments`, `appointment-types`, `certifications`, `estimator-items`, `services` ou `job-applications`.', type: 'string')]
+    #[QueryParameter('type', description: 'Type d’élément : `domains`, `music-genres`, `tracks`, `uses-items`, `technology-categories`, `technologies`, `job-profiles`, `skills`, `educations`, `experiences`, `projects`, `posts`, `professional-references`, `testimonials`, `post-comments`, `contacts`, `engagements`, `appointments`, `appointment-types`, `certifications`, `distinctions`, `estimator-items`, `services` ou `job-applications`.', type: 'string')]
     #[QueryParameter('page', description: 'Numéro de page.', type: 'integer', default: 1)]
     #[QueryParameter('per_page', description: 'Éléments par page : `10`, `25` ou `50`.', type: 'integer', default: 10)]
     public function index(Request $request): AnonymousResourceCollection
@@ -154,6 +156,7 @@ class TrashController extends Controller
             'educations' => trim("{$model->degree} · {$model->institution}"),
             'experiences' => trim("{$model->role} · {$model->company}"),
             'projects', 'posts' => (string) $model->title,
+            'distinctions' => trim("{$model->title} · {$model->issuer}"),
             'testimonials' => (string) $model->author_name,
             'post-comments' => trim($model->author_name.' — '.Str::limit((string) $model->body, 60)),
             'contacts', 'engagements' => trim("{$model->name} — {$model->subject}"),

@@ -268,6 +268,33 @@ export type Certification = {
     badge_url?: string | null;
 };
 
+export type DistinctionContextType = "experience" | "education" | "project";
+
+export type Distinction = {
+    /** Client IA qui a rédigé le brouillon (serveur MCP). */
+    drafted_by?: string | null;
+    id: number;
+    title: Translatable;
+    issuer: string;
+    description: Partial<Translatable> | null;
+    /** AAAA-MM-JJ. */
+    awarded_on: string;
+    url: string | null;
+    context_type: DistinctionContextType | null;
+    context_id: number | null;
+    /** Entreprise, établissement ou titre du projet (liste). */
+    context_label?: string | null;
+    congratulations_count: number;
+    status: "published" | "draft";
+    sort_order: number;
+};
+
+/** Contextes qu'on peut choisir pour une distinction, par type. */
+export type DistinctionContextOptions = Record<
+    DistinctionContextType,
+    { id: number; label: string }[]
+>;
+
 export type UsesItem = {
     /** Client IA qui a rédigé le brouillon (serveur MCP). */
     drafted_by?: string | null;

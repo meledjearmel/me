@@ -7,7 +7,6 @@ import SearchDialog, {
     useSearchShortcut,
 } from '@/components/public/search-dialog';
 import ThemeToggle from '@/components/public/theme-toggle';
-import { useAvailability } from '@/lib/availability';
 import { useContactDrawer } from '@/lib/contact-drawer';
 import { useLocalizedPath, useTranslations } from '@/lib/i18n';
 import type { PublicProfile } from '@/types';
@@ -64,7 +63,6 @@ export default function SiteHeader({
     const { profile } = props;
     const [menuOpen, setMenuOpen] = useState(false);
     const { open: openContact } = useContactDrawer();
-    const availability = useAvailability();
     const [searchOpen, setSearchOpen] = useState(false);
     const openSearch = useCallback(() => setSearchOpen(true), []);
 
@@ -83,10 +81,13 @@ export default function SiteHeader({
 
     // Page courante : l'adresse égale le lien, ou en est une sous-page (/projects/xyz).
     const currentPath = url.split(/[?#]/)[0].replace(/\/$/, '');
+    // L'accueil n'est actif que sur lui-même : toutes les pages en sont des sous-chemins.
     const isActive = (href: string) =>
-        currentPath === href || currentPath.startsWith(`${href}/`);
+        currentPath === href ||
+        (href !== path() && currentPath.startsWith(`${href}/`));
 
     const links: { href: string; label: string }[] = [
+        { href: path(), label: t.nav.home },
         { href: path('about'), label: t.nav.about },
         { href: path('skills'), label: t.nav.skills },
         { href: path('projects'), label: t.nav.projects },
@@ -143,16 +144,6 @@ export default function SiteHeader({
                         <span aria-hidden="true">{initials}</span>
                     )}
                 </Link>
-
-                <span
-                    className={`pub-avail pub-avail--${availability.status}`}
-                    aria-hidden={!compact}
-                >
-                    <span className="pub-avail__text">
-                        {availability.badge}
-                    </span>
-                    <span className="pub-avail__dot" />
-                </span>
 
                 <nav className="pub-pill__links" aria-label="Navigation">
                     {links.map((link) => (

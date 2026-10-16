@@ -29,8 +29,10 @@ export type GitHubActivityData = {
 };
 
 /**
- * Mon activité GitHub (synchronisée chaque heure par `github:sync`) : trois
- * compteurs, puis mes dépôts les plus étoilés et les plus récents.
+ * Mon activité GitHub (synchronisée chaque heure par `github:sync`) : deux
+ * compteurs, le calendrier, puis mes dépôts en bref. Les descriptions, écrites
+ * sur GitHub dans une seule langue, ne sont pas reprises : le récit d'un projet
+ * vit dans son étude de cas, vers laquelle le dépôt renvoie.
  */
 export default function GitHubActivity({
     github,
@@ -64,7 +66,6 @@ export default function GitHubActivity({
                 <dl className="pub-github__stats">
                     {[
                         [t.about.github.repos, github.public_repos],
-                        [t.about.github.followers, github.followers],
                         [
                             t.about.github.contributions,
                             github.contributions_last_30_days,
@@ -94,8 +95,21 @@ export default function GitHubActivity({
                                             className="pub-github__repo-link"
                                             target="_blank"
                                             rel="noopener noreferrer"
+                                            title={
+                                                t.about.github.viewRepository
+                                            }
+                                            data-cursor-label={
+                                                t.about.github.viewRepository
+                                            }
                                         >
                                             {repository.name}
+                                            <span className="pub-github__hint">
+                                                GitHub
+                                                <span aria-hidden="true">
+                                                    {' '}
+                                                    ↗
+                                                </span>
+                                            </span>
                                         </a>
                                     ) : (
                                         <strong>{repository.name}</strong>
@@ -117,9 +131,6 @@ export default function GitHubActivity({
                                                 </span>
                                             )}
                                         </span>
-                                    )}
-                                    {repository.description && (
-                                        <p>{repository.description}</p>
                                     )}
                                     <span className="pub-github__meta">
                                         {[

@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\V1\ContentRevisionController;
 use App\Http\Controllers\Api\V1\ContentStatusController;
 use App\Http\Controllers\Api\V1\CvDownloadController;
 use App\Http\Controllers\Api\V1\DashboardController;
+use App\Http\Controllers\Api\V1\DistinctionController;
 use App\Http\Controllers\Api\V1\DocumentTemplateController;
 use App\Http\Controllers\Api\V1\DomainController;
 use App\Http\Controllers\Api\V1\EducationController;
@@ -208,6 +209,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::delete('job-applications/{job_application}/cv', [JobApplicationCvController::class, 'destroy'])->name('job-applications.cv.destroy');
         Route::apiResource('job-applications', JobApplicationController::class);
         Route::apiResource('certifications', CertificationController::class);
+        Route::apiResource('distinctions', DistinctionController::class);
         Route::get('github', [GitHubController::class, 'show'])->name('github.show');
         Route::put('github', [GitHubController::class, 'update'])->name('github.update');
         Route::post('github/sync', [GitHubController::class, 'sync'])->middleware('throttle:6,1')->name('github.sync');

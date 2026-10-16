@@ -6,6 +6,7 @@ use App\Enums\CertificationKind;
 use App\Enums\ServicePriceMode;
 use App\Enums\UsesCategory;
 use App\Models\Certification;
+use App\Models\Distinction;
 use App\Models\Education;
 use App\Models\EstimatorItem;
 use App\Models\Experience;
@@ -85,6 +86,25 @@ class ContentTypes
                     'expires_on' => ['rules' => ['nullable', 'date_format:Y-m-d', 'after:issued_on'], 'doc' => 'Expiration, AAAA-MM-JJ ; vide si sans limite.'],
                     'credential_id' => ['rules' => ['nullable', 'string', 'max:120'], 'doc' => 'Identifiant du certificat.'],
                     'credential_url' => ['rules' => ['nullable', 'url', 'max:255'], 'doc' => 'Lien de vérification.'],
+                ],
+                'relations' => [],
+            ],
+            'distinction' => [
+                'model' => Distinction::class,
+                'label' => 'distinction ou prix reçu (carte « Distinction » de la page À propos)',
+                'route' => 'admin.distinctions.edit',
+                'title' => 'issuer',
+                'mentions' => [],
+                'translatable' => [
+                    'title' => ['rules' => ['required', 'string', 'max:160'], 'doc' => 'Intitulé de la distinction, ex. « Meilleur agent du premier semestre 2025 ».'],
+                    'description' => ['rules' => ['nullable', 'string', 'max:500'], 'doc' => 'Contexte en une ou deux phrases (facultatif).'],
+                ],
+                'fields' => [
+                    'issuer' => ['rules' => ['required', 'string', 'max:120'], 'doc' => 'Organisme qui l\'a décernée, ex. « CIAPOL ».'],
+                    'awarded_on' => ['rules' => ['required', 'date_format:Y-m-d', 'before_or_equal:today'], 'doc' => 'Date d\'obtention, AAAA-MM-JJ.'],
+                    'url' => ['rules' => ['nullable', 'url', 'max:255'], 'doc' => 'Lien vers une preuve (article, publication).'],
+                    'context_type' => ['rules' => ['nullable', 'required_with:context_id', Rule::in(array_keys(Distinction::CONTEXTS))], 'doc' => 'Contexte facultatif : « experience », « education » ou « project » (identifiants avec list-contents ou get-catalog).'],
+                    'context_id' => ['rules' => ['nullable', 'required_with:context_type', 'integer'], 'doc' => 'Identifiant de l\'expérience, de la formation ou du projet.'],
                 ],
                 'relations' => [],
             ],

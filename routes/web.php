@@ -13,6 +13,7 @@ use App\Http\Controllers\CongratulationController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CvDownloadController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DistinctionCongratulationController;
 use App\Http\Controllers\EngagementController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JobApplicationController;
@@ -165,6 +166,9 @@ Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, Lo
     Route::post('celebrations/{celebration}/congratulations', CelebrationCongratulationController::class)
         ->middleware('throttle:60,1')
         ->name('celebrations.congratulate');
+    Route::post('distinctions/{distinction}/congratulations', DistinctionCongratulationController::class)
+        ->middleware('throttle:60,1')
+        ->name('distinctions.congratulate');
     Route::post('chat', [ChatController::class, 'store'])
         ->middleware('throttle:chat')
         ->name('chat.store');

@@ -171,7 +171,7 @@ class CommandGuide
         ],
         'list-contents' => [
             'usage' => 'Décrire les champs d\'un type de contenu et lister l\'existant.',
-            'tips' => ['Types : experience, education, certification, uses_item, skill, service.'],
+            'tips' => ['Types : experience, education, certification, distinction, uses_item, skill, service.'],
             'example' => 'Quelles certifications ai-je déjà sur le site ?',
         ],
         'get-content' => [

@@ -46,20 +46,25 @@ export default function Hero({
                     {t.hero.vertical}
                 </span>
 
-                <motion.p className="pub-hero__eyebrow" {...reveal(0)}>
+                {/* Le titre de la page est la phrase visible, complétée pour les moteurs
+                par l'intitulé du poste ; le texte animé, lui, reste décoratif. */}
+                <motion.h1 className="pub-hero__eyebrow" {...reveal(0)}>
                     <span className="pub-hero__dot" />
-                    {t.hero.hello} {profile.name}. {t.hero.a} —
-                </motion.p>
+                    {t.hero.hello} {profile.name}.{' '}
+                    <span className="sr-only">{profile.headline}. </span>
+                    <span aria-hidden="true">{t.hero.a} —</span>
+                </motion.h1>
 
-                <h1 className="sr-only">
-                    {profile.name} —{' '}
-                    {jobProfiles
-                        .map(
-                            (jobProfile) =>
-                                `${jobProfile.hero_title} ${jobProfile.hero_words.join(', ')}`,
-                        )
-                        .join(' · ')}
-                </h1>
+                {jobProfiles.length > 0 && (
+                    <ul className="sr-only">
+                        {jobProfiles.map((jobProfile) => (
+                            <li key={jobProfile.hero_title}>
+                                {jobProfile.hero_title}{' '}
+                                {jobProfile.hero_words.join(', ')}
+                            </li>
+                        ))}
+                    </ul>
+                )}
 
                 <motion.div
                     className="pub-hero__title"

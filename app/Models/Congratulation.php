@@ -36,6 +36,7 @@ class Congratulation extends Model
     protected $fillable = [
         'source',
         'celebration_id',
+        'distinction_id',
         'reason',
         'count',
         'locale',
@@ -53,21 +54,36 @@ class Congratulation extends Model
         return $this->belongsTo(Celebration::class);
     }
 
+    /** @return BelongsTo<Distinction, $this> */
+    public function distinction(): BelongsTo
+    {
+        return $this->belongsTo(Distinction::class);
+    }
+
     /** Enregistre un envoi et prévient l'app mobile (au plus une fois par motif toutes les NOTIFY_EVERY_MINUTES). */
-    public static function record(CongratulationSource $source, int $count, ?Celebration $celebration = null): self
+    public static function record(CongratulationSource $source, int $count, ?Celebration $celebration = null, ?Distinction $distinction = null): self
     {
         $congratulation = static::query()->create([
             'source' => $source,
             'celebration_id' => $celebration?->id,
-            'reason' => $celebration?->getTranslation('message', 'fr') ?? self::ABOUT_REASON,
+            'distinction_id' => $distinction?->id,
+            'reason' => $celebration?->getTranslation('message', 'fr')
+                ?? $distinction?->getTranslation('title', 'fr')
+                ?? self::ABOUT_REASON,
             'count' => $count,
             'locale' => app()->getLocale(),
         ]);
 
-        if (static::shouldNotify($celebration?->id ?? $source->value)) {
+        $reasonKey = match (true) {
+            $celebration !== null => $celebration->id,
+            $distinction !== null => 'distinction:'.$distinction->id,
+            default => $source->value,
+        };
+
+        if (static::shouldNotify($reasonKey)) {
             SendPushNotification::dispatch(
                 'Nouvelles félicitations 🎉',
-                static::notificationBody($count, $celebration),
+                static::notificationBody($count, $celebration, $distinction),
                 ['type' => 'congratulation', 'id' => (string) $congratulation->id],
             );
         }
@@ -91,11 +107,13 @@ class Congratulation extends Model
     }
 
     /** « Vous avez reçu 3 félicitations pour votre prix de meilleur agent » (toujours en français : c'est Armel qui la lit). */
-    public static function notificationBody(int $count, ?Celebration $celebration = null): string
+    public static function notificationBody(int $count, ?Celebration $celebration = null, ?Distinction $distinction = null): string
     {
-        $for = $celebration === null
-            ? self::ABOUT_CONGRATULATED_FOR
-            : ($celebration->congratulated_for ?? Str::limit($celebration->getTranslation('message', 'fr'), 100));
+        $for = match (true) {
+            $celebration !== null => $celebration->congratulated_for ?? Str::limit($celebration->getTranslation('message', 'fr'), 100),
+            $distinction !== null => sprintf('votre distinction « %s »', $distinction->getTranslation('title', 'fr')),
+            default => self::ABOUT_CONGRATULATED_FOR,
+        };
 
         return sprintf('Vous avez reçu %d %s pour %s', $count, $count > 1 ? 'félicitations' : 'félicitation', $for);
     }

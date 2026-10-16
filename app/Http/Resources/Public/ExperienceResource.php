@@ -33,6 +33,8 @@ class ExperienceResource extends JsonResource
                 ->sortBy('sort_order')
                 ->map(fn ($highlight) => $highlight->getTranslation('text', $locale))
                 ->values()),
+            /** Distinctions publiées obtenues dans cette expérience. */
+            'distinctions' => DistinctionResource::collection($this->whenLoaded('distinctions')),
         ];
     }
 }

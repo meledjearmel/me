@@ -16,7 +16,7 @@ class AddContentPrompt extends Prompt
     public function handle(Request $request): Response
     {
         $request->validate([
-            'type' => ['required', 'in:experience,education,certification,uses_item,skill,service'],
+            'type' => ['required', 'in:experience,education,certification,distinction,uses_item,skill,service'],
             'source' => ['nullable', 'string'],
         ]);
 
@@ -39,7 +39,7 @@ class AddContentPrompt extends Prompt
     public function arguments(): array
     {
         return [
-            new Argument('type', 'experience, education, certification, uses_item, skill ou service.', required: true),
+            new Argument('type', 'experience, education, certification, distinction, uses_item, skill ou service.', required: true),
             new Argument('source', 'Adresse web, texte collé ou chemin de fichier (CV, profil, page de certification…).'),
         ];
     }
