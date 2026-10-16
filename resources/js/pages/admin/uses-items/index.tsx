@@ -1,11 +1,13 @@
 import { Head, Link } from "@inertiajs/react";
+import StatusMenu, {
+    PUBLICATION_VARIANTS,
+} from "@/components/admin/status-menu";
 import { Plus, SquarePen } from "lucide-react";
 import UsesItemController from "@/actions/App/Http/Controllers/Admin/UsesItemController";
 import DeleteButton from "@/components/admin/delete-button";
 import { FilterSelect, ResourceList } from "@/components/admin/data-list";
 import Heading from "@/components/heading";
 import AiDraftBadge from "@/components/admin/ai-draft-badge";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PUBLICATION_STATUSES, USES_CATEGORIES } from "@/lib/admin-options";
 import { index as pageIndex } from "@/routes/admin/uses-items";
@@ -57,19 +59,16 @@ export default function UsesItemsIndex({
                         { header: "Ordre", cell: (row) => row.sort_order },
                         {
                             header: "Statut",
+                            fit: true,
                             cell: (row) => (
                                 <>
-                                    <Badge
-                                        variant={
-                                            row.status === "published"
-                                                ? "default"
-                                                : "secondary"
-                                        }
-                                    >
-                                        {row.status === "published"
-                                            ? "Publié"
-                                            : "Brouillon"}
-                                    </Badge>
+                                    <StatusMenu
+                                        type="uses_item"
+                                        id={row.id}
+                                        status={row.status}
+                                        options={PUBLICATION_STATUSES}
+                                        variants={PUBLICATION_VARIANTS}
+                                    />
                                     <AiDraftBadge
                                         draftedBy={row.drafted_by}
                                         status={row.status}

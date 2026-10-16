@@ -1,4 +1,7 @@
 import { Head, Link } from "@inertiajs/react";
+import StatusMenu, {
+    PUBLICATION_VARIANTS,
+} from "@/components/admin/status-menu";
 import { Plus, Eye, SquarePen } from "lucide-react";
 import { index as pageIndex } from "@/routes/admin/projects";
 import ProjectController from "@/actions/App/Http/Controllers/Admin/ProjectController";
@@ -6,7 +9,6 @@ import DeleteButton from "@/components/admin/delete-button";
 import { FilterSelect, ResourceList } from "@/components/admin/data-list";
 import Heading from "@/components/heading";
 import AiDraftBadge from "@/components/admin/ai-draft-badge";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PROJECT_STATUSES } from "@/lib/admin-options";
 import type { ListFilters, Paginated, Project } from "@/types";
@@ -41,21 +43,15 @@ export default function ProjectsIndex({
                         { header: "Titre (FR)", cell: (row) => row.title.fr },
                         {
                             header: "Statut",
+                            fit: true,
                             cell: (row) => (
-                                <Badge
-                                    variant={
-                                        row.status === "published"
-                                            ? "default"
-                                            : "secondary"
-                                    }
-                                >
-                                    {
-                                        PROJECT_STATUSES.find(
-                                            (status) =>
-                                                status.value === row.status,
-                                        )?.label
-                                    }
-                                </Badge>
+                                <StatusMenu
+                                    type="project"
+                                    id={row.id}
+                                    status={row.status}
+                                    options={PROJECT_STATUSES}
+                                    variants={PUBLICATION_VARIANTS}
+                                />
                             ),
                         },
                         {

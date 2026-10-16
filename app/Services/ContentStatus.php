@@ -2,34 +2,70 @@
 
 namespace App\Services;
 
+use App\Enums\AppointmentStatus;
+use App\Enums\CommentStatus;
+use App\Enums\CommercialDocumentStatus;
+use App\Enums\ContactStatus;
+use App\Enums\EngagementStatus;
+use App\Enums\JobApplicationStatus;
 use App\Enums\ProjectStatus;
 use App\Enums\PublicationStatus;
+use App\Enums\RevisionStatus;
+use App\Enums\TestimonialStatus;
+use App\Models\Appointment;
 use App\Models\Certification;
+use App\Models\CommercialDocument;
+use App\Models\Contact;
+use App\Models\ContentRevision;
 use App\Models\Distinction;
+use App\Models\Domain;
 use App\Models\Education;
+use App\Models\Engagement;
 use App\Models\Experience;
+use App\Models\JobApplication;
+use App\Models\JobProfile;
 use App\Models\Post;
+use App\Models\PostComment;
 use App\Models\Project;
 use App\Models\Service;
 use App\Models\Skill;
+use App\Models\Testimonial;
 use App\Models\UsesItem;
+use App\Services\Ai\ContentRevisions;
 use BackedEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
 
 /**
- * Change le seul statut d'un contenu (fiche de l'administration, API), avec les règles des
- * formulaires : on ne publie pas un contenu dont l'anglais obligatoire manque, et un article
- * publié sans date paraît tout de suite.
+ * Change le seul statut d'une ligne (liste ou fiche de l'administration, API), avec les règles
+ * des formulaires : on ne publie pas un contenu dont l'anglais obligatoire manque, un article
+ * publié sans date paraît tout de suite, et les statuts à effets (rendez-vous, documents
+ * commerciaux, révisions) passent par leur service, emails et numérotation compris.
  */
 class ContentStatus
 {
+    public function __construct(
+        private readonly BookingCalendar $calendar,
+        private readonly CommercialDocuments $documents,
+        private readonly ContentRevisions $revisions,
+    ) {}
+
     /**
      * Modèle, statuts possibles et champs traduits à remplir en anglais pour publier.
      *
      * @var array<string, array{model: class-string<Model>, enum: class-string<BackedEnum>, english: list<string>}>
      */
     private const array TYPES = [
+        'domain' => ['model' => Domain::class, 'enum' => PublicationStatus::class, 'english' => []],
+        'job_profile' => ['model' => JobProfile::class, 'enum' => PublicationStatus::class, 'english' => []],
+        'contact' => ['model' => Contact::class, 'enum' => ContactStatus::class, 'english' => []],
+        'engagement' => ['model' => Engagement::class, 'enum' => EngagementStatus::class, 'english' => []],
+        'job_application' => ['model' => JobApplication::class, 'enum' => JobApplicationStatus::class, 'english' => []],
+        'comment' => ['model' => PostComment::class, 'enum' => CommentStatus::class, 'english' => []],
+        'testimonial' => ['model' => Testimonial::class, 'enum' => TestimonialStatus::class, 'english' => []],
+        'appointment' => ['model' => Appointment::class, 'enum' => AppointmentStatus::class, 'english' => []],
+        'commercial_document' => ['model' => CommercialDocument::class, 'enum' => CommercialDocumentStatus::class, 'english' => []],
+        'revision' => ['model' => ContentRevision::class, 'enum' => RevisionStatus::class, 'english' => []],
         'project' => ['model' => Project::class, 'enum' => ProjectStatus::class, 'english' => ['title', 'context', 'realization', 'result']],
         'post' => ['model' => Post::class, 'enum' => PublicationStatus::class, 'english' => []],
         'experience' => ['model' => Experience::class, 'enum' => PublicationStatus::class, 'english' => ['role']],
@@ -64,6 +100,18 @@ class ContentStatus
             throw ValidationException::withMessages(['status' => __('Statut inconnu.')]);
         }
 
+        if ($newStatus === $content->status) {
+            return;
+        }
+
+        if (! in_array($newStatus, $this->allowedTransitions($content), true)) {
+            throw ValidationException::withMessages(['status' => __('Ce changement de statut n\'est pas possible.')]);
+        }
+
+        if ($this->changeThroughService($content, $newStatus)) {
+            return;
+        }
+
         $publishing = $newStatus->value === 'published';
         $missing = $publishing ? $this->missingEnglish($definition['english'], $content) : [];
 
@@ -79,7 +127,63 @@ class ContentStatus
             $content->published_at = now();
         }
 
+        if ($content instanceof Testimonial && $newStatus !== TestimonialStatus::Approved) {
+            $content->is_featured = false;
+        }
+
         $content->save();
+    }
+
+    /**
+     * Les statuts qu'on peut donner à la ligne depuis son statut actuel : un rendez-vous refusé,
+     * une révision traitée ou un document payé ne reviennent pas en arrière.
+     *
+     * @return list<BackedEnum>
+     */
+    public function allowedTransitions(Model $content): array
+    {
+        return match (true) {
+            $content instanceof Appointment => match ($content->status) {
+                AppointmentStatus::Pending => [AppointmentStatus::Confirmed, AppointmentStatus::Declined],
+                AppointmentStatus::Confirmed => [AppointmentStatus::Declined],
+                default => [],
+            },
+            $content instanceof CommercialDocument => match ($content->status) {
+                CommercialDocumentStatus::Draft => [CommercialDocumentStatus::Issued],
+                CommercialDocumentStatus::Paid, CommercialDocumentStatus::Cancelled => [],
+                default => array_values(array_filter(
+                    [CommercialDocumentStatus::Accepted, CommercialDocumentStatus::Declined, CommercialDocumentStatus::Paid, CommercialDocumentStatus::Cancelled],
+                    fn (CommercialDocumentStatus $status): bool => $status !== $content->status,
+                )),
+            },
+            $content instanceof ContentRevision => $content->status === RevisionStatus::Pending
+                ? [RevisionStatus::Applied, RevisionStatus::Rejected]
+                : [],
+            default => $content->status::cases(),
+        };
+    }
+
+    /** Les statuts à effets passent par le service métier ; renvoie false pour un simple champ. */
+    private function changeThroughService(Model $content, BackedEnum $status): bool
+    {
+        match (true) {
+            $content instanceof Appointment => $status === AppointmentStatus::Confirmed
+                ? $this->calendar->confirm($content)
+                : $this->calendar->decline($content),
+            $content instanceof CommercialDocument => match ($status) {
+                CommercialDocumentStatus::Issued => $this->documents->issue($content),
+                CommercialDocumentStatus::Accepted => $this->documents->accept($content),
+                CommercialDocumentStatus::Declined => $this->documents->decline($content),
+                CommercialDocumentStatus::Paid => $this->documents->markPaid($content),
+                default => $this->documents->cancel($content),
+            },
+            $content instanceof ContentRevision => $status === RevisionStatus::Applied
+                ? $this->revisions->apply($content)
+                : $this->revisions->reject($content),
+            default => null,
+        };
+
+        return $content instanceof Appointment || $content instanceof CommercialDocument || $content instanceof ContentRevision;
     }
 
     /**

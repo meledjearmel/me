@@ -1,4 +1,5 @@
 import { Head, Link } from "@inertiajs/react";
+import StatusMenu from "@/components/admin/status-menu";
 import { Eye, Palette, Plus, Settings } from "lucide-react";
 import CommercialDocumentController from "@/actions/App/Http/Controllers/Admin/CommercialDocumentController";
 import DocumentTemplateController from "@/actions/App/Http/Controllers/Admin/DocumentTemplateController";
@@ -128,11 +129,21 @@ export default function CommercialDocumentsIndex({
                         },
                         {
                             header: "Statut",
+                            fit: true,
                             cell: (row) => (
                                 <span className="flex flex-wrap gap-1">
-                                    <Badge variant={STATUS_VARIANT[row.status]}>
-                                        {DOCUMENT_STATUSES[row.status]}
-                                    </Badge>
+                                    <StatusMenu
+                                        type="commercial_document"
+                                        id={row.id}
+                                        status={row.status}
+                                        options={Object.entries(
+                                            DOCUMENT_STATUSES,
+                                        ).map(([value, label]) => ({
+                                            value,
+                                            label,
+                                        }))}
+                                        variants={STATUS_VARIANT}
+                                    />
                                     {row.reminder_due_at && (
                                         <Badge variant="destructive">
                                             À relancer

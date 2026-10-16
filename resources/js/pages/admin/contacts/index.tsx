@@ -1,29 +1,29 @@
-import { Head, Link } from '@inertiajs/react';
-import { Eye, SquarePen } from 'lucide-react';
+import { Head, Link } from "@inertiajs/react";
+import StatusMenu from "@/components/admin/status-menu";
+import { Eye, SquarePen } from "lucide-react";
 import {
     destroy,
     edit,
     show,
     index as pageIndex,
-} from '@/routes/admin/contacts';
-import DeleteButton from '@/components/admin/delete-button';
-import { FilterSelect, ResourceList } from '@/components/admin/data-list';
-import Heading from '@/components/heading';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import type { ListFilters, Paginated, Contact } from '@/types';
-import ActionTooltip from '@/components/admin/action-tooltip';
+} from "@/routes/admin/contacts";
+import DeleteButton from "@/components/admin/delete-button";
+import { FilterSelect, ResourceList } from "@/components/admin/data-list";
+import Heading from "@/components/heading";
+import { Button } from "@/components/ui/button";
+import type { ListFilters, Paginated, Contact } from "@/types";
+import ActionTooltip from "@/components/admin/action-tooltip";
 
 const STATUS_VARIANT = {
-    new: 'default',
-    read: 'secondary',
-    replied: 'outline',
+    new: "default",
+    read: "secondary",
+    replied: "outline",
 } as const;
 
 const STATUS_LABEL = {
-    new: 'Nouveau',
-    read: 'Lu',
-    replied: 'Répondu',
+    new: "Nouveau",
+    read: "Lu",
+    replied: "Répondu",
 } as const;
 
 export default function ContactsIndex({
@@ -50,15 +50,22 @@ export default function ContactsIndex({
                     filters={filters}
                     searchPlaceholder="Nom, email, sujet, message…"
                     columns={[
-                        { header: 'Nom', cell: (row) => row.name },
-                        { header: 'Email', cell: (row) => row.email },
-                        { header: 'Sujet', cell: (row) => row.subject },
+                        { header: "Nom", cell: (row) => row.name },
+                        { header: "Email", cell: (row) => row.email },
+                        { header: "Sujet", cell: (row) => row.subject },
                         {
-                            header: 'Statut',
+                            header: "Statut",
+                            fit: true,
                             cell: (row) => (
-                                <Badge variant={STATUS_VARIANT[row.status]}>
-                                    {STATUS_LABEL[row.status]}
-                                </Badge>
+                                <StatusMenu
+                                    type="contact"
+                                    id={row.id}
+                                    status={row.status}
+                                    options={Object.entries(STATUS_LABEL).map(
+                                        ([value, label]) => ({ value, label }),
+                                    )}
+                                    variants={STATUS_VARIANT}
+                                />
                             ),
                         },
                     ]}
@@ -70,9 +77,9 @@ export default function ContactsIndex({
                                 value={filters.status}
                                 label="Statut"
                                 options={[
-                                    { value: 'new', label: 'Nouveau' },
-                                    { value: 'read', label: 'Lu' },
-                                    { value: 'replied', label: 'Répondu' },
+                                    { value: "new", label: "Nouveau" },
+                                    { value: "read", label: "Lu" },
+                                    { value: "replied", label: "Répondu" },
                                 ]}
                             />
                         </>
@@ -109,5 +116,5 @@ export default function ContactsIndex({
 }
 
 ContactsIndex.layout = {
-    breadcrumbs: [{ title: 'Contacts', href: pageIndex() }],
+    breadcrumbs: [{ title: "Contacts", href: pageIndex() }],
 };

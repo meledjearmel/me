@@ -1,4 +1,7 @@
 import { Head, Link } from "@inertiajs/react";
+import StatusMenu, {
+    PUBLICATION_VARIANTS,
+} from "@/components/admin/status-menu";
 import { Plus, SquarePen } from "lucide-react";
 import CertificationController from "@/actions/App/Http/Controllers/Admin/CertificationController";
 import DeleteButton from "@/components/admin/delete-button";
@@ -6,7 +9,6 @@ import { FilterSelect, ResourceList } from "@/components/admin/data-list";
 import { formatDate } from "@/components/admin/show-page";
 import Heading from "@/components/heading";
 import AiDraftBadge from "@/components/admin/ai-draft-badge";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CERTIFICATION_KINDS, PUBLICATION_STATUSES } from "@/lib/admin-options";
 import { index as pageIndex } from "@/routes/admin/certifications";
@@ -57,19 +59,16 @@ export default function CertificationsIndex({
                         },
                         {
                             header: "Statut",
+                            fit: true,
                             cell: (row) => (
                                 <>
-                                    <Badge
-                                        variant={
-                                            row.status === "published"
-                                                ? "default"
-                                                : "secondary"
-                                        }
-                                    >
-                                        {row.status === "published"
-                                            ? "Publié"
-                                            : "Brouillon"}
-                                    </Badge>
+                                    <StatusMenu
+                                        type="certification"
+                                        id={row.id}
+                                        status={row.status}
+                                        options={PUBLICATION_STATUSES}
+                                        variants={PUBLICATION_VARIANTS}
+                                    />
                                     <AiDraftBadge
                                         draftedBy={row.drafted_by}
                                         status={row.status}

@@ -1,4 +1,7 @@
 import { Head, Link } from "@inertiajs/react";
+import StatusMenu, {
+    PUBLICATION_VARIANTS,
+} from "@/components/admin/status-menu";
 import { Eye, Plus, SquarePen } from "lucide-react";
 import PostController from "@/actions/App/Http/Controllers/Admin/PostController";
 import { FilterSelect, ResourceList } from "@/components/admin/data-list";
@@ -74,11 +77,35 @@ export default function PostsIndex({
                         },
                         {
                             header: "Statut",
+                            fit: true,
                             cell: (row) => {
                                 const { label, variant } =
                                     publicationLabel(row);
 
-                                return <Badge variant={variant}>{label}</Badge>;
+                                return (
+                                    <StatusMenu
+                                        type="post"
+                                        id={row.id}
+                                        status={row.status}
+                                        options={[
+                                            {
+                                                value: "published",
+                                                label:
+                                                    row.status === "published"
+                                                        ? label
+                                                        : "Publié",
+                                            },
+                                            {
+                                                value: "draft",
+                                                label: "Brouillon",
+                                            },
+                                        ]}
+                                        variants={{
+                                            ...PUBLICATION_VARIANTS,
+                                            published: variant,
+                                        }}
+                                    />
+                                );
                             },
                         },
                         {

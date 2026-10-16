@@ -1,31 +1,31 @@
-import { Head, router } from '@inertiajs/react';
-import { Check, ExternalLink, X } from 'lucide-react';
-import DeleteButton from '@/components/admin/delete-button';
-import { FilterSelect, ResourceList } from '@/components/admin/data-list';
-import Heading from '@/components/heading';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Head, router } from "@inertiajs/react";
+import StatusMenu from "@/components/admin/status-menu";
+import { Check, ExternalLink, X } from "lucide-react";
+import DeleteButton from "@/components/admin/delete-button";
+import { FilterSelect, ResourceList } from "@/components/admin/data-list";
+import Heading from "@/components/heading";
+import { Button } from "@/components/ui/button";
 import {
     destroy,
     index as pageIndex,
     update,
-} from '@/routes/admin/post-comments';
-import type { ListFilters, Paginated, PostComment } from '@/types';
-import ActionTooltip from '@/components/admin/action-tooltip';
+} from "@/routes/admin/post-comments";
+import type { ListFilters, Paginated, PostComment } from "@/types";
+import ActionTooltip from "@/components/admin/action-tooltip";
 
 const STATUS_VARIANT = {
-    pending: 'secondary',
-    approved: 'default',
-    rejected: 'destructive',
+    pending: "secondary",
+    approved: "default",
+    rejected: "destructive",
 } as const;
 
 const STATUS_LABEL = {
-    pending: 'En attente',
-    approved: 'Publié',
-    rejected: 'Refusé',
+    pending: "En attente",
+    approved: "Publié",
+    rejected: "Refusé",
 } as const;
 
-function moderate(comment: PostComment, status: PostComment['status']): void {
+function moderate(comment: PostComment, status: PostComment["status"]): void {
     router.patch(update.url(comment.id), { status }, { preserveScroll: true });
 }
 
@@ -52,7 +52,7 @@ export default function PostCommentsIndex({
                     searchPlaceholder="Auteur, email, commentaire…"
                     columns={[
                         {
-                            header: 'Auteur',
+                            header: "Auteur",
                             cell: (row) => (
                                 <div className="grid">
                                     <span>{row.author_name}</span>
@@ -65,7 +65,7 @@ export default function PostCommentsIndex({
                             ),
                         },
                         {
-                            header: 'Commentaire',
+                            header: "Commentaire",
                             cell: (row) => (
                                 <div className="grid max-w-md gap-1">
                                     <p className="line-clamp-3 whitespace-pre-line">
@@ -86,18 +86,25 @@ export default function PostCommentsIndex({
                             ),
                         },
                         {
-                            header: 'Statut',
+                            header: "Statut",
+                            fit: true,
                             cell: (row) => (
-                                <Badge variant={STATUS_VARIANT[row.status]}>
-                                    {STATUS_LABEL[row.status]}
-                                </Badge>
+                                <StatusMenu
+                                    type="comment"
+                                    id={row.id}
+                                    status={row.status}
+                                    options={Object.entries(STATUS_LABEL).map(
+                                        ([value, label]) => ({ value, label }),
+                                    )}
+                                    variants={STATUS_VARIANT}
+                                />
                             ),
                         },
                         {
-                            header: 'Reçu le',
+                            header: "Reçu le",
                             cell: (row) =>
                                 new Date(row.created_at).toLocaleDateString(
-                                    'fr-FR',
+                                    "fr-FR",
                                 ),
                         },
                     ]}
@@ -108,15 +115,15 @@ export default function PostCommentsIndex({
                             value={filters.status}
                             label="Statut"
                             options={[
-                                { value: 'pending', label: 'En attente' },
-                                { value: 'approved', label: 'Publié' },
-                                { value: 'rejected', label: 'Refusé' },
+                                { value: "pending", label: "En attente" },
+                                { value: "approved", label: "Publié" },
+                                { value: "rejected", label: "Refusé" },
                             ]}
                         />
                     )}
                     actions={(row) => (
                         <>
-                            {row.status !== 'approved' && (
+                            {row.status !== "approved" && (
                                 <ActionTooltip label="Publier">
                                     <Button
                                         variant="ghost"
@@ -124,14 +131,14 @@ export default function PostCommentsIndex({
                                         aria-label="Publier"
                                         title="Publier"
                                         onClick={() =>
-                                            moderate(row, 'approved')
+                                            moderate(row, "approved")
                                         }
                                     >
                                         <Check />
                                     </Button>
                                 </ActionTooltip>
                             )}
-                            {row.status !== 'rejected' && (
+                            {row.status !== "rejected" && (
                                 <ActionTooltip label="Refuser">
                                     <Button
                                         variant="ghost"
@@ -139,7 +146,7 @@ export default function PostCommentsIndex({
                                         aria-label="Refuser"
                                         title="Refuser"
                                         onClick={() =>
-                                            moderate(row, 'rejected')
+                                            moderate(row, "rejected")
                                         }
                                     >
                                         <X />
@@ -159,5 +166,5 @@ export default function PostCommentsIndex({
 }
 
 PostCommentsIndex.layout = {
-    breadcrumbs: [{ title: 'Commentaires', href: pageIndex() }],
+    breadcrumbs: [{ title: "Commentaires", href: pageIndex() }],
 };

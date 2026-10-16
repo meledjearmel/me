@@ -1,4 +1,8 @@
 import { Head, Link } from "@inertiajs/react";
+import { PUBLICATION_STATUSES } from "@/lib/admin-options";
+import StatusMenu, {
+    PUBLICATION_VARIANTS,
+} from "@/components/admin/status-menu";
 import { Plus, Eye, SquarePen } from "lucide-react";
 import { index as pageIndex } from "@/routes/admin/educations";
 import EducationController from "@/actions/App/Http/Controllers/Admin/EducationController";
@@ -6,7 +10,6 @@ import DeleteButton from "@/components/admin/delete-button";
 import { FilterSelect, ResourceList } from "@/components/admin/data-list";
 import Heading from "@/components/heading";
 import AiDraftBadge from "@/components/admin/ai-draft-badge";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ListFilters, Paginated, Education } from "@/types";
 import ActionTooltip from "@/components/admin/action-tooltip";
@@ -52,19 +55,16 @@ export default function EducationsIndex({
                         },
                         {
                             header: "Statut",
+                            fit: true,
                             cell: (row) => (
                                 <>
-                                    <Badge
-                                        variant={
-                                            row.status === "published"
-                                                ? "default"
-                                                : "secondary"
-                                        }
-                                    >
-                                        {row.status === "published"
-                                            ? "Publié"
-                                            : "Brouillon"}
-                                    </Badge>
+                                    <StatusMenu
+                                        type="education"
+                                        id={row.id}
+                                        status={row.status}
+                                        options={PUBLICATION_STATUSES}
+                                        variants={PUBLICATION_VARIANTS}
+                                    />
                                     <AiDraftBadge
                                         draftedBy={row.drafted_by}
                                         status={row.status}

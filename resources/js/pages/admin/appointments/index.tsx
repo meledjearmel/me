@@ -1,21 +1,21 @@
-import { Head, Link } from '@inertiajs/react';
-import { Eye } from 'lucide-react';
-import AppointmentController from '@/actions/App/Http/Controllers/Admin/AppointmentController';
-import { FilterSelect, ResourceList } from '@/components/admin/data-list';
-import DeleteButton from '@/components/admin/delete-button';
-import Heading from '@/components/heading';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Head, Link } from "@inertiajs/react";
+import StatusMenu from "@/components/admin/status-menu";
+import { Eye } from "lucide-react";
+import AppointmentController from "@/actions/App/Http/Controllers/Admin/AppointmentController";
+import { FilterSelect, ResourceList } from "@/components/admin/data-list";
+import DeleteButton from "@/components/admin/delete-button";
+import Heading from "@/components/heading";
+import { Button } from "@/components/ui/button";
 import {
     APPOINTMENT_LOCATIONS,
     APPOINTMENT_STATUSES,
     APPOINTMENT_STATUS_VARIANT,
     formatSlot,
     optionLabel,
-} from '@/lib/admin-options';
-import { index as pageIndex } from '@/routes/admin/appointments';
-import type { Appointment, ListFilters, Paginated } from '@/types';
-import ActionTooltip from '@/components/admin/action-tooltip';
+} from "@/lib/admin-options";
+import { index as pageIndex } from "@/routes/admin/appointments";
+import type { Appointment, ListFilters, Paginated } from "@/types";
+import ActionTooltip from "@/components/admin/action-tooltip";
 
 export default function AppointmentsIndex({
     appointments,
@@ -58,12 +58,12 @@ export default function AppointmentsIndex({
                     )}
                     columns={[
                         {
-                            header: 'Quand',
+                            header: "Quand",
                             cell: (row) =>
                                 formatSlot(row.starts_at, row.ends_at),
                         },
                         {
-                            header: 'Avec',
+                            header: "Avec",
                             cell: (row) => (
                                 <div className="flex flex-col">
                                     <span className="font-medium">
@@ -72,17 +72,17 @@ export default function AppointmentsIndex({
                                     <span className="text-xs text-muted-foreground">
                                         {[row.company, row.email]
                                             .filter(Boolean)
-                                            .join(' · ')}
+                                            .join(" · ")}
                                     </span>
                                 </div>
                             ),
                         },
                         {
-                            header: 'Type',
+                            header: "Type",
                             cell: (row) => row.appointment_type?.name.fr,
                         },
                         {
-                            header: 'Lieu',
+                            header: "Lieu",
                             cell: (row) =>
                                 optionLabel(
                                     APPOINTMENT_LOCATIONS,
@@ -90,18 +90,16 @@ export default function AppointmentsIndex({
                                 ),
                         },
                         {
-                            header: 'Statut',
+                            header: "Statut",
+                            fit: true,
                             cell: (row) => (
-                                <Badge
-                                    variant={
-                                        APPOINTMENT_STATUS_VARIANT[row.status]
-                                    }
-                                >
-                                    {optionLabel(
-                                        APPOINTMENT_STATUSES,
-                                        row.status,
-                                    )}
-                                </Badge>
+                                <StatusMenu
+                                    type="appointment"
+                                    id={row.id}
+                                    status={row.status}
+                                    options={APPOINTMENT_STATUSES}
+                                    variants={APPOINTMENT_STATUS_VARIANT}
+                                />
                             ),
                         },
                     ]}
@@ -132,5 +130,5 @@ export default function AppointmentsIndex({
 }
 
 AppointmentsIndex.layout = {
-    breadcrumbs: [{ title: 'Rendez-vous', href: pageIndex() }],
+    breadcrumbs: [{ title: "Rendez-vous", href: pageIndex() }],
 };

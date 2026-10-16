@@ -1,30 +1,30 @@
-import { Head, Link } from '@inertiajs/react';
-import { Eye, Plus, SquarePen } from 'lucide-react';
-import JobApplicationController from '@/actions/App/Http/Controllers/Admin/JobApplicationController';
-import ActionTooltip from '@/components/admin/action-tooltip';
-import AiDraftBadge from '@/components/admin/ai-draft-badge';
-import { FilterSelect, ResourceList } from '@/components/admin/data-list';
-import DeleteButton from '@/components/admin/delete-button';
-import { JOB_APPLICATION_STATUSES } from '@/components/admin/job-application-fields';
-import Heading from '@/components/heading';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { index as pageIndex } from '@/routes/admin/job-applications';
-import type { JobApplication, ListFilters, Paginated } from '@/types';
+import { Head, Link } from "@inertiajs/react";
+import StatusMenu from "@/components/admin/status-menu";
+import { Eye, Plus, SquarePen } from "lucide-react";
+import JobApplicationController from "@/actions/App/Http/Controllers/Admin/JobApplicationController";
+import ActionTooltip from "@/components/admin/action-tooltip";
+import AiDraftBadge from "@/components/admin/ai-draft-badge";
+import { FilterSelect, ResourceList } from "@/components/admin/data-list";
+import DeleteButton from "@/components/admin/delete-button";
+import { JOB_APPLICATION_STATUSES } from "@/components/admin/job-application-fields";
+import Heading from "@/components/heading";
+import { Button } from "@/components/ui/button";
+import { index as pageIndex } from "@/routes/admin/job-applications";
+import type { JobApplication, ListFilters, Paginated } from "@/types";
 
-const STATUS_LABELS: Record<JobApplication['status'], string> = {
-    draft: 'Brouillon',
-    active: 'En ligne',
-    archived: 'Archivée',
+const STATUS_LABELS: Record<JobApplication["status"], string> = {
+    draft: "Brouillon",
+    active: "En ligne",
+    archived: "Archivée",
 };
 
 const lastSeen = (value: string | null) =>
     value
-        ? new Date(value).toLocaleDateString('fr-FR', {
-              day: 'numeric',
-              month: 'short',
+        ? new Date(value).toLocaleDateString("fr-FR", {
+              day: "numeric",
+              month: "short",
           })
-        : 'Jamais';
+        : "Jamais";
 
 export default function JobApplicationsIndex({
     applications,
@@ -56,33 +56,41 @@ export default function JobApplicationsIndex({
                     filters={filters}
                     searchPlaceholder="Entreprise, poste ou recruteur…"
                     columns={[
-                        { header: 'Entreprise', cell: (row) => row.company },
-                        { header: 'Poste', cell: (row) => row.position },
-                        { header: 'Vues', cell: (row) => row.views_count },
-                        { header: 'CV', cell: (row) => row.cv_downloads_count },
+                        { header: "Entreprise", cell: (row) => row.company },
+                        { header: "Poste", cell: (row) => row.position },
+                        { header: "Vues", cell: (row) => row.views_count },
+                        { header: "CV", cell: (row) => row.cv_downloads_count },
                         {
-                            header: 'Dernière visite',
+                            header: "Dernière visite",
                             cell: (row) => lastSeen(row.last_viewed_at),
                         },
                         {
-                            header: 'Statut',
+                            header: "Statut",
+                            fit: true,
                             cell: (row) => (
                                 <>
-                                    <Badge
-                                        variant={
-                                            row.status === 'active'
-                                                ? 'default'
-                                                : 'secondary'
-                                        }
-                                    >
-                                        {STATUS_LABELS[row.status]}
-                                    </Badge>
+                                    <StatusMenu
+                                        type="job_application"
+                                        id={row.id}
+                                        status={row.status}
+                                        options={Object.entries(
+                                            STATUS_LABELS,
+                                        ).map(([value, label]) => ({
+                                            value,
+                                            label,
+                                        }))}
+                                        variants={{
+                                            active: "default",
+                                            draft: "secondary",
+                                            archived: "secondary",
+                                        }}
+                                    />
                                     <AiDraftBadge
                                         draftedBy={row.drafted_by}
                                         status={
-                                            row.status === 'draft'
-                                                ? 'draft'
-                                                : 'published'
+                                            row.status === "draft"
+                                                ? "draft"
+                                                : "published"
                                         }
                                     />
                                 </>
@@ -142,5 +150,5 @@ export default function JobApplicationsIndex({
 }
 
 JobApplicationsIndex.layout = {
-    breadcrumbs: [{ title: 'Candidatures', href: pageIndex() }],
+    breadcrumbs: [{ title: "Candidatures", href: pageIndex() }],
 };

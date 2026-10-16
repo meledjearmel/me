@@ -1,20 +1,20 @@
-import { router } from '@inertiajs/react';
-import { ArrowLeft, ArrowRight, SearchIcon, XIcon } from 'lucide-react';
-import type { ReactNode } from 'react';
-import { useEffect, useRef, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { router } from "@inertiajs/react";
+import { ArrowLeft, ArrowRight, SearchIcon, XIcon } from "lucide-react";
+import type { ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
     Empty,
     EmptyDescription,
     EmptyHeader,
     EmptyTitle,
-} from '@/components/ui/empty';
+} from "@/components/ui/empty";
 import {
     InputGroup,
     InputGroupAddon,
     InputGroupInput,
-} from '@/components/ui/input-group';
+} from "@/components/ui/input-group";
 import {
     Select,
     SelectContent,
@@ -22,7 +22,7 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
     Table,
     TableBody,
@@ -30,11 +30,11 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from '@/components/ui/table';
-import { cn } from '@/lib/utils';
-import type { ListFilters, Paginated } from '@/types';
+} from "@/components/ui/table";
+import { cn } from "@/lib/utils";
+import type { ListFilters, Paginated } from "@/types";
 
-const ALL = 'all';
+const ALL = "all";
 const PER_PAGE_OPTIONS = [10, 25, 50];
 
 /**
@@ -55,7 +55,7 @@ export function useListState(filters: ListFilters) {
         const query = Object.fromEntries(
             Object.entries(next).filter(
                 ([key, value]) =>
-                    value !== '' && !(key === 'per_page' && value === 10),
+                    value !== "" && !(key === "per_page" && value === 10),
             ),
         );
 
@@ -84,7 +84,7 @@ export function useListState(filters: ListFilters) {
     }, [search]);
 
     const activeFilterCount = Object.entries(filters).filter(
-        ([key, value]) => key !== 'per_page' && value !== '',
+        ([key, value]) => key !== "per_page" && value !== "",
     ).length;
 
     return {
@@ -93,7 +93,7 @@ export function useListState(filters: ListFilters) {
         visit,
         activeFilterCount,
         reset: () => {
-            setSearch('');
+            setSearch("");
             router.get(
                 window.location.pathname,
                 {},
@@ -111,7 +111,7 @@ type ListToolbarProps = {
 
 export function ListToolbar({
     state,
-    placeholder = 'Rechercher…',
+    placeholder = "Rechercher…",
     children,
 }: ListToolbarProps) {
     return (
@@ -159,9 +159,9 @@ export function FilterSelect({
 }: FilterSelectProps) {
     return (
         <Select
-            value={String(value) === '' ? ALL : String(value)}
+            value={String(value) === "" ? ALL : String(value)}
             onValueChange={(next) =>
-                state.visit({ [name]: next === ALL ? '' : next, page: 1 })
+                state.visit({ [name]: next === ALL ? "" : next, page: 1 })
             }
         >
             <SelectTrigger className="w-auto min-w-36" aria-label={label}>
@@ -181,18 +181,18 @@ export function FilterSelect({
     );
 }
 
-function pageWindow(current: number, last: number): (number | 'gap')[] {
+function pageWindow(current: number, last: number): (number | "gap")[] {
     const pages = new Set(
         [1, last, current - 1, current, current + 1].filter(
             (page) => page >= 1 && page <= last,
         ),
     );
     const sorted = [...pages].sort((a, b) => a - b);
-    const result: (number | 'gap')[] = [];
+    const result: (number | "gap")[] = [];
 
     sorted.forEach((page, index) => {
         if (index > 0 && page - sorted[index - 1] > 1) {
-            result.push('gap');
+            result.push("gap");
         }
 
         result.push(page);
@@ -227,7 +227,7 @@ export function ListPagination({
             <div className="flex items-center gap-1">
                 {last > 1 ? (
                     pageWindow(current, last).map((page, index) =>
-                        page === 'gap' ? (
+                        page === "gap" ? (
                             <span
                                 key={`gap-${index}`}
                                 className="px-2 text-sm text-muted-foreground"
@@ -238,12 +238,12 @@ export function ListPagination({
                             <Button
                                 key={page}
                                 variant={
-                                    page === current ? 'secondary' : 'ghost'
+                                    page === current ? "secondary" : "ghost"
                                 }
                                 size="sm"
                                 className="min-w-8"
                                 aria-current={
-                                    page === current ? 'page' : undefined
+                                    page === current ? "page" : undefined
                                 }
                                 onClick={() => go(page)}
                             >
@@ -313,12 +313,12 @@ export function EmptyList({
         <Empty>
             <EmptyHeader>
                 <EmptyTitle>
-                    {filtered ? 'Aucun résultat' : 'Rien pour le moment'}
+                    {filtered ? "Aucun résultat" : "Rien pour le moment"}
                 </EmptyTitle>
                 <EmptyDescription>
                     {filtered
-                        ? 'Aucun élément ne correspond à la recherche ou aux filtres.'
-                        : 'Les éléments apparaîtront ici.'}
+                        ? "Aucun élément ne correspond à la recherche ou aux filtres."
+                        : "Les éléments apparaîtront ici."}
                 </EmptyDescription>
             </EmptyHeader>
             {children}
@@ -330,7 +330,28 @@ export type Column<T> = {
     header: string;
     cell: (row: T) => ReactNode;
     className?: string;
+    /**
+     * Colonne à la largeur de son contenu, jamais tronquée (badge, statut, date). Les autres
+     * se partagent la place restante et coupent le texte trop long par « … ».
+     */
+    fit?: boolean;
 };
+
+/** Coupe le texte trop long par « … » ; le texte entier reste lisible au survol. */
+function TruncatedCell({ children }: { children: ReactNode }) {
+    return (
+        <div
+            className="truncate"
+            title={
+                typeof children === "string" || typeof children === "number"
+                    ? String(children)
+                    : undefined
+            }
+        >
+            {children}
+        </div>
+    );
+}
 
 type ResourceListProps<T extends { id: number }> = {
     paginator: Paginated<T>;
@@ -365,7 +386,7 @@ export function ResourceList<T extends { id: number }>({
                 </ListToolbar>
                 <div className="flex items-center gap-2">
                     <Badge variant="outline">
-                        {total} élément{total > 1 ? 's' : ''}
+                        {total} élément{total > 1 ? "s" : ""}
                     </Badge>
                     <PerPageSelect paginator={paginator} state={state} />
                 </div>
@@ -381,7 +402,7 @@ export function ResourceList<T extends { id: number }>({
                                 <TableHead
                                     key={column.header}
                                     className={cn(
-                                        'h-11 px-4 text-xs font-medium text-muted-foreground first:pl-6',
+                                        "h-11 px-4 text-xs font-medium text-muted-foreground first:pl-6",
                                         column.className,
                                     )}
                                 >
@@ -400,17 +421,24 @@ export function ResourceList<T extends { id: number }>({
                                     <TableCell
                                         key={column.header}
                                         className={cn(
-                                            'px-4 py-4 first:pl-6',
+                                            "px-4 py-4 first:pl-6",
+                                            column.fit ? "w-px" : "max-w-0",
                                             index === 0
-                                                ? 'font-medium'
-                                                : 'text-muted-foreground',
+                                                ? "font-medium"
+                                                : "text-muted-foreground",
                                             column.className,
                                         )}
                                     >
-                                        {column.cell(row)}
+                                        {column.fit ? (
+                                            column.cell(row)
+                                        ) : (
+                                            <TruncatedCell>
+                                                {column.cell(row)}
+                                            </TruncatedCell>
+                                        )}
                                     </TableCell>
                                 ))}
-                                <TableCell className="px-4 py-4 pr-6">
+                                <TableCell className="w-px px-4 py-4 pr-6">
                                     <div className="flex justify-end gap-0.5 text-muted-foreground">
                                         {actions(row)}
                                     </div>

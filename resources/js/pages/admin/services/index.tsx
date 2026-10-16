@@ -1,21 +1,23 @@
-import { Head, Link } from '@inertiajs/react';
-import { ExternalLink, Plus, SquarePen } from 'lucide-react';
-import ServiceController from '@/actions/App/Http/Controllers/Admin/ServiceController';
-import ActionTooltip from '@/components/admin/action-tooltip';
-import AiDraftBadge from '@/components/admin/ai-draft-badge';
-import { FilterSelect, ResourceList } from '@/components/admin/data-list';
-import DeleteButton from '@/components/admin/delete-button';
-import Heading from '@/components/heading';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { PUBLICATION_STATUSES } from '@/lib/admin-options';
-import { index as pageIndex } from '@/routes/admin/services';
-import type { ListFilters, Paginated, Service } from '@/types';
+import { Head, Link } from "@inertiajs/react";
+import StatusMenu, {
+    PUBLICATION_VARIANTS,
+} from "@/components/admin/status-menu";
+import { ExternalLink, Plus, SquarePen } from "lucide-react";
+import ServiceController from "@/actions/App/Http/Controllers/Admin/ServiceController";
+import ActionTooltip from "@/components/admin/action-tooltip";
+import AiDraftBadge from "@/components/admin/ai-draft-badge";
+import { FilterSelect, ResourceList } from "@/components/admin/data-list";
+import DeleteButton from "@/components/admin/delete-button";
+import Heading from "@/components/heading";
+import { Button } from "@/components/ui/button";
+import { PUBLICATION_STATUSES } from "@/lib/admin-options";
+import { index as pageIndex } from "@/routes/admin/services";
+import type { ListFilters, Paginated, Service } from "@/types";
 
-const PRICE_LABELS: Record<Service['price_mode'], string> = {
-    estimator: 'Estimateur',
-    manual: 'Saisi',
-    quote: 'Sur devis',
+const PRICE_LABELS: Record<Service["price_mode"], string> = {
+    estimator: "Estimateur",
+    manual: "Saisi",
+    quote: "Sur devis",
 };
 
 export default function ServicesIndex({
@@ -59,31 +61,28 @@ export default function ServicesIndex({
                     filters={filters}
                     searchPlaceholder="Nom ou ancre…"
                     columns={[
-                        { header: 'Nom', cell: (row) => row.title.fr },
+                        { header: "Nom", cell: (row) => row.title.fr },
                         {
-                            header: 'Prix',
+                            header: "Prix",
                             cell: (row) => PRICE_LABELS[row.price_mode],
                         },
                         {
-                            header: 'Projets',
+                            header: "Projets",
                             cell: (row) => row.projects_count ?? 0,
                         },
-                        { header: 'Ordre', cell: (row) => row.sort_order },
+                        { header: "Ordre", cell: (row) => row.sort_order },
                         {
-                            header: 'Statut',
+                            header: "Statut",
+                            fit: true,
                             cell: (row) => (
                                 <>
-                                    <Badge
-                                        variant={
-                                            row.status === 'published'
-                                                ? 'default'
-                                                : 'secondary'
-                                        }
-                                    >
-                                        {row.status === 'published'
-                                            ? 'Publiée'
-                                            : 'Brouillon'}
-                                    </Badge>
+                                    <StatusMenu
+                                        type="service"
+                                        id={row.id}
+                                        status={row.status}
+                                        options={PUBLICATION_STATUSES}
+                                        variants={PUBLICATION_VARIANTS}
+                                    />
                                     <AiDraftBadge
                                         draftedBy={row.drafted_by}
                                         status={row.status}
@@ -126,5 +125,5 @@ export default function ServicesIndex({
 }
 
 ServicesIndex.layout = {
-    breadcrumbs: [{ title: 'Services', href: pageIndex() }],
+    breadcrumbs: [{ title: "Services", href: pageIndex() }],
 };

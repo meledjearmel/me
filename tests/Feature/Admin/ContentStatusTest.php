@@ -1,12 +1,24 @@
 <?php
 
+use App\Enums\AppointmentStatus;
+use App\Enums\CommercialDocumentStatus;
+use App\Enums\ContactStatus;
 use App\Enums\ProjectStatus;
 use App\Enums\PublicationStatus;
+use App\Enums\RevisionStatus;
+use App\Enums\TestimonialStatus;
+use App\Jobs\SendAppointmentMails;
+use App\Models\Appointment;
+use App\Models\CommercialDocument;
+use App\Models\Contact;
+use App\Models\ContentRevision;
 use App\Models\Domain;
 use App\Models\Experience;
 use App\Models\Post;
 use App\Models\Project;
+use App\Models\Testimonial;
 use App\Models\User;
+use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
 
 test('a project status is changed from its page', function () {
@@ -77,3 +89,59 @@ test('a new item ordered 0 goes last, an explicit order is kept', function () {
         ->and(Domain::factory()->create(['sort_order' => 2])->sort_order)->toBe(2)
         ->and(Domain::factory()->create(['sort_order' => null])->sort_order)->toBe(6);
 });
+
+test('a status is changed from a list row', function () {
+    $contact = Contact::factory()->create(['status' => ContactStatus::New]);
+
+    $this->actingAs(User::factory()->create())
+        ->patch(route('admin.content-status.update', ['type' => 'contact', 'id' => $contact->id]), ['status' => 'replied'])
+        ->assertSessionHasNoErrors();
+
+    expect($contact->fresh()->status)->toBe(ContactStatus::Replied);
+});
+
+test('a rejected testimonial leaves the featured ones', function () {
+    $testimonial = Testimonial::factory()->create(['status' => TestimonialStatus::Approved, 'is_featured' => true]);
+
+    $this->actingAs(User::factory()->create())
+        ->patch(route('admin.content-status.update', ['type' => 'testimonial', 'id' => $testimonial->id]), ['status' => 'rejected']);
+
+    expect($testimonial->fresh())->status->toBe(TestimonialStatus::Rejected)->is_featured->toBeFalse();
+});
+
+test('confirming an appointment from the list mails the visitor', function () {
+    Queue::fake();
+    $appointment = Appointment::factory()->create();
+
+    $this->actingAs(User::factory()->create())
+        ->patch(route('admin.content-status.update', ['type' => 'appointment', 'id' => $appointment->id]), ['status' => 'confirmed'])
+        ->assertSessionHasNoErrors();
+
+    expect($appointment->fresh()->status)->toBe(AppointmentStatus::Confirmed);
+    Queue::assertPushed(SendAppointmentMails::class, fn (SendAppointmentMails $job): bool => $job->event === 'confirmed');
+});
+
+test('issuing a document from the list gives it its number', function () {
+    $document = CommercialDocument::factory()->create();
+
+    $this->actingAs(User::factory()->create())
+        ->patch(route('admin.content-status.update', ['type' => 'commercial_document', 'id' => $document->id]), ['status' => 'issued'])
+        ->assertSessionHasNoErrors();
+
+    expect($document->fresh())->status->toBe(CommercialDocumentStatus::Issued)->number->not->toBeNull();
+});
+
+test('a status that cannot follow the current one is refused', function (string $type, Closure $create, string $status) {
+    $content = $create();
+    $before = $content->status;
+
+    $this->actingAs(User::factory()->create())
+        ->patch(route('admin.content-status.update', ['type' => $type, 'id' => $content->id]), ['status' => $status])
+        ->assertSessionHasErrors(['status' => "Ce changement de statut n'est pas possible."]);
+
+    expect($content->fresh()->status)->toBe($before);
+})->with([
+    'draft document marked paid' => ['commercial_document', fn () => CommercialDocument::factory()->create(), 'paid'],
+    'declined appointment confirmed' => ['appointment', fn () => Appointment::factory()->create(['status' => AppointmentStatus::Declined]), 'confirmed'],
+    'applied revision rejected' => ['revision', fn () => ContentRevision::factory()->create(['status' => RevisionStatus::Applied]), 'rejected'],
+]);
