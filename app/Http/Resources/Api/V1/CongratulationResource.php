@@ -22,7 +22,9 @@ class CongratulationResource extends JsonResource
             'source' => $this->source,
             /** Surprise d'origine ; `null` pour la page À propos ou si la surprise a été supprimée. */
             'celebration_id' => $this->celebration_id,
-            /** Motif lisible, figé au moment du clic (message FR de la surprise). */
+            /** Distinction félicitée (source `about`) ; `null` pour une surprise ou si elle a été supprimée. */
+            'distinction_id' => $this->distinction_id,
+            /** Motif lisible, figé au moment du clic (message FR de la surprise ou intitulé FR de la distinction). */
             'reason' => $this->reason,
             /** Nombre de clics regroupés dans cet envoi. */
             'count' => $this->count,

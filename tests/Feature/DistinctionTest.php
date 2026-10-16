@@ -169,6 +169,17 @@ test('the API creates a distinction linked to a project and exposes its context'
         ->assertJsonPath('context_label', 'App Station');
 });
 
+test('the congratulations history tells which distinction was congratulated', function () {
+    $distinction = Distinction::factory()->create();
+    $this->postJson("/fr/distinctions/{$distinction->id}/congratulations", ['count' => 2])->assertOk();
+
+    Sanctum::actingAs(User::factory()->create());
+
+    $this->getJson(route('api.v1.congratulations.index'))
+        ->assertOk()
+        ->assertJsonPath('data.0.distinction_id', $distinction->id);
+});
+
 test('the distinctions API requires authentication', function () {
     $this->getJson(route('api.v1.distinctions.index'))->assertUnauthorized();
 });
