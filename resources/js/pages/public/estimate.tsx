@@ -1,15 +1,15 @@
-import { Form, useHttp } from '@inertiajs/react';
-import { useEffect, useRef, useState } from 'react';
-import ProjectEstimateController from '@/actions/App/Http/Controllers/ProjectEstimateController';
-import PageHero from '@/components/public/page-hero';
-import PublicShell from '@/components/public/public-shell';
-import Seo from '@/components/public/seo';
-import { post } from '@/hooks/use-ai-text-assist';
-import { useLocale, useTranslations } from '@/lib/i18n';
-import type { PublicEstimatorItem } from '@/types';
+import { Form, useHttp } from "@inertiajs/react";
+import { useEffect, useRef, useState } from "react";
+import ProjectEstimateController from "@/actions/App/Http/Controllers/ProjectEstimateController";
+import PageHero from "@/components/public/page-hero";
+import PublicShell from "@/components/public/public-shell";
+import Seo from "@/components/public/seo";
+import { post } from "@/hooks/use-ai-text-assist";
+import { useLocale, useTranslations } from "@/lib/i18n";
+import type { PublicEstimatorItem } from "@/types";
 
 type Quote = {
-    billing: 'fixed' | 'hourly';
+    billing: "fixed" | "hourly";
     currency: string;
     hourly_rate: number;
     hours_min: number;
@@ -28,7 +28,7 @@ type Quote = {
     }[];
 };
 
-type StepKey = 'project' | 'options' | 'estimate' | 'contact';
+type StepKey = "project" | "options" | "estimate" | "contact";
 
 /**
  * Estimateur de projet en étapes, une à la fois : le projet (avec l'aide facultative de
@@ -39,7 +39,6 @@ type StepKey = 'project' | 'options' | 'estimate' | 'contact';
 export default function Estimate({
     projectTypes,
     features,
-    currencies,
     defaultCurrency,
     preselectedTypeId,
 }: {
@@ -75,8 +74,8 @@ export default function Estimate({
     // Sans option pour ce type, l'étape des options n'a pas lieu d'être.
     const steps: StepKey[] =
         availableFeatures.length > 0
-            ? ['project', 'options', 'estimate', 'contact']
-            : ['project', 'estimate', 'contact'];
+            ? ["project", "options", "estimate", "contact"]
+            : ["project", "estimate", "contact"];
 
     /** Changer de type retire les options qui ne lui sont pas proposées. */
     const chooseProjectType = (typeId: number) => {
@@ -91,13 +90,15 @@ export default function Estimate({
             }),
         );
     };
-    const [currency, setCurrency] = useState(defaultCurrency);
+    // La devise suit le pays du visiteur, choisie par le serveur : pas de sélecteur,
+    // pour que chacun ne voie que le tarif de son marché.
+    const currency = defaultCurrency;
     const [quote, setQuote] = useState<Quote | null>(null);
     const [sent, setSent] = useState(false);
-    const [description, setDescription] = useState('');
+    const [description, setDescription] = useState("");
     const [aiStatus, setAiStatus] = useState<
-        'idle' | 'pending' | 'done' | 'error'
-    >('idle');
+        "idle" | "pending" | "done" | "error"
+    >("idle");
     const [blocked, setBlocked] = useState(false);
     const headingRef = useRef<HTMLHeadingElement>(null);
     const hasNavigated = useRef(false);
@@ -113,7 +114,7 @@ export default function Estimate({
 
     /** « Laisser l'IA choisir » : le type et les options d'après la description du visiteur. */
     const suggest = async () => {
-        setAiStatus('pending');
+        setAiStatus("pending");
 
         try {
             const match = await post<{
@@ -126,9 +127,9 @@ export default function Estimate({
             setProjectTypeId(match.project_type_id);
             setFeatureIds(match.feature_ids);
             setBlocked(false);
-            setAiStatus('done');
+            setAiStatus("done");
         } catch {
-            setAiStatus('error');
+            setAiStatus("error");
         }
     };
 
@@ -169,12 +170,12 @@ export default function Estimate({
         new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(
             amount,
         ) +
-        ' ' +
-        (currency === 'XOF' ? 'FCFA' : currency);
+        " " +
+        (currency === "XOF" ? "FCFA" : currency);
 
     const currentQuote = quote && quote.currency === currency ? quote : null;
     const quoteLabel = currentQuote
-        ? currentQuote.billing === 'hourly'
+        ? currentQuote.billing === "hourly"
             ? `${t.estimate.hourlyPrice(`${currentQuote.hours_min} – ${currentQuote.hours_max} h`, money(currentQuote.hourly_rate))} · ${t.estimate.weeks(currentQuote.weeks_min, currentQuote.weeks_max)}`
             : `${money(currentQuote.price_min)} – ${money(currentQuote.price_max)} · ${t.estimate.weeks(currentQuote.weeks_min, currentQuote.weeks_max)}`
         : t.estimate.calculating;
@@ -182,9 +183,9 @@ export default function Estimate({
     const recurringLabel = (currentQuote?.recurring ?? [])
         .map(
             (line) =>
-                ` + ${money(line.price_min)} – ${money(line.price_max)} ${t.estimate.perPeriod[line.period] ?? ''}`,
+                ` + ${money(line.price_min)} – ${money(line.price_max)} ${t.estimate.perPeriod[line.period] ?? ""}`,
         )
-        .join('');
+        .join("");
 
     const toggleFeature = (id: number) =>
         setFeatureIds((current) =>
@@ -199,7 +200,7 @@ export default function Estimate({
     };
 
     const next = () => {
-        if (step === 'project' && projectTypeId === null) {
+        if (step === "project" && projectTypeId === null) {
             setBlocked(true);
 
             return;
@@ -214,8 +215,8 @@ export default function Estimate({
         setPeriods({});
         setProjectTypeId(projectTypes.length === 1 ? projectTypes[0].id : null);
         setQuote(null);
-        setDescription('');
-        setAiStatus('idle');
+        setDescription("");
+        setAiStatus("idle");
         goTo(0);
     };
 
@@ -286,15 +287,15 @@ export default function Estimate({
                                                     key={key}
                                                     data-state={
                                                         index < stepIndex
-                                                            ? 'done'
+                                                            ? "done"
                                                             : index ===
                                                                 stepIndex
-                                                              ? 'current'
-                                                              : 'todo'
+                                                              ? "current"
+                                                              : "todo"
                                                     }
                                                     aria-current={
                                                         index === stepIndex
-                                                            ? 'step'
+                                                            ? "step"
                                                             : undefined
                                                     }
                                                 >
@@ -329,25 +330,25 @@ export default function Estimate({
                                             <span>
                                                 {String(stepIndex + 1).padStart(
                                                     2,
-                                                    '0',
+                                                    "0",
                                                 )}
-                                            </span>{' '}
+                                            </span>{" "}
                                             {titles[step]}
                                         </h2>
 
-                                        {(step === 'options' ||
-                                            step === 'contact') && (
+                                        {(step === "options" ||
+                                            step === "contact") && (
                                             <p
                                                 className="pub-estimate__mini"
                                                 aria-live="polite"
                                             >
-                                                <span>{t.estimate.result}</span>{' '}
+                                                <span>{t.estimate.result}</span>{" "}
                                                 {quoteLabel}
                                                 {recurringLabel}
                                             </p>
                                         )}
 
-                                        {step === 'project' && (
+                                        {step === "project" && (
                                             <>
                                                 <div className="pub-estimate__ai">
                                                     <p className="pub-booking__label">
@@ -382,7 +383,7 @@ export default function Estimate({
                                                             className="pub-filter"
                                                             disabled={
                                                                 aiStatus ===
-                                                                    'pending' ||
+                                                                    "pending" ||
                                                                 description.trim()
                                                                     .length < 15
                                                             }
@@ -391,21 +392,21 @@ export default function Estimate({
                                                             }
                                                         >
                                                             {aiStatus ===
-                                                            'pending'
+                                                            "pending"
                                                                 ? t.estimate
                                                                       .aiThinking
                                                                 : t.estimate
                                                                       .aiSubmit}
                                                         </button>
                                                     </div>
-                                                    {(aiStatus === 'done' ||
+                                                    {(aiStatus === "done" ||
                                                         aiStatus ===
-                                                            'error') && (
+                                                            "error") && (
                                                         <p
                                                             className="pub-booking__note"
                                                             role="status"
                                                         >
-                                                            {aiStatus === 'done'
+                                                            {aiStatus === "done"
                                                                 ? t.estimate
                                                                       .aiDone
                                                                 : t.estimate
@@ -460,7 +461,7 @@ export default function Estimate({
                                             </>
                                         )}
 
-                                        {step === 'options' && (
+                                        {step === "options" && (
                                             <>
                                                 <p className="pub-booking__note">
                                                     {t.estimate.step2Hint}
@@ -511,60 +512,15 @@ export default function Estimate({
                                             </>
                                         )}
 
-                                        {step === 'estimate' && (
+                                        {step === "estimate" && (
                                             <>
-                                                {currencies.length > 1 && (
-                                                    <>
-                                                        <p className="pub-booking__label">
-                                                            {
-                                                                t.estimate
-                                                                    .currency
-                                                            }
-                                                        </p>
-                                                        <div
-                                                            className="pub-booking__times"
-                                                            role="group"
-                                                            aria-label={
-                                                                t.estimate
-                                                                    .currency
-                                                            }
-                                                        >
-                                                            {currencies.map(
-                                                                (candidate) => (
-                                                                    <button
-                                                                        key={
-                                                                            candidate
-                                                                        }
-                                                                        type="button"
-                                                                        className="pub-filter"
-                                                                        aria-pressed={
-                                                                            candidate ===
-                                                                            currency
-                                                                        }
-                                                                        onClick={() =>
-                                                                            setCurrency(
-                                                                                candidate,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        {candidate ===
-                                                                        'XOF'
-                                                                            ? 'FCFA'
-                                                                            : candidate}
-                                                                    </button>
-                                                                ),
-                                                            )}
-                                                        </div>
-                                                    </>
-                                                )}
-
                                                 <p
                                                     className="pub-booking__summary"
                                                     aria-live="polite"
                                                 >
                                                     <span>
                                                         {currentQuote?.billing ===
-                                                        'fixed'
+                                                        "fixed"
                                                             ? t.estimate
                                                                   .fixedPrice
                                                             : t.estimate.result}
@@ -573,7 +529,7 @@ export default function Estimate({
                                                         {quoteLabel}
                                                     </strong>
                                                     {currentQuote?.billing ===
-                                                        'hourly' && (
+                                                        "hourly" && (
                                                         <span>
                                                             {t.estimate.hourlyTotal(
                                                                 `${money(currentQuote.price_min)} – ${money(currentQuote.price_max)}`,
@@ -621,7 +577,7 @@ export default function Estimate({
                                                                                     }
                                                                                 </span>
                                                                                 <strong>
-                                                                                    {`${money(line.price_min)} – ${money(line.price_max)} ${t.estimate.perPeriod[line.period] ?? ''}`}
+                                                                                    {`${money(line.price_min)} – ${money(line.price_max)} ${t.estimate.perPeriod[line.period] ?? ""}`}
                                                                                 </strong>
                                                                             </p>
                                                                             {offered.length >
@@ -669,7 +625,7 @@ export default function Estimate({
                                                                                                 }
                                                                                                 {discount
                                                                                                     ? ` ${t.estimate.discount(discount)}`
-                                                                                                    : ''}
+                                                                                                    : ""}
                                                                                             </button>
                                                                                         ),
                                                                                     )}
@@ -689,7 +645,7 @@ export default function Estimate({
                                                     )}
                                                 <p className="pub-booking__note">
                                                     {currentQuote?.billing ===
-                                                    'hourly'
+                                                    "hourly"
                                                         ? `${t.estimate.hourlyNote} ${t.estimate.disclaimer}`
                                                         : t.estimate.disclaimer}
                                                 </p>
@@ -702,7 +658,7 @@ export default function Estimate({
                                             </>
                                         )}
 
-                                        {step === 'contact' &&
+                                        {step === "contact" &&
                                             projectTypeId !== null && (
                                                 <Form
                                                     {...ProjectEstimateController.store.form(
@@ -848,7 +804,7 @@ export default function Estimate({
                                                                             t
                                                                                 .fab
                                                                                 .timeline
-                                                                        }{' '}
+                                                                        }{" "}
                                                                         (
                                                                         {
                                                                             t
@@ -935,7 +891,7 @@ export default function Estimate({
                                                                         )
                                                                     }
                                                                 >
-                                                                    ←{' '}
+                                                                    ←{" "}
                                                                     {
                                                                         t
                                                                             .estimate
@@ -966,7 +922,7 @@ export default function Estimate({
                                                 </Form>
                                             )}
 
-                                        {step !== 'contact' && (
+                                        {step !== "contact" && (
                                             <div className="pub-estimate__nav">
                                                 {stepIndex > 0 ? (
                                                     <button
@@ -986,13 +942,13 @@ export default function Estimate({
                                                     className="pub-drawer__send"
                                                     onClick={next}
                                                     disabled={
-                                                        step === 'estimate' &&
+                                                        step === "estimate" &&
                                                         !currentQuote
                                                     }
                                                 >
-                                                    {step === 'estimate'
+                                                    {step === "estimate"
                                                         ? t.estimate.send
-                                                        : step === 'options' &&
+                                                        : step === "options" &&
                                                             featureIds.length ===
                                                                 0
                                                           ? t.estimate.skip
