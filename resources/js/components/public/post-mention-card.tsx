@@ -54,16 +54,13 @@ export default function PostMentionCard({
             }
 
             later(
-                () =>
-                    setOpen({ mention, rect: link.getBoundingClientRect() }),
+                () => setOpen({ mention, rect: link.getBoundingClientRect() }),
                 event.type === 'focusin' ? 0 : OPEN_DELAY_MS,
             );
         };
 
         const hide = (event: Event) => {
-            if (
-                (event.target as HTMLElement).closest('a[data-mention]')
-            ) {
+            if ((event.target as HTMLElement).closest('a[data-mention]')) {
                 later(() => setOpen(null), CLOSE_DELAY_MS);
             }
         };
@@ -122,9 +119,7 @@ export default function PostMentionCard({
             tabIndex={-1}
             aria-hidden
         >
-            {mention.image && (
-                <img src={mention.image} alt="" loading="lazy" />
-            )}
+            {mention.image && <img src={mention.image} alt="" loading="lazy" />}
             <span className="post-mention-card__body">
                 <span className="post-mention-card__kind">
                     {t.blog.mentionKinds[mention.kind]}

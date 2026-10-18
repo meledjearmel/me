@@ -1,38 +1,38 @@
-import { Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
-import FormSelect from "@/components/admin/form-select";
-import { ESTIMATOR_CURRENCIES } from "@/components/admin/estimator-rate-inputs";
-import { Button } from "@/components/ui/button";
+import { Plus, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import FormSelect from '@/components/admin/form-select';
+import { ESTIMATOR_CURRENCIES } from '@/components/admin/estimator-rate-inputs';
+import { Button } from '@/components/ui/button';
 import {
     Field,
     FieldDescription,
     FieldError,
     FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { NativeSelect } from "@/components/ui/native-select";
-import { Textarea } from "@/components/ui/textarea";
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { NativeSelect } from '@/components/ui/native-select';
+import { Textarea } from '@/components/ui/textarea';
 import {
     formatMoney,
     LINE_UNITS,
     linesTotal,
-} from "@/lib/commercial-documents";
+} from '@/lib/commercial-documents';
 import type {
     CommercialDocument,
     CommercialDocumentLine,
     CommercialDocumentType,
-} from "@/types";
+} from '@/types';
 
 type Defaults = Pick<
     CommercialDocument,
-    "deposit_percent" | "payment_terms" | "valid_until" | "due_at"
+    'deposit_percent' | 'payment_terms' | 'valid_until' | 'due_at'
 >;
 
 const EMPTY_LINE: CommercialDocumentLine = {
-    label: "",
+    label: '',
     description: null,
     quantity: 1,
-    unit: "flat",
+    unit: 'flat',
     unit_price: 0,
 };
 
@@ -55,10 +55,10 @@ export default function CommercialDocumentFields({
         document?.lines ?? [EMPTY_LINE],
     );
     const [currency, setCurrency] = useState<string>(
-        document?.currency ?? "CHF",
+        document?.currency ?? 'CHF',
     );
     const values = document ?? defaults;
-    const isQuote = type === "quote";
+    const isQuote = type === 'quote';
 
     const updateLine = (
         index: number,
@@ -90,7 +90,7 @@ export default function CommercialDocumentFields({
                     <Input
                         id="client_company"
                         name="client_company"
-                        defaultValue={document?.client_company ?? ""}
+                        defaultValue={document?.client_company ?? ''}
                     />
                     <FieldError>{errors.client_company}</FieldError>
                 </Field>
@@ -100,7 +100,7 @@ export default function CommercialDocumentFields({
                         id="client_email"
                         name="client_email"
                         type="email"
-                        defaultValue={document?.client_email ?? ""}
+                        defaultValue={document?.client_email ?? ''}
                     />
                     <FieldDescription>
                         Nécessaire pour envoyer le document.
@@ -112,7 +112,7 @@ export default function CommercialDocumentFields({
                     <FormSelect
                         id="locale"
                         name="locale"
-                        defaultValue={document?.locale ?? "fr"}
+                        defaultValue={document?.locale ?? 'fr'}
                     >
                         <option value="fr">Français</option>
                         <option value="en">Anglais</option>
@@ -129,7 +129,7 @@ export default function CommercialDocumentFields({
                     id="client_address"
                     name="client_address"
                     rows={2}
-                    defaultValue={document?.client_address ?? ""}
+                    defaultValue={document?.client_address ?? ''}
                 />
                 <FieldError>{errors.client_address}</FieldError>
             </Field>
@@ -203,7 +203,7 @@ export default function CommercialDocumentFields({
                         </div>
                         <Textarea
                             name={`lines[${index}][description]`}
-                            value={line.description ?? ""}
+                            value={line.description ?? ''}
                             onChange={(event) =>
                                 updateLine(index, {
                                     description: event.target.value,
@@ -233,7 +233,7 @@ export default function CommercialDocumentFields({
                                 onChange={(event) =>
                                     updateLine(index, {
                                         unit: event.target
-                                            .value as CommercialDocumentLine["unit"],
+                                            .value as CommercialDocumentLine['unit'],
                                     })
                                 }
                                 aria-label="Unité"
@@ -312,7 +312,7 @@ export default function CommercialDocumentFields({
                             name="valid_until"
                             type="date"
                             defaultValue={
-                                values?.valid_until?.slice(0, 10) ?? ""
+                                values?.valid_until?.slice(0, 10) ?? ''
                             }
                         />
                         <FieldError>{errors.valid_until}</FieldError>
@@ -326,7 +326,7 @@ export default function CommercialDocumentFields({
                             id="due_at"
                             name="due_at"
                             type="date"
-                            defaultValue={values?.due_at?.slice(0, 10) ?? ""}
+                            defaultValue={values?.due_at?.slice(0, 10) ?? ''}
                         />
                         <FieldError>{errors.due_at}</FieldError>
                     </Field>
@@ -341,7 +341,7 @@ export default function CommercialDocumentFields({
                     id="payment_terms"
                     name="payment_terms"
                     rows={3}
-                    defaultValue={values?.payment_terms ?? ""}
+                    defaultValue={values?.payment_terms ?? ''}
                 />
                 <FieldError>{errors.payment_terms}</FieldError>
             </Field>
@@ -352,7 +352,7 @@ export default function CommercialDocumentFields({
                     id="notes"
                     name="notes"
                     rows={3}
-                    defaultValue={document?.notes ?? ""}
+                    defaultValue={document?.notes ?? ''}
                 />
                 <FieldDescription>
                     Ce qui est compris ou non, le planning, les livrables…

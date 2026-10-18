@@ -1,10 +1,10 @@
-import StatusSelect from "@/components/admin/status-select";
-import { Link } from "@inertiajs/react";
-import ProjectController from "@/actions/App/Http/Controllers/Admin/ProjectController";
-import AiDraftBadge from "@/components/admin/ai-draft-badge";
-import ShowPage, { Bilingual, Pills } from "@/components/admin/show-page";
-import { index as projectsIndex } from "@/routes/admin/projects";
-import type { Project } from "@/types";
+import StatusSelect from '@/components/admin/status-select';
+import { Link } from '@inertiajs/react';
+import ProjectController from '@/actions/App/Http/Controllers/Admin/ProjectController';
+import AiDraftBadge from '@/components/admin/ai-draft-badge';
+import ShowPage, { Bilingual, Pills } from '@/components/admin/show-page';
+import { index as projectsIndex } from '@/routes/admin/projects';
+import type { Project } from '@/types';
 
 export default function ProjectShow({ project: row }: { project: Project }) {
     return (
@@ -29,20 +29,20 @@ export default function ProjectShow({ project: row }: { project: Project }) {
             editHref={ProjectController.edit(row.id)}
             sections={[
                 {
-                    title: "Détails",
+                    title: 'Détails',
                     items: [
                         {
-                            label: "Titre",
+                            label: 'Titre',
                             value: <Bilingual value={row.title} />,
                         },
-                        { label: "Adresse", value: `/projects/${row.slug}` },
+                        { label: 'Adresse', value: `/projects/${row.slug}` },
                         {
-                            label: "Mis en avant",
-                            value: row.is_featured ? "Oui" : "Non",
+                            label: 'Mis en avant',
+                            value: row.is_featured ? 'Oui' : 'Non',
                         },
                         {
-                            label: "Open source",
-                            value: row.is_open_source ? "Oui" : "Non",
+                            label: 'Open source',
+                            value: row.is_open_source ? 'Oui' : 'Non',
                         },
                         {
                             label: "Couleur d'accent",
@@ -58,9 +58,9 @@ export default function ProjectShow({ project: row }: { project: Project }) {
                                 </span>
                             ),
                         },
-                        { label: "Ordre", value: row.sort_order },
+                        { label: 'Ordre', value: row.sort_order },
                         {
-                            label: "Dépôt",
+                            label: 'Dépôt',
                             value: row.repo_url && (
                                 <a
                                     href={row.repo_url}
@@ -73,7 +73,7 @@ export default function ProjectShow({ project: row }: { project: Project }) {
                             ),
                         },
                         {
-                            label: "Démo",
+                            label: 'Démo',
                             value: row.demo_url && (
                                 <a
                                     href={row.demo_url}
@@ -88,30 +88,30 @@ export default function ProjectShow({ project: row }: { project: Project }) {
                     ],
                 },
                 {
-                    title: "Récit du projet",
+                    title: 'Récit du projet',
                     items: [
                         {
-                            label: "Contexte",
+                            label: 'Contexte',
                             value: <Bilingual value={row.context} />,
                             wide: true,
                         },
                         {
-                            label: "Réalisation",
+                            label: 'Réalisation',
                             value: <Bilingual value={row.realization} />,
                             wide: true,
                         },
                         {
-                            label: "Résultat",
+                            label: 'Résultat',
                             value: <Bilingual value={row.result} />,
                             wide: true,
                         },
                     ],
                 },
                 {
-                    title: "Classement",
+                    title: 'Classement',
                     items: [
                         {
-                            label: "Domaines",
+                            label: 'Domaines',
                             value: (
                                 <Pills
                                     items={(row.domains ?? []).map(
@@ -121,7 +121,7 @@ export default function ProjectShow({ project: row }: { project: Project }) {
                             ),
                         },
                         {
-                            label: "Profils métier",
+                            label: 'Profils métier',
                             value: (
                                 <Pills
                                     items={(row.job_profiles ?? []).map(
@@ -131,7 +131,7 @@ export default function ProjectShow({ project: row }: { project: Project }) {
                             ),
                         },
                         {
-                            label: "Technologies",
+                            label: 'Technologies',
                             value: (
                                 <Pills
                                     items={(row.technologies ?? []).map(
@@ -142,7 +142,7 @@ export default function ProjectShow({ project: row }: { project: Project }) {
                             wide: true,
                         },
                         {
-                            label: "Projets liés",
+                            label: 'Projets liés',
                             value: (
                                 <Pills
                                     items={(row.related_projects ?? []).map(
@@ -165,7 +165,7 @@ export default function ProjectShow({ project: row }: { project: Project }) {
                     ],
                 },
                 {
-                    title: "Images",
+                    title: 'Images',
                     content: (
                         <div className="flex flex-wrap gap-3">
                             {row.cover_url && (
@@ -199,7 +199,7 @@ export default function ProjectShow({ project: row }: { project: Project }) {
 
 ProjectShow.layout = {
     breadcrumbs: [
-        { title: "Projets", href: projectsIndex() },
-        { title: "Détail", href: "" },
+        { title: 'Projets', href: projectsIndex() },
+        { title: 'Détail', href: '' },
     ],
 };

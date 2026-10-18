@@ -1,37 +1,37 @@
-import { Form, Head } from "@inertiajs/react";
-import { useRef, useState } from "react";
-import ProjectController from "@/actions/App/Http/Controllers/Admin/ProjectController";
-import CheckboxGroup from "@/components/admin/checkbox-group";
+import { Form, Head } from '@inertiajs/react';
+import { useRef, useState } from 'react';
+import ProjectController from '@/actions/App/Http/Controllers/Admin/ProjectController';
+import CheckboxGroup from '@/components/admin/checkbox-group';
 import ProjectCaseStudyFields, {
     ProjectDecisionsField,
-} from "@/components/admin/project-case-study-fields";
-import FormPageHeader from "@/components/admin/form-page-header";
+} from '@/components/admin/project-case-study-fields';
+import FormPageHeader from '@/components/admin/form-page-header';
 import {
     ProjectAiDraftButton,
     type ProjectDraft,
     TranslateFormButton,
-} from "@/components/admin/project-ai-draft";
-import ProjectGitHubField from "@/components/admin/project-github-field";
-import type { GitHubRepositoryOption } from "@/components/admin/project-github-field";
-import TranslatableField from "@/components/translatable-field";
-import { Checkbox } from "@/components/ui/checkbox";
+} from '@/components/admin/project-ai-draft';
+import ProjectGitHubField from '@/components/admin/project-github-field';
+import type { GitHubRepositoryOption } from '@/components/admin/project-github-field';
+import TranslatableField from '@/components/translatable-field';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     Field,
     FieldError,
     FieldGroup,
     FieldLabel,
-} from "@/components/ui/field";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import FormSelect from "@/components/admin/form-select";
-import { PROJECT_STATUSES } from "@/lib/admin-options";
-import { index as projectsIndex } from "@/routes/admin/projects";
-import type { Domain, JobProfile, Project, Technology } from "@/types";
+} from '@/components/ui/field';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import FormSelect from '@/components/admin/form-select';
+import { PROJECT_STATUSES } from '@/lib/admin-options';
+import { index as projectsIndex } from '@/routes/admin/projects';
+import type { Domain, JobProfile, Project, Technology } from '@/types';
 
 /** Les champs français proposés par l'IA, au format des valeurs par défaut du formulaire. */
 function draftToProject(draft: ProjectDraft): Partial<Project> {
     const french = (text: string | null) =>
-        text === null ? null : { fr: text, en: "" };
+        text === null ? null : { fr: text, en: '' };
 
     return {
         tagline: french(draft.tagline),
@@ -43,11 +43,11 @@ function draftToProject(draft: ProjectDraft): Partial<Project> {
         team_size: draft.team_size,
         key_figures: draft.key_figures.map((figure) => ({
             value: figure.value,
-            label: { fr: figure.label, en: "" },
+            label: { fr: figure.label, en: '' },
         })),
         decisions: draft.decisions.map((decision) => ({
-            choice: { fr: decision.choice, en: "" },
-            reason: { fr: decision.reason, en: "" },
+            choice: { fr: decision.choice, en: '' },
+            reason: { fr: decision.reason, en: '' },
         })),
     };
 }
@@ -121,8 +121,8 @@ export default function ProjectCreate({
                                     required
                                     defaultValue={french(draft?.title)}
                                     errors={{
-                                        fr: errors["title.fr"],
-                                        en: errors["title.en"],
+                                        fr: errors['title.fr'],
+                                        en: errors['title.en'],
                                     }}
                                 />
 
@@ -156,8 +156,8 @@ export default function ProjectCreate({
                                     required
                                     defaultValue={french(draft?.context)}
                                     errors={{
-                                        fr: errors["context.fr"],
-                                        en: errors["context.en"],
+                                        fr: errors['context.fr'],
+                                        en: errors['context.en'],
                                     }}
                                 />
 
@@ -168,8 +168,8 @@ export default function ProjectCreate({
                                     mentions
                                     defaultValue={french(draft?.challenges)}
                                     errors={{
-                                        fr: errors["challenges.fr"],
-                                        en: errors["challenges.en"],
+                                        fr: errors['challenges.fr'],
+                                        en: errors['challenges.en'],
                                     }}
                                 />
 
@@ -181,8 +181,8 @@ export default function ProjectCreate({
                                     required
                                     defaultValue={french(draft?.realization)}
                                     errors={{
-                                        fr: errors["realization.fr"],
-                                        en: errors["realization.en"],
+                                        fr: errors['realization.fr'],
+                                        en: errors['realization.en'],
                                     }}
                                 />
 
@@ -203,8 +203,8 @@ export default function ProjectCreate({
                                     required
                                     defaultValue={french(draft?.result)}
                                     errors={{
-                                        fr: errors["result.fr"],
-                                        en: errors["result.en"],
+                                        fr: errors['result.fr'],
+                                        en: errors['result.en'],
                                     }}
                                 />
 
@@ -410,7 +410,7 @@ export default function ProjectCreate({
 
 ProjectCreate.layout = {
     breadcrumbs: [
-        { title: "Projets", href: projectsIndex() },
-        { title: "Nouveau", href: "" },
+        { title: 'Projets', href: projectsIndex() },
+        { title: 'Nouveau', href: '' },
     ],
 };

@@ -1,22 +1,22 @@
-import { Form } from "@inertiajs/react";
-import { useState } from "react";
-import EngagementController from "@/actions/App/Http/Controllers/Admin/EngagementController";
-import FormSelect from "@/components/admin/form-select";
-import { ESTIMATOR_CURRENCIES } from "@/components/admin/estimator-rate-inputs";
-import { Button } from "@/components/ui/button";
+import { Form } from '@inertiajs/react';
+import { useState } from 'react';
+import EngagementController from '@/actions/App/Http/Controllers/Admin/EngagementController';
+import FormSelect from '@/components/admin/form-select';
+import { ESTIMATOR_CURRENCIES } from '@/components/admin/estimator-rate-inputs';
+import { Button } from '@/components/ui/button';
 import {
     Field,
     FieldDescription,
     FieldError,
     FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import type { Engagement } from "@/types";
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import type { Engagement } from '@/types';
 
 const OUTCOMES = [
-    { value: "", label: "Pas encore d’issue" },
-    { value: "won", label: "Signée" },
-    { value: "lost", label: "Perdue" },
+    { value: '', label: 'Pas encore d’issue' },
+    { value: 'won', label: 'Signée' },
+    { value: 'lost', label: 'Perdue' },
 ] as const;
 
 /**
@@ -28,7 +28,7 @@ export default function EngagementOutcomeForm({
 }: {
     engagement: Engagement;
 }) {
-    const [outcome, setOutcome] = useState<string>(engagement.outcome ?? "");
+    const [outcome, setOutcome] = useState<string>(engagement.outcome ?? '');
 
     return (
         <Form
@@ -55,7 +55,7 @@ export default function EngagementOutcomeForm({
                         <FieldError>{errors.outcome}</FieldError>
                     </Field>
 
-                    {outcome === "won" && (
+                    {outcome === 'won' && (
                         <div className="grid gap-4 sm:grid-cols-2">
                             <Field data-invalid={!!errors.outcome_amount}>
                                 <FieldLabel htmlFor="outcome_amount">
@@ -68,7 +68,7 @@ export default function EngagementOutcomeForm({
                                     min={0}
                                     required
                                     defaultValue={
-                                        engagement.outcome_amount ?? ""
+                                        engagement.outcome_amount ?? ''
                                     }
                                 />
                                 <FieldError>{errors.outcome_amount}</FieldError>
@@ -84,7 +84,7 @@ export default function EngagementOutcomeForm({
                                     defaultValue={
                                         engagement.outcome_currency ??
                                         engagement.estimate?.currency ??
-                                        "CHF"
+                                        'CHF'
                                     }
                                 >
                                     {ESTIMATOR_CURRENCIES.map((currency) => (

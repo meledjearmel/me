@@ -391,7 +391,11 @@ export function ThinkIcon({ active, play, reduceMotion }: IconProps) {
     });
 
     return (
-        <svg viewBox="0 0 24 24" className="pub-reaction-icon" aria-hidden="true">
+        <svg
+            viewBox="0 0 24 24"
+            className="pub-reaction-icon"
+            aria-hidden="true"
+        >
             {THOUGHT_TRAIL.map((bubble, index) => (
                 <motion.circle
                     key={`${play}-${index}`}
@@ -421,7 +425,9 @@ export function ThinkIcon({ active, play, reduceMotion }: IconProps) {
                     {...STROKE}
                     initial={false}
                     animate={{
-                        stroke: active ? 'var(--reaction-think)' : 'currentColor',
+                        stroke: active
+                            ? 'var(--reaction-think)'
+                            : 'currentColor',
                     }}
                     transition={fillTransition(reduceMotion, 0.25)}
                 />

@@ -1,7 +1,7 @@
-import type { Editor } from "@tiptap/core";
-import type { TableOfContentData } from "@tiptap/extension-table-of-contents";
-import { TextSelection } from "@tiptap/pm/state";
-import { cn } from "@/lib/utils";
+import type { Editor } from '@tiptap/core';
+import type { TableOfContentData } from '@tiptap/extension-table-of-contents';
+import { TextSelection } from '@tiptap/pm/state';
+import { cn } from '@/lib/utils';
 
 /**
  * Sommaire de l'article (façon Notion) : des traits à droite de la feuille, qui
@@ -24,7 +24,7 @@ export default function OutlineRail({
             tr.setSelection(TextSelection.create(tr.doc, pos + 1)),
         );
         editor.view.focus();
-        dom.scrollIntoView({ behavior: "smooth", block: "center" });
+        dom.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     return (
@@ -37,9 +37,9 @@ export default function OutlineRail({
                     <li
                         key={anchor.id}
                         className={cn(
-                            "h-0.5 rounded-full bg-muted-foreground/30",
-                            anchor.level === 1 ? "w-5" : "w-3",
-                            anchor.isActive && "bg-foreground",
+                            'h-0.5 rounded-full bg-muted-foreground/30',
+                            anchor.level === 1 ? 'w-5' : 'w-3',
+                            anchor.isActive && 'bg-foreground',
                         )}
                     />
                 ))}
@@ -54,12 +54,12 @@ export default function OutlineRail({
                                 paddingLeft: `${(anchor.level - 1) * 12 + 8}px`,
                             }}
                             className={cn(
-                                "w-full truncate rounded-md py-1 pr-2 text-left text-sm text-muted-foreground hover:bg-accent hover:text-foreground",
+                                'w-full truncate rounded-md py-1 pr-2 text-left text-sm text-muted-foreground hover:bg-accent hover:text-foreground',
                                 anchor.isActive &&
-                                    "font-medium text-foreground",
+                                    'font-medium text-foreground',
                             )}
                         >
-                            {anchor.textContent || "Sans titre"}
+                            {anchor.textContent || 'Sans titre'}
                         </button>
                     </li>
                 ))}

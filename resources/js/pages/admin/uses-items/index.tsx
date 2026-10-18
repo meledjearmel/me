@@ -1,18 +1,18 @@
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link } from '@inertiajs/react';
 import StatusMenu, {
     PUBLICATION_VARIANTS,
-} from "@/components/admin/status-menu";
-import { Plus, SquarePen } from "lucide-react";
-import UsesItemController from "@/actions/App/Http/Controllers/Admin/UsesItemController";
-import DeleteButton from "@/components/admin/delete-button";
-import { FilterSelect, ResourceList } from "@/components/admin/data-list";
-import Heading from "@/components/heading";
-import AiDraftBadge from "@/components/admin/ai-draft-badge";
-import { Button } from "@/components/ui/button";
-import { PUBLICATION_STATUSES, USES_CATEGORIES } from "@/lib/admin-options";
-import { index as pageIndex } from "@/routes/admin/uses-items";
-import type { ListFilters, Paginated, UsesItem } from "@/types";
-import ActionTooltip from "@/components/admin/action-tooltip";
+} from '@/components/admin/status-menu';
+import { Plus, SquarePen } from 'lucide-react';
+import UsesItemController from '@/actions/App/Http/Controllers/Admin/UsesItemController';
+import DeleteButton from '@/components/admin/delete-button';
+import { FilterSelect, ResourceList } from '@/components/admin/data-list';
+import Heading from '@/components/heading';
+import AiDraftBadge from '@/components/admin/ai-draft-badge';
+import { Button } from '@/components/ui/button';
+import { PUBLICATION_STATUSES, USES_CATEGORIES } from '@/lib/admin-options';
+import { index as pageIndex } from '@/routes/admin/uses-items';
+import type { ListFilters, Paginated, UsesItem } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 const categoryLabel = (value: string) =>
     USES_CATEGORIES.find((category) => category.value === value)?.label ??
@@ -48,17 +48,17 @@ export default function UsesItemsIndex({
                     searchPlaceholder="Nom ou description…"
                     columns={[
                         {
-                            header: "Rubrique",
+                            header: 'Rubrique',
                             cell: (row) => categoryLabel(row.category),
                         },
-                        { header: "Nom", cell: (row) => row.name },
+                        { header: 'Nom', cell: (row) => row.name },
                         {
-                            header: "Description (FR)",
-                            cell: (row) => row.description?.fr ?? "—",
+                            header: 'Description (FR)',
+                            cell: (row) => row.description?.fr ?? '—',
                         },
-                        { header: "Ordre", cell: (row) => row.sort_order },
+                        { header: 'Ordre', cell: (row) => row.sort_order },
                         {
-                            header: "Statut",
+                            header: 'Statut',
                             fit: true,
                             cell: (row) => (
                                 <>
@@ -120,5 +120,5 @@ export default function UsesItemsIndex({
 }
 
 UsesItemsIndex.layout = {
-    breadcrumbs: [{ title: "Uses", href: pageIndex() }],
+    breadcrumbs: [{ title: 'Uses', href: pageIndex() }],
 };

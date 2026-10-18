@@ -1,36 +1,36 @@
-import { getHTMLFromFragment, type Editor } from "@tiptap/core";
-import { Fragment } from "@tiptap/pm/model";
-import { ImageOff, Languages, Loader2, X } from "lucide-react";
-import type { ReactNode } from "react";
-import { useRef, useState } from "react";
-import AiAssistController from "@/actions/App/Http/Controllers/Admin/AiAssistController";
-import FormSelect from "@/components/admin/form-select";
-import PostEditor from "@/components/admin/post-editor/post-editor";
-import TranslatableField from "@/components/translatable-field";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { getHTMLFromFragment, type Editor } from '@tiptap/core';
+import { Fragment } from '@tiptap/pm/model';
+import { ImageOff, Languages, Loader2, X } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { useRef, useState } from 'react';
+import AiAssistController from '@/actions/App/Http/Controllers/Admin/AiAssistController';
+import FormSelect from '@/components/admin/form-select';
+import PostEditor from '@/components/admin/post-editor/post-editor';
+import TranslatableField from '@/components/translatable-field';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     Field,
     FieldDescription,
     FieldError,
     FieldGroup,
     FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { post as postJson, type Locale } from "@/hooks/use-ai-text-assist";
-import type { Post } from "@/types";
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { post as postJson, type Locale } from '@/hooks/use-ai-text-assist';
+import type { Post } from '@/types';
 
 /** Taille d'un fragment envoyé à la traduction (sous la limite du serveur). */
 const TRANSLATION_CHUNK_LENGTH = 5000;
 
 function slugify(value: string): string {
     return value
-        .normalize("NFD")
-        .replace(/[̀-ͯ]/g, "")
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
 }
 
 /** Découpe le document en fragments HTML de blocs entiers. */
@@ -46,7 +46,7 @@ function htmlChunks(editor: Editor): string[] {
             length + html.length > TRANSLATION_CHUNK_LENGTH &&
             current.length > 0
         ) {
-            chunks.push(current.join(""));
+            chunks.push(current.join(''));
             current = [];
             length = 0;
         }
@@ -56,7 +56,7 @@ function htmlChunks(editor: Editor): string[] {
     });
 
     if (current.length > 0) {
-        chunks.push(current.join(""));
+        chunks.push(current.join(''));
     }
 
     return chunks;
@@ -73,13 +73,13 @@ function TagsField({
     error?: string;
 }) {
     const [tags, setTags] = useState(defaultValue);
-    const [draft, setDraft] = useState("");
+    const [draft, setDraft] = useState('');
 
     function add(value: string) {
         const tag = value.trim();
 
         if (
-            tag !== "" &&
+            tag !== '' &&
             !tags.some(
                 (existing) => existing.toLowerCase() === tag.toLowerCase(),
             )
@@ -87,7 +87,7 @@ function TagsField({
             setTags([...tags, tag]);
         }
 
-        setDraft("");
+        setDraft('');
     }
 
     return (
@@ -123,7 +123,7 @@ function TagsField({
                 onChange={(event) => setDraft(event.target.value)}
                 onBlur={() => add(draft)}
                 onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === ",") {
+                    if (event.key === 'Enter' || event.key === ',') {
                         event.preventDefault();
                         add(draft);
                     }
@@ -180,9 +180,9 @@ export default function PostForm({
 }) {
     const formRef = useRef<HTMLDivElement>(null);
     const editors = useRef<Partial<Record<Locale, Editor>>>({});
-    const [locale, setLocale] = useState<Locale>("fr");
+    const [locale, setLocale] = useState<Locale>('fr');
     const [slugTouched, setSlugTouched] = useState(!!post);
-    const [slug, setSlug] = useState(post?.slug ?? "");
+    const [slug, setSlug] = useState(post?.slug ?? '');
     const [translating, setTranslating] = useState<string | null>(null);
     const [translationError, setTranslationError] = useState<string | null>(
         null,
@@ -194,10 +194,10 @@ export default function PostForm({
                 (
                     formRef.current?.querySelector<
                         HTMLInputElement | HTMLTextAreaElement
-                    >(`[name="${field}[${target}]"]`)?.value ?? ""
+                    >(`[name="${field}[${target}]"]`)?.value ?? ''
                 ).trim();
 
-            return { title: read("title"), excerpt: read("excerpt") };
+            return { title: read('title'), excerpt: read('excerpt') };
         };
     }
 
@@ -240,10 +240,10 @@ export default function PostForm({
                 translated.push(text);
             }
 
-            to.commands.setContent(translated.join(""), { emitUpdate: true });
+            to.commands.setContent(translated.join(''), { emitUpdate: true });
         } catch {
             setTranslationError(
-                "Traduction indisponible pour le moment, réessayez.",
+                'Traduction indisponible pour le moment, réessayez.',
             );
         } finally {
             setTranslating(null);
@@ -262,8 +262,8 @@ export default function PostForm({
                     required
                     defaultValue={post?.title}
                     errors={{
-                        fr: errors["title.fr"],
-                        en: errors["title.en"],
+                        fr: errors['title.fr'],
+                        en: errors['title.en'],
                     }}
                 />
                 <FormSection title="Référencement">
@@ -279,13 +279,13 @@ export default function PostForm({
                                 setSlug(event.target.value);
                             }}
                             onFocus={() => {
-                                if (!slugTouched && slug === "") {
-                                    setSlug(slugify(articleMeta("fr")().title));
+                                if (!slugTouched && slug === '') {
+                                    setSlug(slugify(articleMeta('fr')().title));
                                 }
                             }}
                         />
                         <FieldDescription>
-                            L’adresse de l’article : /blog/{slug || "…"}
+                            L’adresse de l’article : /blog/{slug || '…'}
                         </FieldDescription>
                         <FieldError>{errors.slug}</FieldError>
                     </Field>
@@ -296,8 +296,8 @@ export default function PostForm({
                         maxLength={300}
                         defaultValue={post?.excerpt ?? undefined}
                         errors={{
-                            fr: errors["excerpt.fr"],
-                            en: errors["excerpt.en"],
+                            fr: errors['excerpt.fr'],
+                            en: errors['excerpt.en'],
                         }}
                     />
                 </FormSection>
@@ -318,7 +318,7 @@ export default function PostForm({
                             disabled={translating !== null}
                             onClick={() =>
                                 void translateBody(
-                                    locale === "fr" ? "en" : "fr",
+                                    locale === 'fr' ? 'en' : 'fr',
                                     locale,
                                 )
                             }
@@ -330,7 +330,7 @@ export default function PostForm({
                             )}
                             {translating
                                 ? `Traduction ${translating}…`
-                                : `Traduire depuis ${locale === "fr" ? "l’anglais" : "le français"}`}
+                                : `Traduire depuis ${locale === 'fr' ? 'l’anglais' : 'le français'}`}
                         </Button>
                     </div>
                     {translationError && (
@@ -338,7 +338,7 @@ export default function PostForm({
                             {translationError}
                         </p>
                     )}
-                    {(["fr", "en"] as const).map((item) => (
+                    {(['fr', 'en'] as const).map((item) => (
                         <TabsContent
                             key={item}
                             value={item}
@@ -372,7 +372,7 @@ export default function PostForm({
                         <FormSelect
                             id="status"
                             name="status"
-                            defaultValue={post?.status ?? "draft"}
+                            defaultValue={post?.status ?? 'draft'}
                         >
                             <option value="draft">Brouillon</option>
                             <option value="published">Publié</option>
@@ -388,7 +388,7 @@ export default function PostForm({
                             name="published_at"
                             type="datetime-local"
                             defaultValue={
-                                post?.published_at?.slice(0, 16) ?? ""
+                                post?.published_at?.slice(0, 16) ?? ''
                             }
                         />
                         <FieldDescription>
@@ -462,7 +462,7 @@ export default function PostForm({
                                 list="post-series-suggestions"
                                 maxLength={80}
                                 placeholder="Ex. : Laravel de A à Z"
-                                defaultValue={post?.series ?? ""}
+                                defaultValue={post?.series ?? ''}
                             />
                             <datalist id="post-series-suggestions">
                                 {seriesNames.map((name) => (
@@ -485,7 +485,7 @@ export default function PostForm({
                                 type="number"
                                 min={1}
                                 max={99}
-                                defaultValue={post?.series_position ?? ""}
+                                defaultValue={post?.series_position ?? ''}
                             />
                             <FieldError>{errors.series_position}</FieldError>
                         </Field>

@@ -1,17 +1,17 @@
-import { Head, Link } from "@inertiajs/react";
-import { PUBLICATION_STATUSES } from "@/lib/admin-options";
+import { Head, Link } from '@inertiajs/react';
+import { PUBLICATION_STATUSES } from '@/lib/admin-options';
 import StatusMenu, {
     PUBLICATION_VARIANTS,
-} from "@/components/admin/status-menu";
-import { Plus, Eye, SquarePen } from "lucide-react";
-import { index as pageIndex } from "@/routes/admin/job-profiles";
-import JobProfileController from "@/actions/App/Http/Controllers/Admin/JobProfileController";
-import DeleteButton from "@/components/admin/delete-button";
-import { FilterSelect, ResourceList } from "@/components/admin/data-list";
-import Heading from "@/components/heading";
-import { Button } from "@/components/ui/button";
-import type { ListFilters, Paginated, JobProfile } from "@/types";
-import ActionTooltip from "@/components/admin/action-tooltip";
+} from '@/components/admin/status-menu';
+import { Plus, Eye, SquarePen } from 'lucide-react';
+import { index as pageIndex } from '@/routes/admin/job-profiles';
+import JobProfileController from '@/actions/App/Http/Controllers/Admin/JobProfileController';
+import DeleteButton from '@/components/admin/delete-button';
+import { FilterSelect, ResourceList } from '@/components/admin/data-list';
+import Heading from '@/components/heading';
+import { Button } from '@/components/ui/button';
+import type { ListFilters, Paginated, JobProfile } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 export default function JobProfilesIndex({
     jobProfiles,
@@ -43,14 +43,14 @@ export default function JobProfilesIndex({
                     searchPlaceholder="Clé ou libellé…"
                     columns={[
                         {
-                            header: "Clé",
-                            className: "font-mono text-xs",
+                            header: 'Clé',
+                            className: 'font-mono text-xs',
                             cell: (row) => row.key,
                         },
-                        { header: "Libellé (FR)", cell: (row) => row.label.fr },
-                        { header: "Ordre", cell: (row) => row.sort_order },
+                        { header: 'Libellé (FR)', cell: (row) => row.label.fr },
+                        { header: 'Ordre', cell: (row) => row.sort_order },
                         {
-                            header: "Statut",
+                            header: 'Statut',
                             fit: true,
                             cell: (row) => (
                                 <StatusMenu
@@ -71,8 +71,8 @@ export default function JobProfilesIndex({
                                 value={filters.status}
                                 label="Statut"
                                 options={[
-                                    { value: "published", label: "Publié" },
-                                    { value: "draft", label: "Brouillon" },
+                                    { value: 'published', label: 'Publié' },
+                                    { value: 'draft', label: 'Brouillon' },
                                 ]}
                             />
                         </>
@@ -112,5 +112,5 @@ export default function JobProfilesIndex({
 }
 
 JobProfilesIndex.layout = {
-    breadcrumbs: [{ title: "Profils métier", href: pageIndex() }],
+    breadcrumbs: [{ title: 'Profils métier', href: pageIndex() }],
 };

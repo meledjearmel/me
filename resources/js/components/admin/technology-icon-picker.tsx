@@ -270,7 +270,7 @@ export default function TechnologyIconPicker({
                     invalid && 'border-destructive',
                 )}
             >
-                <div className="bg-muted flex size-12 shrink-0 items-center justify-center rounded-md p-2">
+                <div className="flex size-12 shrink-0 items-center justify-center rounded-md bg-muted p-2">
                     {selected && <IconImage icon={selected} />}
                 </div>
                 <div className="min-w-0 flex-1 text-sm">
@@ -282,7 +282,7 @@ export default function TechnologyIconPicker({
                         <>
                             <div className="truncate font-medium">{value}</div>
                             {!selected && (
-                                <div className="text-destructive text-xs">
+                                <div className="text-xs text-destructive">
                                     Aucun fichier pour ce logo : choisis-en un
                                     ci-dessous.
                                 </div>
@@ -314,7 +314,7 @@ export default function TechnologyIconPicker({
 
                 <div className="grid max-h-60 grid-cols-3 gap-2 overflow-y-auto rounded-md border p-2 sm:grid-cols-4">
                     {visible.length === 0 && (
-                        <p className="text-muted-foreground col-span-full py-4 text-center text-sm">
+                        <p className="col-span-full py-4 text-center text-sm text-muted-foreground">
                             Aucun logo ne correspond. Ajoute-le depuis le
                             catalogue ci-dessous.
                         </p>
@@ -326,7 +326,7 @@ export default function TechnologyIconPicker({
                             onClick={() => setValue(icon.slug)}
                             aria-pressed={icon.slug === value}
                             className={cn(
-                                'hover:bg-accent relative flex flex-col items-center gap-1 rounded-md border p-2 text-xs',
+                                'relative flex flex-col items-center gap-1 rounded-md border p-2 text-xs hover:bg-accent',
                                 icon.slug === value &&
                                     'border-primary bg-accent',
                             )}
@@ -338,7 +338,7 @@ export default function TechnologyIconPicker({
                                 {icon.slug}
                             </span>
                             {icon.slug === value && (
-                                <Check className="text-primary absolute top-1 right-1 size-3.5" />
+                                <Check className="absolute top-1 right-1 size-3.5 text-primary" />
                             )}
                         </button>
                     ))}
@@ -380,7 +380,7 @@ export default function TechnologyIconPicker({
 
                         {catalogError && (
                             <p
-                                className="text-destructive text-sm"
+                                className="text-sm text-destructive"
                                 role="alert"
                             >
                                 {catalogError}
@@ -388,7 +388,7 @@ export default function TechnologyIconPicker({
                         )}
 
                         {results?.length === 0 && (
-                            <p className="text-muted-foreground text-sm">
+                            <p className="text-sm text-muted-foreground">
                                 Aucun résultat pour « {query.trim()} ».
                             </p>
                         )}
@@ -402,7 +402,7 @@ export default function TechnologyIconPicker({
                                         onClick={() => pickResult(result)}
                                         aria-pressed={picked?.id === result.id}
                                         className={cn(
-                                            'hover:bg-accent flex flex-col items-center gap-1 rounded-md border p-2 text-xs',
+                                            'flex flex-col items-center gap-1 rounded-md border p-2 text-xs hover:bg-accent',
                                             picked?.id === result.id &&
                                                 'border-primary bg-accent',
                                         )}
@@ -418,7 +418,7 @@ export default function TechnologyIconPicker({
                                         <span className="w-full truncate text-center">
                                             {result.name}
                                         </span>
-                                        <span className="text-muted-foreground w-full truncate text-center">
+                                        <span className="w-full truncate text-center text-muted-foreground">
                                             {result.collection}
                                         </span>
                                     </button>
@@ -429,7 +429,7 @@ export default function TechnologyIconPicker({
                         <div className="border-t pt-3">
                             <label
                                 htmlFor="technology-icon-file"
-                                className="text-muted-foreground mb-1.5 block text-xs"
+                                className="mb-1.5 block text-xs text-muted-foreground"
                             >
                                 Ou envoyer ton propre fichier SVG (200 Ko max)
                             </label>
@@ -472,7 +472,7 @@ export default function TechnologyIconPicker({
                                         </Button>
                                     ))}
                                 </div>
-                                <p className="text-muted-foreground text-xs">
+                                <p className="text-xs text-muted-foreground">
                                     Pour ajouter la variante d&apos;un logo
                                     existant, reprends son nom et choisis le
                                     thème concerné.

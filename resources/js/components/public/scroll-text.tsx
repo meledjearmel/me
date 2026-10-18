@@ -1,8 +1,4 @@
-import {
-    motion,
-    useTransform,
-    type MotionValue,
-} from 'framer-motion';
+import { motion, useTransform, type MotionValue } from 'framer-motion';
 import { Fragment, useRef } from 'react';
 import type { ReactNode } from 'react';
 import MentionText, {

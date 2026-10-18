@@ -1,13 +1,13 @@
-import type { Editor } from "@tiptap/core";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import { cn } from "@/lib/utils";
+import type { Editor } from '@tiptap/core';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { cn } from '@/lib/utils';
 import {
     type EditorActions,
     filterBlockCommands,
     runBlockCommand,
-} from "./block-commands";
-import type { SlashBridge, SlashState } from "./slash-command";
+} from './block-commands';
+import type { SlashBridge, SlashState } from './slash-command';
 
 /**
  * Menu des blocs ouvert par « / ». Les flèches et Entrée sont reçues du plugin
@@ -26,7 +26,7 @@ export default function SlashMenu({
     const [activeIndex, setActiveIndex] = useState(0);
     const listRef = useRef<HTMLDivElement>(null);
     const commands = useMemo(
-        () => filterBlockCommands(state?.query ?? ""),
+        () => filterBlockCommands(state?.query ?? ''),
         [state?.query],
     );
 
@@ -46,8 +46,8 @@ export default function SlashMenu({
                 return false;
             }
 
-            if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-                const step = event.key === "ArrowDown" ? 1 : -1;
+            if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                const step = event.key === 'ArrowDown' ? 1 : -1;
                 setActiveIndex(
                     (current.activeIndex + step + current.commands.length) %
                         current.commands.length,
@@ -56,7 +56,7 @@ export default function SlashMenu({
                 return true;
             }
 
-            if (event.key === "Enter" || event.key === "Tab") {
+            if (event.key === 'Enter' || event.key === 'Tab') {
                 runBlockCommand(
                     editor,
                     current.state.range,
@@ -75,7 +75,7 @@ export default function SlashMenu({
     useEffect(() => {
         listRef.current
             ?.querySelector(`[data-index="${activeIndex}"]`)
-            ?.scrollIntoView({ block: "nearest" });
+            ?.scrollIntoView({ block: 'nearest' });
     }, [activeIndex]);
 
     if (!state?.rect || commands.length === 0) {
@@ -110,8 +110,8 @@ export default function SlashMenu({
                         setState(null);
                     }}
                     className={cn(
-                        "flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left",
-                        index === activeIndex && "bg-accent",
+                        'flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left',
+                        index === activeIndex && 'bg-accent',
                     )}
                 >
                     <span className="flex size-8 shrink-0 items-center justify-center rounded-md border bg-background">

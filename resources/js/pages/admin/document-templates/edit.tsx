@@ -1,28 +1,28 @@
-import { Head, Link, router } from "@inertiajs/react";
-import { Loader2 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import DocumentTemplateController from "@/actions/App/Http/Controllers/Admin/DocumentTemplateController";
-import Heading from "@/components/heading";
-import TranslatableField from "@/components/translatable-field";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Head, Link, router } from '@inertiajs/react';
+import { Loader2 } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import DocumentTemplateController from '@/actions/App/Http/Controllers/Admin/DocumentTemplateController';
+import Heading from '@/components/heading';
+import TranslatableField from '@/components/translatable-field';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     Field,
     FieldDescription,
     FieldError,
     FieldGroup,
     FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { NativeSelect } from "@/components/ui/native-select";
-import { csrfToken } from "@/hooks/use-ai-text-assist";
-import { DOCUMENT_TYPES } from "@/lib/commercial-documents";
-import { cn } from "@/lib/utils";
-import { index as documentsIndex } from "@/routes/admin/commercial-documents";
-import type { CommercialDocumentType, Translatable } from "@/types";
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { NativeSelect } from '@/components/ui/native-select';
+import { csrfToken } from '@/hooks/use-ai-text-assist';
+import { DOCUMENT_TYPES } from '@/lib/commercial-documents';
+import { cn } from '@/lib/utils';
+import { index as documentsIndex } from '@/routes/admin/commercial-documents';
+import type { CommercialDocumentType, Translatable } from '@/types';
 
 type Template = {
-    layout: "classic" | "modern" | "minimal";
+    layout: 'classic' | 'modern' | 'minimal';
     primary_color: string;
     accent_color: string;
     font: string;
@@ -37,28 +37,28 @@ type Template = {
 
 const LAYOUTS = [
     {
-        value: "classic",
-        label: "Classique",
-        description: "En-tête sobre, tableau aux couleurs du modèle",
+        value: 'classic',
+        label: 'Classique',
+        description: 'En-tête sobre, tableau aux couleurs du modèle',
     },
     {
-        value: "modern",
-        label: "Moderne",
-        description: "Bandeau de couleur pleine largeur, total souligné",
+        value: 'modern',
+        label: 'Moderne',
+        description: 'Bandeau de couleur pleine largeur, total souligné',
     },
     {
-        value: "minimal",
-        label: "Épurée",
-        description: "Sans aplat, de simples filets",
+        value: 'minimal',
+        label: 'Épurée',
+        description: 'Sans aplat, de simples filets',
     },
 ] as const;
 
 const TOGGLES = [
-    { name: "show_logo", label: "Afficher le logo" },
-    { name: "show_bank_details", label: "Afficher les coordonnées bancaires" },
+    { name: 'show_logo', label: 'Afficher le logo' },
+    { name: 'show_bank_details', label: 'Afficher les coordonnées bancaires' },
     {
-        name: "show_signature",
-        label: "Bloc « Bon pour accord » (date et signature du client)",
+        name: 'show_signature',
+        label: 'Bloc « Bon pour accord » (date et signature du client)',
     },
 ] as const;
 
@@ -78,7 +78,7 @@ export default function DocumentTemplateEdit({
     const formRef = useRef<HTMLFormElement>(null);
     const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    const [previewLocale, setPreviewLocale] = useState<"fr" | "en">("fr");
+    const [previewLocale, setPreviewLocale] = useState<'fr' | 'en'>('fr');
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -90,9 +90,9 @@ export default function DocumentTemplateEdit({
         const data = new FormData(formRef.current ?? undefined);
 
         TOGGLES.forEach(({ name }) =>
-            data.set(name, data.has(name) ? "1" : "0"),
+            data.set(name, data.has(name) ? '1' : '0'),
         );
-        data.set("remove_logo", data.has("remove_logo") ? "1" : "0");
+        data.set('remove_logo', data.has('remove_logo') ? '1' : '0');
 
         return data;
     }, []);
@@ -100,18 +100,18 @@ export default function DocumentTemplateEdit({
     const refreshPreview = useCallback(async () => {
         setLoading(true);
         const data = formData();
-        data.set("preview_locale", previewLocale);
+        data.set('preview_locale', previewLocale);
 
         try {
             const response = await fetch(
                 DocumentTemplateController.preview.url(type),
                 {
-                    method: "POST",
+                    method: 'POST',
                     headers: {
-                        "X-XSRF-TOKEN": csrfToken(),
+                        'X-XSRF-TOKEN': csrfToken(),
                         // JSON : une erreur de validation revient en 422, pas en page HTML.
-                        Accept: "application/json",
-                        "X-Requested-With": "XMLHttpRequest",
+                        Accept: 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
                     },
                     body: data,
                 },
@@ -136,8 +136,8 @@ export default function DocumentTemplateEdit({
             if (
                 response.ok &&
                 response.headers
-                    .get("Content-Type")
-                    ?.startsWith("application/pdf")
+                    .get('Content-Type')
+                    ?.startsWith('application/pdf')
             ) {
                 setErrors({});
                 const url = URL.createObjectURL(await response.blob());
@@ -200,13 +200,13 @@ export default function DocumentTemplateEdit({
                                 key={item}
                                 href={DocumentTemplateController.edit(item)}
                                 className={cn(
-                                    "rounded-md px-3 py-1.5 text-sm",
+                                    'rounded-md px-3 py-1.5 text-sm',
                                     item === type
-                                        ? "bg-primary text-primary-foreground"
-                                        : "hover:bg-muted",
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'hover:bg-muted',
                                 )}
                                 aria-current={
-                                    item === type ? "page" : undefined
+                                    item === type ? 'page' : undefined
                                 }
                             >
                                 {DOCUMENT_TYPES[item]}
@@ -360,7 +360,7 @@ export default function DocumentTemplateEdit({
                                             type="checkbox"
                                             name="remove_logo"
                                             value="1"
-                                        />{" "}
+                                        />{' '}
                                         Retirer le logo
                                     </label>
                                 )}
@@ -394,8 +394,8 @@ export default function DocumentTemplateEdit({
                                 label="Titre du document"
                                 defaultValue={template.title}
                                 errors={{
-                                    fr: errors["title.fr"],
-                                    en: errors["title.en"],
+                                    fr: errors['title.fr'],
+                                    en: errors['title.en'],
                                 }}
                             />
                             <FieldDescription className="-mt-4">
@@ -407,8 +407,8 @@ export default function DocumentTemplateEdit({
                                 textarea
                                 defaultValue={template.intro}
                                 errors={{
-                                    fr: errors["intro.fr"],
-                                    en: errors["intro.en"],
+                                    fr: errors['intro.fr'],
+                                    en: errors['intro.en'],
                                 }}
                             />
                             <TranslatableField
@@ -416,8 +416,8 @@ export default function DocumentTemplateEdit({
                                 label="Texte du pied de page"
                                 defaultValue={template.footer}
                                 errors={{
-                                    fr: errors["footer.fr"],
-                                    en: errors["footer.en"],
+                                    fr: errors['footer.fr'],
+                                    en: errors['footer.en'],
                                 }}
                             />
 
@@ -442,7 +442,7 @@ export default function DocumentTemplateEdit({
                                 value={previewLocale}
                                 onChange={(event) =>
                                     setPreviewLocale(
-                                        event.target.value as "fr" | "en",
+                                        event.target.value as 'fr' | 'en',
                                     )
                                 }
                             >
@@ -470,7 +470,7 @@ export default function DocumentTemplateEdit({
 
 DocumentTemplateEdit.layout = {
     breadcrumbs: [
-        { title: "Devis et factures", href: documentsIndex() },
-        { title: "Modèles", href: "" },
+        { title: 'Devis et factures', href: documentsIndex() },
+        { title: 'Modèles', href: '' },
     ],
 };

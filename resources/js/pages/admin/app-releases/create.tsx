@@ -1,17 +1,17 @@
-import { Form, Head } from "@inertiajs/react";
-import AppReleaseController from "@/actions/App/Http/Controllers/Admin/AppReleaseController";
-import FormPageHeader from "@/components/admin/form-page-header";
-import { Button } from "@/components/ui/button";
+import { Form, Head } from '@inertiajs/react';
+import AppReleaseController from '@/actions/App/Http/Controllers/Admin/AppReleaseController';
+import FormPageHeader from '@/components/admin/form-page-header';
+import { Button } from '@/components/ui/button';
 import {
     Field,
     FieldDescription,
     FieldError,
     FieldGroup,
     FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { index as releasesIndex } from "@/routes/admin/app-releases";
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { index as releasesIndex } from '@/routes/admin/app-releases';
 
 export default function AppReleaseCreate({
     nextBuildNumber,
@@ -96,7 +96,7 @@ export default function AppReleaseCreate({
                             <Button disabled={processing}>
                                 {progress
                                     ? `Envoi… ${progress.percentage ?? 0} %`
-                                    : "Envoyer"}
+                                    : 'Envoyer'}
                             </Button>
                         </FieldGroup>
                     )}
@@ -108,7 +108,7 @@ export default function AppReleaseCreate({
 
 AppReleaseCreate.layout = {
     breadcrumbs: [
-        { title: "Application mobile", href: releasesIndex() },
-        { title: "Envoyer un build", href: "" },
+        { title: 'Application mobile', href: releasesIndex() },
+        { title: 'Envoyer un build', href: '' },
     ],
 };

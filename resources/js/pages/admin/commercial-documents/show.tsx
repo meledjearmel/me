@@ -1,25 +1,25 @@
-import { Head, Link, router } from "@inertiajs/react";
-import { Copy, Download, FileCheck2, SquarePen } from "lucide-react";
-import CommercialDocumentController from "@/actions/App/Http/Controllers/Admin/CommercialDocumentController";
-import CommercialDocumentSendDialog from "@/components/admin/commercial-document-send-dialog";
-import DeleteButton from "@/components/admin/delete-button";
-import FormPageHeader from "@/components/admin/form-page-header";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Head, Link, router } from '@inertiajs/react';
+import { Copy, Download, FileCheck2, SquarePen } from 'lucide-react';
+import CommercialDocumentController from '@/actions/App/Http/Controllers/Admin/CommercialDocumentController';
+import CommercialDocumentSendDialog from '@/components/admin/commercial-document-send-dialog';
+import DeleteButton from '@/components/admin/delete-button';
+import FormPageHeader from '@/components/admin/form-page-header';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     DOCUMENT_STATUSES,
     DOCUMENT_TYPES,
     formatMoney,
-} from "@/lib/commercial-documents";
-import { index as documentsIndex } from "@/routes/admin/commercial-documents";
-import { show as engagementShow } from "@/routes/admin/engagements";
+} from '@/lib/commercial-documents';
+import { index as documentsIndex } from '@/routes/admin/commercial-documents';
+import { show as engagementShow } from '@/routes/admin/engagements';
 import type {
     CommercialDocument,
     CommercialDocumentStatus,
     CommercialDocumentType,
-} from "@/types";
+} from '@/types';
 
-const date = new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" });
+const date = new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' });
 
 /**
  * Un document : aperçu du PDF et ce qu'on peut en faire selon son état (modifier, émettre,
@@ -30,10 +30,10 @@ export default function CommercialDocumentShow({
     derived,
 }: {
     document: CommercialDocument;
-    derived: Pick<CommercialDocument, "id" | "type" | "number" | "status">[];
+    derived: Pick<CommercialDocument, 'id' | 'type' | 'number' | 'status'>[];
 }) {
-    const isDraft = document.status === "draft";
-    const isQuote = document.type === "quote";
+    const isDraft = document.status === 'draft';
+    const isQuote = document.type === 'quote';
     const pdfUrl = CommercialDocumentController.pdf.url(document.id);
 
     const setStatus = (status: CommercialDocumentStatus) =>
@@ -68,7 +68,7 @@ export default function CommercialDocumentShow({
                 />
 
                 <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant={isDraft ? "outline" : "secondary"}>
+                    <Badge variant={isDraft ? 'outline' : 'secondary'}>
                         {DOCUMENT_STATUSES[document.status]}
                     </Badge>
                     {document.sent_at && (
@@ -100,8 +100,8 @@ export default function CommercialDocumentShow({
                             href={CommercialDocumentController.show(item.id)}
                             className="text-sm underline"
                         >
-                            {DOCUMENT_TYPES[item.type]}{" "}
-                            {item.number ?? "(brouillon)"}
+                            {DOCUMENT_TYPES[item.type]}{' '}
+                            {item.number ?? '(brouillon)'}
                         </Link>
                     ))}
                 </div>
@@ -109,9 +109,9 @@ export default function CommercialDocumentShow({
                 {document.reminder_due_at && (
                     <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm dark:border-amber-800 dark:bg-amber-950/40">
                         <p>
-                            <strong>Relance suggérée</strong> :{" "}
+                            <strong>Relance suggérée</strong> :{' '}
                             {isQuote
-                                ? "le devis est toujours sans réponse."
+                                ? 'le devis est toujours sans réponse.'
                                 : "l'échéance de paiement est dépassée."}
                             {document.reminders_count > 0 &&
                                 ` ${document.reminders_count} relance(s) déjà envoyée(s).`}
@@ -167,11 +167,11 @@ export default function CommercialDocumentShow({
                             envoyer
                         </Button>
                     )}
-                    {document.status !== "cancelled" && (
+                    {document.status !== 'cancelled' && (
                         <CommercialDocumentSendDialog document={document} />
                     )}
                     {!document.reminder_due_at &&
-                        document.status === "issued" &&
+                        document.status === 'issued' &&
                         document.sent_at && (
                             <CommercialDocumentSendDialog
                                 document={document}
@@ -188,7 +188,7 @@ export default function CommercialDocumentShow({
                             variant="outline"
                             onClick={() =>
                                 void navigator.clipboard.writeText(
-                                    document.public_url ?? "",
+                                    document.public_url ?? '',
                                 )
                             }
                         >
@@ -196,61 +196,61 @@ export default function CommercialDocumentShow({
                             client
                         </Button>
                     )}
-                    {isQuote && document.status === "issued" && (
+                    {isQuote && document.status === 'issued' && (
                         <>
                             <Button
                                 variant="outline"
-                                onClick={() => setStatus("accepted")}
+                                onClick={() => setStatus('accepted')}
                             >
                                 Marquer accepté
                             </Button>
                             <Button
                                 variant="outline"
-                                onClick={() => setStatus("declined")}
+                                onClick={() => setStatus('declined')}
                             >
                                 Marquer refusé
                             </Button>
                         </>
                     )}
                     {isQuote &&
-                        ["issued", "accepted"].includes(document.status) && (
+                        ['issued', 'accepted'].includes(document.status) && (
                             <>
                                 <Button
                                     variant="outline"
-                                    onClick={() => convert("proforma")}
+                                    onClick={() => convert('proforma')}
                                 >
                                     Créer la proforma
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    onClick={() => convert("invoice")}
+                                    onClick={() => convert('invoice')}
                                 >
                                     Créer la facture
                                 </Button>
                             </>
                         )}
-                    {document.type === "proforma" &&
-                        document.status !== "draft" && (
+                    {document.type === 'proforma' &&
+                        document.status !== 'draft' && (
                             <Button
                                 variant="outline"
-                                onClick={() => convert("invoice")}
+                                onClick={() => convert('invoice')}
                             >
                                 Créer la facture
                             </Button>
                         )}
-                    {!isQuote && document.status === "issued" && (
+                    {!isQuote && document.status === 'issued' && (
                         <Button
                             variant="outline"
-                            onClick={() => setStatus("paid")}
+                            onClick={() => setStatus('paid')}
                         >
                             Marquer payé
                         </Button>
                     )}
                     {!isDraft &&
-                        !["cancelled", "paid"].includes(document.status) && (
+                        !['cancelled', 'paid'].includes(document.status) && (
                             <Button
                                 variant="ghost"
-                                onClick={() => setStatus("cancelled")}
+                                onClick={() => setStatus('cancelled')}
                             >
                                 Annuler le document
                             </Button>
@@ -278,7 +278,7 @@ export default function CommercialDocumentShow({
 
 CommercialDocumentShow.layout = {
     breadcrumbs: [
-        { title: "Devis et factures", href: documentsIndex() },
-        { title: "Document", href: "" },
+        { title: 'Devis et factures', href: documentsIndex() },
+        { title: 'Document', href: '' },
     ],
 };

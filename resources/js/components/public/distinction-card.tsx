@@ -62,7 +62,9 @@ export default function DistinctionCard({
             {...motionProps}
         >
             <p className="pub-fact__label">
-                {total > 1 ? t.about.distinctionsLabel : t.about.distinctionLabel}
+                {total > 1
+                    ? t.about.distinctionsLabel
+                    : t.about.distinctionLabel}
             </p>
 
             <AnimatePresence mode="wait" initial={false}>
@@ -104,11 +106,7 @@ export default function DistinctionCard({
  * Une distinction : son intitulé, son contexte (lien vers l'expérience, la formation ou le
  * projet) et son propre compteur de félicitations. Toute la carte sert de bouton « Féliciter ».
  */
-function DistinctionSlide({
-    distinction,
-}: {
-    distinction: PublicDistinction;
-}) {
+function DistinctionSlide({ distinction }: { distinction: PublicDistinction }) {
     const t = useTranslations();
     const locale = useLocale();
     const path = useLocalizedPath();

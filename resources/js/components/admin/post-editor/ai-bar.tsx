@@ -1,27 +1,27 @@
-import { getHTMLFromFragment, type Editor, type Range } from "@tiptap/core";
-import { ArrowUp, Loader2, Sparkles, X } from "lucide-react";
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import AiAssistController from "@/actions/App/Http/Controllers/Admin/AiAssistController";
-import { Button } from "@/components/ui/button";
-import { post, type Locale } from "@/hooks/use-ai-text-assist";
-import { cn } from "@/lib/utils";
+import { getHTMLFromFragment, type Editor, type Range } from '@tiptap/core';
+import { ArrowUp, Loader2, Sparkles, X } from 'lucide-react';
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import AiAssistController from '@/actions/App/Http/Controllers/Admin/AiAssistController';
+import { Button } from '@/components/ui/button';
+import { post, type Locale } from '@/hooks/use-ai-text-assist';
+import { cn } from '@/lib/utils';
 
 /** Longueur du texte précédant le curseur envoyée comme contexte. */
 const CONTEXT_LENGTH = 1500;
 
 const SELECTION_PRESETS = [
-    "Améliore la formulation",
-    "Corrige les fautes",
-    "Rends-le plus concis",
-    "Développe davantage",
-    "Transforme en liste à puces",
+    'Améliore la formulation',
+    'Corrige les fautes',
+    'Rends-le plus concis',
+    'Développe davantage',
+    'Transforme en liste à puces',
 ];
 
 const CURSOR_PRESETS = [
-    "Continue l’écriture",
-    "Écris une introduction",
-    "Écris une conclusion",
-    "Ajoute un tableau comparatif",
+    'Continue l’écriture',
+    'Écris une introduction',
+    'Écris une conclusion',
+    'Ajoute un tableau comparatif',
 ];
 
 export type AiBarHandle = {
@@ -40,7 +40,7 @@ const AiBar = forwardRef<
     { editor: Editor; locale: Locale; articleMeta: ArticleMeta }
 >(function AiBar({ editor, locale, articleMeta }, ref) {
     const inputRef = useRef<HTMLTextAreaElement>(null);
-    const [instruction, setInstruction] = useState("");
+    const [instruction, setInstruction] = useState('');
     const [target, setTarget] = useState<Range | null>(null);
     const [pending, setPending] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -63,7 +63,7 @@ const AiBar = forwardRef<
     async function submit(text: string) {
         const consigne = text.trim();
 
-        if (consigne === "" || pending) {
+        if (consigne === '' || pending) {
             return;
         }
 
@@ -84,7 +84,7 @@ const AiBar = forwardRef<
             : doc.textBetween(
                   Math.max(0, range.from - CONTEXT_LENGTH),
                   range.from,
-                  "\n\n",
+                  '\n\n',
               ) || null;
 
         setPending(true);
@@ -109,10 +109,10 @@ const AiBar = forwardRef<
                     parseOptions: { preserveWhitespace: false },
                 })
                 .run();
-            setInstruction("");
+            setInstruction('');
             setTarget(null);
         } catch {
-            setError("L’assistant est indisponible pour le moment, réessayez.");
+            setError('L’assistant est indisponible pour le moment, réessayez.');
         } finally {
             setPending(false);
         }
@@ -122,8 +122,8 @@ const AiBar = forwardRef<
         <div className="sticky bottom-4 z-20 mx-auto mt-6 w-full max-w-2xl px-4">
             <div
                 className={cn(
-                    "rounded-xl border bg-background/95 p-2 shadow-lg backdrop-blur",
-                    "ring-violet-500/30 focus-within:ring-2",
+                    'rounded-xl border bg-background/95 p-2 shadow-lg backdrop-blur',
+                    'ring-violet-500/30 focus-within:ring-2',
                 )}
             >
                 {(hasSelection || error) && (
@@ -156,29 +156,29 @@ const AiBar = forwardRef<
                         onFocus={() => target === null && captureSelection()}
                         onChange={(event) => setInstruction(event.target.value)}
                         onKeyDown={(event) => {
-                            if (event.key === "Enter" && !event.shiftKey) {
+                            if (event.key === 'Enter' && !event.shiftKey) {
                                 event.preventDefault();
                                 void submit(instruction);
                             }
 
-                            if (event.key === "Escape") {
+                            if (event.key === 'Escape') {
                                 setTarget(null);
                                 editor.commands.focus();
                             }
                         }}
                         placeholder={
                             hasSelection
-                                ? "Que faire de la sélection ?"
-                                : "Demandez à l’IA d’écrire ou de modifier l’article…"
+                                ? 'Que faire de la sélection ?'
+                                : 'Demandez à l’IA d’écrire ou de modifier l’article…'
                         }
                         aria-label="Consigne pour l’IA"
-                        className="max-h-32 min-h-9 flex-1 resize-none bg-transparent py-2 text-sm outline-none placeholder:text-muted-foreground field-sizing-content"
+                        className="field-sizing-content max-h-32 min-h-9 flex-1 resize-none bg-transparent py-2 text-sm outline-none placeholder:text-muted-foreground"
                     />
                     <Button
                         type="button"
                         size="icon"
                         className="size-8 shrink-0 rounded-full"
-                        disabled={pending || instruction.trim() === ""}
+                        disabled={pending || instruction.trim() === ''}
                         onClick={() => void submit(instruction)}
                         aria-label="Envoyer"
                     >

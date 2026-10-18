@@ -39,7 +39,6 @@ type StepKey = 'project' | 'options' | 'estimate' | 'contact';
 export default function Estimate({
     projectTypes,
     features,
-    currencies,
     defaultCurrency,
     preselectedTypeId,
 }: {
@@ -91,7 +90,9 @@ export default function Estimate({
             }),
         );
     };
-    const [currency, setCurrency] = useState(defaultCurrency);
+    // La devise suit le pays du visiteur, choisie par le serveur : pas de sélecteur,
+    // pour que chacun ne voie que le tarif de son marché.
+    const currency = defaultCurrency;
     const [quote, setQuote] = useState<Quote | null>(null);
     const [sent, setSent] = useState(false);
     const [description, setDescription] = useState('');
@@ -513,51 +514,6 @@ export default function Estimate({
 
                                         {step === 'estimate' && (
                                             <>
-                                                {currencies.length > 1 && (
-                                                    <>
-                                                        <p className="pub-booking__label">
-                                                            {
-                                                                t.estimate
-                                                                    .currency
-                                                            }
-                                                        </p>
-                                                        <div
-                                                            className="pub-booking__times"
-                                                            role="group"
-                                                            aria-label={
-                                                                t.estimate
-                                                                    .currency
-                                                            }
-                                                        >
-                                                            {currencies.map(
-                                                                (candidate) => (
-                                                                    <button
-                                                                        key={
-                                                                            candidate
-                                                                        }
-                                                                        type="button"
-                                                                        className="pub-filter"
-                                                                        aria-pressed={
-                                                                            candidate ===
-                                                                            currency
-                                                                        }
-                                                                        onClick={() =>
-                                                                            setCurrency(
-                                                                                candidate,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        {candidate ===
-                                                                        'XOF'
-                                                                            ? 'FCFA'
-                                                                            : candidate}
-                                                                    </button>
-                                                                ),
-                                                            )}
-                                                        </div>
-                                                    </>
-                                                )}
-
                                                 <p
                                                     className="pub-booking__summary"
                                                     aria-live="polite"

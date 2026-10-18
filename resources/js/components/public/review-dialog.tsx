@@ -85,7 +85,8 @@ export default function ReviewDialog({
                             )}
                             {subject && (
                                 <p className="pub-review-context">
-                                    {t.fab.reviewAbout} <strong>{subject}</strong>
+                                    {t.fab.reviewAbout}{' '}
+                                    <strong>{subject}</strong>
                                 </p>
                             )}
                             {invite ? (
@@ -139,7 +140,9 @@ export default function ReviewDialog({
                                     <input
                                         type="email"
                                         name="author_email"
-                                        defaultValue={invite?.email ?? undefined}
+                                        defaultValue={
+                                            invite?.email ?? undefined
+                                        }
                                         autoComplete="email"
                                         required
                                     />

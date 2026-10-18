@@ -32,7 +32,11 @@ export default function PublicShell({
                 {/* role explicite : main est en display: contents (voir public.css) */}
                 <main role="main">
                     {/* main en display: contents ne peut pas recevoir le focus : la cible du lien d'évitement est cet élément. */}
-                    <div id="contenu" tabIndex={-1} className="pub-skip-target" />
+                    <div
+                        id="contenu"
+                        tabIndex={-1}
+                        className="pub-skip-target"
+                    />
                     {children}
                 </main>
                 <SiteFooter

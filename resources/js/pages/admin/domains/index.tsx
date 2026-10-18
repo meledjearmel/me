@@ -1,17 +1,17 @@
-import { Head, Link } from "@inertiajs/react";
-import { PUBLICATION_STATUSES } from "@/lib/admin-options";
+import { Head, Link } from '@inertiajs/react';
+import { PUBLICATION_STATUSES } from '@/lib/admin-options';
 import StatusMenu, {
     PUBLICATION_VARIANTS,
-} from "@/components/admin/status-menu";
-import { Plus, Eye, SquarePen } from "lucide-react";
-import { index as pageIndex } from "@/routes/admin/domains";
-import DomainController from "@/actions/App/Http/Controllers/Admin/DomainController";
-import DeleteButton from "@/components/admin/delete-button";
-import { FilterSelect, ResourceList } from "@/components/admin/data-list";
-import Heading from "@/components/heading";
-import { Button } from "@/components/ui/button";
-import type { ListFilters, Paginated, Domain } from "@/types";
-import ActionTooltip from "@/components/admin/action-tooltip";
+} from '@/components/admin/status-menu';
+import { Plus, Eye, SquarePen } from 'lucide-react';
+import { index as pageIndex } from '@/routes/admin/domains';
+import DomainController from '@/actions/App/Http/Controllers/Admin/DomainController';
+import DeleteButton from '@/components/admin/delete-button';
+import { FilterSelect, ResourceList } from '@/components/admin/data-list';
+import Heading from '@/components/heading';
+import { Button } from '@/components/ui/button';
+import type { ListFilters, Paginated, Domain } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 export default function DomainsIndex({
     domains,
@@ -43,13 +43,13 @@ export default function DomainsIndex({
                     searchPlaceholder="Clé ou libellé…"
                     columns={[
                         {
-                            header: "Clé",
-                            className: "font-mono text-xs",
+                            header: 'Clé',
+                            className: 'font-mono text-xs',
                             cell: (row) => row.key,
                         },
-                        { header: "Libellé (FR)", cell: (row) => row.label.fr },
+                        { header: 'Libellé (FR)', cell: (row) => row.label.fr },
                         {
-                            header: "Couleur",
+                            header: 'Couleur',
                             cell: (row) => (
                                 <span className="inline-flex items-center gap-2">
                                     <span
@@ -60,9 +60,9 @@ export default function DomainsIndex({
                                 </span>
                             ),
                         },
-                        { header: "Ordre", cell: (row) => row.sort_order },
+                        { header: 'Ordre', cell: (row) => row.sort_order },
                         {
-                            header: "Statut",
+                            header: 'Statut',
                             fit: true,
                             cell: (row) => (
                                 <StatusMenu
@@ -83,8 +83,8 @@ export default function DomainsIndex({
                                 value={filters.status}
                                 label="Statut"
                                 options={[
-                                    { value: "published", label: "Publié" },
-                                    { value: "draft", label: "Brouillon" },
+                                    { value: 'published', label: 'Publié' },
+                                    { value: 'draft', label: 'Brouillon' },
                                 ]}
                             />
                         </>
@@ -124,5 +124,5 @@ export default function DomainsIndex({
 }
 
 DomainsIndex.layout = {
-    breadcrumbs: [{ title: "Domaines", href: pageIndex() }],
+    breadcrumbs: [{ title: 'Domaines', href: pageIndex() }],
 };

@@ -2,10 +2,7 @@ import FormSelect from '@/components/admin/form-select';
 import TranslatableField from '@/components/translatable-field';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import {
-    CERTIFICATION_KINDS,
-    PUBLICATION_STATUSES,
-} from '@/lib/admin-options';
+import { CERTIFICATION_KINDS, PUBLICATION_STATUSES } from '@/lib/admin-options';
 import type { Certification } from '@/types';
 
 /** Champs d'une certification, partagés par la création et la modification. */

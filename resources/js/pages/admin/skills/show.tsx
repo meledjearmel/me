@@ -1,10 +1,10 @@
-import StatusSelect from "@/components/admin/status-select";
-import { Link } from "@inertiajs/react";
-import SkillController from "@/actions/App/Http/Controllers/Admin/SkillController";
-import DomainController from "@/actions/App/Http/Controllers/Admin/DomainController";
-import ShowPage, { Bilingual, Pills } from "@/components/admin/show-page";
-import { index as skillsIndex } from "@/routes/admin/skills";
-import type { Skill } from "@/types";
+import StatusSelect from '@/components/admin/status-select';
+import { Link } from '@inertiajs/react';
+import SkillController from '@/actions/App/Http/Controllers/Admin/SkillController';
+import DomainController from '@/actions/App/Http/Controllers/Admin/DomainController';
+import ShowPage, { Bilingual, Pills } from '@/components/admin/show-page';
+import { index as skillsIndex } from '@/routes/admin/skills';
+import type { Skill } from '@/types';
 
 export default function SkillShow({ skill: row }: { skill: Skill }) {
     return (
@@ -13,7 +13,7 @@ export default function SkillShow({ skill: row }: { skill: Skill }) {
             description={
                 row.domain
                     ? `Compétence · ${row.domain.label.fr}`
-                    : "Compétence"
+                    : 'Compétence'
             }
             badge={
                 <StatusSelect type="skill" id={row.id} status={row.status} />
@@ -23,11 +23,11 @@ export default function SkillShow({ skill: row }: { skill: Skill }) {
             editHref={SkillController.edit(row.id)}
             sections={[
                 {
-                    title: "Détails",
+                    title: 'Détails',
                     items: [
-                        { label: "Nom", value: <Bilingual value={row.name} /> },
+                        { label: 'Nom', value: <Bilingual value={row.name} /> },
                         {
-                            label: "Domaine",
+                            label: 'Domaine',
                             value: row.domain && (
                                 <Link
                                     href={DomainController.show(row.domain.id)}
@@ -37,22 +37,22 @@ export default function SkillShow({ skill: row }: { skill: Skill }) {
                                 </Link>
                             ),
                         },
-                        { label: "Ordre", value: row.sort_order },
+                        { label: 'Ordre', value: row.sort_order },
                         {
-                            label: "Description",
+                            label: 'Description',
                             value: <Bilingual value={row.description} />,
                             wide: true,
                         },
                         {
-                            label: "Détails (fenêtre au clic)",
+                            label: 'Détails (fenêtre au clic)',
                             value: <Bilingual value={row.details} />,
                             wide: true,
                         },
                     ],
                 },
                 {
-                    title: "Technologies",
-                    description: "Logos affichés sur la carte de la compétence",
+                    title: 'Technologies',
+                    description: 'Logos affichés sur la carte de la compétence',
                     content: (
                         <Pills
                             items={(row.technologies ?? []).map(
@@ -68,7 +68,7 @@ export default function SkillShow({ skill: row }: { skill: Skill }) {
 
 SkillShow.layout = {
     breadcrumbs: [
-        { title: "Compétences", href: skillsIndex() },
-        { title: "Détail", href: "" },
+        { title: 'Compétences', href: skillsIndex() },
+        { title: 'Détail', href: '' },
     ],
 };

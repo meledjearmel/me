@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import PostController from "@/actions/App/Http/Controllers/Admin/PostController";
-import type { Mentionable } from "@/components/admin/post-editor/mention";
+import { useEffect, useState } from 'react';
+import PostController from '@/actions/App/Http/Controllers/Admin/PostController';
+import type { Mentionable } from '@/components/admin/post-editor/mention';
 
 /** Délai avant de chercher, pour ne pas lancer une requête par lettre tapée. */
 const SEARCH_DELAY_MS = 150;
@@ -22,7 +22,7 @@ export function useMentionSearch(query: string | null): Mentionable[] {
         const controller = new AbortController();
         const timer = window.setTimeout(() => {
             fetch(PostController.mentions.url({ query: { q: query } }), {
-                headers: { Accept: "application/json" },
+                headers: { Accept: 'application/json' },
                 signal: controller.signal,
             })
                 .then((response) => response.json())

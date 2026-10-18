@@ -1,15 +1,15 @@
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import type { EstimatorCurrency } from "@/types";
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import type { EstimatorCurrency } from '@/types';
 
 export const ESTIMATOR_CURRENCIES: {
     value: EstimatorCurrency;
     label: string;
 }[] = [
-    { value: "CHF", label: "CHF" },
-    { value: "EUR", label: "EUR" },
-    { value: "USD", label: "USD" },
-    { value: "XOF", label: "FCFA" },
+    { value: 'CHF', label: 'CHF' },
+    { value: 'EUR', label: 'EUR' },
+    { value: 'USD', label: 'USD' },
+    { value: 'XOF', label: 'FCFA' },
 ];
 
 /**
@@ -46,7 +46,7 @@ export default function EstimatorRateInputs({
                             placeholder={
                                 fallback ? String(fallback) : undefined
                             }
-                            defaultValue={defaultValues?.[currency.value] ?? ""}
+                            defaultValue={defaultValues?.[currency.value] ?? ''}
                         />
                         <FieldError>{error}</FieldError>
                     </Field>

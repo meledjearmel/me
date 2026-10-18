@@ -1,5 +1,5 @@
-import { Bot } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Bot } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 /**
  * Brouillon rédigé par une IA via le serveur MCP (« IA · Claude Code ») : à relire
@@ -12,7 +12,7 @@ export default function AiDraftBadge({
     draftedBy?: string | null;
     status: string;
 }) {
-    if (!draftedBy || status !== "draft") {
+    if (!draftedBy || status !== 'draft') {
         return null;
     }
 

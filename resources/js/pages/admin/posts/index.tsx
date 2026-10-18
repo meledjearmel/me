@@ -1,32 +1,32 @@
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link } from '@inertiajs/react';
 import StatusMenu, {
     PUBLICATION_VARIANTS,
-} from "@/components/admin/status-menu";
-import { Eye, Plus, SquarePen } from "lucide-react";
-import PostController from "@/actions/App/Http/Controllers/Admin/PostController";
-import { FilterSelect, ResourceList } from "@/components/admin/data-list";
-import DeleteButton from "@/components/admin/delete-button";
-import Heading from "@/components/heading";
-import AiDraftBadge from "@/components/admin/ai-draft-badge";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { index as pageIndex } from "@/routes/admin/posts";
-import type { ListFilters, Paginated, Post } from "@/types";
-import ActionTooltip from "@/components/admin/action-tooltip";
+} from '@/components/admin/status-menu';
+import { Eye, Plus, SquarePen } from 'lucide-react';
+import PostController from '@/actions/App/Http/Controllers/Admin/PostController';
+import { FilterSelect, ResourceList } from '@/components/admin/data-list';
+import DeleteButton from '@/components/admin/delete-button';
+import Heading from '@/components/heading';
+import AiDraftBadge from '@/components/admin/ai-draft-badge';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { index as pageIndex } from '@/routes/admin/posts';
+import type { ListFilters, Paginated, Post } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 function publicationLabel(post: Post): {
     label: string;
-    variant: "default" | "secondary" | "outline";
+    variant: 'default' | 'secondary' | 'outline';
 } {
-    if (post.status === "draft") {
-        return { label: "Brouillon", variant: "secondary" };
+    if (post.status === 'draft') {
+        return { label: 'Brouillon', variant: 'secondary' };
     }
 
     if (post.published_at && new Date(post.published_at) > new Date()) {
-        return { label: "Programmé", variant: "outline" };
+        return { label: 'Programmé', variant: 'outline' };
     }
 
-    return { label: "Publié", variant: "default" };
+    return { label: 'Publié', variant: 'default' };
 }
 
 export default function PostsIndex({
@@ -56,7 +56,7 @@ export default function PostsIndex({
                     searchPlaceholder="Titre ou slug…"
                     columns={[
                         {
-                            header: "Titre",
+                            header: 'Titre',
                             cell: (row) => (
                                 <span className="font-medium">
                                     {row.title.fr}
@@ -76,7 +76,7 @@ export default function PostsIndex({
                             ),
                         },
                         {
-                            header: "Statut",
+                            header: 'Statut',
                             fit: true,
                             cell: (row) => {
                                 const { label, variant } =
@@ -89,15 +89,15 @@ export default function PostsIndex({
                                         status={row.status}
                                         options={[
                                             {
-                                                value: "published",
+                                                value: 'published',
                                                 label:
-                                                    row.status === "published"
+                                                    row.status === 'published'
                                                         ? label
-                                                        : "Publié",
+                                                        : 'Publié',
                                             },
                                             {
-                                                value: "draft",
-                                                label: "Brouillon",
+                                                value: 'draft',
+                                                label: 'Brouillon',
                                             },
                                         ]}
                                         variants={{
@@ -109,21 +109,21 @@ export default function PostsIndex({
                             },
                         },
                         {
-                            header: "Publication",
+                            header: 'Publication',
                             cell: (row) =>
                                 row.published_at
                                     ? new Date(
                                           row.published_at,
-                                      ).toLocaleDateString("fr-FR")
-                                    : "—",
+                                      ).toLocaleDateString('fr-FR')
+                                    : '—',
                         },
                         {
-                            header: "Lecture",
+                            header: 'Lecture',
                             cell: (row) => `${row.reading_minutes} min`,
                         },
                         {
-                            header: "Mis en avant",
-                            cell: (row) => (row.is_featured ? "Oui" : "—"),
+                            header: 'Mis en avant',
+                            cell: (row) => (row.is_featured ? 'Oui' : '—'),
                         },
                     ]}
                     filterControls={(state) => (
@@ -134,8 +134,8 @@ export default function PostsIndex({
                                 value={filters.status}
                                 label="Statut"
                                 options={[
-                                    { value: "published", label: "Publié" },
-                                    { value: "draft", label: "Brouillon" },
+                                    { value: 'published', label: 'Publié' },
+                                    { value: 'draft', label: 'Brouillon' },
                                 ]}
                             />
                             <FilterSelect
@@ -144,8 +144,8 @@ export default function PostsIndex({
                                 value={filters.is_featured}
                                 label="Mise en avant"
                                 options={[
-                                    { value: "1", label: "Mis en avant" },
-                                    { value: "0", label: "Non mis en avant" },
+                                    { value: '1', label: 'Mis en avant' },
+                                    { value: '0', label: 'Non mis en avant' },
                                 ]}
                             />
                         </>
@@ -185,5 +185,5 @@ export default function PostsIndex({
 }
 
 PostsIndex.layout = {
-    breadcrumbs: [{ title: "Blog", href: pageIndex() }],
+    breadcrumbs: [{ title: 'Blog', href: pageIndex() }],
 };

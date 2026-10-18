@@ -1,24 +1,24 @@
-import type { Editor } from "@tiptap/core";
+import type { Editor } from '@tiptap/core';
 import {
     Briefcase,
     FileText,
     FolderKanban,
     Wrench,
     type LucideIcon,
-} from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import type { CSSProperties } from "react";
-import { createPortal } from "react-dom";
-import { useMentionSearch } from "@/hooks/use-mention-search";
-import { cn } from "@/lib/utils";
-import type { MentionKind, Mentionable } from "./mention";
-import type { SlashBridge, SlashState } from "./slash-command";
+} from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
+import { useMentionSearch } from '@/hooks/use-mention-search';
+import { cn } from '@/lib/utils';
+import type { MentionKind, Mentionable } from './mention';
+import type { SlashBridge, SlashState } from './slash-command';
 
 const KINDS: Record<MentionKind, { label: string; icon: LucideIcon }> = {
-    project: { label: "Projet", icon: FolderKanban },
-    post: { label: "Article", icon: FileText },
-    technology: { label: "Technologie", icon: Wrench },
-    experience: { label: "Expérience", icon: Briefcase },
+    project: { label: 'Projet', icon: FolderKanban },
+    post: { label: 'Article', icon: FileText },
+    technology: { label: 'Technologie', icon: Wrench },
+    experience: { label: 'Expérience', icon: Briefcase },
 };
 
 function insertMention(editor: Editor, state: SlashState, item: Mentionable) {
@@ -27,10 +27,10 @@ function insertMention(editor: Editor, state: SlashState, item: Mentionable) {
         .focus()
         .insertContentAt(state.range, [
             {
-                type: "mention",
+                type: 'mention',
                 attrs: { kind: item.kind, id: item.id, label: item.label },
             },
-            { type: "text", text: " " },
+            { type: 'text', text: ' ' },
         ])
         .run();
 }
@@ -59,7 +59,7 @@ export function MentionList({
             role="listbox"
             aria-label="Mentions"
             className={cn(
-                "z-50 max-h-80 w-80 overflow-y-auto rounded-lg border bg-popover p-1 text-popover-foreground shadow-lg",
+                'z-50 max-h-80 w-80 overflow-y-auto rounded-lg border bg-popover p-1 text-popover-foreground shadow-lg',
                 className,
             )}
             style={style}
@@ -82,8 +82,8 @@ export function MentionList({
                             onPick(item);
                         }}
                         className={cn(
-                            "flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left",
-                            index === activeIndex && "bg-accent",
+                            'flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left',
+                            index === activeIndex && 'bg-accent',
                         )}
                     >
                         <span className="flex size-8 shrink-0 items-center justify-center rounded-md border bg-background">
@@ -95,7 +95,7 @@ export function MentionList({
                             </span>
                             <span className="block truncate text-xs text-muted-foreground">
                                 {kind.label}
-                                {item.hint ? ` · ${item.hint}` : ""}
+                                {item.hint ? ` · ${item.hint}` : ''}
                             </span>
                         </span>
                     </button>
@@ -135,8 +135,8 @@ export default function MentionMenu({
                 return false;
             }
 
-            if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-                const step = event.key === "ArrowDown" ? 1 : -1;
+            if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                const step = event.key === 'ArrowDown' ? 1 : -1;
                 setActiveIndex(
                     (current.activeIndex + step + current.items.length) %
                         current.items.length,
@@ -145,7 +145,7 @@ export default function MentionMenu({
                 return true;
             }
 
-            if (event.key === "Enter" || event.key === "Tab") {
+            if (event.key === 'Enter' || event.key === 'Tab') {
                 insertMention(
                     editor,
                     current.state,

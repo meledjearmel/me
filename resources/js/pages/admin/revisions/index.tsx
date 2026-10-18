@@ -1,16 +1,16 @@
-import { Head, Link } from "@inertiajs/react";
-import { Bot, ChevronRight } from "lucide-react";
-import ContentRevisionController from "@/actions/App/Http/Controllers/Admin/ContentRevisionController";
-import Heading from "@/components/heading";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { index as pageIndex } from "@/routes/admin/revisions";
-import type { ContentRevisionSummary } from "@/types";
+import { Head, Link } from '@inertiajs/react';
+import { Bot, ChevronRight } from 'lucide-react';
+import ContentRevisionController from '@/actions/App/Http/Controllers/Admin/ContentRevisionController';
+import Heading from '@/components/heading';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { index as pageIndex } from '@/routes/admin/revisions';
+import type { ContentRevisionSummary } from '@/types';
 
 const STATUSES = [
-    { value: "pending", label: "À relire" },
-    { value: "applied", label: "Appliquées" },
-    { value: "rejected", label: "Rejetées" },
+    { value: 'pending', label: 'À relire' },
+    { value: 'applied', label: 'Appliquées' },
+    { value: 'rejected', label: 'Rejetées' },
 ] as const;
 
 /**
@@ -39,7 +39,7 @@ export default function RevisionsIndex({
                         <Button
                             key={option.value}
                             variant={
-                                option.value === status ? "default" : "outline"
+                                option.value === status ? 'default' : 'outline'
                             }
                             size="sm"
                             asChild
@@ -57,9 +57,9 @@ export default function RevisionsIndex({
 
                 {revisions.length === 0 ? (
                     <p className="text-sm text-muted-foreground">
-                        {status === "pending"
-                            ? "Aucune révision à relire."
-                            : "Aucune révision."}
+                        {status === 'pending'
+                            ? 'Aucune révision à relire.'
+                            : 'Aucune révision.'}
                     </p>
                 ) : (
                     <ul className="divide-y rounded-md border">
@@ -81,7 +81,7 @@ export default function RevisionsIndex({
                                             </span>
                                             {revision.drafted_by && (
                                                 <Badge variant="outline">
-                                                    <Bot />{" "}
+                                                    <Bot />{' '}
                                                     {revision.drafted_by}
                                                 </Badge>
                                             )}
@@ -90,12 +90,12 @@ export default function RevisionsIndex({
                                             {revision.summary}
                                         </p>
                                         <p className="text-xs text-muted-foreground">
-                                            Proposée le{" "}
+                                            Proposée le{' '}
                                             {revision.created_at
                                                 ? new Date(
                                                       revision.created_at,
-                                                  ).toLocaleString("fr-FR")
-                                                : "—"}
+                                                  ).toLocaleString('fr-FR')
+                                                : '—'}
                                         </p>
                                     </div>
                                     <ChevronRight className="size-4 text-muted-foreground" />
@@ -110,5 +110,5 @@ export default function RevisionsIndex({
 }
 
 RevisionsIndex.layout = {
-    breadcrumbs: [{ title: "Révisions proposées", href: pageIndex() }],
+    breadcrumbs: [{ title: 'Révisions proposées', href: pageIndex() }],
 };

@@ -1,25 +1,25 @@
-import { router, usePage } from "@inertiajs/react";
-import { useState } from "react";
-import ContentStatusController from "@/actions/App/Http/Controllers/Admin/ContentStatusController";
+import { router, usePage } from '@inertiajs/react';
+import { useState } from 'react';
+import ContentStatusController from '@/actions/App/Http/Controllers/Admin/ContentStatusController';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
-import { PROJECT_STATUSES, PUBLICATION_STATUSES } from "@/lib/admin-options";
+} from '@/components/ui/select';
+import { PROJECT_STATUSES, PUBLICATION_STATUSES } from '@/lib/admin-options';
 
 export type StatusContentType =
-    | "project"
-    | "post"
-    | "experience"
-    | "education"
-    | "certification"
-    | "distinction"
-    | "uses_item"
-    | "skill"
-    | "service";
+    | 'project'
+    | 'post'
+    | 'experience'
+    | 'education'
+    | 'certification'
+    | 'distinction'
+    | 'uses_item'
+    | 'skill'
+    | 'service';
 
 /**
  * Change le statut d'un contenu depuis sa fiche, sans passer par le formulaire. Publier est
@@ -35,7 +35,7 @@ export default function StatusSelect({
     status: string;
 }) {
     const options =
-        type === "project" ? PROJECT_STATUSES : PUBLICATION_STATUSES;
+        type === 'project' ? PROJECT_STATUSES : PUBLICATION_STATUSES;
     const error = usePage().props.errors?.status as string | undefined;
     const [processing, setProcessing] = useState(false);
 

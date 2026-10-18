@@ -91,8 +91,7 @@ export default function SearchDialog({
             event.preventDefault();
             const step = event.key === 'ArrowDown' ? 1 : -1;
             setActive(
-                (current) =>
-                    (current + step + results.length) % results.length,
+                (current) => (current + step + results.length) % results.length,
             );
         } else if (event.key === 'Enter') {
             event.preventDefault();

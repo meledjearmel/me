@@ -1,6 +1,6 @@
-import type { Editor } from "@tiptap/core";
-import { useEditorState } from "@tiptap/react";
-import { BubbleMenu } from "@tiptap/react/menus";
+import type { Editor } from '@tiptap/core';
+import { useEditorState } from '@tiptap/react';
+import { BubbleMenu } from '@tiptap/react/menus';
 import {
     Bold,
     Code,
@@ -9,12 +9,12 @@ import {
     Sparkles,
     Strikethrough,
     Underline,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import type { EditorActions } from "./block-commands";
-import LinkPopover from "./link-popover";
-import ToolbarButton from "./toolbar-button";
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import type { EditorActions } from './block-commands';
+import LinkPopover from './link-popover';
+import ToolbarButton from './toolbar-button';
 
 /** Menu flottant au-dessus de la sélection : mise en forme et IA. */
 export default function SelectionBubble({
@@ -27,13 +27,13 @@ export default function SelectionBubble({
     const state = useEditorState({
         editor,
         selector: ({ editor: current }) => ({
-            bold: current.isActive("bold"),
-            italic: current.isActive("italic"),
-            underline: current.isActive("underline"),
-            strike: current.isActive("strike"),
-            code: current.isActive("code"),
-            highlight: current.isActive("highlight"),
-            link: current.isActive("link"),
+            bold: current.isActive('bold'),
+            italic: current.isActive('italic'),
+            underline: current.isActive('underline'),
+            strike: current.isActive('strike'),
+            code: current.isActive('code'),
+            highlight: current.isActive('highlight'),
+            link: current.isActive('link'),
         }),
     });
 
@@ -44,8 +44,8 @@ export default function SelectionBubble({
             editor={editor}
             shouldShow={({ editor: current, from, to }) =>
                 from !== to &&
-                !current.isActive("image") &&
-                !current.isActive("codeBlock")
+                !current.isActive('image') &&
+                !current.isActive('codeBlock')
             }
             className="flex items-center gap-0.5 rounded-lg border bg-popover p-1 shadow-lg"
         >

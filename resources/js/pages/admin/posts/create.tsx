@@ -1,8 +1,8 @@
-import { Form, Head } from "@inertiajs/react";
-import PostController from "@/actions/App/Http/Controllers/Admin/PostController";
-import FormPageHeader from "@/components/admin/form-page-header";
-import PostForm from "@/components/admin/post-form";
-import { index as postsIndex } from "@/routes/admin/posts";
+import { Form, Head } from '@inertiajs/react';
+import PostController from '@/actions/App/Http/Controllers/Admin/PostController';
+import FormPageHeader from '@/components/admin/form-page-header';
+import PostForm from '@/components/admin/post-form';
+import { index as postsIndex } from '@/routes/admin/posts';
 
 export default function PostCreate({
     tags,
@@ -40,7 +40,7 @@ export default function PostCreate({
 
 PostCreate.layout = {
     breadcrumbs: [
-        { title: "Blog", href: postsIndex() },
-        { title: "Nouveau", href: "" },
+        { title: 'Blog', href: postsIndex() },
+        { title: 'Nouveau', href: '' },
     ],
 };

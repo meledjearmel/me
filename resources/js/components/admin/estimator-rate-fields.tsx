@@ -1,13 +1,13 @@
-import EstimatorRateInputs from "@/components/admin/estimator-rate-inputs";
-import TranslatableField from "@/components/translatable-field";
+import EstimatorRateInputs from '@/components/admin/estimator-rate-inputs';
+import TranslatableField from '@/components/translatable-field';
 import {
     Field,
     FieldDescription,
     FieldError,
     FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import type { EstimatorRate } from "@/types";
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import type { EstimatorRate } from '@/types';
 
 /** Champs d'une grille tarifaire : son nom et ses taux par devise. */
 export default function EstimatorRateFields({
@@ -24,7 +24,7 @@ export default function EstimatorRateFields({
                 label="Nom"
                 required
                 defaultValue={rate?.name}
-                errors={{ fr: errors["name.fr"], en: errors["name.en"] }}
+                errors={{ fr: errors['name.fr'], en: errors['name.en'] }}
             />
 
             <div className="space-y-2">

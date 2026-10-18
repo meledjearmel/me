@@ -1,14 +1,14 @@
-import { Head, Link } from "@inertiajs/react";
-import { Plus, SquarePen } from "lucide-react";
-import EstimatorRateController from "@/actions/App/Http/Controllers/Admin/EstimatorRateController";
-import ActionTooltip from "@/components/admin/action-tooltip";
-import { ResourceList } from "@/components/admin/data-list";
-import DeleteButton from "@/components/admin/delete-button";
-import { ESTIMATOR_CURRENCIES } from "@/components/admin/estimator-rate-inputs";
-import Heading from "@/components/heading";
-import { Button } from "@/components/ui/button";
-import { index as ratesIndex } from "@/routes/admin/estimator-rates";
-import type { EstimatorRate, ListFilters, Paginated } from "@/types";
+import { Head, Link } from '@inertiajs/react';
+import { Plus, SquarePen } from 'lucide-react';
+import EstimatorRateController from '@/actions/App/Http/Controllers/Admin/EstimatorRateController';
+import ActionTooltip from '@/components/admin/action-tooltip';
+import { ResourceList } from '@/components/admin/data-list';
+import DeleteButton from '@/components/admin/delete-button';
+import { ESTIMATOR_CURRENCIES } from '@/components/admin/estimator-rate-inputs';
+import Heading from '@/components/heading';
+import { Button } from '@/components/ui/button';
+import { index as ratesIndex } from '@/routes/admin/estimator-rates';
+import type { EstimatorRate, ListFilters, Paginated } from '@/types';
 
 /**
  * Les grilles tarifaires de l'estimateur : un élément suit ses propres taux, sinon sa
@@ -43,9 +43,9 @@ export default function EstimatorRatesIndex({
                     filters={filters}
                     searchPlaceholder="Nom…"
                     columns={[
-                        { header: "Nom", cell: (row) => row.name.fr },
+                        { header: 'Nom', cell: (row) => row.name.fr },
                         {
-                            header: "Taux",
+                            header: 'Taux',
                             cell: (row) =>
                                 ESTIMATOR_CURRENCIES.filter(
                                     (currency) =>
@@ -55,13 +55,13 @@ export default function EstimatorRatesIndex({
                                         (currency) =>
                                             `${row.hourly_rates[currency.value]} ${currency.label}/h`,
                                     )
-                                    .join(" · ") || "Taux global",
+                                    .join(' · ') || 'Taux global',
                         },
                         {
-                            header: "Éléments",
+                            header: 'Éléments',
                             cell: (row) => row.items_count ?? 0,
                         },
-                        { header: "Ordre", cell: (row) => row.sort_order },
+                        { header: 'Ordre', cell: (row) => row.sort_order },
                     ]}
                     actions={(row) => (
                         <>
@@ -92,5 +92,5 @@ export default function EstimatorRatesIndex({
 }
 
 EstimatorRatesIndex.layout = {
-    breadcrumbs: [{ title: "Grilles tarifaires", href: ratesIndex() }],
+    breadcrumbs: [{ title: 'Grilles tarifaires', href: ratesIndex() }],
 };

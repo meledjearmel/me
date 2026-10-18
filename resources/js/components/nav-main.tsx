@@ -84,7 +84,11 @@ export function NavMain({
     }
 
     return (
-        <Collapsible open={open} onOpenChange={handleOpenChange} className="group/collapsible">
+        <Collapsible
+            open={open}
+            onOpenChange={handleOpenChange}
+            className="group/collapsible"
+        >
             <SidebarGroup className="px-2 py-0">
                 <SidebarGroupLabel asChild>
                     <CollapsibleTrigger className="cursor-pointer hover:text-sidebar-foreground">
