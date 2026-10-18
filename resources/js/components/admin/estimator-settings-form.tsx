@@ -1,15 +1,15 @@
-import { Form } from "@inertiajs/react";
-import EstimatorSettingsController from "@/actions/App/Http/Controllers/Admin/EstimatorSettingsController";
-import EstimatorRateInputs from "@/components/admin/estimator-rate-inputs";
-import { Button } from "@/components/ui/button";
+import { Form } from '@inertiajs/react';
+import EstimatorSettingsController from '@/actions/App/Http/Controllers/Admin/EstimatorSettingsController';
+import EstimatorRateInputs from '@/components/admin/estimator-rate-inputs';
+import { Button } from '@/components/ui/button';
 import {
     Field,
     FieldDescription,
     FieldError,
     FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import type { EstimatorSettings } from "@/types";
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import type { EstimatorSettings } from '@/types';
 
 /** Taux horaire par devise, marge pour imprévus et heures facturables par semaine. */
 export default function EstimatorSettingsForm({

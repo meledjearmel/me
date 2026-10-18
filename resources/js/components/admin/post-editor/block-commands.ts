@@ -1,4 +1,4 @@
-import type { Editor, Range } from "@tiptap/core";
+import type { Editor, Range } from '@tiptap/core';
 import {
     Code2,
     Heading2,
@@ -13,7 +13,7 @@ import {
     Sparkles,
     Table,
     type LucideIcon,
-} from "lucide-react";
+} from 'lucide-react';
 
 /** Actions de l'éditeur fournies par le composant (upload, barre IA). */
 export type EditorActions = {
@@ -32,68 +32,68 @@ export type BlockCommand = {
 /** Blocs proposés par le menu « / » (façon Notion). */
 export const BLOCK_COMMANDS: BlockCommand[] = [
     {
-        title: "Texte",
-        description: "Un paragraphe simple",
-        keywords: ["paragraphe", "texte", "p"],
+        title: 'Texte',
+        description: 'Un paragraphe simple',
+        keywords: ['paragraphe', 'texte', 'p'],
         icon: Pilcrow,
         run: (editor) => editor.chain().focus().setParagraph().run(),
     },
     {
-        title: "Titre 2",
-        description: "Une section de l’article",
-        keywords: ["h2", "titre", "section"],
+        title: 'Titre 2',
+        description: 'Une section de l’article',
+        keywords: ['h2', 'titre', 'section'],
         icon: Heading2,
         run: (editor) =>
             editor.chain().focus().toggleHeading({ level: 2 }).run(),
     },
     {
-        title: "Titre 3",
-        description: "Une sous-section",
-        keywords: ["h3", "sous-titre"],
+        title: 'Titre 3',
+        description: 'Une sous-section',
+        keywords: ['h3', 'sous-titre'],
         icon: Heading3,
         run: (editor) =>
             editor.chain().focus().toggleHeading({ level: 3 }).run(),
     },
     {
-        title: "Titre 4",
-        description: "Un petit intertitre",
-        keywords: ["h4"],
+        title: 'Titre 4',
+        description: 'Un petit intertitre',
+        keywords: ['h4'],
         icon: Heading4,
         run: (editor) =>
             editor.chain().focus().toggleHeading({ level: 4 }).run(),
     },
     {
-        title: "Liste à puces",
-        description: "Une liste simple",
-        keywords: ["liste", "puces", "ul"],
+        title: 'Liste à puces',
+        description: 'Une liste simple',
+        keywords: ['liste', 'puces', 'ul'],
         icon: List,
         run: (editor) => editor.chain().focus().toggleBulletList().run(),
     },
     {
-        title: "Liste numérotée",
-        description: "Des étapes dans l’ordre",
-        keywords: ["liste", "numéro", "ol", "étapes"],
+        title: 'Liste numérotée',
+        description: 'Des étapes dans l’ordre',
+        keywords: ['liste', 'numéro', 'ol', 'étapes'],
         icon: ListOrdered,
         run: (editor) => editor.chain().focus().toggleOrderedList().run(),
     },
     {
-        title: "Citation",
-        description: "Mettre une phrase en valeur",
-        keywords: ["citation", "quote", "blockquote"],
+        title: 'Citation',
+        description: 'Mettre une phrase en valeur',
+        keywords: ['citation', 'quote', 'blockquote'],
         icon: Quote,
         run: (editor) => editor.chain().focus().toggleBlockquote().run(),
     },
     {
-        title: "Bloc de code",
-        description: "Du code, police à chasse fixe",
-        keywords: ["code", "pre"],
+        title: 'Bloc de code',
+        description: 'Du code, police à chasse fixe',
+        keywords: ['code', 'pre'],
         icon: Code2,
         run: (editor) => editor.chain().focus().toggleCodeBlock().run(),
     },
     {
-        title: "Tableau",
-        description: "Un tableau de 3 × 3",
-        keywords: ["tableau", "table", "comparatif"],
+        title: 'Tableau',
+        description: 'Un tableau de 3 × 3',
+        keywords: ['tableau', 'table', 'comparatif'],
         icon: Table,
         run: (editor) =>
             editor
@@ -103,23 +103,23 @@ export const BLOCK_COMMANDS: BlockCommand[] = [
                 .run(),
     },
     {
-        title: "Image",
-        description: "Importer une image",
-        keywords: ["image", "photo", "illustration"],
+        title: 'Image',
+        description: 'Importer une image',
+        keywords: ['image', 'photo', 'illustration'],
         icon: ImagePlus,
         run: (_editor, actions) => actions.pickImage(),
     },
     {
-        title: "Séparateur",
-        description: "Une ligne horizontale",
-        keywords: ["séparateur", "ligne", "hr"],
+        title: 'Séparateur',
+        description: 'Une ligne horizontale',
+        keywords: ['séparateur', 'ligne', 'hr'],
         icon: Minus,
         run: (editor) => editor.chain().focus().setHorizontalRule().run(),
     },
     {
-        title: "Demander à l’IA",
-        description: "Rédiger la suite avec l’assistant",
-        keywords: ["ia", "ai", "rédiger", "écrire"],
+        title: 'Demander à l’IA',
+        description: 'Rédiger la suite avec l’assistant',
+        keywords: ['ia', 'ai', 'rédiger', 'écrire'],
         icon: Sparkles,
         run: (_editor, actions) => actions.focusAi(),
     },
@@ -128,7 +128,7 @@ export const BLOCK_COMMANDS: BlockCommand[] = [
 export function filterBlockCommands(query: string): BlockCommand[] {
     const normalized = query.trim().toLowerCase();
 
-    if (normalized === "") {
+    if (normalized === '') {
         return BLOCK_COMMANDS;
     }
 

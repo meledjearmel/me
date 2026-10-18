@@ -2,34 +2,34 @@ import type {
     CommercialDocumentLine,
     CommercialDocumentStatus,
     CommercialDocumentType,
-} from "@/types";
+} from '@/types';
 
 export const DOCUMENT_TYPES: Record<CommercialDocumentType, string> = {
-    quote: "Devis",
-    proforma: "Facture proforma",
-    invoice: "Facture",
+    quote: 'Devis',
+    proforma: 'Facture proforma',
+    invoice: 'Facture',
 };
 
 export const DOCUMENT_STATUSES: Record<CommercialDocumentStatus, string> = {
-    draft: "Brouillon",
-    issued: "Émis",
-    accepted: "Accepté",
-    declined: "Refusé",
-    paid: "Payé",
-    cancelled: "Annulé",
+    draft: 'Brouillon',
+    issued: 'Émis',
+    accepted: 'Accepté',
+    declined: 'Refusé',
+    paid: 'Payé',
+    cancelled: 'Annulé',
 };
 
-export const LINE_UNITS: Record<CommercialDocumentLine["unit"], string> = {
-    hour: "Heures",
-    day: "Jours",
-    flat: "Forfait",
-    month: "Par mois",
-    quarter: "Par trimestre",
-    semester: "Par semestre",
-    year: "Par an",
+export const LINE_UNITS: Record<CommercialDocumentLine['unit'], string> = {
+    hour: 'Heures',
+    day: 'Jours',
+    flat: 'Forfait',
+    month: 'Par mois',
+    quarter: 'Par trimestre',
+    semester: 'Par semestre',
+    year: 'Par an',
 };
 
-const amount = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
+const amount = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 });
 
 /** « 4 800 CHF » */
 export function formatMoney(value: number, currency: string): string {
@@ -38,7 +38,7 @@ export function formatMoney(value: number, currency: string): string {
 
 /** Total des lignes, arrondi à l'unité comme côté serveur. */
 export function linesTotal(
-    lines: Pick<CommercialDocumentLine, "quantity" | "unit_price">[],
+    lines: Pick<CommercialDocumentLine, 'quantity' | 'unit_price'>[],
 ): number {
     return Math.round(
         lines.reduce(

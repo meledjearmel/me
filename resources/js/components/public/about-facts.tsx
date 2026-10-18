@@ -152,7 +152,11 @@ export default function AboutFacts({
                                         : t.about.statusOffline}
                                 </p>
                                 <p className="pub-fact__offset">
-                                    {formatOffset(time.visitorOffset, t, locale)}
+                                    {formatOffset(
+                                        time.visitorOffset,
+                                        t,
+                                        locale,
+                                    )}
                                 </p>
                             </div>
                         )}

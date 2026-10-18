@@ -1,4 +1,4 @@
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link } from '@inertiajs/react';
 import {
     Check,
     ChevronRight,
@@ -7,27 +7,27 @@ import {
     Search,
     Terminal,
     Wrench,
-} from "lucide-react";
-import { useMemo, useState } from "react";
-import Heading from "@/components/heading";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+} from 'lucide-react';
+import { useMemo, useState } from 'react';
+import Heading from '@/components/heading';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
     DialogDescription,
     DialogHeader,
     DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { access, index as pageIndex } from "@/routes/admin/mcp-server";
-import ActionTooltip from "@/components/admin/action-tooltip";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { access, index as pageIndex } from '@/routes/admin/mcp-server';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 type Command = {
     name: string;
     title: string;
-    kind: "prompt" | "tool";
+    kind: 'prompt' | 'tool';
     description: string;
     usage: string;
     tips: string[];
@@ -40,8 +40,8 @@ type Command = {
 /** Recherche sans tenir compte des accents ni de la casse. */
 const normalize = (text: string) =>
     text
-        .normalize("NFD")
-        .replace(/\p{Diacritic}/gu, "")
+        .normalize('NFD')
+        .replace(/\p{Diacritic}/gu, '')
         .toLowerCase();
 
 function CopyButton({ value }: { value: string }) {
@@ -117,17 +117,17 @@ export default function McpServerIndex({
     tools: Command[];
 }) {
     const [shown, setShown] = useState<Command | null>(null);
-    const [query, setQuery] = useState("");
+    const [query, setQuery] = useState('');
 
     const filter = useMemo(() => {
         const terms = normalize(query.trim());
 
         return (commands: Command[]) =>
-            terms === ""
+            terms === ''
                 ? commands
                 : commands.filter((command) =>
                       normalize(
-                          `${command.title} ${command.name} ${command.usage} ${command.requests.join(" ")}`,
+                          `${command.title} ${command.name} ${command.usage} ${command.requests.join(' ')}`,
                       ).includes(terms),
                   );
     }, [query]);
@@ -238,9 +238,9 @@ export default function McpServerIndex({
                             <DialogTitle>{shown.title}</DialogTitle>
                             <div className="flex items-center gap-2">
                                 <Badge variant="outline">
-                                    {shown.kind === "prompt"
-                                        ? "Commande"
-                                        : "Outil"}
+                                    {shown.kind === 'prompt'
+                                        ? 'Commande'
+                                        : 'Outil'}
                                 </Badge>
                                 <code className="text-xs text-muted-foreground">
                                     {shown.name}
@@ -276,7 +276,7 @@ export default function McpServerIndex({
                                 </section>
                             )}
 
-                            {shown.kind === "prompt" && shown.example && (
+                            {shown.kind === 'prompt' && shown.example && (
                                 <section className="space-y-1.5">
                                     <h3 className="font-medium">
                                         Commande (Claude Code, Codex)
@@ -313,7 +313,7 @@ export default function McpServerIndex({
                                                     <code>{argument.name}</code>
                                                     {argument.required && (
                                                         <span className="text-muted-foreground">
-                                                            {" "}
+                                                            {' '}
                                                             · obligatoire
                                                         </span>
                                                     )}
@@ -342,5 +342,5 @@ export default function McpServerIndex({
 }
 
 McpServerIndex.layout = {
-    breadcrumbs: [{ title: "Serveur MCP", href: pageIndex() }],
+    breadcrumbs: [{ title: 'Serveur MCP', href: pageIndex() }],
 };

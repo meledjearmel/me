@@ -296,10 +296,9 @@ export default function SiteSettingsEdit({
                                         Les lecteurs réagissent sans compte
                                         (j’aime, j’adore, impressionnant,
                                         instructif, réflexion), une fois par
-                                        réaction.
-                                        Désactivé, les boutons disparaissent ;
-                                        les réactions déjà données sont
-                                        conservées.
+                                        réaction. Désactivé, les boutons
+                                        disparaissent ; les réactions déjà
+                                        données sont conservées.
                                     </FieldDescription>
                                     <FieldError>
                                         {errors.blog_reactions_enabled}
@@ -411,8 +410,8 @@ export default function SiteSettingsEdit({
                                         }
                                     >
                                         <FieldLabel htmlFor="congratulation_notify_minutes">
-                                            Notification de félicitations et
-                                            de réactions au plus toutes les
+                                            Notification de félicitations et de
+                                            réactions au plus toutes les
                                             (minutes)
                                         </FieldLabel>
                                         <Input

@@ -1,29 +1,29 @@
-import { Head, Link } from "@inertiajs/react";
-import StatusMenu from "@/components/admin/status-menu";
-import { Eye, Palette, Plus, Settings } from "lucide-react";
-import CommercialDocumentController from "@/actions/App/Http/Controllers/Admin/CommercialDocumentController";
-import DocumentTemplateController from "@/actions/App/Http/Controllers/Admin/DocumentTemplateController";
-import ActionTooltip from "@/components/admin/action-tooltip";
-import { FilterSelect, ResourceList } from "@/components/admin/data-list";
-import Heading from "@/components/heading";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Head, Link } from '@inertiajs/react';
+import StatusMenu from '@/components/admin/status-menu';
+import { Eye, Palette, Plus, Settings } from 'lucide-react';
+import CommercialDocumentController from '@/actions/App/Http/Controllers/Admin/CommercialDocumentController';
+import DocumentTemplateController from '@/actions/App/Http/Controllers/Admin/DocumentTemplateController';
+import ActionTooltip from '@/components/admin/action-tooltip';
+import { FilterSelect, ResourceList } from '@/components/admin/data-list';
+import Heading from '@/components/heading';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     DOCUMENT_STATUSES,
     DOCUMENT_TYPES,
     formatMoney,
-} from "@/lib/commercial-documents";
-import { edit as billingSettingsEdit } from "@/routes/admin/billing-settings";
-import { index as documentsIndex } from "@/routes/admin/commercial-documents";
-import type { CommercialDocument, ListFilters, Paginated } from "@/types";
+} from '@/lib/commercial-documents';
+import { edit as billingSettingsEdit } from '@/routes/admin/billing-settings';
+import { index as documentsIndex } from '@/routes/admin/commercial-documents';
+import type { CommercialDocument, ListFilters, Paginated } from '@/types';
 
 const STATUS_VARIANT = {
-    draft: "outline",
-    issued: "secondary",
-    accepted: "default",
-    declined: "destructive",
-    paid: "default",
-    cancelled: "outline",
+    draft: 'outline',
+    issued: 'secondary',
+    accepted: 'default',
+    declined: 'destructive',
+    paid: 'default',
+    cancelled: 'outline',
 } as const;
 
 /** Devis, proformas et factures, du brouillon au paiement. */
@@ -47,7 +47,7 @@ export default function CommercialDocumentsIndex({
                     <div className="flex flex-wrap gap-2">
                         <Button variant="outline" asChild>
                             <Link
-                                href={DocumentTemplateController.edit("quote")}
+                                href={DocumentTemplateController.edit('quote')}
                             >
                                 <Palette data-icon="inline-start" /> Modèles
                             </Link>
@@ -60,7 +60,7 @@ export default function CommercialDocumentsIndex({
                         <Button asChild>
                             <Link
                                 href={CommercialDocumentController.create({
-                                    query: { type: "quote" },
+                                    query: { type: 'quote' },
                                 })}
                             >
                                 <Plus data-icon="inline-start" /> Nouveau devis
@@ -97,11 +97,11 @@ export default function CommercialDocumentsIndex({
                     )}
                     columns={[
                         {
-                            header: "Document",
+                            header: 'Document',
                             cell: (row) => (
                                 <>
                                     <div className="font-medium">
-                                        {row.number ?? "Brouillon"}
+                                        {row.number ?? 'Brouillon'}
                                     </div>
                                     <div className="text-sm text-muted-foreground">
                                         {DOCUMENT_TYPES[row.type]}
@@ -110,7 +110,7 @@ export default function CommercialDocumentsIndex({
                             ),
                         },
                         {
-                            header: "Client",
+                            header: 'Client',
                             cell: (row) => (
                                 <>
                                     <div>
@@ -123,12 +123,12 @@ export default function CommercialDocumentsIndex({
                             ),
                         },
                         {
-                            header: "Montant",
-                            className: "tabular-nums",
+                            header: 'Montant',
+                            className: 'tabular-nums',
                             cell: (row) => formatMoney(row.total, row.currency),
                         },
                         {
-                            header: "Statut",
+                            header: 'Statut',
                             fit: true,
                             cell: (row) => (
                                 <span className="flex flex-wrap gap-1">
@@ -174,5 +174,5 @@ export default function CommercialDocumentsIndex({
 }
 
 CommercialDocumentsIndex.layout = {
-    breadcrumbs: [{ title: "Devis et factures", href: documentsIndex() }],
+    breadcrumbs: [{ title: 'Devis et factures', href: documentsIndex() }],
 };

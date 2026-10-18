@@ -7,7 +7,9 @@ import PublicShell from '@/components/public/public-shell';
 import Seo from '@/components/public/seo';
 import { useLocale, useTranslations } from '@/lib/i18n';
 
-type Block = { type: 'paragraph'; text: string } | { type: 'list'; items: string[] };
+type Block =
+    | { type: 'paragraph'; text: string }
+    | { type: 'list'; items: string[] };
 
 /**
  * Découpe le texte saisi dans l'admin : une ligne vide sépare deux blocs ; un bloc

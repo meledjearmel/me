@@ -1,16 +1,16 @@
-import { Form, Head } from "@inertiajs/react";
-import EstimatorItemController from "@/actions/App/Http/Controllers/Admin/EstimatorItemController";
-import EstimatorItemFields from "@/components/admin/estimator-item-fields";
-import FormPageHeader from "@/components/admin/form-page-header";
-import { Button } from "@/components/ui/button";
-import { FieldGroup } from "@/components/ui/field";
-import { index as itemsIndex } from "@/routes/admin/estimator-items";
-import { index as optionsIndex } from "@/routes/admin/estimator-options";
+import { Form, Head } from '@inertiajs/react';
+import EstimatorItemController from '@/actions/App/Http/Controllers/Admin/EstimatorItemController';
+import EstimatorItemFields from '@/components/admin/estimator-item-fields';
+import FormPageHeader from '@/components/admin/form-page-header';
+import { Button } from '@/components/ui/button';
+import { FieldGroup } from '@/components/ui/field';
+import { index as itemsIndex } from '@/routes/admin/estimator-items';
+import { index as optionsIndex } from '@/routes/admin/estimator-options';
 import type {
     EstimatorCurrency,
     EstimatorItem,
     EstimatorRateOption,
-} from "@/types";
+} from '@/types';
 
 export default function EstimatorItemEdit({
     estimatorItem,
@@ -23,10 +23,10 @@ export default function EstimatorItemEdit({
     rates: EstimatorRateOption[];
     globalRates: Partial<Record<EstimatorCurrency, number>>;
 }) {
-    const isFeature = estimatorItem.kind === "feature";
+    const isFeature = estimatorItem.kind === 'feature';
     const title = isFeature
         ? "Modifier l'option"
-        : "Modifier le type de projet";
+        : 'Modifier le type de projet';
 
     return (
         <>
@@ -37,7 +37,7 @@ export default function EstimatorItemEdit({
                     title={title}
                     description={estimatorItem.name.fr}
                     backHref={isFeature ? optionsIndex() : itemsIndex()}
-                    backLabel={isFeature ? "Options" : "Types de projet"}
+                    backLabel={isFeature ? 'Options' : 'Types de projet'}
                 />
 
                 <Form
@@ -67,7 +67,7 @@ export default function EstimatorItemEdit({
 
 EstimatorItemEdit.layout = {
     breadcrumbs: [
-        { title: "Estimateur de projet", href: itemsIndex() },
-        { title: "Modifier", href: "" },
+        { title: 'Estimateur de projet', href: itemsIndex() },
+        { title: 'Modifier', href: '' },
     ],
 };

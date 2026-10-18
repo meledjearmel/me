@@ -1,21 +1,21 @@
-import { Head, Link, router } from "@inertiajs/react";
-import { AlertTriangle, Bot, Check, ExternalLink, X } from "lucide-react";
-import { useState } from "react";
-import ContentRevisionController from "@/actions/App/Http/Controllers/Admin/ContentRevisionController";
-import FormPageHeader from "@/components/admin/form-page-header";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { index as revisionsIndex } from "@/routes/admin/revisions";
-import type { ContentRevisionDetail } from "@/types";
+import { Head, Link, router } from '@inertiajs/react';
+import { AlertTriangle, Bot, Check, ExternalLink, X } from 'lucide-react';
+import { useState } from 'react';
+import ContentRevisionController from '@/actions/App/Http/Controllers/Admin/ContentRevisionController';
+import FormPageHeader from '@/components/admin/form-page-header';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { index as revisionsIndex } from '@/routes/admin/revisions';
+import type { ContentRevisionDetail } from '@/types';
 
 function Value({ value }: { value: unknown }) {
-    if (value === null || value === undefined || value === "") {
+    if (value === null || value === undefined || value === '') {
         return <span className="text-muted-foreground italic">(vide)</span>;
     }
 
     return (
         <pre className="font-sans text-sm break-words whitespace-pre-wrap">
-            {typeof value === "string" ? value : JSON.stringify(value, null, 2)}
+            {typeof value === 'string' ? value : JSON.stringify(value, null, 2)}
         </pre>
     );
 }
@@ -30,7 +30,7 @@ export default function RevisionShow({
     revision: ContentRevisionDetail;
 }) {
     const [processing, setProcessing] = useState(false);
-    const decide = (action: "apply" | "reject") =>
+    const decide = (action: 'apply' | 'reject') =>
         router.post(
             ContentRevisionController[action].url(revision.id),
             {},
@@ -59,19 +59,19 @@ export default function RevisionShow({
                             </Badge>
                         )}
                         <span className="text-sm text-muted-foreground">
-                            Proposée le{" "}
+                            Proposée le{' '}
                             {revision.created_at
                                 ? new Date(revision.created_at).toLocaleString(
-                                      "fr-FR",
+                                      'fr-FR',
                                   )
-                                : "—"}
+                                : '—'}
                         </span>
                         {revision.edit_url && (
                             <Link
                                 href={revision.edit_url}
                                 className="inline-flex items-center gap-1 text-sm underline"
                             >
-                                Ouvrir le contenu{" "}
+                                Ouvrir le contenu{' '}
                                 <ExternalLink className="size-3" />
                             </Link>
                         )}
@@ -82,12 +82,12 @@ export default function RevisionShow({
                 {revision.image && (
                     <section className="space-y-3 rounded-md border p-4">
                         <span className="font-medium">
-                            {revision.image.role === "cover"
-                                ? "Nouvelle couverture"
-                                : "Image ajoutée à la galerie"}
+                            {revision.image.role === 'cover'
+                                ? 'Nouvelle couverture'
+                                : 'Image ajoutée à la galerie'}
                         </span>
                         <div className="grid gap-3 md:grid-cols-2">
-                            {revision.image.role === "cover" && (
+                            {revision.image.role === 'cover' && (
                                 <div className="space-y-1 rounded-md bg-muted/50 p-3">
                                     <p className="text-xs font-medium text-muted-foreground uppercase">
                                         Avant
@@ -136,7 +136,7 @@ export default function RevisionShow({
                                 </Badge>
                             </div>
 
-                            {revision.status === "pending" &&
+                            {revision.status === 'pending' &&
                                 !same(change.before, change.current) && (
                                     <p className="flex items-start gap-2 rounded-md bg-amber-500/10 p-2 text-sm text-amber-700 dark:text-amber-400">
                                         <AlertTriangle className="mt-0.5 size-4 shrink-0" />
@@ -164,30 +164,30 @@ export default function RevisionShow({
                     ))}
                 </div>
 
-                {revision.status === "pending" ? (
+                {revision.status === 'pending' ? (
                     <div className="flex flex-wrap gap-2">
                         <Button
                             disabled={processing}
-                            onClick={() => decide("apply")}
+                            onClick={() => decide('apply')}
                         >
                             <Check /> Appliquer sur le site
                         </Button>
                         <Button
                             variant="outline"
                             disabled={processing}
-                            onClick={() => decide("reject")}
+                            onClick={() => decide('reject')}
                         >
                             <X /> Rejeter
                         </Button>
                     </div>
                 ) : (
                     <p className="text-sm text-muted-foreground">
-                        {revision.status === "applied"
-                            ? "Révision appliquée"
-                            : "Révision rejetée"}
+                        {revision.status === 'applied'
+                            ? 'Révision appliquée'
+                            : 'Révision rejetée'}
                         {revision.decided_at
-                            ? ` le ${new Date(revision.decided_at).toLocaleString("fr-FR")}`
-                            : ""}
+                            ? ` le ${new Date(revision.decided_at).toLocaleString('fr-FR')}`
+                            : ''}
                         .
                     </p>
                 )}
@@ -198,7 +198,7 @@ export default function RevisionShow({
 
 RevisionShow.layout = {
     breadcrumbs: [
-        { title: "Révisions proposées", href: revisionsIndex() },
-        { title: "Détail", href: "" },
+        { title: 'Révisions proposées', href: revisionsIndex() },
+        { title: 'Détail', href: '' },
     ],
 };

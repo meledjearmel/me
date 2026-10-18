@@ -1,18 +1,18 @@
-import { Form, Head } from "@inertiajs/react";
-import BillingSettingsController from "@/actions/App/Http/Controllers/Admin/BillingSettingsController";
-import Heading from "@/components/heading";
-import { Button } from "@/components/ui/button";
+import { Form, Head } from '@inertiajs/react';
+import BillingSettingsController from '@/actions/App/Http/Controllers/Admin/BillingSettingsController';
+import Heading from '@/components/heading';
+import { Button } from '@/components/ui/button';
 import {
     Field,
     FieldDescription,
     FieldError,
     FieldGroup,
     FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { edit as pageEdit } from "@/routes/admin/billing-settings";
-import type { BillingSettings } from "@/types";
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { edit as pageEdit } from '@/routes/admin/billing-settings';
+import type { BillingSettings } from '@/types';
 
 type TextField = {
     name: keyof BillingSettings;
@@ -23,23 +23,23 @@ type TextField = {
 
 const ISSUER_FIELDS: TextField[] = [
     {
-        name: "billing_business_name",
-        label: "Nom ou raison sociale",
-        description: "Vide : le nom du profil.",
+        name: 'billing_business_name',
+        label: 'Nom ou raison sociale',
+        description: 'Vide : le nom du profil.',
     },
     {
-        name: "billing_legal_form",
-        label: "Statut",
-        description: "Ex. « Entreprise individuelle », « Indépendant ».",
+        name: 'billing_legal_form',
+        label: 'Statut',
+        description: 'Ex. « Entreprise individuelle », « Indépendant ».',
     },
-    { name: "billing_address", label: "Adresse", textarea: true },
+    { name: 'billing_address', label: 'Adresse', textarea: true },
     {
-        name: "billing_registration_number",
-        label: "Numéro d’entreprise",
-        description: "IDE, SIRET, RCCM…",
+        name: 'billing_registration_number',
+        label: 'Numéro d’entreprise',
+        description: 'IDE, SIRET, RCCM…',
     },
-    { name: "billing_iban", label: "IBAN" },
-    { name: "billing_bank", label: "Banque" },
+    { name: 'billing_iban', label: 'IBAN' },
+    { name: 'billing_bank', label: 'Banque' },
 ];
 
 /** L'émetteur des devis et factures, la mention de TVA et les valeurs par défaut des documents. */
@@ -79,7 +79,7 @@ export default function BillingSettingsEdit({
                                             name={field.name}
                                             rows={3}
                                             defaultValue={String(
-                                                settings[field.name] ?? "",
+                                                settings[field.name] ?? '',
                                             )}
                                         />
                                     ) : (
@@ -87,7 +87,7 @@ export default function BillingSettingsEdit({
                                             id={field.name}
                                             name={field.name}
                                             defaultValue={String(
-                                                settings[field.name] ?? "",
+                                                settings[field.name] ?? '',
                                             )}
                                         />
                                     )}
@@ -111,7 +111,7 @@ export default function BillingSettingsEdit({
                                     name="billing_vat_mention"
                                     placeholder="TVA non applicable"
                                     defaultValue={
-                                        settings.billing_vat_mention ?? ""
+                                        settings.billing_vat_mention ?? ''
                                     }
                                 />
                                 <FieldDescription>
@@ -137,7 +137,7 @@ export default function BillingSettingsEdit({
                                     name="billing_payment_terms"
                                     rows={3}
                                     defaultValue={
-                                        settings.billing_payment_terms ?? ""
+                                        settings.billing_payment_terms ?? ''
                                     }
                                 />
                                 <FieldError>
@@ -227,18 +227,18 @@ export default function BillingSettingsEdit({
                                     {(
                                         [
                                             [
-                                                "billing_quote_reminder_days",
-                                                "Devis sans réponse depuis (jours)",
+                                                'billing_quote_reminder_days',
+                                                'Devis sans réponse depuis (jours)',
                                                 1,
                                             ],
                                             [
-                                                "billing_invoice_reminder_days",
-                                                "Facture en retard depuis (jours)",
+                                                'billing_invoice_reminder_days',
+                                                'Facture en retard depuis (jours)',
                                                 0,
                                             ],
                                             [
-                                                "billing_max_reminders",
-                                                "Relances au plus (0 : aucune)",
+                                                'billing_max_reminders',
+                                                'Relances au plus (0 : aucune)',
                                                 0,
                                             ],
                                         ] as const
@@ -276,5 +276,5 @@ export default function BillingSettingsEdit({
 }
 
 BillingSettingsEdit.layout = {
-    breadcrumbs: [{ title: "Réglages de facturation", href: pageEdit() }],
+    breadcrumbs: [{ title: 'Réglages de facturation', href: pageEdit() }],
 };

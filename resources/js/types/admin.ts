@@ -3,7 +3,7 @@ export type Translatable = {
     en: string;
 };
 
-export type PublicationStatus = "draft" | "published";
+export type PublicationStatus = 'draft' | 'published';
 
 export type Domain = {
     id: number;
@@ -56,7 +56,7 @@ export type Celebration = {
 /** Un envoi de félicitations d'un visiteur, avec son motif. */
 export type Congratulation = {
     id: number;
-    source: "about" | "surprise";
+    source: 'about' | 'surprise';
     celebration_id: number | null;
     reason: string;
     count: number;
@@ -98,7 +98,7 @@ export type JobProfile = {
     hero_title: Translatable | null;
     hero_words: Translatable | null;
     cv_description: Translatable;
-    cv_files?: Record<"fr" | "en", { file_name: string; url: string } | null>;
+    cv_files?: Record<'fr' | 'en', { file_name: string; url: string } | null>;
     sort_order: number;
     status: PublicationStatus;
     projects?: Project[];
@@ -189,7 +189,7 @@ export type Project = {
     demo_url: string | null;
     is_featured: boolean;
     is_open_source: boolean;
-    status: "draft" | "published" | "archived";
+    status: 'draft' | 'published' | 'archived';
     /** Client IA qui a rédigé le brouillon (serveur MCP). */
     drafted_by?: string | null;
     sort_order: number;
@@ -207,8 +207,8 @@ export type PostComment = {
     author_name: string;
     author_email: string | null;
     body: string;
-    locale: "fr" | "en";
-    status: "pending" | "approved" | "rejected";
+    locale: 'fr' | 'en';
+    status: 'pending' | 'approved' | 'rejected';
     post: { id: number; slug: string; title: Translatable } | null;
     created_at: string;
 };
@@ -224,10 +224,10 @@ export type Testimonial = {
     project_id: number | null;
     project?: Project;
     experience_id: number | null;
-    experience?: Pick<Experience, "id" | "company" | "role"> | null;
+    experience?: Pick<Experience, 'id' | 'company' | 'role'> | null;
     education_id: number | null;
-    education?: Pick<Education, "id" | "institution" | "degree"> | null;
-    status: "pending" | "approved" | "rejected";
+    education?: Pick<Education, 'id' | 'institution' | 'degree'> | null;
+    status: 'pending' | 'approved' | 'rejected';
     is_featured: boolean;
     submitted_at: string;
 };
@@ -236,8 +236,8 @@ export type CvDownload = {
     id: number;
     job_profile_id: number | null;
     job_profile?: { id: number; label: Translatable } | null;
-    locale: "fr" | "en";
-    source: "uploaded" | "generated";
+    locale: 'fr' | 'en';
+    source: 'uploaded' | 'generated';
     email: string | null;
     country_code: string | null;
     country: string | null;
@@ -246,7 +246,7 @@ export type CvDownload = {
     utm_source: string | null;
     utm_medium: string | null;
     utm_campaign: string | null;
-    device: "desktop" | "mobile" | "tablet" | null;
+    device: 'desktop' | 'mobile' | 'tablet' | null;
     origin?: string;
     created_at: string;
 };
@@ -255,7 +255,7 @@ export type Certification = {
     /** Client IA qui a rédigé le brouillon (serveur MCP). */
     drafted_by?: string | null;
     id: number;
-    kind: "certification" | "course";
+    kind: 'certification' | 'course';
     name: Translatable;
     issuer: string;
     /** AAAA-MM-JJ. */
@@ -263,12 +263,12 @@ export type Certification = {
     expires_on: string | null;
     credential_id: string | null;
     credential_url: string | null;
-    status: "published" | "draft";
+    status: 'published' | 'draft';
     sort_order: number;
     badge_url?: string | null;
 };
 
-export type DistinctionContextType = "experience" | "education" | "project";
+export type DistinctionContextType = 'experience' | 'education' | 'project';
 
 export type Distinction = {
     /** Client IA qui a rédigé le brouillon (serveur MCP). */
@@ -285,7 +285,7 @@ export type Distinction = {
     /** Entreprise, établissement ou titre du projet (liste). */
     context_label?: string | null;
     congratulations_count: number;
-    status: "published" | "draft";
+    status: 'published' | 'draft';
     sort_order: number;
 };
 
@@ -299,18 +299,18 @@ export type UsesItem = {
     /** Client IA qui a rédigé le brouillon (serveur MCP). */
     drafted_by?: string | null;
     id: number;
-    category: "hardware" | "development" | "apps" | "services";
+    category: 'hardware' | 'development' | 'apps' | 'services';
     name: string;
     description: Translatable | null;
     url: string | null;
-    status: "published" | "draft";
+    status: 'published' | 'draft';
     sort_order: number;
 };
 
 export type Subscriber = {
     id: number;
     email: string;
-    locale: "fr" | "en";
+    locale: 'fr' | 'en';
     confirmed_at: string | null;
     unsubscribed_at: string | null;
     created_at: string;
@@ -320,13 +320,13 @@ export type ReviewInvitation = {
     id: number;
     name: string | null;
     email: string | null;
-    locale: "fr" | "en";
+    locale: 'fr' | 'en';
     url: string;
-    status: "pending" | "used" | "expired";
+    status: 'pending' | 'used' | 'expired';
     note: string | null;
-    project: Pick<Project, "id" | "title"> | null;
-    experience: Pick<Experience, "id" | "role" | "company"> | null;
-    education: Pick<Education, "id" | "degree" | "institution"> | null;
+    project: Pick<Project, 'id' | 'title'> | null;
+    experience: Pick<Experience, 'id' | 'role' | 'company'> | null;
+    education: Pick<Education, 'id' | 'degree' | 'institution'> | null;
     testimonial_id: number | null;
     expires_at: string | null;
     used_at: string | null;
@@ -339,7 +339,7 @@ export type Contact = {
     email: string;
     subject: string | null;
     message: string;
-    status: "new" | "read" | "replied";
+    status: 'new' | 'read' | 'replied';
     created_at: string;
 };
 
@@ -377,7 +377,7 @@ export type Profile = {
 
 export type Engagement = {
     id: number;
-    type: "freelance" | "hiring";
+    type: 'freelance' | 'hiring';
     name: string;
     email: string;
     company: string | null;
@@ -392,7 +392,7 @@ export type Engagement = {
         price_max: number;
     } | null;
     /** Issue : signée (avec le montant signé) ou perdue ; null sans issue. */
-    outcome: "won" | "lost" | null;
+    outcome: 'won' | 'lost' | null;
     outcome_amount: number | null;
     outcome_currency: EstimatorCurrency | null;
     outcome_at: string | null;
@@ -401,7 +401,7 @@ export type Engagement = {
     timeline: string | null;
     message: string | null;
     locale: string;
-    status: "new" | "handled";
+    status: 'new' | 'handled';
     cv_sent_at: string | null;
     created_at: string;
     job_profile?: { id: number; label: Translatable } | null;
@@ -415,10 +415,13 @@ export type TrashItem = {
     deleted_at: string;
 };
 
-export type AppointmentLocation = "video" | "phone" | "whatsapp" | "in_person";
+export type AppointmentLocation = 'video' | 'phone' | 'whatsapp' | 'in_person';
 
 export type AppointmentStatus =
-    "pending" | "confirmed" | "declined" | "cancelled";
+    | 'pending'
+    | 'confirmed'
+    | 'declined'
+    | 'cancelled';
 
 export type AppointmentType = {
     id: number;
@@ -431,20 +434,20 @@ export type AppointmentType = {
     appointments_count?: number;
 };
 
-export type EstimatorCurrency = "CHF" | "EUR" | "USD" | "XOF";
+export type EstimatorCurrency = 'CHF' | 'EUR' | 'USD' | 'XOF';
 
-export type EstimatorBilling = "fixed" | "hourly";
+export type EstimatorBilling = 'fixed' | 'hourly';
 
-export type EstimatorPeriod = "monthly" | "quarterly" | "semiannual" | "yearly";
+export type EstimatorPeriod = 'monthly' | 'quarterly' | 'semiannual' | 'yearly';
 
 export type EstimatorItem = {
     id: number;
-    kind: "project_type" | "feature";
+    kind: 'project_type' | 'feature';
     name: Translatable;
     description: Partial<Translatable> | null;
     hours_min: number;
     hours_max: number;
-    pricing: "hours" | "percent" | "recurring";
+    pricing: 'hours' | 'percent' | 'recurring';
     percent: number | null;
     /** Options récurrentes : périodes proposées et leur remise en %. */
     periods: Partial<Record<EstimatorPeriod, number>> | null;
@@ -478,21 +481,21 @@ export type EstimatorRateOption = {
     rates: Partial<Record<EstimatorCurrency, number>>;
 };
 
-export type CommercialDocumentType = "quote" | "proforma" | "invoice";
+export type CommercialDocumentType = 'quote' | 'proforma' | 'invoice';
 
 export type CommercialDocumentStatus =
-    | "draft"
-    | "issued"
-    | "accepted"
-    | "declined"
-    | "paid"
-    | "cancelled";
+    | 'draft'
+    | 'issued'
+    | 'accepted'
+    | 'declined'
+    | 'paid'
+    | 'cancelled';
 
 export type CommercialDocumentLine = {
     label: string;
     description: string | null;
     quantity: number;
-    unit: "hour" | "day" | "flat" | "month" | "quarter" | "semester" | "year";
+    unit: 'hour' | 'day' | 'flat' | 'month' | 'quarter' | 'semester' | 'year';
     unit_price: number;
 };
 
@@ -503,7 +506,7 @@ export type CommercialDocument = {
     number: string | null;
     engagement_id: number | null;
     source_id: number | null;
-    locale: "fr" | "en";
+    locale: 'fr' | 'en';
     client_name: string;
     client_email: string | null;
     client_company: string | null;
@@ -531,7 +534,11 @@ export type CommercialDocument = {
     deposit_amount?: number;
     public_url?: string | null;
     engagement?: { id: number; name: string; subject: string | null } | null;
-    source?: { id: number; number: string | null; type: CommercialDocumentType } | null;
+    source?: {
+        id: number;
+        number: string | null;
+        type: CommercialDocumentType;
+    } | null;
 };
 
 export type BillingSettings = {
@@ -559,7 +566,7 @@ export type Service = {
     description: Partial<Translatable> | null;
     /** Ce qui est compris, une ligne par élément. */
     includes: Partial<Translatable> | null;
-    price_mode: "estimator" | "manual" | "quote";
+    price_mode: 'estimator' | 'manual' | 'quote';
     estimator_item_id: number | null;
     manual_prices: Partial<Record<EstimatorCurrency, number>> | null;
     status: PublicationStatus;
@@ -569,7 +576,7 @@ export type Service = {
     project_ids?: number[];
 };
 
-export type JobApplicationStatus = "draft" | "active" | "archived";
+export type JobApplicationStatus = 'draft' | 'active' | 'archived';
 
 export type JobApplication = {
     id: number;
@@ -586,7 +593,7 @@ export type JobApplication = {
         reasoning: string | null;
     } | null;
     cv_tailored_at: string | null;
-    locale: "fr" | "en";
+    locale: 'fr' | 'en';
     intro: string;
     job_posting_url: string | null;
     job_posting_text: string | null;
@@ -604,7 +611,7 @@ export type JobApplication = {
 
 export type JobApplicationEvent = {
     id: number;
-    type: "view" | "cv_download";
+    type: 'view' | 'cv_download';
     country_code: string | null;
     country: string | null;
     city: string | null;
@@ -616,14 +623,14 @@ export type JobApplicationEvent = {
 export type EstimatorProposalItem = {
     ref?: string;
     id?: number;
-    kind: "project_type" | "feature";
+    kind: 'project_type' | 'feature';
     name_fr: string;
     name_en: string;
     description_fr?: string;
     description_en?: string;
     hours_min?: number;
     hours_max?: number;
-    pricing?: "hours" | "percent" | "recurring";
+    pricing?: 'hours' | 'percent' | 'recurring';
     percent?: number;
     periods?: Partial<Record<EstimatorPeriod, number>>;
     billing?: EstimatorBilling;
@@ -684,7 +691,7 @@ export type Appointment = {
 
 export type SiteSettings = {
     contact_opens_drawer: boolean;
-    availability_status: "available" | "from" | "unavailable";
+    availability_status: 'available' | 'from' | 'unavailable';
     /** AAAA-MM-JJ. */
     available_from: string | null;
     testimonial_video_enabled: boolean;
@@ -692,13 +699,13 @@ export type SiteSettings = {
     blog_reactions_enabled: boolean;
     blog_comments_enabled: boolean;
     cv_job_profile_id: number | null;
-    cv_source: "uploaded" | "generated";
+    cv_source: 'uploaded' | 'generated';
     congratulation_notify_minutes: number;
     booking_enabled: boolean;
     booking_min_notice_hours: number;
     booking_horizon_days: number;
     booking_buffer_minutes: number;
-    booking_video_provider: "jitsi" | "link";
+    booking_video_provider: 'jitsi' | 'link';
     booking_video_link: string | null;
 };
 
@@ -724,7 +731,7 @@ export type Post = {
     body: Partial<Translatable>;
     reading_minutes: number;
     is_featured: boolean;
-    status: "draft" | "published";
+    status: 'draft' | 'published';
     /** Client IA qui a rédigé le brouillon (serveur MCP). */
     drafted_by?: string | null;
     published_at: string | null;
@@ -763,7 +770,7 @@ export type ContentRevisionSummary = {
     edit_url: string | null;
     summary: string;
     drafted_by: string | null;
-    status: "pending" | "applied" | "rejected";
+    status: 'pending' | 'applied' | 'rejected';
     created_at: string | null;
     decided_at: string | null;
 };
@@ -772,14 +779,14 @@ export type ContentRevisionDetail = ContentRevisionSummary & {
     /** Chaque champ modifié : valeur à la proposition, proposée et actuelle. */
     fields: {
         field: string;
-        locale: "fr" | "en";
+        locale: 'fr' | 'en';
         before: unknown;
         after: unknown;
         current: unknown;
     }[];
     /** Révision d'image : l'image proposée et, pour une couverture, l'actuelle. */
     image: {
-        role: "cover" | "gallery";
+        role: 'cover' | 'gallery';
         url: string | null;
         current_url: string | null;
     } | null;

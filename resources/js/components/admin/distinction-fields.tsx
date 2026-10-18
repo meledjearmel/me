@@ -26,9 +26,9 @@ export default function DistinctionFields({
     contexts: DistinctionContextOptions;
     errors: Record<string, string>;
 }) {
-    const [contextType, setContextType] = useState<
-        DistinctionContextType | ''
-    >(distinction?.context_type ?? '');
+    const [contextType, setContextType] = useState<DistinctionContextType | ''>(
+        distinction?.context_type ?? '',
+    );
     const options = contextType === '' ? [] : contexts[contextType];
 
     return (

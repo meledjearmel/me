@@ -75,7 +75,10 @@ export function ProjectMeta({
         [t.projects.roleLabel, project.role],
         [t.projects.clientLabel, project.client],
         [t.projects.platformLabel, project.platform],
-        [t.projects.periodLabel, projectPeriod(project, locale, t.projects.ongoing)],
+        [
+            t.projects.periodLabel,
+            projectPeriod(project, locale, t.projects.ongoing),
+        ],
         [
             t.projects.teamLabel,
             project.team_size ? t.projects.team(project.team_size) : null,

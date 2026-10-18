@@ -60,8 +60,8 @@ export default function CelebrationFields({
                     required
                 />
                 <FieldDescription>
-                    Complète la notification : « Vous avez reçu 3
-                    félicitations pour… ». En français, adressé à vous.
+                    Complète la notification : « Vous avez reçu 3 félicitations
+                    pour… ». En français, adressé à vous.
                 </FieldDescription>
                 <FieldError>{errors.congratulated_for}</FieldError>
             </Field>
@@ -121,8 +121,8 @@ export default function CelebrationFields({
                         required
                     />
                     <FieldDescription>
-                        Part des visites qui la verront (une fois par session
-                        au plus). 100 % : à chaque visite.
+                        Part des visites qui la verront (une fois par session au
+                        plus). 100 % : à chaque visite.
                     </FieldDescription>
                     <FieldError>{errors.chance_percent}</FieldError>
                 </Field>

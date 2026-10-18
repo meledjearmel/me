@@ -285,7 +285,9 @@ export default function TestimonialEdit({
                                 <FormSelect
                                     id="education_id"
                                     name="education_id"
-                                    defaultValue={testimonial.education_id ?? ''}
+                                    defaultValue={
+                                        testimonial.education_id ?? ''
+                                    }
                                 >
                                     <option value="">Aucune</option>
                                     {educations.map((education) => (

@@ -70,7 +70,10 @@ export default function CelebrationShow({
                 {
                     title: "Période et fréquence d'apparition",
                     items: [
-                        { label: 'Active', value: row.is_active ? 'Oui' : 'Non' },
+                        {
+                            label: 'Active',
+                            value: row.is_active ? 'Oui' : 'Non',
+                        },
                         {
                             label: 'Période',
                             value:
@@ -108,7 +111,9 @@ export default function CelebrationShow({
                     items: [
                         {
                             label: 'Reçues',
-                            value: row.congratulations_count.toLocaleString('fr-FR'),
+                            value: row.congratulations_count.toLocaleString(
+                                'fr-FR',
+                            ),
                         },
                         {
                             label: 'Créée le',

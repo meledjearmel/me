@@ -1,19 +1,19 @@
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link } from '@inertiajs/react';
 import StatusMenu, {
     PUBLICATION_VARIANTS,
-} from "@/components/admin/status-menu";
-import { Plus, SquarePen } from "lucide-react";
-import CertificationController from "@/actions/App/Http/Controllers/Admin/CertificationController";
-import DeleteButton from "@/components/admin/delete-button";
-import { FilterSelect, ResourceList } from "@/components/admin/data-list";
-import { formatDate } from "@/components/admin/show-page";
-import Heading from "@/components/heading";
-import AiDraftBadge from "@/components/admin/ai-draft-badge";
-import { Button } from "@/components/ui/button";
-import { CERTIFICATION_KINDS, PUBLICATION_STATUSES } from "@/lib/admin-options";
-import { index as pageIndex } from "@/routes/admin/certifications";
-import type { Certification, ListFilters, Paginated } from "@/types";
-import ActionTooltip from "@/components/admin/action-tooltip";
+} from '@/components/admin/status-menu';
+import { Plus, SquarePen } from 'lucide-react';
+import CertificationController from '@/actions/App/Http/Controllers/Admin/CertificationController';
+import DeleteButton from '@/components/admin/delete-button';
+import { FilterSelect, ResourceList } from '@/components/admin/data-list';
+import { formatDate } from '@/components/admin/show-page';
+import Heading from '@/components/heading';
+import AiDraftBadge from '@/components/admin/ai-draft-badge';
+import { Button } from '@/components/ui/button';
+import { CERTIFICATION_KINDS, PUBLICATION_STATUSES } from '@/lib/admin-options';
+import { index as pageIndex } from '@/routes/admin/certifications';
+import type { Certification, ListFilters, Paginated } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 export default function CertificationsIndex({
     certifications,
@@ -44,21 +44,21 @@ export default function CertificationsIndex({
                     filters={filters}
                     searchPlaceholder="Intitulé ou organisme…"
                     columns={[
-                        { header: "Intitulé", cell: (row) => row.name.fr },
-                        { header: "Organisme", cell: (row) => row.issuer },
+                        { header: 'Intitulé', cell: (row) => row.name.fr },
+                        { header: 'Organisme', cell: (row) => row.issuer },
                         {
-                            header: "Type",
+                            header: 'Type',
                             cell: (row) =>
-                                row.kind === "course"
-                                    ? "Formation"
-                                    : "Certification",
+                                row.kind === 'course'
+                                    ? 'Formation'
+                                    : 'Certification',
                         },
                         {
-                            header: "Obtenue le",
+                            header: 'Obtenue le',
                             cell: (row) => formatDate(row.issued_on),
                         },
                         {
-                            header: "Statut",
+                            header: 'Statut',
                             fit: true,
                             cell: (row) => (
                                 <>
@@ -124,5 +124,5 @@ export default function CertificationsIndex({
 }
 
 CertificationsIndex.layout = {
-    breadcrumbs: [{ title: "Certifications", href: pageIndex() }],
+    breadcrumbs: [{ title: 'Certifications', href: pageIndex() }],
 };

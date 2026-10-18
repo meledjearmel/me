@@ -1,15 +1,15 @@
-import { Head, Link } from "@inertiajs/react";
-import StatusMenu from "@/components/admin/status-menu";
-import { Plus, SquarePen } from "lucide-react";
-import AppointmentTypeController from "@/actions/App/Http/Controllers/Admin/AppointmentTypeController";
-import { ResourceList } from "@/components/admin/data-list";
-import DeleteButton from "@/components/admin/delete-button";
-import Heading from "@/components/heading";
-import { Button } from "@/components/ui/button";
-import { APPOINTMENT_LOCATIONS, optionLabel } from "@/lib/admin-options";
-import { index as pageIndex } from "@/routes/admin/appointment-types";
-import type { AppointmentType, ListFilters, Paginated } from "@/types";
-import ActionTooltip from "@/components/admin/action-tooltip";
+import { Head, Link } from '@inertiajs/react';
+import StatusMenu from '@/components/admin/status-menu';
+import { Plus, SquarePen } from 'lucide-react';
+import AppointmentTypeController from '@/actions/App/Http/Controllers/Admin/AppointmentTypeController';
+import { ResourceList } from '@/components/admin/data-list';
+import DeleteButton from '@/components/admin/delete-button';
+import Heading from '@/components/heading';
+import { Button } from '@/components/ui/button';
+import { APPOINTMENT_LOCATIONS, optionLabel } from '@/lib/admin-options';
+import { index as pageIndex } from '@/routes/admin/appointment-types';
+import type { AppointmentType, ListFilters, Paginated } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 export default function AppointmentTypesIndex({
     appointmentTypes,
@@ -40,13 +40,13 @@ export default function AppointmentTypesIndex({
                     filters={filters}
                     searchPlaceholder="Nom…"
                     columns={[
-                        { header: "Nom", cell: (row) => row.name.fr },
+                        { header: 'Nom', cell: (row) => row.name.fr },
                         {
-                            header: "Durée",
+                            header: 'Durée',
                             cell: (row) => `${row.duration_minutes} min`,
                         },
                         {
-                            header: "Lieux",
+                            header: 'Lieux',
                             cell: (row) =>
                                 row.locations
                                     .map((location) =>
@@ -55,32 +55,32 @@ export default function AppointmentTypesIndex({
                                             location,
                                         ),
                                     )
-                                    .join(", "),
+                                    .join(', '),
                         },
                         {
-                            header: "Statut",
+                            header: 'Statut',
                             fit: true,
                             cell: (row) => (
                                 <StatusMenu
                                     type="appointment_type"
                                     id={row.id}
-                                    status={row.is_active ? "active" : "hidden"}
+                                    status={row.is_active ? 'active' : 'hidden'}
                                     options={[
-                                        { value: "active", label: "Proposé" },
-                                        { value: "hidden", label: "Masqué" },
+                                        { value: 'active', label: 'Proposé' },
+                                        { value: 'hidden', label: 'Masqué' },
                                     ]}
                                     variants={{
-                                        active: "default",
-                                        hidden: "secondary",
+                                        active: 'default',
+                                        hidden: 'secondary',
                                     }}
                                 />
                             ),
                         },
                         {
-                            header: "Rendez-vous",
+                            header: 'Rendez-vous',
                             cell: (row) => row.appointments_count ?? 0,
                         },
-                        { header: "Ordre", cell: (row) => row.sort_order },
+                        { header: 'Ordre', cell: (row) => row.sort_order },
                     ]}
                     actions={(row) => (
                         <>
@@ -111,5 +111,5 @@ export default function AppointmentTypesIndex({
 }
 
 AppointmentTypesIndex.layout = {
-    breadcrumbs: [{ title: "Types de rendez-vous", href: pageIndex() }],
+    breadcrumbs: [{ title: 'Types de rendez-vous', href: pageIndex() }],
 };

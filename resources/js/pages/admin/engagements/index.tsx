@@ -1,21 +1,21 @@
-import { Head, Link, router } from "@inertiajs/react";
-import StatusMenu from "@/components/admin/status-menu";
-import { Check, Eye, RotateCcw } from "lucide-react";
-import { FilterSelect, ResourceList } from "@/components/admin/data-list";
-import DeleteButton from "@/components/admin/delete-button";
-import Heading from "@/components/heading";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Head, Link, router } from '@inertiajs/react';
+import StatusMenu from '@/components/admin/status-menu';
+import { Check, Eye, RotateCcw } from 'lucide-react';
+import { FilterSelect, ResourceList } from '@/components/admin/data-list';
+import DeleteButton from '@/components/admin/delete-button';
+import Heading from '@/components/heading';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     destroy,
     index as engagementsIndex,
     show,
     update,
-} from "@/routes/admin/engagements";
-import type { Engagement, ListFilters, Paginated } from "@/types";
-import ActionTooltip from "@/components/admin/action-tooltip";
+} from '@/routes/admin/engagements';
+import type { Engagement, ListFilters, Paginated } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
-const TYPE_LABEL = { freelance: "Freelance", hiring: "Embauche" } as const;
+const TYPE_LABEL = { freelance: 'Freelance', hiring: 'Embauche' } as const;
 
 export default function EngagementsIndex({
     engagements,
@@ -46,8 +46,8 @@ export default function EngagementsIndex({
                                 value={filters.type}
                                 label="Type"
                                 options={[
-                                    { value: "freelance", label: "Freelance" },
-                                    { value: "hiring", label: "Embauche" },
+                                    { value: 'freelance', label: 'Freelance' },
+                                    { value: 'hiring', label: 'Embauche' },
                                 ]}
                             />
                             <FilterSelect
@@ -56,21 +56,21 @@ export default function EngagementsIndex({
                                 value={filters.status}
                                 label="Statut"
                                 options={[
-                                    { value: "new", label: "Nouveau" },
-                                    { value: "handled", label: "Traité" },
+                                    { value: 'new', label: 'Nouveau' },
+                                    { value: 'handled', label: 'Traité' },
                                 ]}
                             />
                         </>
                     )}
                     columns={[
                         {
-                            header: "Type",
+                            header: 'Type',
                             cell: (row) => (
                                 <Badge
                                     variant={
-                                        row.type === "hiring"
-                                            ? "default"
-                                            : "secondary"
+                                        row.type === 'hiring'
+                                            ? 'default'
+                                            : 'secondary'
                                     }
                                 >
                                     {TYPE_LABEL[row.type]}
@@ -78,7 +78,7 @@ export default function EngagementsIndex({
                             ),
                         },
                         {
-                            header: "Contact",
+                            header: 'Contact',
                             cell: (row) => (
                                 <>
                                     <div className="font-medium">
@@ -92,12 +92,12 @@ export default function EngagementsIndex({
                             ),
                         },
                         {
-                            header: "Poste / projet",
+                            header: 'Poste / projet',
                             cell: (row) => row.subject,
                         },
                         {
-                            header: "Détails",
-                            className: "max-w-xs text-sm text-muted-foreground",
+                            header: 'Détails',
+                            className: 'max-w-xs text-sm text-muted-foreground',
                             cell: (row) => (
                                 <>
                                     {[
@@ -107,7 +107,7 @@ export default function EngagementsIndex({
                                         row.timeline,
                                     ]
                                         .filter(Boolean)
-                                        .join(" · ")}
+                                        .join(' · ')}
                                     {row.message && (
                                         <p className="mt-1 line-clamp-2">
                                             {row.message}
@@ -117,13 +117,13 @@ export default function EngagementsIndex({
                             ),
                         },
                         {
-                            header: "CV",
+                            header: 'CV',
                             cell: (row) =>
-                                row.type === "hiring" &&
-                                (row.cv_sent_at ? "Envoyé" : "Non envoyé"),
+                                row.type === 'hiring' &&
+                                (row.cv_sent_at ? 'Envoyé' : 'Non envoyé'),
                         },
                         {
-                            header: "Statut",
+                            header: 'Statut',
                             fit: true,
                             cell: (row) => (
                                 <StatusMenu
@@ -131,12 +131,12 @@ export default function EngagementsIndex({
                                     id={row.id}
                                     status={row.status}
                                     options={[
-                                        { value: "new", label: "Nouveau" },
-                                        { value: "handled", label: "Traité" },
+                                        { value: 'new', label: 'Nouveau' },
+                                        { value: 'handled', label: 'Traité' },
                                     ]}
                                     variants={{
-                                        new: "default",
-                                        handled: "outline",
+                                        new: 'default',
+                                        handled: 'outline',
                                     }}
                                 />
                             ),
@@ -153,23 +153,23 @@ export default function EngagementsIndex({
                             </ActionTooltip>
                             <ActionTooltip
                                 label={
-                                    row.status === "new"
-                                        ? "Marquer comme traité"
-                                        : "Remettre en nouveau"
+                                    row.status === 'new'
+                                        ? 'Marquer comme traité'
+                                        : 'Remettre en nouveau'
                                 }
                             >
                                 <Button
                                     variant="ghost"
                                     size="icon"
                                     title={
-                                        row.status === "new"
-                                            ? "Marquer comme traité"
-                                            : "Remettre en nouveau"
+                                        row.status === 'new'
+                                            ? 'Marquer comme traité'
+                                            : 'Remettre en nouveau'
                                     }
                                     aria-label={
-                                        row.status === "new"
-                                            ? "Marquer comme traité"
-                                            : "Remettre en nouveau"
+                                        row.status === 'new'
+                                            ? 'Marquer comme traité'
+                                            : 'Remettre en nouveau'
                                     }
                                     onClick={() =>
                                         router.patch(
@@ -179,7 +179,7 @@ export default function EngagementsIndex({
                                         )
                                     }
                                 >
-                                    {row.status === "new" ? (
+                                    {row.status === 'new' ? (
                                         <Check />
                                     ) : (
                                         <RotateCcw />
@@ -199,5 +199,5 @@ export default function EngagementsIndex({
 }
 
 EngagementsIndex.layout = {
-    breadcrumbs: [{ title: "Collaborations", href: engagementsIndex() }],
+    breadcrumbs: [{ title: 'Collaborations', href: engagementsIndex() }],
 };

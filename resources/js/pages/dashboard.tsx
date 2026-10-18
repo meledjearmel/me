@@ -1,4 +1,4 @@
-import { Head, Link, usePage } from "@inertiajs/react";
+import { Head, Link, usePage } from '@inertiajs/react';
 import {
     AlertTriangle,
     BellRing,
@@ -18,15 +18,15 @@ import {
     Share2,
     Sparkles,
     Trophy,
-} from "lucide-react";
-import type { ComponentType, ReactNode } from "react";
+} from 'lucide-react';
+import type { ComponentType, ReactNode } from 'react';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
     Area,
     AreaChart,
@@ -37,29 +37,29 @@ import {
     LabelList,
     XAxis,
     YAxis,
-} from "recharts";
-import { Badge } from "@/components/ui/badge";
+} from 'recharts';
+import { Badge } from '@/components/ui/badge';
 import {
     ChartContainer,
     ChartTooltip,
     ChartTooltipContent,
-} from "@/components/ui/chart";
-import { Empty, EmptyDescription, EmptyHeader } from "@/components/ui/empty";
-import { dashboard } from "@/routes";
-import { index as contactsIndex } from "@/routes/admin/contacts";
-import { index as postCommentsIndex } from "@/routes/admin/post-comments";
-import { index as postsIndex, show as postShow } from "@/routes/admin/posts";
-import { index as cvDownloadsIndex } from "@/routes/admin/cv-downloads";
+} from '@/components/ui/chart';
+import { Empty, EmptyDescription, EmptyHeader } from '@/components/ui/empty';
+import { dashboard } from '@/routes';
+import { index as contactsIndex } from '@/routes/admin/contacts';
+import { index as postCommentsIndex } from '@/routes/admin/post-comments';
+import { index as postsIndex, show as postShow } from '@/routes/admin/posts';
+import { index as cvDownloadsIndex } from '@/routes/admin/cv-downloads';
 import {
     index as documentsIndex,
     show as documentShow,
-} from "@/routes/admin/commercial-documents";
-import { index as engagementsIndex } from "@/routes/admin/engagements";
-import { index as referencesIndex } from "@/routes/admin/professional-references";
-import { edit as profileEdit } from "@/routes/admin/profile";
-import { index as projectsIndex } from "@/routes/admin/projects";
-import { index as revisionsIndex } from "@/routes/admin/revisions";
-import { index as testimonialsIndex } from "@/routes/admin/testimonials";
+} from '@/routes/admin/commercial-documents';
+import { index as engagementsIndex } from '@/routes/admin/engagements';
+import { index as referencesIndex } from '@/routes/admin/professional-references';
+import { edit as profileEdit } from '@/routes/admin/profile';
+import { index as projectsIndex } from '@/routes/admin/projects';
+import { index as revisionsIndex } from '@/routes/admin/revisions';
+import { index as testimonialsIndex } from '@/routes/admin/testimonials';
 
 type Bar = { label: string; color?: string; count: number };
 
@@ -111,7 +111,7 @@ type DashboardProps = {
         by_device: Bar[];
         top_pages: { path: string; count: number }[];
         top_content: {
-            type: "post" | "project";
+            type: 'post' | 'project';
             title: string;
             url: string;
             visits: number;
@@ -254,7 +254,7 @@ type DashboardProps = {
             id: number;
             name: string;
             company: string | null;
-            type: "freelance" | "hiring";
+            type: 'freelance' | 'hiring';
             subject: string | null;
             is_new: boolean;
             at: string;
@@ -268,84 +268,84 @@ type DashboardProps = {
     };
 };
 
-const number = new Intl.NumberFormat("fr-FR");
-const shortDate = new Intl.DateTimeFormat("fr-FR", {
-    day: "numeric",
-    month: "short",
+const number = new Intl.NumberFormat('fr-FR');
+const shortDate = new Intl.DateTimeFormat('fr-FR', {
+    day: 'numeric',
+    month: 'short',
 });
-const longDate = new Intl.DateTimeFormat("fr-FR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
+const longDate = new Intl.DateTimeFormat('fr-FR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
 });
 
 /** Libellés des objectifs suivis dans « Conversions ». */
 const GOALS = {
-    cv_downloads: "CV téléchargés",
-    contacts: "Messages envoyés",
-    engagements: "Demandes de collaboration",
-    appointments: "Rendez-vous pris",
+    cv_downloads: 'CV téléchargés',
+    contacts: 'Messages envoyés',
+    engagements: 'Demandes de collaboration',
+    appointments: 'Rendez-vous pris',
 } as const;
 
 /** Libellés des réactions du blog. */
 const REACTIONS: Record<string, string> = {
-    like: "J’aime",
-    love: "J’adore",
-    fire: "Impressionnant",
-    idea: "Instructif",
-    think: "Ça fait réfléchir",
+    like: 'J’aime',
+    love: 'J’adore',
+    fire: 'Impressionnant',
+    idea: 'Instructif',
+    think: 'Ça fait réfléchir',
 };
 
 /** Libellés des moyens de partage du blog. */
 const SHARE_NETWORKS: Record<string, string> = {
-    linkedin: "LinkedIn",
-    x: "X",
-    whatsapp: "WhatsApp",
-    facebook: "Facebook",
-    email: "E-mail",
-    copy: "Lien copié",
-    native: "Partage du téléphone",
+    linkedin: 'LinkedIn',
+    x: 'X',
+    whatsapp: 'WhatsApp',
+    facebook: 'Facebook',
+    email: 'E-mail',
+    copy: 'Lien copié',
+    native: 'Partage du téléphone',
 };
 
 /** Libellés des types d'appareil. */
 const DEVICES: Record<string, string> = {
-    desktop: "Ordinateur",
-    mobile: "Mobile",
-    tablet: "Tablette",
-    inconnu: "Inconnu",
+    desktop: 'Ordinateur',
+    mobile: 'Mobile',
+    tablet: 'Tablette',
+    inconnu: 'Inconnu',
 };
 
 /** Libellés et liens de la liste « à compléter ». */
 const HEALTH = {
     profile_photo: {
-        label: "Photo du profil (site)",
-        done: "Photo du profil renseignée",
+        label: 'Photo du profil (site)',
+        done: 'Photo du profil renseignée',
         href: profileEdit(),
     },
     cv_photo: {
-        label: "Photo du CV",
-        done: "Photo du CV renseignée",
+        label: 'Photo du CV',
+        done: 'Photo du CV renseignée',
         href: profileEdit(),
     },
     cv_identity: {
-        label: "Nom et prénoms du CV",
-        done: "Nom et prénoms du CV renseignés",
+        label: 'Nom et prénoms du CV',
+        done: 'Nom et prénoms du CV renseignés',
         href: profileEdit(),
     },
     cv_references: {
-        label: "Références à joindre au CV",
-        done: "Références jointes au CV",
+        label: 'Références à joindre au CV',
+        done: 'Références jointes au CV',
         href: referencesIndex(),
     },
     project_covers: {
-        label: "Images de couverture des projets",
-        done: "Tous les projets ont une couverture",
+        label: 'Images de couverture des projets',
+        done: 'Tous les projets ont une couverture',
         href: projectsIndex(),
     },
     featured_testimonials: {
-        label: "Avis à la une choisis",
-        done: "Avis à la une choisis",
+        label: 'Avis à la une choisis',
+        done: 'Avis à la une choisis',
         href: testimonialsIndex(),
     },
 } as const;
@@ -398,10 +398,10 @@ function TodoCard({
     return (
         <Link href={href} prefetch>
             <Card
-                className={`gap-1 py-4 transition-colors hover:bg-muted/40 ${busy ? "border-primary/40 bg-primary/5" : ""}`}
+                className={`gap-1 py-4 transition-colors hover:bg-muted/40 ${busy ? 'border-primary/40 bg-primary/5' : ''}`}
             >
                 <CardHeader className="flex flex-row items-center justify-between px-5">
-                    <CardDescription className={busy ? "text-foreground" : ""}>
+                    <CardDescription className={busy ? 'text-foreground' : ''}>
                         {title}
                     </CardDescription>
                     <Icon className="size-4 text-muted-foreground" />
@@ -413,7 +413,7 @@ function TodoCard({
                         </p>
                     ) : (
                         <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                            <CheckCircle2 className="size-4 text-primary" />{" "}
+                            <CheckCircle2 className="size-4 text-primary" />{' '}
                             {done}
                         </p>
                     )}
@@ -426,7 +426,7 @@ function TodoCard({
 /** Barres horizontales, dans la couleur du domaine quand elle existe. */
 function Bars({
     rows,
-    empty = "Aucune donnée.",
+    empty = 'Aucune donnée.',
 }: {
     rows: Bar[];
     empty?: string;
@@ -443,7 +443,7 @@ function Bars({
 
     return (
         <ChartContainer
-            config={{ count: { label: "Éléments", color: "var(--chart-1)" } }}
+            config={{ count: { label: 'Éléments', color: 'var(--chart-1)' } }}
             className="w-full"
             style={{ height: rows.length * 36 + 8 }}
         >
@@ -468,7 +468,7 @@ function Bars({
                     {rows.map((row) => (
                         <Cell
                             key={row.label}
-                            fill={row.color ?? "var(--color-count)"}
+                            fill={row.color ?? 'var(--color-count)'}
                         />
                     ))}
                     <LabelList
@@ -484,10 +484,10 @@ function Bars({
 }
 
 /** Courbe d'audience : visites par jour sur la période, valeur exacte au survol. */
-function VisitsChart({ daily }: { daily: DashboardProps["visits"]["daily"] }) {
+function VisitsChart({ daily }: { daily: DashboardProps['visits']['daily'] }) {
     return (
         <ChartContainer
-            config={{ count: { label: "Visites", color: "var(--chart-1)" } }}
+            config={{ count: { label: 'Visites', color: 'var(--chart-1)' } }}
             className="h-56 w-full"
         >
             <AreaChart data={daily} margin={{ left: 0, right: 8, top: 8 }}>
@@ -637,7 +637,7 @@ export default function Dashboard({
     blog,
 }: DashboardProps) {
     const { auth } = usePage().props;
-    const firstName = auth.user.name.split(" ")[0];
+    const firstName = auth.user.name.split(' ')[0];
     const french =
         visits.french + visits.english > 0
             ? Math.round(
@@ -688,7 +688,7 @@ export default function Dashboard({
                         title="Commentaires à modérer"
                         count={todo.comments}
                         href={postCommentsIndex({
-                            query: { status: "pending" },
+                            query: { status: 'pending' },
                         })}
                         icon={MessagesSquare}
                         done="Aucun commentaire en attente"
@@ -702,8 +702,8 @@ export default function Dashboard({
                         }
                         href={
                             todo.project_drafts > 0 || todo.post_drafts === 0
-                                ? projectsIndex({ query: { status: "draft" } })
-                                : postsIndex({ query: { status: "draft" } })
+                                ? projectsIndex({ query: { status: 'draft' } })
+                                : postsIndex({ query: { status: 'draft' } })
                         }
                         icon={FilePen}
                         done="Aucun brouillon en attente"
@@ -719,7 +719,7 @@ export default function Dashboard({
                         title="Factures en retard"
                         count={todo.overdue_invoices}
                         href={documentsIndex({
-                            query: { type: "invoice", status: "issued" },
+                            query: { type: 'invoice', status: 'issued' },
                         })}
                         icon={ReceiptText}
                         done="Aucune facture en retard"
@@ -727,7 +727,7 @@ export default function Dashboard({
                     <TodoCard
                         title="Relances à envoyer"
                         count={todo.document_reminders}
-                        href={documentsIndex({ query: { reminder: "1" } })}
+                        href={documentsIndex({ query: { reminder: '1' } })}
                         icon={BellRing}
                         done="Aucune relance en attente"
                     />
@@ -840,9 +840,9 @@ export default function Dashboard({
                                         <tr key={row.url} className="border-t">
                                             <td className="py-2 pr-3">
                                                 <span className="mr-2 text-xs text-muted-foreground">
-                                                    {row.type === "post"
-                                                        ? "Article"
-                                                        : "Projet"}
+                                                    {row.type === 'post'
+                                                        ? 'Article'
+                                                        : 'Projet'}
                                                 </span>
                                                 <a
                                                     href={row.url}
@@ -874,20 +874,20 @@ export default function Dashboard({
                 <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
                     <div className="grid gap-4">
                         <StatCard
-                            title={`Réactions sur ${blog.period_days ?? "toute la"} ${blog.period_days ? "jours" : "période"}`}
+                            title={`Réactions sur ${blog.period_days ?? 'toute la'} ${blog.period_days ? 'jours' : 'période'}`}
                             value={number.format(blog.reactions.period)}
                             hint={`${number.format(blog.reactions.total)} au total · ${number.format(blog.views_total)} lectures d’articles`}
                             icon={SmilePlus}
                         />
                         <StatCard
-                            title={`Partages sur ${blog.period_days ?? "toute la"} ${blog.period_days ? "jours" : "période"}`}
+                            title={`Partages sur ${blog.period_days ?? 'toute la'} ${blog.period_days ? 'jours' : 'période'}`}
                             value={number.format(blog.shares.period)}
                             hint={`${number.format(blog.shares.total)} au total`}
                             icon={Share2}
                         />
                         <Link href={postCommentsIndex()} className="block">
                             <StatCard
-                                title={`Commentaires sur ${blog.period_days ?? "toute la"} ${blog.period_days ? "jours" : "période"}`}
+                                title={`Commentaires sur ${blog.period_days ?? 'toute la'} ${blog.period_days ? 'jours' : 'période'}`}
                                 value={number.format(blog.comments.period)}
                                 hint={`${number.format(blog.comments.approved)} publiés · ${number.format(blog.comments.pending)} en attente · ${number.format(blog.comments.rejected)} refusés`}
                                 icon={MessagesSquare}
@@ -957,15 +957,15 @@ export default function Dashboard({
                                         </Link>
                                         <span className="flex shrink-0 gap-3 text-xs text-muted-foreground tabular-nums">
                                             <span title="Réactions">
-                                                {number.format(row.reactions)}{" "}
+                                                {number.format(row.reactions)}{' '}
                                                 réac.
                                             </span>
                                             <span title="Partages">
-                                                {number.format(row.shares)}{" "}
+                                                {number.format(row.shares)}{' '}
                                                 part.
                                             </span>
                                             <span title="Commentaires">
-                                                {number.format(row.comments)}{" "}
+                                                {number.format(row.comments)}{' '}
                                                 com.
                                             </span>
                                         </span>
@@ -1017,7 +1017,7 @@ export default function Dashboard({
                                             {number.format(goal.count)}
                                         </span>
                                         <span className="w-14 text-right text-xs text-muted-foreground">
-                                            {goal.rate.toLocaleString("fr-FR")}{" "}
+                                            {goal.rate.toLocaleString('fr-FR')}{' '}
                                             %
                                         </span>
                                     </span>
@@ -1033,7 +1033,7 @@ export default function Dashboard({
                         <StatCard
                             title={`Estimations envoyées sur ${estimator.period_days} jours`}
                             value={number.format(estimator.requests)}
-                            hint={`${number.format(estimator.page_visitors)} visiteurs → ${number.format(estimator.simulators)} ont simulé (${estimator.simulation_rate.toLocaleString("fr-FR")} %) → ${number.format(estimator.requests)} demandes (${estimator.request_rate.toLocaleString("fr-FR")} %)`}
+                            hint={`${number.format(estimator.page_visitors)} visiteurs → ${number.format(estimator.simulators)} ont simulé (${estimator.simulation_rate.toLocaleString('fr-FR')} %) → ${number.format(estimator.requests)} demandes (${estimator.request_rate.toLocaleString('fr-FR')} %)`}
                             icon={Calculator}
                         />
                     </Link>
@@ -1054,17 +1054,17 @@ export default function Dashboard({
                                     >
                                         <span>
                                             {row.currency} · {row.count} demande
-                                            {row.count > 1 ? "s" : ""}
+                                            {row.count > 1 ? 's' : ''}
                                         </span>
                                         <span className="text-right tabular-nums">
                                             <span className="font-medium">
-                                                {number.format(row.price_min)} –{" "}
+                                                {number.format(row.price_min)} –{' '}
                                                 {number.format(row.price_max)}
                                             </span>
                                             <span className="block text-xs text-muted-foreground">
-                                                moyenne{" "}
-                                                {number.format(row.average_min)}{" "}
-                                                –{" "}
+                                                moyenne{' '}
+                                                {number.format(row.average_min)}{' '}
+                                                –{' '}
                                                 {number.format(row.average_max)}
                                             </span>
                                         </span>
@@ -1075,16 +1075,16 @@ export default function Dashboard({
                         {estimator.ai_gap.hours_gap_percent !== null && (
                             <p className="mt-4 text-xs text-muted-foreground">
                                 Sur {estimator.ai_gap.analysed} demande(s)
-                                analysée(s), l'IA chiffre en moyenne{" "}
+                                analysée(s), l'IA chiffre en moyenne{' '}
                                 <span className="font-medium text-foreground">
                                     {estimator.ai_gap.hours_gap_percent > 0
-                                        ? "+"
-                                        : ""}
+                                        ? '+'
+                                        : ''}
                                     {estimator.ai_gap.hours_gap_percent.toLocaleString(
-                                        "fr-FR",
-                                    )}{" "}
+                                        'fr-FR',
+                                    )}{' '}
                                     %
-                                </span>{" "}
+                                </span>{' '}
                                 d'heures par rapport à la grille.
                             </p>
                         )}
@@ -1119,7 +1119,7 @@ export default function Dashboard({
                                             {row.label}
                                         </span>
                                         <span className="shrink-0 tabular-nums">
-                                            {number.format(row.simulators)} →{" "}
+                                            {number.format(row.simulators)} →{' '}
                                             <span className="font-medium">
                                                 {number.format(row.requests)}
                                             </span>
@@ -1155,7 +1155,7 @@ export default function Dashboard({
                         <StatCard
                             title={`Demandes signées sur ${outcomes.period_days} jours`}
                             value={number.format(outcomes.won)}
-                            hint={`${number.format(outcomes.lost)} perdue(s)${outcomes.win_rate !== null ? ` · ${outcomes.win_rate.toLocaleString("fr-FR")} % de signature` : ""}`}
+                            hint={`${number.format(outcomes.lost)} perdue(s)${outcomes.win_rate !== null ? ` · ${outcomes.win_rate.toLocaleString('fr-FR')} % de signature` : ''}`}
                             icon={Trophy}
                         />
                     </Link>
@@ -1176,14 +1176,14 @@ export default function Dashboard({
                                     >
                                         <span>
                                             {row.currency} · {row.count} signée
-                                            {row.count > 1 ? "s" : ""}
+                                            {row.count > 1 ? 's' : ''}
                                         </span>
                                         <span className="text-right tabular-nums">
                                             <span className="font-medium">
                                                 {number.format(row.amount)}
                                             </span>
                                             <span className="block text-xs text-muted-foreground">
-                                                moyenne{" "}
+                                                moyenne{' '}
                                                 {number.format(row.average)}
                                             </span>
                                         </span>
@@ -1194,28 +1194,28 @@ export default function Dashboard({
                         {outcomes.estimate_gap.gap_percent !== null && (
                             <p className="mt-4 text-xs text-muted-foreground">
                                 Sur {outcomes.estimate_gap.compared} demande(s)
-                                estimée(s), signé en moyenne{" "}
+                                estimée(s), signé en moyenne{' '}
                                 <span className="font-medium text-foreground">
                                     {outcomes.estimate_gap.gap_percent > 0
-                                        ? "+"
-                                        : ""}
+                                        ? '+'
+                                        : ''}
                                     {outcomes.estimate_gap.gap_percent.toLocaleString(
-                                        "fr-FR",
-                                    )}{" "}
+                                        'fr-FR',
+                                    )}{' '}
                                     %
-                                </span>{" "}
+                                </span>{' '}
                                 par rapport au milieu de la fourchette estimée.
                             </p>
                         )}
                     </Section>
                     <Section
                         title="Rendez-vous"
-                        description={`${number.format(appointments.total)} demande(s) sur ${appointments.period_days} jours${appointments.confirmation_rate !== null ? ` · ${appointments.confirmation_rate.toLocaleString("fr-FR")} % confirmées` : ""}${appointments.response_hours !== null ? ` · réponse en ${appointments.response_hours.toLocaleString("fr-FR")} h en moyenne` : ""}`}
+                        description={`${number.format(appointments.total)} demande(s) sur ${appointments.period_days} jours${appointments.confirmation_rate !== null ? ` · ${appointments.confirmation_rate.toLocaleString('fr-FR')} % confirmées` : ''}${appointments.response_hours !== null ? ` · réponse en ${appointments.response_hours.toLocaleString('fr-FR')} h en moyenne` : ''}`}
                     >
                         <p className="mb-3 text-xs text-muted-foreground">
-                            {appointments.by_status.confirmed} confirmé(s) ·{" "}
-                            {appointments.by_status.pending} en attente ·{" "}
-                            {appointments.by_status.declined} refusé(s) ·{" "}
+                            {appointments.by_status.confirmed} confirmé(s) ·{' '}
+                            {appointments.by_status.pending} en attente ·{' '}
+                            {appointments.by_status.declined} refusé(s) ·{' '}
                             {appointments.by_status.cancelled} annulé(s)
                         </p>
                         <Bars
@@ -1265,7 +1265,7 @@ export default function Dashboard({
                                                 En retard
                                             </dt>
                                             <dd
-                                                className={`text-right ${row.overdue > 0 ? "font-medium text-destructive" : ""}`}
+                                                className={`text-right ${row.overdue > 0 ? 'font-medium text-destructive' : ''}`}
                                             >
                                                 {number.format(row.overdue)}
                                             </dd>
@@ -1276,13 +1276,13 @@ export default function Dashboard({
                         )}
                     </Section>
                     <Link
-                        href={documentsIndex({ query: { type: "quote" } })}
+                        href={documentsIndex({ query: { type: 'quote' } })}
                         className="block"
                     >
                         <StatCard
                             title={`Devis émis sur ${billing.period_days} jours`}
                             value={number.format(billing.quotes.issued)}
-                            hint={`${billing.quotes.accepted} accepté(s) · ${billing.quotes.declined} refusé(s)${billing.quotes.acceptance_rate !== null ? ` · ${billing.quotes.acceptance_rate.toLocaleString("fr-FR")} % d'acceptation` : ""}`}
+                            hint={`${billing.quotes.accepted} accepté(s) · ${billing.quotes.declined} refusé(s)${billing.quotes.acceptance_rate !== null ? ` · ${billing.quotes.acceptance_rate.toLocaleString('fr-FR')} % d'acceptation` : ''}`}
                             icon={ReceiptText}
                         />
                     </Link>
@@ -1303,11 +1303,11 @@ export default function Dashboard({
                                             className="flex items-baseline justify-between gap-3 text-sm hover:underline"
                                         >
                                             <span className="truncate">
-                                                {invoice.number} ·{" "}
+                                                {invoice.number} ·{' '}
                                                 {invoice.client}
                                             </span>
                                             <span className="shrink-0 text-right tabular-nums">
-                                                {number.format(invoice.total)}{" "}
+                                                {number.format(invoice.total)}{' '}
                                                 {invoice.currency}
                                                 <span className="block text-xs text-destructive">
                                                     {invoice.days_late} j de
@@ -1389,8 +1389,8 @@ export default function Dashboard({
                         title="Contenu à compléter"
                         description={
                             incomplete === 0
-                                ? "Tout est en place."
-                                : `${incomplete} point${incomplete > 1 ? "s" : ""} à compléter pour un site et des CV complets`
+                                ? 'Tout est en place.'
+                                : `${incomplete} point${incomplete > 1 ? 's' : ''} à compléter pour un site et des CV complets`
                         }
                     >
                         <ul className="space-y-2.5">
@@ -1412,8 +1412,8 @@ export default function Dashboard({
                                             <span
                                                 className={
                                                     item.ok
-                                                        ? "text-muted-foreground"
-                                                        : ""
+                                                        ? 'text-muted-foreground'
+                                                        : ''
                                                 }
                                             >
                                                 {item.ok
@@ -1439,7 +1439,7 @@ export default function Dashboard({
                             items={recent.contacts.map((contact) => ({
                                 key: contact.id,
                                 title: contact.name,
-                                meta: `${contact.subject ?? "Sans sujet"} · ${relative(contact.at)}`,
+                                meta: `${contact.subject ?? 'Sans sujet'} · ${relative(contact.at)}`,
                                 isNew: contact.is_new,
                             }))}
                         />
@@ -1456,11 +1456,11 @@ export default function Dashboard({
                                 title: engagement.company
                                     ? `${engagement.name} · ${engagement.company}`
                                     : engagement.name,
-                                meta: `${engagement.subject ?? ""} · ${relative(engagement.at)}`,
+                                meta: `${engagement.subject ?? ''} · ${relative(engagement.at)}`,
                                 badge:
-                                    engagement.type === "hiring"
-                                        ? "Embauche"
-                                        : "Freelance",
+                                    engagement.type === 'hiring'
+                                        ? 'Embauche'
+                                        : 'Freelance',
                                 isNew: engagement.is_new,
                             }))}
                         />
@@ -1490,7 +1490,7 @@ export default function Dashboard({
 Dashboard.layout = {
     breadcrumbs: [
         {
-            title: "Tableau de bord",
+            title: 'Tableau de bord',
             href: dashboard(),
         },
     ],

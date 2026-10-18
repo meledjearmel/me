@@ -1,12 +1,12 @@
-import { Form, Head } from "@inertiajs/react";
-import CommercialDocumentController from "@/actions/App/Http/Controllers/Admin/CommercialDocumentController";
-import CommercialDocumentFields from "@/components/admin/commercial-document-fields";
-import FormPageHeader from "@/components/admin/form-page-header";
-import { Button } from "@/components/ui/button";
-import { FieldGroup } from "@/components/ui/field";
-import { DOCUMENT_TYPES } from "@/lib/commercial-documents";
-import { index as documentsIndex } from "@/routes/admin/commercial-documents";
-import type { CommercialDocument } from "@/types";
+import { Form, Head } from '@inertiajs/react';
+import CommercialDocumentController from '@/actions/App/Http/Controllers/Admin/CommercialDocumentController';
+import CommercialDocumentFields from '@/components/admin/commercial-document-fields';
+import FormPageHeader from '@/components/admin/form-page-header';
+import { Button } from '@/components/ui/button';
+import { FieldGroup } from '@/components/ui/field';
+import { DOCUMENT_TYPES } from '@/lib/commercial-documents';
+import { index as documentsIndex } from '@/routes/admin/commercial-documents';
+import type { CommercialDocument } from '@/types';
 
 export default function CommercialDocumentEdit({
     document,
@@ -57,7 +57,7 @@ export default function CommercialDocumentEdit({
 
 CommercialDocumentEdit.layout = {
     breadcrumbs: [
-        { title: "Devis et factures", href: documentsIndex() },
-        { title: "Modifier", href: "" },
+        { title: 'Devis et factures', href: documentsIndex() },
+        { title: 'Modifier', href: '' },
     ],
 };

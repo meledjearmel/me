@@ -1,11 +1,11 @@
-import StatusSelect from "@/components/admin/status-select";
-import ExperienceController from "@/actions/App/Http/Controllers/Admin/ExperienceController";
+import StatusSelect from '@/components/admin/status-select';
+import ExperienceController from '@/actions/App/Http/Controllers/Admin/ExperienceController';
 import ShowPage, {
     Bilingual,
     formatPeriod,
-} from "@/components/admin/show-page";
-import { index as experiencesIndex } from "@/routes/admin/experiences";
-import type { Experience } from "@/types";
+} from '@/components/admin/show-page';
+import { index as experiencesIndex } from '@/routes/admin/experiences';
+import type { Experience } from '@/types';
 
 export default function ExperienceShow({
     experience: row,
@@ -28,29 +28,29 @@ export default function ExperienceShow({
             editHref={ExperienceController.edit(row.id)}
             sections={[
                 {
-                    title: "Détails",
+                    title: 'Détails',
                     items: [
-                        { label: "Entreprise", value: row.company },
-                        { label: "Lieu", value: row.location },
+                        { label: 'Entreprise', value: row.company },
+                        { label: 'Lieu', value: row.location },
                         {
-                            label: "Période",
+                            label: 'Période',
                             value: formatPeriod(row.start_date, row.end_date),
                         },
-                        { label: "Ordre", value: row.sort_order },
+                        { label: 'Ordre', value: row.sort_order },
                         {
-                            label: "Rôle",
+                            label: 'Rôle',
                             value: <Bilingual value={row.role} />,
                             wide: true,
                         },
                         {
-                            label: "Description",
+                            label: 'Description',
                             value: <Bilingual value={row.description} />,
                             wide: true,
                         },
                     ],
                 },
                 {
-                    title: "Réalisations marquantes",
+                    title: 'Réalisations marquantes',
                     content: (
                         <ul className="flex flex-col gap-2 text-sm">
                             {(row.highlights ?? []).map((highlight) => (
@@ -76,7 +76,7 @@ export default function ExperienceShow({
 
 ExperienceShow.layout = {
     breadcrumbs: [
-        { title: "Expériences", href: experiencesIndex() },
-        { title: "Détail", href: "" },
+        { title: 'Expériences', href: experiencesIndex() },
+        { title: 'Détail', href: '' },
     ],
 };

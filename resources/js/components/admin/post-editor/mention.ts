@@ -1,9 +1,9 @@
-import { mergeAttributes, Node } from "@tiptap/core";
-import { PluginKey } from "@tiptap/pm/state";
-import Suggestion from "@tiptap/suggestion";
-import type { SlashBridge } from "./slash-command";
+import { mergeAttributes, Node } from '@tiptap/core';
+import { PluginKey } from '@tiptap/pm/state';
+import Suggestion from '@tiptap/suggestion';
+import type { SlashBridge } from './slash-command';
 
-export type MentionKind = "project" | "post" | "technology" | "experience";
+export type MentionKind = 'project' | 'post' | 'technology' | 'experience';
 
 export type Mentionable = {
     kind: MentionKind;
@@ -18,8 +18,8 @@ export type Mentionable = {
  * Le menu réutilise le pont du menu « / ».
  */
 export const Mention = Node.create<{ bridge: SlashBridge }>({
-    name: "mention",
-    group: "inline",
+    name: 'mention',
+    group: 'inline',
     inline: true,
     atom: true,
     selectable: false,
@@ -33,18 +33,18 @@ export const Mention = Node.create<{ bridge: SlashBridge }>({
     addAttributes() {
         return {
             kind: {
-                parseHTML: (element) => element.getAttribute("data-kind"),
-                renderHTML: (attributes) => ({ "data-kind": attributes.kind }),
+                parseHTML: (element) => element.getAttribute('data-kind'),
+                renderHTML: (attributes) => ({ 'data-kind': attributes.kind }),
             },
             id: {
-                parseHTML: (element) => Number(element.getAttribute("data-id")),
-                renderHTML: (attributes) => ({ "data-id": attributes.id }),
+                parseHTML: (element) => Number(element.getAttribute('data-id')),
+                renderHTML: (attributes) => ({ 'data-id': attributes.id }),
             },
             label: {
                 parseHTML: (element) =>
-                    element.getAttribute("data-label") ?? element.textContent,
+                    element.getAttribute('data-label') ?? element.textContent,
                 renderHTML: (attributes) => ({
-                    "data-label": attributes.label,
+                    'data-label': attributes.label,
                 }),
             },
         };
@@ -56,9 +56,9 @@ export const Mention = Node.create<{ bridge: SlashBridge }>({
 
     renderHTML({ node, HTMLAttributes }) {
         return [
-            "span",
+            'span',
             mergeAttributes(
-                { "data-type": "mention", class: "post-mention" },
+                { 'data-type': 'mention', class: 'post-mention' },
                 HTMLAttributes,
             ),
             `@${node.attrs.label}`,
@@ -82,7 +82,7 @@ export const Mention = Node.create<{ bridge: SlashBridge }>({
                     }
 
                     tr.insertText(
-                        "@",
+                        '@',
                         selection.anchor - before.nodeSize,
                         selection.anchor,
                     );
@@ -108,16 +108,16 @@ export const Mention = Node.create<{ bridge: SlashBridge }>({
         return [
             Suggestion({
                 editor: this.editor,
-                pluginKey: new PluginKey("mention"),
-                char: "@",
+                pluginKey: new PluginKey('mention'),
+                char: '@',
                 allowSpaces: true,
-                allow: ({ editor }) => !editor.isActive("codeBlock"),
+                allow: ({ editor }) => !editor.isActive('codeBlock'),
                 items: () => [],
                 render: () => ({
                     onStart: state,
                     onUpdate: state,
                     onKeyDown: ({ event }) => {
-                        if (event.key === "Escape") {
+                        if (event.key === 'Escape') {
                             bridge.onChange(null);
 
                             return true;

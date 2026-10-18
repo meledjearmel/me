@@ -1,8 +1,8 @@
-import { Form } from "@inertiajs/react";
-import { BellRing, Loader2, Send, Sparkles } from "lucide-react";
-import { useState } from "react";
-import CommercialDocumentController from "@/actions/App/Http/Controllers/Admin/CommercialDocumentController";
-import { Button } from "@/components/ui/button";
+import { Form } from '@inertiajs/react';
+import { BellRing, Loader2, Send, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import CommercialDocumentController from '@/actions/App/Http/Controllers/Admin/CommercialDocumentController';
+import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
@@ -11,13 +11,13 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { post } from "@/hooks/use-ai-text-assist";
-import { DOCUMENT_TYPES } from "@/lib/commercial-documents";
-import type { CommercialDocument } from "@/types";
+} from '@/components/ui/dialog';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { post } from '@/hooks/use-ai-text-assist';
+import { DOCUMENT_TYPES } from '@/lib/commercial-documents';
+import type { CommercialDocument } from '@/types';
 
 /**
  * Envoi du document au client : objet et message à relire (proposés par l'IA sur demande),
@@ -33,12 +33,12 @@ export default function CommercialDocumentSendDialog({
 }) {
     const [open, setOpen] = useState(false);
     const [subject, setSubject] = useState(
-        `${reminder ? "Relance : " : ""}${DOCUMENT_TYPES[document.type]} ${document.number ?? ""} — ${document.title}`.replace(
-            "  ",
-            " ",
+        `${reminder ? 'Relance : ' : ''}${DOCUMENT_TYPES[document.type]} ${document.number ?? ''} — ${document.title}`.replace(
+            '  ',
+            ' ',
         ),
     );
-    const [message, setMessage] = useState("");
+    const [message, setMessage] = useState('');
     const [pending, setPending] = useState(false);
     const [aiError, setAiError] = useState<string | null>(null);
 
@@ -56,7 +56,7 @@ export default function CommercialDocumentSendDialog({
             setSubject(mail.subject);
             setMessage(mail.message);
         } catch {
-            setAiError("Suggestion indisponible pour le moment, réessayez.");
+            setAiError('Suggestion indisponible pour le moment, réessayez.');
         } finally {
             setPending(false);
         }
@@ -68,10 +68,10 @@ export default function CommercialDocumentSendDialog({
                 <Button
                     variant={
                         reminder
-                            ? "default"
+                            ? 'default'
                             : document.sent_at
-                              ? "outline"
-                              : "default"
+                              ? 'outline'
+                              : 'default'
                     }
                     disabled={!document.client_email}
                 >
@@ -81,25 +81,25 @@ export default function CommercialDocumentSendDialog({
                         <Send data-icon="inline-start" />
                     )}
                     {reminder
-                        ? "Relancer"
+                        ? 'Relancer'
                         : document.sent_at
-                          ? "Renvoyer"
-                          : "Envoyer au client"}
+                          ? 'Renvoyer'
+                          : 'Envoyer au client'}
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-xl">
                 <DialogHeader>
                     <DialogTitle>
-                        {reminder ? "Relancer" : "Envoyer à"}{" "}
+                        {reminder ? 'Relancer' : 'Envoyer à'}{' '}
                         {document.client_email}
                     </DialogTitle>
                     <DialogDescription>
                         Le PDF est joint
-                        {document.type === "quote" &&
-                            ", avec un lien pour accepter le devis en ligne"}
-                        .{" "}
-                        {document.status === "draft" &&
-                            "Le brouillon est émis à l’envoi : il reçoit son numéro et ne se modifie plus."}
+                        {document.type === 'quote' &&
+                            ', avec un lien pour accepter le devis en ligne'}
+                        .{' '}
+                        {document.status === 'draft' &&
+                            'Le brouillon est émis à l’envoi : il reçoit son numéro et ne se modifie plus.'}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -169,7 +169,7 @@ export default function CommercialDocumentSendDialog({
                             <DialogFooter>
                                 <Button
                                     disabled={
-                                        processing || message.trim() === ""
+                                        processing || message.trim() === ''
                                     }
                                 >
                                     {processing && (

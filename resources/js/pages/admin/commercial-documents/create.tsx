@@ -1,12 +1,12 @@
-import { Form, Head } from "@inertiajs/react";
-import CommercialDocumentController from "@/actions/App/Http/Controllers/Admin/CommercialDocumentController";
-import CommercialDocumentFields from "@/components/admin/commercial-document-fields";
-import FormPageHeader from "@/components/admin/form-page-header";
-import { Button } from "@/components/ui/button";
-import { FieldGroup } from "@/components/ui/field";
-import { DOCUMENT_TYPES } from "@/lib/commercial-documents";
-import { index as documentsIndex } from "@/routes/admin/commercial-documents";
-import type { CommercialDocument, CommercialDocumentType } from "@/types";
+import { Form, Head } from '@inertiajs/react';
+import CommercialDocumentController from '@/actions/App/Http/Controllers/Admin/CommercialDocumentController';
+import CommercialDocumentFields from '@/components/admin/commercial-document-fields';
+import FormPageHeader from '@/components/admin/form-page-header';
+import { Button } from '@/components/ui/button';
+import { FieldGroup } from '@/components/ui/field';
+import { DOCUMENT_TYPES } from '@/lib/commercial-documents';
+import { index as documentsIndex } from '@/routes/admin/commercial-documents';
+import type { CommercialDocument, CommercialDocumentType } from '@/types';
 
 export default function CommercialDocumentCreate({
     type,
@@ -15,7 +15,7 @@ export default function CommercialDocumentCreate({
     type: CommercialDocumentType;
     defaults: Pick<
         CommercialDocument,
-        "deposit_percent" | "payment_terms" | "valid_until" | "due_at"
+        'deposit_percent' | 'payment_terms' | 'valid_until' | 'due_at'
     >;
 }) {
     const title = `Nouveau ${DOCUMENT_TYPES[type].toLowerCase()}`;
@@ -58,7 +58,7 @@ export default function CommercialDocumentCreate({
 
 CommercialDocumentCreate.layout = {
     breadcrumbs: [
-        { title: "Devis et factures", href: documentsIndex() },
-        { title: "Nouveau", href: "" },
+        { title: 'Devis et factures', href: documentsIndex() },
+        { title: 'Nouveau', href: '' },
     ],
 };

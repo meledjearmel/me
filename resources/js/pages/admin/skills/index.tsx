@@ -1,18 +1,18 @@
-import { Head, Link } from "@inertiajs/react";
-import { PUBLICATION_STATUSES } from "@/lib/admin-options";
+import { Head, Link } from '@inertiajs/react';
+import { PUBLICATION_STATUSES } from '@/lib/admin-options';
 import StatusMenu, {
     PUBLICATION_VARIANTS,
-} from "@/components/admin/status-menu";
-import { Plus, Eye, SquarePen } from "lucide-react";
-import { index as pageIndex } from "@/routes/admin/skills";
-import SkillController from "@/actions/App/Http/Controllers/Admin/SkillController";
-import DeleteButton from "@/components/admin/delete-button";
-import { FilterSelect, ResourceList } from "@/components/admin/data-list";
-import Heading from "@/components/heading";
-import AiDraftBadge from "@/components/admin/ai-draft-badge";
-import { Button } from "@/components/ui/button";
-import type { Domain, ListFilters, Paginated, Skill } from "@/types";
-import ActionTooltip from "@/components/admin/action-tooltip";
+} from '@/components/admin/status-menu';
+import { Plus, Eye, SquarePen } from 'lucide-react';
+import { index as pageIndex } from '@/routes/admin/skills';
+import SkillController from '@/actions/App/Http/Controllers/Admin/SkillController';
+import DeleteButton from '@/components/admin/delete-button';
+import { FilterSelect, ResourceList } from '@/components/admin/data-list';
+import Heading from '@/components/heading';
+import AiDraftBadge from '@/components/admin/ai-draft-badge';
+import { Button } from '@/components/ui/button';
+import type { Domain, ListFilters, Paginated, Skill } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 export default function SkillsIndex({
     skills,
@@ -21,7 +21,7 @@ export default function SkillsIndex({
 }: {
     skills: Paginated<Skill>;
     filters: ListFilters;
-    domains: Pick<Domain, "id" | "label">[];
+    domains: Pick<Domain, 'id' | 'label'>[];
 }) {
     return (
         <>
@@ -46,14 +46,14 @@ export default function SkillsIndex({
                     filters={filters}
                     searchPlaceholder="Nom de la compétence…"
                     columns={[
-                        { header: "Nom (FR)", cell: (row) => row.name.fr },
+                        { header: 'Nom (FR)', cell: (row) => row.name.fr },
                         {
-                            header: "Domaine",
+                            header: 'Domaine',
                             cell: (row) => row.domain?.label.fr,
                         },
-                        { header: "Ordre", cell: (row) => row.sort_order },
+                        { header: 'Ordre', cell: (row) => row.sort_order },
                         {
-                            header: "Statut",
+                            header: 'Statut',
                             fit: true,
                             cell: (row) => (
                                 <>
@@ -90,8 +90,8 @@ export default function SkillsIndex({
                                 value={filters.status}
                                 label="Statut"
                                 options={[
-                                    { value: "published", label: "Publié" },
-                                    { value: "draft", label: "Brouillon" },
+                                    { value: 'published', label: 'Publié' },
+                                    { value: 'draft', label: 'Brouillon' },
                                 ]}
                             />
                         </>
@@ -131,5 +131,5 @@ export default function SkillsIndex({
 }
 
 SkillsIndex.layout = {
-    breadcrumbs: [{ title: "Compétences", href: pageIndex() }],
+    breadcrumbs: [{ title: 'Compétences', href: pageIndex() }],
 };

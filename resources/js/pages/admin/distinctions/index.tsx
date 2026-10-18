@@ -1,29 +1,29 @@
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link } from '@inertiajs/react';
 import StatusMenu, {
     PUBLICATION_VARIANTS,
-} from "@/components/admin/status-menu";
-import { Plus, SquarePen } from "lucide-react";
-import DistinctionController from "@/actions/App/Http/Controllers/Admin/DistinctionController";
-import ActionTooltip from "@/components/admin/action-tooltip";
-import AiDraftBadge from "@/components/admin/ai-draft-badge";
-import { FilterSelect, ResourceList } from "@/components/admin/data-list";
-import DeleteButton from "@/components/admin/delete-button";
-import { formatDate } from "@/components/admin/show-page";
-import Heading from "@/components/heading";
-import { Button } from "@/components/ui/button";
-import { PUBLICATION_STATUSES } from "@/lib/admin-options";
-import { index as pageIndex } from "@/routes/admin/distinctions";
+} from '@/components/admin/status-menu';
+import { Plus, SquarePen } from 'lucide-react';
+import DistinctionController from '@/actions/App/Http/Controllers/Admin/DistinctionController';
+import ActionTooltip from '@/components/admin/action-tooltip';
+import AiDraftBadge from '@/components/admin/ai-draft-badge';
+import { FilterSelect, ResourceList } from '@/components/admin/data-list';
+import DeleteButton from '@/components/admin/delete-button';
+import { formatDate } from '@/components/admin/show-page';
+import Heading from '@/components/heading';
+import { Button } from '@/components/ui/button';
+import { PUBLICATION_STATUSES } from '@/lib/admin-options';
+import { index as pageIndex } from '@/routes/admin/distinctions';
 import type {
     Distinction,
     DistinctionContextType,
     ListFilters,
     Paginated,
-} from "@/types";
+} from '@/types';
 
 const CONTEXT_LABELS: Record<DistinctionContextType, string> = {
-    experience: "Expérience",
-    education: "Formation",
-    project: "Projet",
+    experience: 'Expérience',
+    education: 'Formation',
+    project: 'Projet',
 };
 
 export default function DistinctionsIndex({
@@ -55,16 +55,16 @@ export default function DistinctionsIndex({
                     filters={filters}
                     searchPlaceholder="Intitulé ou organisme…"
                     columns={[
-                        { header: "Intitulé", cell: (row) => row.title.fr },
-                        { header: "Organisme", cell: (row) => row.issuer },
+                        { header: 'Intitulé', cell: (row) => row.title.fr },
+                        { header: 'Organisme', cell: (row) => row.issuer },
                         {
-                            header: "Contexte",
+                            header: 'Contexte',
                             cell: (row) =>
                                 row.context_type && row.context_label ? (
                                     <span className="text-sm">
                                         <span className="text-muted-foreground">
-                                            {CONTEXT_LABELS[row.context_type]}{" "}
-                                            ·{" "}
+                                            {CONTEXT_LABELS[row.context_type]}{' '}
+                                            ·{' '}
                                         </span>
                                         {row.context_label}
                                     </span>
@@ -75,15 +75,15 @@ export default function DistinctionsIndex({
                                 ),
                         },
                         {
-                            header: "Obtenue le",
+                            header: 'Obtenue le',
                             cell: (row) => formatDate(row.awarded_on),
                         },
                         {
-                            header: "Félicitations",
+                            header: 'Félicitations',
                             cell: (row) => row.congratulations_count,
                         },
                         {
-                            header: "Statut",
+                            header: 'Statut',
                             fit: true,
                             cell: (row) => (
                                 <>
@@ -138,5 +138,5 @@ export default function DistinctionsIndex({
 }
 
 DistinctionsIndex.layout = {
-    breadcrumbs: [{ title: "Distinctions", href: pageIndex() }],
+    breadcrumbs: [{ title: 'Distinctions', href: pageIndex() }],
 };

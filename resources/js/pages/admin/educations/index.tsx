@@ -1,18 +1,18 @@
-import { Head, Link } from "@inertiajs/react";
-import { PUBLICATION_STATUSES } from "@/lib/admin-options";
+import { Head, Link } from '@inertiajs/react';
+import { PUBLICATION_STATUSES } from '@/lib/admin-options';
 import StatusMenu, {
     PUBLICATION_VARIANTS,
-} from "@/components/admin/status-menu";
-import { Plus, Eye, SquarePen } from "lucide-react";
-import { index as pageIndex } from "@/routes/admin/educations";
-import EducationController from "@/actions/App/Http/Controllers/Admin/EducationController";
-import DeleteButton from "@/components/admin/delete-button";
-import { FilterSelect, ResourceList } from "@/components/admin/data-list";
-import Heading from "@/components/heading";
-import AiDraftBadge from "@/components/admin/ai-draft-badge";
-import { Button } from "@/components/ui/button";
-import type { ListFilters, Paginated, Education } from "@/types";
-import ActionTooltip from "@/components/admin/action-tooltip";
+} from '@/components/admin/status-menu';
+import { Plus, Eye, SquarePen } from 'lucide-react';
+import { index as pageIndex } from '@/routes/admin/educations';
+import EducationController from '@/actions/App/Http/Controllers/Admin/EducationController';
+import DeleteButton from '@/components/admin/delete-button';
+import { FilterSelect, ResourceList } from '@/components/admin/data-list';
+import Heading from '@/components/heading';
+import AiDraftBadge from '@/components/admin/ai-draft-badge';
+import { Button } from '@/components/ui/button';
+import type { ListFilters, Paginated, Education } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 export default function EducationsIndex({
     educations,
@@ -41,20 +41,20 @@ export default function EducationsIndex({
                     searchPlaceholder="Établissement, diplôme, domaine…"
                     columns={[
                         {
-                            header: "Établissement",
+                            header: 'Établissement',
                             cell: (row) => row.institution,
                         },
                         {
-                            header: "Diplôme (FR)",
+                            header: 'Diplôme (FR)',
                             cell: (row) => row.degree.fr,
                         },
                         {
-                            header: "Période",
+                            header: 'Période',
                             cell: (row) =>
-                                `${row.start_date} — ${row.end_date ?? "en cours"}`,
+                                `${row.start_date} — ${row.end_date ?? 'en cours'}`,
                         },
                         {
-                            header: "Statut",
+                            header: 'Statut',
                             fit: true,
                             cell: (row) => (
                                 <>
@@ -81,8 +81,8 @@ export default function EducationsIndex({
                                 value={filters.status}
                                 label="Statut"
                                 options={[
-                                    { value: "published", label: "Publié" },
-                                    { value: "draft", label: "Brouillon" },
+                                    { value: 'published', label: 'Publié' },
+                                    { value: 'draft', label: 'Brouillon' },
                                 ]}
                             />
                         </>
@@ -122,5 +122,5 @@ export default function EducationsIndex({
 }
 
 EducationsIndex.layout = {
-    breadcrumbs: [{ title: "Formation", href: pageIndex() }],
+    breadcrumbs: [{ title: 'Formation', href: pageIndex() }],
 };

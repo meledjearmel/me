@@ -1,14 +1,14 @@
-import { Head, router } from "@inertiajs/react";
-import { useState } from "react";
-import CommercialDocumentController from "@/actions/App/Http/Controllers/CommercialDocumentController";
-import PublicShell from "@/components/public/public-shell";
-import { useLocale } from "@/lib/i18n";
+import { Head, router } from '@inertiajs/react';
+import { useState } from 'react';
+import CommercialDocumentController from '@/actions/App/Http/Controllers/CommercialDocumentController';
+import PublicShell from '@/components/public/public-shell';
+import { useLocale } from '@/lib/i18n';
 
 type PublicDocument = {
-    type: "quote" | "proforma" | "invoice";
+    type: 'quote' | 'proforma' | 'invoice';
     type_label: string;
     number: string;
-    status: "issued" | "accepted" | "declined" | "paid";
+    status: 'issued' | 'accepted' | 'declined' | 'paid';
     title: string;
     client_name: string;
     currency: string;
@@ -31,44 +31,57 @@ type PublicDocument = {
 const COPY = {
     fr: {
         hello: (name: string) => `Bonjour ${name},`,
-        intro: "Voici le détail du document. Vous pouvez télécharger le PDF et, pour un devis, me donner votre réponse ici.",
-        total: "Total",
+        intro: 'Voici le détail du document. Vous pouvez télécharger le PDF et, pour un devis, me donner votre réponse ici.',
+        total: 'Total',
         deposit: (percent: number) => `Acompte (${percent} %)`,
-        validUntil: "Valable jusqu’au",
-        dueAt: "À régler avant le",
-        download: "Télécharger le PDF",
-        accept: "J’accepte le devis",
-        decline: "Je décline",
-        confirmAccept: "Confirmer l’acceptation de ce devis ?",
+        validUntil: 'Valable jusqu’au',
+        dueAt: 'À régler avant le',
+        download: 'Télécharger le PDF',
+        accept: 'J’accepte le devis',
+        decline: 'Je décline',
+        confirmAccept: 'Confirmer l’acceptation de ce devis ?',
         accepted:
-            "Devis accepté, merci ! Je reviens vers vous très vite pour la suite.",
-        declined: "Vous avez décliné ce devis. Merci pour votre réponse.",
+            'Devis accepté, merci ! Je reviens vers vous très vite pour la suite.',
+        declined: 'Vous avez décliné ce devis. Merci pour votre réponse.',
         expired:
-            "Ce devis n’est plus valable : contactez-moi pour en recevoir un à jour.",
-        paid: "Ce document est réglé, merci.",
-        units: { hour: "h", day: "j", flat: "forfait", month: "mois", quarter: "trimestre", semester: "semestre", year: "an" } as Record<
-            string,
-            string
-        >,
+            'Ce devis n’est plus valable : contactez-moi pour en recevoir un à jour.',
+        paid: 'Ce document est réglé, merci.',
+        units: {
+            hour: 'h',
+            day: 'j',
+            flat: 'forfait',
+            month: 'mois',
+            quarter: 'trimestre',
+            semester: 'semestre',
+            year: 'an',
+        } as Record<string, string>,
     },
     en: {
         hello: (name: string) => `Hello ${name},`,
-        intro: "Here are the details of the document. You can download the PDF and, for a quote, give me your answer here.",
-        total: "Total",
+        intro: 'Here are the details of the document. You can download the PDF and, for a quote, give me your answer here.',
+        total: 'Total',
         deposit: (percent: number) => `Deposit (${percent}%)`,
-        validUntil: "Valid until",
-        dueAt: "Due by",
-        download: "Download the PDF",
-        accept: "I accept the quote",
-        decline: "I decline",
-        confirmAccept: "Confirm that you accept this quote?",
+        validUntil: 'Valid until',
+        dueAt: 'Due by',
+        download: 'Download the PDF',
+        accept: 'I accept the quote',
+        decline: 'I decline',
+        confirmAccept: 'Confirm that you accept this quote?',
         accepted:
-            "Quote accepted, thank you! I will get back to you very soon about next steps.",
-        declined: "You declined this quote. Thank you for your answer.",
+            'Quote accepted, thank you! I will get back to you very soon about next steps.',
+        declined: 'You declined this quote. Thank you for your answer.',
         expired:
-            "This quote has expired: contact me to receive an updated one.",
-        paid: "This document has been paid, thank you.",
-        units: { hour: "h", day: "d", flat: "flat", month: "month", quarter: "quarter", semester: "half-year", year: "year" } as Record<string, string>,
+            'This quote has expired: contact me to receive an updated one.',
+        paid: 'This document has been paid, thank you.',
+        units: {
+            hour: 'h',
+            day: 'd',
+            flat: 'flat',
+            month: 'month',
+            quarter: 'quarter',
+            semester: 'half-year',
+            year: 'year',
+        } as Record<string, string>,
     },
 };
 
@@ -84,14 +97,14 @@ export default function PublicCommercialDocument({
     const copy = COPY[locale];
     const [processing, setProcessing] = useState(false);
     const money = (value: number) =>
-        `${new Intl.NumberFormat(locale === "en" ? "en-GB" : "fr-FR", { maximumFractionDigits: 0 }).format(value)} ${document.currency}`;
+        `${new Intl.NumberFormat(locale === 'en' ? 'en-GB' : 'fr-FR', { maximumFractionDigits: 0 }).format(value)} ${document.currency}`;
     const date = (value: string) =>
-        new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "fr-FR", {
-            dateStyle: "long",
+        new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'fr-FR', {
+            dateStyle: 'long',
         }).format(new Date(value));
 
-    const answer = (action: "accept" | "decline") => {
-        if (action === "accept" && !window.confirm(copy.confirmAccept)) {
+    const answer = (action: 'accept' | 'decline') => {
+        if (action === 'accept' && !window.confirm(copy.confirmAccept)) {
             return;
         }
 
@@ -106,13 +119,13 @@ export default function PublicCommercialDocument({
         );
     };
 
-    const isQuote = document.type === "quote";
+    const isQuote = document.type === 'quote';
     const status =
-        document.status === "accepted"
+        document.status === 'accepted'
             ? copy.accepted
-            : document.status === "declined"
+            : document.status === 'declined'
               ? copy.declined
-              : document.status === "paid"
+              : document.status === 'paid'
                 ? copy.paid
                 : isQuote && !document.can_answer
                   ? copy.expired
@@ -160,8 +173,8 @@ export default function PublicCommercialDocument({
                                                 )}
                                             </td>
                                             <td className="py-3 pr-4 text-right whitespace-nowrap opacity-70">
-                                                {line.quantity}{" "}
-                                                {copy.units[line.unit] ?? ""}
+                                                {line.quantity}{' '}
+                                                {copy.units[line.unit] ?? ''}
                                             </td>
                                             <td className="py-3 text-right whitespace-nowrap tabular-nums">
                                                 {money(
@@ -206,7 +219,7 @@ export default function PublicCommercialDocument({
                                             type="button"
                                             className="pub-drawer__send"
                                             disabled={processing}
-                                            onClick={() => answer("accept")}
+                                            onClick={() => answer('accept')}
                                         >
                                             {copy.accept}
                                         </button>
@@ -214,7 +227,7 @@ export default function PublicCommercialDocument({
                                             type="button"
                                             className="pub-application__secondary"
                                             disabled={processing}
-                                            onClick={() => answer("decline")}
+                                            onClick={() => answer('decline')}
                                         >
                                             {copy.decline}
                                         </button>
@@ -228,7 +241,7 @@ export default function PublicCommercialDocument({
                                     })}
                                     className="pub-application__secondary"
                                 >
-                                    {copy.download}{" "}
+                                    {copy.download}{' '}
                                     <span aria-hidden="true">↓</span>
                                 </a>
                             </div>

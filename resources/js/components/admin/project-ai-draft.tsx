@@ -1,8 +1,8 @@
-import { Languages, Loader2, Sparkles } from "lucide-react";
-import { type RefObject, useState } from "react";
-import AiAssistController from "@/actions/App/Http/Controllers/Admin/AiAssistController";
-import type { GitHubRepositoryOption } from "@/components/admin/project-github-field";
-import { Button } from "@/components/ui/button";
+import { Languages, Loader2, Sparkles } from 'lucide-react';
+import { type RefObject, useState } from 'react';
+import AiAssistController from '@/actions/App/Http/Controllers/Admin/AiAssistController';
+import type { GitHubRepositoryOption } from '@/components/admin/project-github-field';
+import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
@@ -10,17 +10,17 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from "@/components/ui/dialog";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+} from '@/components/ui/dialog';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { useAiTextAssist } from "@/hooks/use-ai-text-assist";
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { useAiTextAssist } from '@/hooks/use-ai-text-assist';
 
 /** Champs proposés par l'IA, en français seulement (voir ProjectDraftService). */
 export type ProjectDraft = {
@@ -48,12 +48,12 @@ export type ProjectDraft = {
     is_open_source?: boolean;
 };
 
-const NONE = "__none__";
+const NONE = '__none__';
 
 function csrfToken(): string {
     const match = document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]*)/);
 
-    return match ? decodeURIComponent(match[1]) : "";
+    return match ? decodeURIComponent(match[1]) : '';
 }
 
 /**
@@ -68,14 +68,14 @@ export function ProjectAiDraftButton({
     onDraft: (draft: ProjectDraft) => void;
 }) {
     const [open, setOpen] = useState(false);
-    const [repository, setRepository] = useState("");
-    const [notes, setNotes] = useState("");
+    const [repository, setRepository] = useState('');
+    const [notes, setNotes] = useState('');
     const [pending, setPending] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     async function handleSubmit() {
-        if (repository === "" && notes.trim() === "") {
-            setError("Choisissez un dépôt ou écrivez quelques notes.");
+        if (repository === '' && notes.trim() === '') {
+            setError('Choisissez un dépôt ou écrivez quelques notes.');
 
             return;
         }
@@ -87,12 +87,12 @@ export function ProjectAiDraftButton({
             const response = await fetch(
                 AiAssistController.draftProject.url(),
                 {
-                    method: "POST",
+                    method: 'POST',
                     headers: {
-                        "Content-Type": "application/json",
-                        Accept: "application/json",
-                        "X-XSRF-TOKEN": csrfToken(),
-                        "X-Requested-With": "XMLHttpRequest",
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                        'X-XSRF-TOKEN': csrfToken(),
+                        'X-Requested-With': 'XMLHttpRequest',
                     },
                     body: JSON.stringify({
                         github_repository: repository || null,
@@ -109,7 +109,7 @@ export function ProjectAiDraftButton({
                               body.errors as Record<string, string[]>,
                           )[0]?.[0] ?? null)
                         : (body.message ??
-                              "Pré-remplissage indisponible pour le moment, réessayez."),
+                              'Pré-remplissage indisponible pour le moment, réessayez.'),
                 );
 
                 return;
@@ -118,7 +118,7 @@ export function ProjectAiDraftButton({
             onDraft(body.project as ProjectDraft);
             setOpen(false);
         } catch {
-            setError("Pré-remplissage indisponible pour le moment, réessayez.");
+            setError('Pré-remplissage indisponible pour le moment, réessayez.');
         } finally {
             setPending(false);
         }
@@ -156,7 +156,7 @@ export function ProjectAiDraftButton({
                         <Select
                             value={repository || NONE}
                             onValueChange={(value) =>
-                                setRepository(value === NONE ? "" : value)
+                                setRepository(value === NONE ? '' : value)
                             }
                         >
                             <SelectTrigger id="draft_repository">
@@ -172,8 +172,8 @@ export function ProjectAiDraftButton({
                                     >
                                         {option.full_name}
                                         {option.private
-                                            ? " (privé : non envoyé)"
-                                            : ""}
+                                            ? ' (privé : non envoyé)'
+                                            : ''}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -211,8 +211,8 @@ export function ProjectAiDraftButton({
                                 <Sparkles />
                             )}
                             {pending
-                                ? "Rédaction… (jusqu’à une minute)"
-                                : "Pré-remplir"}
+                                ? 'Rédaction… (jusqu’à une minute)'
+                                : 'Pré-remplir'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -251,14 +251,14 @@ export function TranslateFormButton({
                 target: form.querySelector<
                     HTMLInputElement | HTMLTextAreaElement
                 >(
-                    `[name="${CSS.escape(source.name.replace(/\[fr\]$/, "[en]"))}"]`,
+                    `[name="${CSS.escape(source.name.replace(/\[fr\]$/, '[en]'))}"]`,
                 ),
             }))
             .filter(
                 ({ source, target }) =>
                     target &&
-                    source.value.trim() !== "" &&
-                    target.value.trim() === "",
+                    source.value.trim() !== '' &&
+                    target.value.trim() === '',
             );
 
         setMessage(null);
@@ -266,7 +266,7 @@ export function TranslateFormButton({
 
         for (const [index, { source, target }] of pairs.entries()) {
             setProgress(`${index + 1}/${pairs.length}`);
-            const translated = await translate(source.value.trim(), "fr", "en");
+            const translated = await translate(source.value.trim(), 'fr', 'en');
 
             if (translated === null || !target) {
                 failures++;
@@ -280,10 +280,10 @@ export function TranslateFormButton({
         setProgress(null);
         setMessage(
             pairs.length === 0
-                ? "Aucun champ anglais vide à traduire."
+                ? 'Aucun champ anglais vide à traduire.'
                 : failures > 0
                   ? `${failures} champ(s) non traduit(s) : complétez-les avec le bouton de traduction du champ.`
-                  : "Champs anglais remplis : relisez-les avant d’enregistrer.",
+                  : 'Champs anglais remplis : relisez-les avant d’enregistrer.',
         );
     }
 
@@ -300,7 +300,7 @@ export function TranslateFormButton({
                 ) : (
                     <Languages />
                 )}
-                {progress ? `Traduction ${progress}…` : "Traduire en anglais"}
+                {progress ? `Traduction ${progress}…` : 'Traduire en anglais'}
             </Button>
             {message && (
                 <span className="text-sm text-muted-foreground">{message}</span>

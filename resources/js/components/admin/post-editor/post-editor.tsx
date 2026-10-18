@@ -1,47 +1,47 @@
-import type { Editor } from "@tiptap/core";
-import { Highlight } from "@tiptap/extension-highlight";
-import { Image } from "@tiptap/extension-image";
-import { Subscript } from "@tiptap/extension-subscript";
-import { Superscript } from "@tiptap/extension-superscript";
-import { TableKit } from "@tiptap/extension-table";
+import type { Editor } from '@tiptap/core';
+import { Highlight } from '@tiptap/extension-highlight';
+import { Image } from '@tiptap/extension-image';
+import { Subscript } from '@tiptap/extension-subscript';
+import { Superscript } from '@tiptap/extension-superscript';
+import { TableKit } from '@tiptap/extension-table';
 import {
     TableOfContents,
     type TableOfContentData,
-} from "@tiptap/extension-table-of-contents";
-import { TextAlign } from "@tiptap/extension-text-align";
-import { CharacterCount, Placeholder } from "@tiptap/extensions";
-import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import { useMemo, useRef, useState } from "react";
-import PostController from "@/actions/App/Http/Controllers/Admin/PostController";
-import type { Locale } from "@/hooks/use-ai-text-assist";
-import AiBar, { type AiBarHandle } from "./ai-bar";
-import { Mention } from "./mention";
-import MentionMenu from "./mention-menu";
-import type { EditorActions } from "./block-commands";
-import ImageBubble from "./image-bubble";
-import OutlineRail from "./outline-rail";
-import SelectionBubble from "./selection-bubble";
-import { type SlashBridge, SlashCommand } from "./slash-command";
-import SlashMenu from "./slash-menu";
-import Toolbar from "./toolbar";
+} from '@tiptap/extension-table-of-contents';
+import { TextAlign } from '@tiptap/extension-text-align';
+import { CharacterCount, Placeholder } from '@tiptap/extensions';
+import { EditorContent, useEditor, useEditorState } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import { useMemo, useRef, useState } from 'react';
+import PostController from '@/actions/App/Http/Controllers/Admin/PostController';
+import type { Locale } from '@/hooks/use-ai-text-assist';
+import AiBar, { type AiBarHandle } from './ai-bar';
+import { Mention } from './mention';
+import MentionMenu from './mention-menu';
+import type { EditorActions } from './block-commands';
+import ImageBubble from './image-bubble';
+import OutlineRail from './outline-rail';
+import SelectionBubble from './selection-bubble';
+import { type SlashBridge, SlashCommand } from './slash-command';
+import SlashMenu from './slash-menu';
+import Toolbar from './toolbar';
 
 function csrfToken(): string {
     const match = document.cookie.match(/(?:^|; )XSRF-TOKEN=([^;]*)/);
 
-    return match ? decodeURIComponent(match[1]) : "";
+    return match ? decodeURIComponent(match[1]) : '';
 }
 
 async function uploadImage(file: File): Promise<string | null> {
     const body = new FormData();
-    body.append("image", file);
+    body.append('image', file);
 
     const response = await fetch(PostController.storeImage.url(), {
-        method: "POST",
+        method: 'POST',
         headers: {
-            Accept: "application/json",
-            "X-XSRF-TOKEN": csrfToken(),
-            "X-Requested-With": "XMLHttpRequest",
+            Accept: 'application/json',
+            'X-XSRF-TOKEN': csrfToken(),
+            'X-Requested-With': 'XMLHttpRequest',
         },
         body,
     });
@@ -53,7 +53,7 @@ async function uploadImage(file: File): Promise<string | null> {
 
 function imageFiles(list: FileList | null | undefined): File[] {
     return Array.from(list ?? []).filter((file) =>
-        file.type.startsWith("image/"),
+        file.type.startsWith('image/'),
     );
 }
 
@@ -76,7 +76,7 @@ export default function PostEditor({
     articleMeta: () => { title: string; excerpt: string };
     onReady?: (editor: Editor) => void;
 }) {
-    const [html, setHtml] = useState(defaultValue ?? "");
+    const [html, setHtml] = useState(defaultValue ?? '');
     const [anchors, setAnchors] = useState<TableOfContentData>([]);
     const [uploadError, setUploadError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -104,7 +104,7 @@ export default function PostEditor({
                 continue;
             }
 
-            const content = { type: "image", attrs: { src, alt: "" } };
+            const content = { type: 'image', attrs: { src, alt: '' } };
 
             if (pos === undefined) {
                 editor.chain().focus().insertContent(content).run();
@@ -124,14 +124,14 @@ export default function PostEditor({
             Highlight,
             Subscript,
             Superscript,
-            TextAlign.configure({ types: ["heading", "paragraph"] }),
+            TextAlign.configure({ types: ['heading', 'paragraph'] }),
             Image,
             TableKit.configure({ table: { resizable: false } }),
             Placeholder.configure({
                 placeholder: ({ node }) =>
-                    node.type.name === "heading"
-                        ? "Titre"
-                        : "Écrivez, ou tapez « / » pour insérer un bloc…",
+                    node.type.name === 'heading'
+                        ? 'Titre'
+                        : 'Écrivez, ou tapez « / » pour insérer un bloc…',
             }),
             CharacterCount,
             TableOfContents.configure({
@@ -140,11 +140,11 @@ export default function PostEditor({
             SlashCommand.configure({ bridge }),
             Mention.configure({ bridge: mentionBridge }),
         ],
-        content: defaultValue ?? "",
+        content: defaultValue ?? '',
         editorProps: {
             attributes: {
-                class: "post-content",
-                "aria-label": "Contenu de l’article",
+                class: 'post-content',
+                'aria-label': 'Contenu de l’article',
             },
             handlePaste: (view, event) => {
                 const files = imageFiles(event.clipboardData?.files);
@@ -175,7 +175,7 @@ export default function PostEditor({
         },
         onCreate: ({ editor: created }) => onReady?.(created),
         onUpdate: ({ editor: updated }) =>
-            setHtml(updated.isEmpty ? "" : updated.getHTML()),
+            setHtml(updated.isEmpty ? '' : updated.getHTML()),
     });
     const editorRef = useRef<Editor | null>(null);
     editorRef.current = editor;
@@ -206,7 +206,7 @@ export default function PostEditor({
                 hidden
                 onChange={(event) => {
                     const files = imageFiles(event.target.files);
-                    event.target.value = "";
+                    event.target.value = '';
 
                     if (editor && files.length > 0) {
                         void insertImages(editor, files);
@@ -234,7 +234,7 @@ export default function PostEditor({
                                 {Math.max(
                                     1,
                                     Math.ceil((counts?.words ?? 0) / 220),
-                                )}{" "}
+                                )}{' '}
                                 min de lecture
                             </span>
                         </div>

@@ -1,8 +1,8 @@
-import { router } from "@inertiajs/react";
-import { Check, ChevronDown } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
-import ContentStatusController from "@/actions/App/Http/Controllers/Admin/ContentStatusController";
+import { router } from '@inertiajs/react';
+import { Check, ChevronDown } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import ContentStatusController from '@/actions/App/Http/Controllers/Admin/ContentStatusController';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -12,40 +12,40 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import type { StatusContentType } from "@/components/admin/status-select";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/dropdown-menu';
+import type { StatusContentType } from '@/components/admin/status-select';
+import { cn } from '@/lib/utils';
 
-type BadgeVariant = "default" | "secondary" | "outline" | "destructive";
+type BadgeVariant = 'default' | 'secondary' | 'outline' | 'destructive';
 
 export const PUBLICATION_VARIANTS: Record<string, BadgeVariant> = {
-    published: "default",
-    draft: "secondary",
-    archived: "outline",
+    published: 'default',
+    draft: 'secondary',
+    archived: 'outline',
 };
 
 export type StatusListType =
     | StatusContentType
-    | "domain"
-    | "job_profile"
-    | "contact"
-    | "engagement"
-    | "job_application"
-    | "comment"
-    | "testimonial"
-    | "appointment"
-    | "commercial_document"
-    | "revision"
-    | "estimator_item"
-    | "appointment_type"
-    | "celebration";
+    | 'domain'
+    | 'job_profile'
+    | 'contact'
+    | 'engagement'
+    | 'job_application'
+    | 'comment'
+    | 'testimonial'
+    | 'appointment'
+    | 'commercial_document'
+    | 'revision'
+    | 'estimator_item'
+    | 'appointment_type'
+    | 'celebration';
 
 /**
  * Statuts atteignables depuis le statut actuel, comme le serveur les accepte : un rendez-vous
@@ -57,24 +57,24 @@ function allowedStatuses(
     all: string[],
 ): string[] {
     switch (type) {
-        case "appointment":
+        case 'appointment':
             return (
-                { pending: ["confirmed", "declined"], confirmed: ["declined"] }[
+                { pending: ['confirmed', 'declined'], confirmed: ['declined'] }[
                     status
                 ] ?? []
             );
-        case "commercial_document":
-            if (status === "draft") {
-                return ["issued"];
+        case 'commercial_document':
+            if (status === 'draft') {
+                return ['issued'];
             }
 
-            return ["paid", "cancelled"].includes(status)
+            return ['paid', 'cancelled'].includes(status)
                 ? []
-                : ["accepted", "declined", "paid", "cancelled"].filter(
+                : ['accepted', 'declined', 'paid', 'cancelled'].filter(
                       (value) => value !== status,
                   );
-        case "revision":
-            return status === "pending" ? ["applied", "rejected"] : [];
+        case 'revision':
+            return status === 'pending' ? ['applied', 'rejected'] : [];
         default:
             return all.filter((value) => value !== status);
     }
@@ -83,16 +83,16 @@ function allowedStatuses(
 /** Les changements à effets lourds (emails, numérotation, contenu modifié) demandent confirmation. */
 const CONFIRMATIONS: Partial<Record<StatusListType, Record<string, string>>> = {
     appointment: {
-        confirmed: "Le visiteur reçoit un email de confirmation.",
-        declined: "Le visiteur est prévenu par email et le créneau est libéré.",
+        confirmed: 'Le visiteur reçoit un email de confirmation.',
+        declined: 'Le visiteur est prévenu par email et le créneau est libéré.',
     },
     commercial_document: {
-        issued: "Le document reçoit son numéro définitif et ne se modifie plus.",
-        cancelled: "Le document est annulé, sans retour possible.",
+        issued: 'Le document reçoit son numéro définitif et ne se modifie plus.',
+        cancelled: 'Le document est annulé, sans retour possible.',
     },
     revision: {
         applied:
-            "Le contenu est remplacé sur le site par la révision proposée.",
+            'Le contenu est remplacé sur le site par la révision proposée.',
     },
 };
 
@@ -122,7 +122,7 @@ export default function StatusMenu({
         status,
         options.map((option) => option.value),
     );
-    const variant = variants?.[status] ?? "secondary";
+    const variant = variants?.[status] ?? 'secondary';
 
     const save = (value: string) =>
         router.patch(
@@ -134,7 +134,7 @@ export default function StatusMenu({
                 onFinish: () => setProcessing(false),
                 onError: (errors) =>
                     toast.error(
-                        errors.status ?? "Le statut n’a pas pu être changé.",
+                        errors.status ?? 'Le statut n’a pas pu être changé.',
                     ),
             },
         );
@@ -162,8 +162,8 @@ export default function StatusMenu({
                     <Badge
                         variant={variant}
                         className={cn(
-                            "cursor-pointer gap-1",
-                            processing && "opacity-60",
+                            'cursor-pointer gap-1',
+                            processing && 'opacity-60',
                         )}
                     >
                         {label}
@@ -184,7 +184,7 @@ export default function StatusMenu({
                         >
                             <Check
                                 className={cn(
-                                    option.value !== status && "invisible",
+                                    option.value !== status && 'invisible',
                                 )}
                             />
                             {option.label}
@@ -200,12 +200,12 @@ export default function StatusMenu({
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            Passer en «{" "}
+                            Passer en «{' '}
                             {
                                 options.find(
                                     (option) => option.value === pending,
                                 )?.label
-                            }{" "}
+                            }{' '}
                             » ?
                         </AlertDialogTitle>
                         <AlertDialogDescription>

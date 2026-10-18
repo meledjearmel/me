@@ -1,14 +1,14 @@
-import type { Editor } from "@tiptap/core";
-import { Link2, Unlink } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import type { Editor } from '@tiptap/core';
+import { Link2, Unlink } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-} from "@/components/ui/popover";
-import ToolbarButton from "./toolbar-button";
+} from '@/components/ui/popover';
+import ToolbarButton from './toolbar-button';
 
 /** Ajoute, modifie ou retire le lien de la sélection. */
 export default function LinkPopover({
@@ -19,18 +19,18 @@ export default function LinkPopover({
     active: boolean;
 }) {
     const [open, setOpen] = useState(false);
-    const [url, setUrl] = useState("");
+    const [url, setUrl] = useState('');
 
     function apply() {
         const href = url.trim();
 
-        if (href === "") {
-            editor.chain().focus().extendMarkRange("link").unsetLink().run();
+        if (href === '') {
+            editor.chain().focus().extendMarkRange('link').unsetLink().run();
         } else {
             editor
                 .chain()
                 .focus()
-                .extendMarkRange("link")
+                .extendMarkRange('link')
                 .setLink({
                     href: /^(https?:|mailto:|\/|#)/i.test(href)
                         ? href
@@ -49,7 +49,7 @@ export default function LinkPopover({
                 setOpen(next);
 
                 if (next) {
-                    setUrl(editor.getAttributes("link").href ?? "");
+                    setUrl(editor.getAttributes('link').href ?? '');
                 }
             }}
         >
@@ -89,7 +89,7 @@ export default function LinkPopover({
                                 editor
                                     .chain()
                                     .focus()
-                                    .extendMarkRange("link")
+                                    .extendMarkRange('link')
                                     .unsetLink()
                                     .run();
                                 setOpen(false);

@@ -30,7 +30,10 @@ export function splitMentions(text: string): MentionSegment[] {
 }
 
 /** Le texte sans jetons : chaque mention redevient son nom. */
-export function plainMentions(text: string, mentions: MentionCards = {}): string {
+export function plainMentions(
+    text: string,
+    mentions: MentionCards = {},
+): string {
     return splitMentions(text)
         .map((segment) =>
             typeof segment === 'string'

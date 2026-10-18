@@ -1,11 +1,11 @@
-import { Form, Head } from "@inertiajs/react";
-import EstimatorRateController from "@/actions/App/Http/Controllers/Admin/EstimatorRateController";
-import EstimatorRateFields from "@/components/admin/estimator-rate-fields";
-import FormPageHeader from "@/components/admin/form-page-header";
-import { Button } from "@/components/ui/button";
-import { FieldGroup } from "@/components/ui/field";
-import { index as ratesIndex } from "@/routes/admin/estimator-rates";
-import type { EstimatorRate } from "@/types";
+import { Form, Head } from '@inertiajs/react';
+import EstimatorRateController from '@/actions/App/Http/Controllers/Admin/EstimatorRateController';
+import EstimatorRateFields from '@/components/admin/estimator-rate-fields';
+import FormPageHeader from '@/components/admin/form-page-header';
+import { Button } from '@/components/ui/button';
+import { FieldGroup } from '@/components/ui/field';
+import { index as ratesIndex } from '@/routes/admin/estimator-rates';
+import type { EstimatorRate } from '@/types';
 
 export default function EstimatorRateEdit({ rate }: { rate: EstimatorRate }) {
     return (
@@ -39,7 +39,7 @@ export default function EstimatorRateEdit({ rate }: { rate: EstimatorRate }) {
 
 EstimatorRateEdit.layout = {
     breadcrumbs: [
-        { title: "Grilles tarifaires", href: ratesIndex() },
-        { title: "Modifier", href: "" },
+        { title: 'Grilles tarifaires', href: ratesIndex() },
+        { title: 'Modifier', href: '' },
     ],
 };

@@ -1,19 +1,19 @@
-import { Head, Link } from "@inertiajs/react";
-import { Download, KeyRound, Plus, Rocket, TriangleAlert } from "lucide-react";
-import AppReleaseController from "@/actions/App/Http/Controllers/Admin/AppReleaseController";
-import ActionTooltip from "@/components/admin/action-tooltip";
-import DeleteButton from "@/components/admin/delete-button";
-import { formatDate } from "@/components/admin/show-page";
-import Heading from "@/components/heading";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Head, Link } from '@inertiajs/react';
+import { Download, KeyRound, Plus, Rocket, TriangleAlert } from 'lucide-react';
+import AppReleaseController from '@/actions/App/Http/Controllers/Admin/AppReleaseController';
+import ActionTooltip from '@/components/admin/action-tooltip';
+import DeleteButton from '@/components/admin/delete-button';
+import { formatDate } from '@/components/admin/show-page';
+import Heading from '@/components/heading';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     destroy,
     download,
     index as pageIndex,
     publish,
-} from "@/routes/admin/app-releases";
+} from '@/routes/admin/app-releases';
 
 type AppRelease = {
     id: number;
@@ -33,7 +33,7 @@ type SigningKeyBackup = {
 };
 
 function formatSize(bytes: number | null): string {
-    return bytes === null ? "—" : `${(bytes / 1_048_576).toFixed(1)} Mo`;
+    return bytes === null ? '—' : `${(bytes / 1_048_576).toFixed(1)} Mo`;
 }
 
 export default function AppReleasesIndex({
@@ -68,8 +68,8 @@ export default function AppReleasesIndex({
                         <AlertTitle>Clé de signature</AlertTitle>
                         <AlertDescription>
                             <p className="break-all">
-                                Sauvegardée le{" "}
-                                {formatDate(signingKeyBackup.created_at)}{" "}
+                                Sauvegardée le{' '}
+                                {formatDate(signingKeyBackup.created_at)}{' '}
                                 (empreinte {signingKeyBackup.key_fingerprint})
                             </p>
                         </AlertDescription>
@@ -130,11 +130,11 @@ export default function AppReleasesIndex({
                                 )}
                                 <p className="text-xs text-muted-foreground">
                                     {release.created_at &&
-                                        formatDate(release.created_at)}{" "}
+                                        formatDate(release.created_at)}{' '}
                                     · {formatSize(release.size)}
                                     {release.sha256 && (
                                         <span className="break-all">
-                                            {" "}
+                                            {' '}
                                             · SHA-256 {release.sha256}
                                         </span>
                                     )}
@@ -183,5 +183,5 @@ export default function AppReleasesIndex({
 }
 
 AppReleasesIndex.layout = {
-    breadcrumbs: [{ title: "Application mobile", href: pageIndex() }],
+    breadcrumbs: [{ title: 'Application mobile', href: pageIndex() }],
 };

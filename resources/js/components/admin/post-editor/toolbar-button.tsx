@@ -1,12 +1,12 @@
-import type { LucideIcon } from "lucide-react";
-import type { ComponentProps } from "react";
-import { Button } from "@/components/ui/button";
+import type { LucideIcon } from 'lucide-react';
+import type { ComponentProps } from 'react';
+import { Button } from '@/components/ui/button';
 import {
     Tooltip,
     TooltipContent,
     TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
 /** Bouton d'icône de l'éditeur, avec son libellé en infobulle. */
 export default function ToolbarButton({
@@ -21,7 +21,7 @@ export default function ToolbarButton({
     label: string;
     shortcut?: string;
     active?: boolean;
-} & Omit<ComponentProps<typeof Button>, "children">) {
+} & Omit<ComponentProps<typeof Button>, 'children'>) {
     return (
         <Tooltip>
             <TooltipTrigger asChild>
@@ -34,8 +34,8 @@ export default function ToolbarButton({
                     // Garde la sélection de l'éditeur au clic.
                     onMouseDown={(event) => event.preventDefault()}
                     className={cn(
-                        "size-8 text-muted-foreground",
-                        active && "bg-accent text-foreground",
+                        'size-8 text-muted-foreground',
+                        active && 'bg-accent text-foreground',
                         className,
                     )}
                     {...props}

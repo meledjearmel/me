@@ -1,18 +1,18 @@
-import { Head, Link } from "@inertiajs/react";
-import { PUBLICATION_STATUSES } from "@/lib/admin-options";
+import { Head, Link } from '@inertiajs/react';
+import { PUBLICATION_STATUSES } from '@/lib/admin-options';
 import StatusMenu, {
     PUBLICATION_VARIANTS,
-} from "@/components/admin/status-menu";
-import { Plus, Eye, SquarePen } from "lucide-react";
-import { index as pageIndex } from "@/routes/admin/experiences";
-import ExperienceController from "@/actions/App/Http/Controllers/Admin/ExperienceController";
-import DeleteButton from "@/components/admin/delete-button";
-import { FilterSelect, ResourceList } from "@/components/admin/data-list";
-import Heading from "@/components/heading";
-import AiDraftBadge from "@/components/admin/ai-draft-badge";
-import { Button } from "@/components/ui/button";
-import type { ListFilters, Paginated, Experience } from "@/types";
-import ActionTooltip from "@/components/admin/action-tooltip";
+} from '@/components/admin/status-menu';
+import { Plus, Eye, SquarePen } from 'lucide-react';
+import { index as pageIndex } from '@/routes/admin/experiences';
+import ExperienceController from '@/actions/App/Http/Controllers/Admin/ExperienceController';
+import DeleteButton from '@/components/admin/delete-button';
+import { FilterSelect, ResourceList } from '@/components/admin/data-list';
+import Heading from '@/components/heading';
+import AiDraftBadge from '@/components/admin/ai-draft-badge';
+import { Button } from '@/components/ui/button';
+import type { ListFilters, Paginated, Experience } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 export default function ExperiencesIndex({
     experiences,
@@ -41,15 +41,15 @@ export default function ExperiencesIndex({
                     filters={filters}
                     searchPlaceholder="Entreprise, rôle, lieu…"
                     columns={[
-                        { header: "Entreprise", cell: (row) => row.company },
-                        { header: "Rôle (FR)", cell: (row) => row.role.fr },
+                        { header: 'Entreprise', cell: (row) => row.company },
+                        { header: 'Rôle (FR)', cell: (row) => row.role.fr },
                         {
-                            header: "Période",
+                            header: 'Période',
                             cell: (row) =>
-                                `${row.start_date} — ${row.end_date ?? "en cours"}`,
+                                `${row.start_date} — ${row.end_date ?? 'en cours'}`,
                         },
                         {
-                            header: "Statut",
+                            header: 'Statut',
                             fit: true,
                             cell: (row) => (
                                 <>
@@ -76,8 +76,8 @@ export default function ExperiencesIndex({
                                 value={filters.status}
                                 label="Statut"
                                 options={[
-                                    { value: "published", label: "Publié" },
-                                    { value: "draft", label: "Brouillon" },
+                                    { value: 'published', label: 'Publié' },
+                                    { value: 'draft', label: 'Brouillon' },
                                 ]}
                             />
                         </>
@@ -117,5 +117,5 @@ export default function ExperiencesIndex({
 }
 
 ExperiencesIndex.layout = {
-    breadcrumbs: [{ title: "Expériences", href: pageIndex() }],
+    breadcrumbs: [{ title: 'Expériences', href: pageIndex() }],
 };

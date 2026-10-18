@@ -1,29 +1,29 @@
-import { Head, Link } from "@inertiajs/react";
-import StatusMenu from "@/components/admin/status-menu";
-import { Eye, SquarePen } from "lucide-react";
+import { Head, Link } from '@inertiajs/react';
+import StatusMenu from '@/components/admin/status-menu';
+import { Eye, SquarePen } from 'lucide-react';
 import {
     destroy,
     edit,
     show,
     index as pageIndex,
-} from "@/routes/admin/testimonials";
-import DeleteButton from "@/components/admin/delete-button";
-import { FilterSelect, ResourceList } from "@/components/admin/data-list";
-import Heading from "@/components/heading";
-import { Button } from "@/components/ui/button";
-import type { ListFilters, Paginated, Testimonial } from "@/types";
-import ActionTooltip from "@/components/admin/action-tooltip";
+} from '@/routes/admin/testimonials';
+import DeleteButton from '@/components/admin/delete-button';
+import { FilterSelect, ResourceList } from '@/components/admin/data-list';
+import Heading from '@/components/heading';
+import { Button } from '@/components/ui/button';
+import type { ListFilters, Paginated, Testimonial } from '@/types';
+import ActionTooltip from '@/components/admin/action-tooltip';
 
 const STATUS_VARIANT = {
-    pending: "secondary",
-    approved: "default",
-    rejected: "destructive",
+    pending: 'secondary',
+    approved: 'default',
+    rejected: 'destructive',
 } as const;
 
 const STATUS_LABEL = {
-    pending: "En attente",
-    approved: "Approuvé",
-    rejected: "Refusé",
+    pending: 'En attente',
+    approved: 'Approuvé',
+    rejected: 'Refusé',
 } as const;
 
 export default function TestimonialsIndex({
@@ -50,13 +50,13 @@ export default function TestimonialsIndex({
                     filters={filters}
                     searchPlaceholder="Auteur, email, contenu…"
                     columns={[
-                        { header: "Auteur", cell: (row) => row.author_name },
+                        { header: 'Auteur', cell: (row) => row.author_name },
                         {
-                            header: "Projet",
-                            cell: (row) => row.project?.title.fr ?? "Général",
+                            header: 'Projet',
+                            cell: (row) => row.project?.title.fr ?? 'Général',
                         },
                         {
-                            header: "Statut",
+                            header: 'Statut',
                             fit: true,
                             cell: (row) => (
                                 <StatusMenu
@@ -71,8 +71,8 @@ export default function TestimonialsIndex({
                             ),
                         },
                         {
-                            header: "À la une",
-                            cell: (row) => (row.is_featured ? "★" : ""),
+                            header: 'À la une',
+                            cell: (row) => (row.is_featured ? '★' : ''),
                         },
                     ]}
                     filterControls={(state) => (
@@ -83,9 +83,9 @@ export default function TestimonialsIndex({
                                 value={filters.status}
                                 label="Statut"
                                 options={[
-                                    { value: "pending", label: "En attente" },
-                                    { value: "approved", label: "Approuvé" },
-                                    { value: "rejected", label: "Refusé" },
+                                    { value: 'pending', label: 'En attente' },
+                                    { value: 'approved', label: 'Approuvé' },
+                                    { value: 'rejected', label: 'Refusé' },
                                 ]}
                             />
                             <FilterSelect
@@ -94,8 +94,8 @@ export default function TestimonialsIndex({
                                 value={filters.is_featured}
                                 label="À la une"
                                 options={[
-                                    { value: "1", label: "À la une" },
-                                    { value: "0", label: "Pas à la une" },
+                                    { value: '1', label: 'À la une' },
+                                    { value: '0', label: 'Pas à la une' },
                                 ]}
                             />
                         </>
@@ -132,5 +132,5 @@ export default function TestimonialsIndex({
 }
 
 TestimonialsIndex.layout = {
-    breadcrumbs: [{ title: "Avis", href: pageIndex() }],
+    breadcrumbs: [{ title: 'Avis', href: pageIndex() }],
 };
