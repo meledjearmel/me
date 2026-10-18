@@ -5,10 +5,8 @@ import DeleteButton from '@/components/admin/delete-button';
 import { formatDate } from '@/components/admin/show-page';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
     Field,
-    FieldDescription,
     FieldError,
     FieldGroup,
     FieldLabel,

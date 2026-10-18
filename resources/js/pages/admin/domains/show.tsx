@@ -1,7 +1,6 @@
 import { Link } from '@inertiajs/react';
 import DomainController from '@/actions/App/Http/Controllers/Admin/DomainController';
 import SkillController from '@/actions/App/Http/Controllers/Admin/SkillController';
-import ProjectController from '@/actions/App/Http/Controllers/Admin/ProjectController';
 import ShowPage, {
     Bilingual,
     PublicationBadge,

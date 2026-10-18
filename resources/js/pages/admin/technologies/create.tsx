@@ -98,7 +98,10 @@ export default function TechnologyCreate({
                                     );
 
                                     return {
-                                        name: String(data.get('name') ?? ''),
+                                        name:
+                                            (data.get('name') as
+                                                | string
+                                                | null) ?? '',
                                         category: category?.label.fr ?? null,
                                     };
                                 }}
