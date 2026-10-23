@@ -61,8 +61,8 @@ class ProjectController extends Controller
     private function testimonialFor(Project $project): ?Testimonial
     {
         return Testimonial::query()
-            ->with('media')
-            ->where('project_id', $project->id)
+            ->with(['media', ...Testimonial::SUBJECT_RELATIONS])
+            ->whereHas('projects', fn ($query) => $query->whereKey($project->id))
             ->where('status', TestimonialStatus::Approved)
             ->orderByDesc('is_featured')
             ->latest('submitted_at')

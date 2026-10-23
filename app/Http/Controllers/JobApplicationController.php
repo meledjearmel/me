@@ -89,9 +89,10 @@ class JobApplicationController extends Controller
         $projectIds = $application->projects->map(fn (Project $project): int => $project->id)->all();
 
         return Testimonial::query()
-            ->with('media')
+            ->with(['media', ...Testimonial::SUBJECT_RELATIONS])
             ->where('status', TestimonialStatus::Approved)
-            ->orderByRaw('CASE WHEN project_id IN ('.(implode(',', $projectIds) ?: '0').') THEN 0 ELSE 1 END')
+            ->withExists(['projects as about_chosen_project' => fn ($query) => $query->whereKey($projectIds)])
+            ->orderByDesc('about_chosen_project')
             ->orderByDesc('is_featured')
             ->latest('submitted_at')
             ->limit(2)

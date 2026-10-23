@@ -29,6 +29,12 @@ class ReviewInvitationFactory extends Factory
         return $this->state(fn (): array => ['used_at' => now()]);
     }
 
+    /** Lien collectif, sans nom ni e-mail ; `null` = sans limite. */
+    public function collective(?int $maxUses = null): static
+    {
+        return $this->state(fn (): array => ['name' => null, 'email' => null, 'max_uses' => $maxUses]);
+    }
+
     public function expired(): static
     {
         return $this->state(fn (): array => ['expires_at' => now()->subDay()]);

@@ -215,13 +215,28 @@ test('the project page exposes the challenges, technical choices and project she
 
 test('the project page shows the approved review left on it, the featured one first', function () {
     $project = Project::factory()->create(['slug' => 'reviewed']);
-    Testimonial::factory()->create(['project_id' => $project->id, 'status' => TestimonialStatus::Approved, 'submitted_at' => now()]);
-    $featured = Testimonial::factory()->create(['project_id' => $project->id, 'status' => TestimonialStatus::Approved, 'is_featured' => true, 'submitted_at' => now()->subYear()]);
-    Testimonial::factory()->create(['project_id' => $project->id, 'status' => TestimonialStatus::Pending, 'is_featured' => true]);
+    Testimonial::factory()->hasAttached($project, relationship: 'projects')->create(['status' => TestimonialStatus::Approved, 'submitted_at' => now()]);
+    $featured = Testimonial::factory()->hasAttached($project, relationship: 'projects')->create(['status' => TestimonialStatus::Approved, 'is_featured' => true, 'submitted_at' => now()->subYear()]);
+    Testimonial::factory()->hasAttached($project, relationship: 'projects')->create(['status' => TestimonialStatus::Pending, 'is_featured' => true]);
     Testimonial::factory()->create(['status' => TestimonialStatus::Approved, 'is_featured' => true]);
 
     $this->get('/fr/projects/reviewed')->assertInertia(fn ($page) => $page
         ->where('testimonial.id', $featured->id)
+    );
+});
+
+test('a review shows the published projects and experiences it is about, with their links', function () {
+    $project = Project::factory()->create(['slug' => 'reviewed', 'title' => ['fr' => 'Projet suivi', 'en' => 'Tracked project']]);
+    $draft = Project::factory()->create(['status' => ProjectStatus::Draft]);
+    $experience = Experience::factory()->create(['company' => 'Acme']);
+    $testimonial = Testimonial::factory()->create(['status' => TestimonialStatus::Approved]);
+    $testimonial->syncSubjects(['project_ids' => [$project->id, $draft->id], 'experience_ids' => [$experience->id]]);
+
+    $this->get('/fr/testimonials')->assertInertia(fn ($page) => $page
+        ->has('testimonials.0.subjects', 2)
+        ->where('testimonials.0.subjects.0', ['type' => 'project', 'label' => 'Projet suivi', 'url' => route('projects.show', ['locale' => 'fr', 'project' => 'reviewed'])])
+        ->where('testimonials.0.subjects.1.label', 'Acme')
+        ->where('testimonials.0.subjects.1.url', route('about', ['locale' => 'fr'])."#experience-{$experience->id}")
     );
 });
 

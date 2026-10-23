@@ -1,3 +1,4 @@
+import { Link } from '@inertiajs/react';
 import { useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import PubDialog from '@/components/public/pub-dialog';
@@ -207,6 +208,8 @@ export function TestimonialReader({
                     <p>{testimonial.video_transcript}</p>
                 </details>
             )}
+
+            <TestimonialSubjects testimonial={testimonial} />
         </PubDialog>
     );
 }
@@ -280,4 +283,45 @@ export function testimonialVideosJsonLd(
             },
         ];
     });
+}
+
+/**
+ * Ce dont parle l'avis : projets, expériences et formations, chacun en lien vers
+ * sa page (ou sa place sur la page À propos). `limit` garde les cartes compactes.
+ */
+export function TestimonialSubjects({
+    testimonial,
+    limit,
+}: {
+    testimonial: PublicTestimonial;
+    limit?: number;
+}) {
+    const t = useTranslations();
+    const subjects = testimonial.subjects ?? [];
+
+    if (subjects.length === 0) {
+        return null;
+    }
+
+    const shown = limit ? subjects.slice(0, limit) : subjects;
+    const hidden = subjects.length - shown.length;
+
+    return (
+        <ul className="pub-testi-subjects" aria-label={t.testimonials.subjects}>
+            {shown.map((subject) => (
+                <li key={subject.url}>
+                    <Link
+                        href={subject.url}
+                        className="pub-testi-subjects__chip"
+                        data-type={subject.type}
+                    >
+                        {subject.label}
+                    </Link>
+                </li>
+            ))}
+            {hidden > 0 && (
+                <li className="pub-testi-subjects__more">+{hidden}</li>
+            )}
+        </ul>
+    );
 }

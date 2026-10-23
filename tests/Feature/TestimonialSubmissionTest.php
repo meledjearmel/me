@@ -54,9 +54,9 @@ test('a review left from a project, an experience or an education is linked to i
 
     $testimonial = Testimonial::query()->firstOrFail();
 
-    expect($testimonial->project_id)->toBe($project->id)
-        ->and($testimonial->experience_id)->toBe($experience->id)
-        ->and($testimonial->education_id)->toBe($education->id);
+    expect($testimonial->projects->modelKeys())->toBe([$project->id])
+        ->and($testimonial->experiences->modelKeys())->toBe([$experience->id])
+        ->and($testimonial->educations->modelKeys())->toBe([$education->id]);
 });
 
 test('a review cannot be linked to an archived project', function () {

@@ -21,7 +21,7 @@ class TestimonialController extends Controller
         return Inertia::render('public/testimonials', [
             'testimonials' => TestimonialResource::collection(
                 Testimonial::query()
-                    ->with('media')
+                    ->with(['media', ...Testimonial::SUBJECT_RELATIONS])
                     ->where('status', TestimonialStatus::Approved)
                     ->latest('submitted_at')
                     ->get(),
@@ -43,7 +43,7 @@ class TestimonialController extends Controller
         }
 
         $invitation = ReviewInvitation::query()
-            ->with(['project', 'experience', 'education'])
+            ->with(ReviewInvitation::SUBJECT_RELATIONS)
             ->where('token', $token)
             ->first();
 

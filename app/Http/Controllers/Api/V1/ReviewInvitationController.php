@@ -22,8 +22,8 @@ class ReviewInvitationController extends Controller
     /**
      * Liste des demandes d'avis
      *
-     * Du plus récent au plus ancien. Chaque demande est un lien personnel à usage unique
-     * qui ouvre le formulaire d'avis prérempli.
+     * Du plus récent au plus ancien. Chaque demande est un lien qui ouvre le formulaire
+     * d'avis prérempli : personnel (une seule utilisation) ou collectif (plusieurs personnes).
      */
     #[QueryParameter('search', description: 'Recherche dans le nom, l’email et le mémo.', type: 'string')]
     #[QueryParameter('status', description: 'Statut : `pending`, `used` ou `expired`.', type: 'string')]
@@ -34,7 +34,7 @@ class ReviewInvitationController extends Controller
         $status = $request->query('status');
 
         $query = ReviewInvitation::query()
-            ->with(['project', 'experience', 'education'])
+            ->with([...ReviewInvitation::SUBJECT_RELATIONS, 'testimonials:id,review_invitation_id'])
             ->when($status === 'pending', fn ($query) => $query->usable())
             ->when($status === 'used', fn ($query) => $query->whereNotNull('used_at'))
             ->when($status === 'expired', fn ($query) => $query->whereNull('used_at')->where('expires_at', '<=', now()))
@@ -46,17 +46,24 @@ class ReviewInvitationController extends Controller
     /**
      * Créer une demande d'avis
      *
-     * Génère le lien personnel (`url`) à envoyer à la personne.
+     * Génère le lien (`url`) à envoyer. Rattachements : `project_ids`, `experience_ids` et
+     * `education_ids` (plusieurs possibles ; les anciens champs uniques `project_id`… restent
+     * acceptés). Avec `collective: true`, le lien sert à plusieurs personnes (`max_uses` avis au
+     * plus, sans limite s'il est vide) et ne préremplit ni nom ni e-mail ; une même adresse
+     * e-mail ne peut y laisser qu'un avis.
      */
     public function store(ReviewInvitationRequest $request): ReviewInvitationResource
     {
-        return new ReviewInvitationResource(ReviewInvitation::query()->create($request->invitationData()));
+        $invitation = ReviewInvitation::query()->create($request->invitationData());
+        $invitation->syncSubjects($request->subjects());
+
+        return new ReviewInvitationResource($invitation->load([...ReviewInvitation::SUBJECT_RELATIONS, 'testimonials']));
     }
 
     /**
      * Supprimer une demande d'avis
      *
-     * Le lien cesse de fonctionner ; un avis déjà reçu reste en place.
+     * Le lien cesse de fonctionner ; les avis déjà reçus restent en place.
      */
     public function destroy(ReviewInvitation $reviewInvitation): Response
     {

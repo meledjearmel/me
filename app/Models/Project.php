@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -98,10 +99,10 @@ class Project extends Model implements HasMedia
         return $this->belongsToMany(Project::class, 'project_related', 'project_id', 'related_project_id');
     }
 
-    /** @return HasMany<Testimonial, $this> */
-    public function testimonials(): HasMany
+    /** @return MorphToMany<Testimonial, $this> */
+    public function testimonials(): MorphToMany
     {
-        return $this->hasMany(Testimonial::class);
+        return $this->morphToMany(Testimonial::class, 'subject', 'testimonial_subjects');
     }
 
     /** @return HasMany<ProfessionalReference, $this> */

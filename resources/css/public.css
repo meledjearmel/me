@@ -10762,3 +10762,57 @@ html:not(.dark) .pub-listen-mini__progress {
 html:not(.dark) .pub-listen-mini__progress span {
     background: #e0b400;
 }
+
+/* ---------- Rattachements d'un avis (projets, expériences, formations) ---------- */
+
+.pub-testi-subjects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pub-testi-subjects__chip,
+.pub-testi-subjects__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+    border-radius: 999px;
+    font-family: var(--pub-font-mono);
+    font-size: 11px;
+    line-height: 1.4;
+    color: inherit;
+    text-decoration: none;
+    opacity: 0.8;
+    transition:
+        border-color 160ms ease,
+        opacity 160ms ease;
+}
+
+.pub-testi-subjects__chip::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--pub-gold);
+}
+
+.pub-testi-subjects__chip[data-type='experience']::before {
+    background: currentColor;
+}
+
+.pub-testi-subjects__chip[data-type='education']::before {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px currentColor;
+}
+
+@media (hover: hover) {
+    .pub-testi-subjects__chip:hover {
+        border-color: var(--pub-gold);
+        opacity: 1;
+    }
+}

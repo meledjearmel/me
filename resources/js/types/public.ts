@@ -175,6 +175,12 @@ export type PublicTestimonial = {
     highlight: string | null;
     video_transcript: string | null;
     video: TestimonialVideo | null;
+    /** Projets, expériences et formations publiés dont parle l'avis, avec leur lien. */
+    subjects: {
+        type: 'project' | 'experience' | 'education';
+        label: string;
+        url: string;
+    }[];
 };
 
 export type PlaylistTrack = {

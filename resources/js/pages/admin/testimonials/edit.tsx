@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import FormSelect from '@/components/admin/form-select';
+import SubjectFields from '@/components/admin/subject-fields';
 import { TESTIMONIAL_STATUSES } from '@/lib/admin-options';
 import { index as testimonialsIndex } from '@/routes/admin/testimonials';
 import type {
@@ -231,77 +232,23 @@ export default function TestimonialEdit({
                                 <FieldError>{errors.is_featured}</FieldError>
                             </div>
 
-                            <Field data-invalid={!!errors.project_id}>
-                                <FieldLabel htmlFor="project_id">
-                                    Projet lié
-                                </FieldLabel>
-                                <FormSelect
-                                    id="project_id"
-                                    name="project_id"
-                                    defaultValue={testimonial.project_id ?? ''}
-                                >
-                                    <option value="">Général</option>
-                                    {projects.map((project) => (
-                                        <option
-                                            key={project.id}
-                                            value={project.id}
-                                        >
-                                            {project.title.fr}
-                                        </option>
-                                    ))}
-                                </FormSelect>
-                                <FieldError>{errors.project_id}</FieldError>
-                            </Field>
-
-                            <Field data-invalid={!!errors.experience_id}>
-                                <FieldLabel htmlFor="experience_id">
-                                    Expérience liée
-                                </FieldLabel>
-                                <FormSelect
-                                    id="experience_id"
-                                    name="experience_id"
-                                    defaultValue={
-                                        testimonial.experience_id ?? ''
-                                    }
-                                >
-                                    <option value="">Aucune</option>
-                                    {experiences.map((experience) => (
-                                        <option
-                                            key={experience.id}
-                                            value={experience.id}
-                                        >
-                                            {experience.role.fr} —{' '}
-                                            {experience.company}
-                                        </option>
-                                    ))}
-                                </FormSelect>
-                                <FieldError>{errors.experience_id}</FieldError>
-                            </Field>
-
-                            <Field data-invalid={!!errors.education_id}>
-                                <FieldLabel htmlFor="education_id">
-                                    Formation liée
-                                </FieldLabel>
-                                <FormSelect
-                                    id="education_id"
-                                    name="education_id"
-                                    defaultValue={
-                                        testimonial.education_id ?? ''
-                                    }
-                                >
-                                    <option value="">Aucune</option>
-                                    {educations.map((education) => (
-                                        <option
-                                            key={education.id}
-                                            value={education.id}
-                                        >
-                                            {education.degree.fr} —{' '}
-                                            {education.institution}
-                                        </option>
-                                    ))}
-                                </FormSelect>
-                                <FieldError>{errors.education_id}</FieldError>
-                            </Field>
+                            <SubjectFields
+                                projects={projects}
+                                experiences={experiences}
+                                educations={educations}
+                                selected={{
+                                    project_ids: (
+                                        testimonial.projects ?? []
+                                    ).map((project) => project.id),
+                                    experience_ids: (
+                                        testimonial.experiences ?? []
+                                    ).map((experience) => experience.id),
+                                    education_ids: (
+                                        testimonial.educations ?? []
+                                    ).map((education) => education.id),
+                                }}
+                                errors={errors}
+                            />
 
                             <div className="flex items-center gap-3">
                                 <Button disabled={processing}>

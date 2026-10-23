@@ -66,14 +66,23 @@ class ServiceController extends Controller
      */
     private function testimonialsByProject(array $projectIds): Collection
     {
-        return Testimonial::query()
-            ->with('media')
-            ->whereIn('project_id', $projectIds)
+        $byProject = collect();
+
+        Testimonial::query()
+            ->with(['media', ...Testimonial::SUBJECT_RELATIONS])
+            ->whereHas('projects', fn ($query) => $query->whereKey($projectIds))
             ->where('status', TestimonialStatus::Approved)
             ->orderByDesc('is_featured')
             ->latest('submitted_at')
             ->get()
-            ->unique('project_id')
-            ->keyBy('project_id');
+            ->each(function (Testimonial $testimonial) use ($byProject, $projectIds): void {
+                foreach ($testimonial->projects->modelKeys() as $projectId) {
+                    if (in_array($projectId, $projectIds, true) && ! $byProject->has($projectId)) {
+                        $byProject->put($projectId, $testimonial);
+                    }
+                }
+            });
+
+        return $byProject;
     }
 }

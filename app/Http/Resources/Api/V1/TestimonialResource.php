@@ -2,6 +2,9 @@
 
 namespace App\Http\Resources\Api\V1;
 
+use App\Models\Education;
+use App\Models\Experience;
+use App\Models\Project;
 use App\Models\Testimonial;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -38,24 +41,39 @@ class TestimonialResource extends JsonResource
             'video' => $this->videoData(),
             'status' => $this->status,
             'is_featured' => $this->is_featured,
-            'project' => $this->whenLoaded('project', fn (): ?array => $this->project === null ? null : [
-                'id' => $this->project->id,
-                'slug' => $this->project->slug,
+            /** Projets dont parle l'avis (plusieurs possibles). */
+            'projects' => $this->whenLoaded('projects', fn (): array => $this->projects->map(fn (Project $project): array => [
+                'id' => $project->id,
+                'slug' => $project->slug,
                 /** @var array{fr: string, en: string} */
-                'title' => $this->project->getTranslations('title'),
-            ]),
-            'experience' => $this->whenLoaded('experience', fn (): ?array => $this->experience === null ? null : [
-                'id' => $this->experience->id,
-                'company' => $this->experience->company,
+                'title' => $project->getTranslations('title'),
+            ])->all()),
+            /** Expériences dont parle l'avis (plusieurs possibles). */
+            'experiences' => $this->whenLoaded('experiences', fn (): array => $this->experiences->map(fn (Experience $experience): array => [
+                'id' => $experience->id,
+                'company' => $experience->company,
                 /** @var array{fr: string, en: string} */
-                'role' => $this->experience->getTranslations('role'),
-            ]),
-            'education' => $this->whenLoaded('education', fn (): ?array => $this->education === null ? null : [
-                'id' => $this->education->id,
-                'institution' => $this->education->institution,
+                'role' => $experience->getTranslations('role'),
+            ])->all()),
+            /** Formations dont parle l'avis (plusieurs possibles). */
+            'educations' => $this->whenLoaded('educations', fn (): array => $this->educations->map(fn (Education $education): array => [
+                'id' => $education->id,
+                'institution' => $education->institution,
                 /** @var array{fr: string, en: string} */
-                'degree' => $this->education->getTranslations('degree'),
+                'degree' => $education->getTranslations('degree'),
+            ])->all()),
+            /**
+             * Premier projet rattaché, gardé pour les anciennes versions de l'app.
+             *
+             * @deprecated Utiliser `projects`.
+             */
+            'project' => $this->whenLoaded('projects', fn (): ?array => $this->projects->isEmpty() ? null : [
+                'id' => $this->projects->first()->id,
+                'slug' => $this->projects->first()->slug,
+                'title' => $this->projects->first()->getTranslations('title'),
             ]),
+            /** Lien d'invitation par lequel l'avis est arrivé. */
+            'review_invitation_id' => $this->review_invitation_id,
             'submitted_at' => $this->submitted_at,
         ];
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Concerns\SubjectValidationRules;
 use App\Enums\TestimonialStatus;
 use App\Models\Testimonial;
 use Illuminate\Foundation\Http\FormRequest;
@@ -10,6 +11,13 @@ use Illuminate\Validation\Validator;
 
 class TestimonialRequest extends FormRequest
 {
+    use SubjectValidationRules;
+
+    protected function prepareForValidation(): void
+    {
+        $this->mergeLegacySubjects();
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -19,9 +27,8 @@ class TestimonialRequest extends FormRequest
     {
         return [
             'status' => ['required', Rule::enum(TestimonialStatus::class)],
-            'project_id' => ['nullable', 'exists:projects,id'],
-            'experience_id' => ['nullable', 'exists:experiences,id'],
-            'education_id' => ['nullable', 'exists:educations,id'],
+            // Un ou plusieurs projets, expériences et formations ; une liste vide retire le rattachement.
+            ...$this->subjectRules(),
             'is_featured' => ['boolean'],
             'author_name' => ['sometimes', 'string', 'max:255'],
             'author_role' => ['sometimes', 'nullable', 'string', 'max:255'],

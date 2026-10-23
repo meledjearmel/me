@@ -17,9 +17,8 @@ class TestimonialSeeder extends Seeder
         $projects = Project::all();
 
         Testimonial::factory()->count(6)->create([
-            'project_id' => fn () => $projects->random()->id,
             'status' => TestimonialStatus::Approved,
-        ]);
+        ])->each(fn (Testimonial $testimonial) => $testimonial->projects()->attach($projects->random(min(2, $projects->count()))));
 
         Testimonial::factory()->count(2)->create();
     }

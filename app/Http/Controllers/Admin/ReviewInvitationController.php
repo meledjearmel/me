@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Concerns\PaginatesAdminLists;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ReviewInvitationRequest;
+use App\Http\Resources\Api\V1\ReviewInvitationResource;
 use App\Models\Education;
 use App\Models\Experience;
 use App\Models\Project;
@@ -15,8 +16,9 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * Liens personnels pour demander un avis : je crée le lien, je le copie et je l'envoie ;
- * il ouvre le formulaire d'avis prérempli et ne sert qu'une fois.
+ * Liens pour demander un avis : je crée le lien, je le copie et je l'envoie ; il ouvre le
+ * formulaire d'avis prérempli. Personnel, il ne sert qu'une fois ; collectif, il sert à
+ * toute une équipe.
  */
 class ReviewInvitationController extends Controller
 {
@@ -27,14 +29,18 @@ class ReviewInvitationController extends Controller
         $status = $request->query('status');
 
         $query = ReviewInvitation::query()
-            ->with(['project:id,title', 'experience:id,role,company', 'education:id,degree,institution'])
+            ->with([...ReviewInvitation::SUBJECT_RELATIONS, 'testimonials:id,review_invitation_id'])
             ->when($status === 'pending', fn ($query) => $query->usable())
             ->when($status === 'used', fn ($query) => $query->whereNotNull('used_at'))
             ->when($status === 'expired', fn ($query) => $query->whereNull('used_at')->where('expires_at', '<=', now()))
             ->latest();
 
+        $invitations = $this->paginateList($query, $request, ['name', 'email', 'note'], []);
+
         return Inertia::render('admin/review-invitations/index', [
-            'invitations' => $this->paginateList($query, $request, ['name', 'email', 'note'], []),
+            'invitations' => $invitations->setCollection(
+                $invitations->getCollection()->map(fn (ReviewInvitation $invitation): array => (new ReviewInvitationResource($invitation))->resolve()),
+            ),
             'filters' => [
                 ...$this->listFilters($request, []),
                 'status' => is_string($status) ? $status : '',
@@ -47,14 +53,15 @@ class ReviewInvitationController extends Controller
 
     public function store(ReviewInvitationRequest $request): RedirectResponse
     {
-        ReviewInvitation::query()->create($request->invitationData());
+        $invitation = ReviewInvitation::query()->create($request->invitationData());
+        $invitation->syncSubjects($request->subjects());
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Lien créé, il ne reste qu’à le copier.')]);
 
         return to_route('admin.review-invitations.index');
     }
 
-    /** Révoque le lien : il ne fonctionne plus. Un avis déjà reçu reste en place. */
+    /** Révoque le lien : il ne fonctionne plus. Les avis déjà reçus restent en place. */
     public function destroy(ReviewInvitation $reviewInvitation): RedirectResponse
     {
         $reviewInvitation->delete();

@@ -15,7 +15,8 @@ class TestimonialSubmissionController extends Controller
     /**
      * Un avis déposé depuis le site, avec ou sans vidéo : il reste « en attente » tant que je ne l'ai
      * pas relu et approuvé dans l'admin, et n'apparaît pas avant. Déposé depuis un lien
-     * d'invitation, il prend le rattachement choisi dans l'admin et le lien ne resservira plus.
+     * d'invitation, il prend les rattachements choisis dans l'admin et compte une utilisation
+     * du lien (un lien personnel ne resservira plus).
      */
     public function store(TestimonialSubmissionRequest $request): RedirectResponse
     {
@@ -27,15 +28,19 @@ class TestimonialSubmissionController extends Controller
             'author_name' => $request->validated('author_name'),
             'author_email' => $request->validated('author_email'),
             'author_role' => $request->validated('author_role'),
-            'project_id' => $invitation ? $invitation->project_id : $request->validated('project_id'),
-            'experience_id' => $invitation ? $invitation->experience_id : $request->validated('experience_id'),
-            'education_id' => $invitation ? $invitation->education_id : $request->validated('education_id'),
+            'review_invitation_id' => $invitation?->id,
             'content' => [app()->getLocale() => $request->validated('content')],
             'status' => TestimonialStatus::Pending,
             'submitted_at' => now(),
         ]);
 
-        $invitation?->forceFill(['used_at' => now(), 'testimonial_id' => $testimonial->id])->save();
+        $testimonial->syncSubjects($invitation ? $invitation->subjectIds() : [
+            'project_ids' => array_filter([$request->validated('project_id')]),
+            'experience_ids' => array_filter([$request->validated('experience_id')]),
+            'education_ids' => array_filter([$request->validated('education_id')]),
+        ]);
+
+        $invitation?->recordUse();
 
         if ($request->hasFile('video')) {
             $testimonial->attachVideo($request->file('video'));
