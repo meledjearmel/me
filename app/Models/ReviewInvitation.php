@@ -94,7 +94,11 @@ class ReviewInvitation extends Model
         $this->save();
     }
 
-    /** `pending` (lien valable), `used` (avis reçu ou limite atteinte) ou `expired`. */
+    /**
+     * `pending` (lien valable), `used` (avis reçu ou limite atteinte) ou `expired`.
+     *
+     * @return Attribute<string, never>
+     */
     protected function status(): Attribute
     {
         return Attribute::get(fn (): string => match (true) {
@@ -104,7 +108,11 @@ class ReviewInvitation extends Model
         });
     }
 
-    /** Le lien à envoyer : la page des avis, qui ouvre le formulaire prérempli. */
+    /**
+     * Le lien à envoyer : la page des avis, qui ouvre le formulaire prérempli.
+     *
+     * @return Attribute<non-falsy-string, never>
+     */
     protected function url(): Attribute
     {
         return Attribute::get(fn (): string => rtrim((string) config('app.url'), '/')."/{$this->locale}/testimonials?invitation={$this->token}");
