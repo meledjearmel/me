@@ -18,6 +18,25 @@ class Celebration extends Model
     /** @use HasFactory<CelebrationFactory> */
     use HasFactory, HasTranslations;
 
+    /**
+     * Règles d'une surprise proposée par l'IA (révision relue avant application) ; le message
+     * et le bouton y sont dans une seule langue.
+     *
+     * @var array<string, list<string>>
+     */
+    public const array DRAFT_RULES = [
+        'message' => ['required', 'string', 'max:280'],
+        'button_label' => ['required', 'string', 'max:40'],
+        'congratulated_for' => ['required', 'string', 'max:150'],
+        'starts_at' => ['nullable', 'date_format:Y-m-d'],
+        'ends_at' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:starts_at'],
+        'weight' => ['integer', 'min:1', 'max:100'],
+        'chance_percent' => ['integer', 'min:1', 'max:100'],
+        'delay_seconds' => ['integer', 'min:0', 'max:600'],
+        'display_seconds' => ['integer', 'min:5', 'max:120'],
+        'snooze_days' => ['integer', 'min:0', 'max:365'],
+    ];
+
     /** @var array<int, string> */
     protected $translatable = ['message', 'button_label'];
 

@@ -24,6 +24,7 @@ use App\Mcp\Tools\GetSigningKeyBackupTool;
 use App\Mcp\Tools\GetStatsTool;
 use App\Mcp\Tools\GetWeeklyReportTool;
 use App\Mcp\Tools\ListAppReleasesTool;
+use App\Mcp\Tools\ListCelebrationsTool;
 use App\Mcp\Tools\ListCommercialDocumentsTool;
 use App\Mcp\Tools\ListContentsTool;
 use App\Mcp\Tools\ListEstimateRequestsTool;
@@ -37,6 +38,7 @@ use App\Mcp\Tools\PrepareSigningKeyBackupTool;
 use App\Mcp\Tools\ProposeRevisionTool;
 use App\Mcp\Tools\PublishAppReleaseTool;
 use App\Mcp\Tools\ReadWebPageTool;
+use App\Mcp\Tools\SaveCelebrationTool;
 use App\Mcp\Tools\SaveContentDraftTool;
 use App\Mcp\Tools\SaveContentTranslationTool;
 use App\Mcp\Tools\SaveEstimateAnalysisTool;
@@ -75,7 +77,8 @@ Pour un article du blog : get-catalog (tags, séries avec leurs articles dans l'
 - Séries : si le sujet prolonge une série existante (post_series), lis ses articles (get-post) pour assurer la continuité (rappel de la partie précédente, pas de redite) et place l'article à next_position ; propose une nouvelle série seulement si le développeur prévoit plusieurs parties.
 - Inspiration : read-web-page lit un article existant donné par le développeur. Ne recopie jamais : reformule, apporte son expérience et son code, et cite la source avec un lien quand une idée en vient.
 - Images : add-post-image ajoute la couverture ou une image du contenu (capture, schéma), puis insère la balise <img> renvoyée dans body. Sans image fournie, propose un plan d'images : emplacement, type (capture réelle de préférence, schéma, illustration), utilité, et pour les images à générer un prompt professionnel en anglais prêt à copier (format, style sobre et cohérent, sans texte incrusté) ; voir le prompt plan-post-images.
-Autres contenus (expériences, formations, certifications, page « Uses », compétences, offres de la page « Services ») : list-contents décrit les champs du type et liste l'existant (pas de doublon), get-content lit un contenu, save-content-draft crée ou modifie un brouillon en français ; voir le prompt add-content.
+Autres contenus (expériences, formations, certifications, distinctions, page « Uses », compétences, offres de la page « Services ») : list-contents décrit les champs du type et liste l'existant (pas de doublon), get-content lit un contenu, save-content-draft crée ou modifie un brouillon en français ; voir le prompt add-content.
+Surprises (bonnes nouvelles qu'Armi, l'avatar du site, annonce au hasard ; les visiteurs félicitent d'un clic) : list-celebrations les liste avec leurs félicitations, save-celebration en crée une en brouillon (message et bouton en français et en anglais, ton chaleureux et sobre, à la première personne) : elle reste désactivée jusqu'à ce que le développeur la relise et l'active. Pour changer une surprise existante, ne la modifie jamais : propose-revision avec le type « celebration » (message et button_label en fr et en, autres champs comme congratulated_for, ends_at ou chance_percent dans fr).
 Ne traduis en anglais (save-project-translation, save-post-translation, save-content-translation) que lorsque le développeur a validé le français et te le demande.
 Contenu déjà publié (ou page « Now ») : ne le modifie jamais directement. Lis-le, vérifie list-revisions pour ne pas proposer deux fois la même chose, puis propose-revision avec seulement les champs modifiés, en français et en anglais, et un résumé de ce qui change et pourquoi ; le développeur relit l'avant/après et applique. Pour une image d'un projet ou d'un article publié, add-project-image ou add-post-image avec summary : la couverture ou l'image de galerie devient elle aussi une révision à appliquer.
 Estimateur de projet : get-estimator lit la grille (heures de travail hors marge, facturation forfait ou à l'heure) et les réglages (taux horaire par devise, marge pour imprévus, heures par semaine). Pour tout configurer d'un coup (réglages et plusieurs éléments), utilise configure-estimator : donne une ref à chaque nouveau type de projet pour qu'une option le vise dans project_types (option réservée à ces types ; vide = pour tous) ; une option dont le coût grandit avec le projet (multilingue…) se chiffre en pourcentage (pricing « percent ») ; un service payé à chaque période (maintenance, hébergement, support) est une option « recurring » : heures par mois, et periods donne les périodes proposées avec leur remise (ex. {"monthly": 0, "yearly": 15}), hors total du projet. save-estimator-item ajoute ou corrige un seul élément. Les éléments créés restent masqués jusqu'à ce que le développeur les active ; chiffre des heures réalistes pour un développeur expérimenté, cohérentes avec le reste de la grille. Pour une demande reçue : list-estimate-requests, puis save-estimate-analysis ; l'objectif est d'éviter une sous-estimation (ce que les choix ne couvrent pas, points flous, questions à poser au client, heures marge comprise, « hourly » quand le périmètre est trop flou pour un forfait sûr).
@@ -109,6 +112,8 @@ class PortfolioServer extends Server
         GetContentTool::class,
         SaveContentDraftTool::class,
         SaveContentTranslationTool::class,
+        ListCelebrationsTool::class,
+        SaveCelebrationTool::class,
         ProposeRevisionTool::class,
         ListRevisionsTool::class,
         GetEstimatorTool::class,

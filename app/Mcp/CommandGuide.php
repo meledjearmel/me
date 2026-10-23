@@ -189,8 +189,21 @@ class CommandGuide
             'tips' => ['Pour une expérience, les réalisations sont traduites dans le même ordre.'],
             'example' => 'Traduis le brouillon d\'expérience #3 en anglais.',
         ],
+        'list-celebrations' => [
+            'usage' => 'Voir les surprises qu\'Armi annonce aux visiteurs, et combien de félicitations chacune a reçues.',
+            'tips' => ['Indique aussi celles qui s\'affichent en ce moment (actives et dans leur période).'],
+            'example' => 'Combien de félicitations ont reçu mes surprises ?',
+        ],
+        'save-celebration' => [
+            'usage' => 'Créer une surprise en brouillon, message et bouton en français et en anglais.',
+            'tips' => [
+                'Elle reste désactivée : vous la relisez et l\'activez dans « Surprises ».',
+                'Pour modifier une surprise existante, l\'agent propose une révision : rien ne change avant votre validation.',
+            ],
+            'example' => 'Crée une surprise : je viens d\'obtenir ma certification AWS, jusqu\'à fin décembre.',
+        ],
         'propose-revision' => [
-            'usage' => 'Proposer une modification d\'un contenu déjà en ligne ou de la page « Now » ; rien ne change avant votre validation.',
+            'usage' => 'Proposer une modification d\'un contenu déjà en ligne, d\'une surprise ou de la page « Now » ; rien ne change avant votre validation.',
             'tips' => [
                 'Vous voyez l\'avant/après dans « Révisions IA » et appliquez ou rejetez.',
                 'Le français et l\'anglais sont proposés ensemble, puisque le contenu est en ligne dans les deux langues.',
@@ -369,6 +382,8 @@ class CommandGuide
         'get-content' => 'Lire un contenu',
         'save-content-draft' => 'Brouillon de contenu',
         'save-content-translation' => 'Traduire un contenu',
+        'list-celebrations' => 'Voir les surprises',
+        'save-celebration' => 'Créer une surprise',
         'propose-revision' => 'Proposer une modification',
         'list-revisions' => 'Révisions en attente',
         'get-estimator' => 'Lire l\'estimateur',

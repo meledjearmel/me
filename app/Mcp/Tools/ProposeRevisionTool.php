@@ -46,9 +46,9 @@ class ProposeRevisionTool extends Tool
     public function schema(JsonSchema $schema): array
     {
         return [
-            'type' => $schema->string()->enum(app(ContentRevisions::class)->typeNames())->description('Type du contenu publié.')->required(),
+            'type' => $schema->string()->enum(app(ContentRevisions::class)->typeNames())->description('Type du contenu publié (celebration : une surprise).')->required(),
             'id' => $schema->integer()->description('Identifiant du contenu (absent pour now_page).'),
-            'fr' => $schema->object()->description('Champs modifiés en français, ex. {"tagline": "…"} ; pour now_page : {"now_content": "…"} (texte brut, 5 000 caractères max., mentions acceptées).'),
+            'fr' => $schema->object()->description('Champs modifiés en français, ex. {"tagline": "…"} ; pour celebration : message, button_label et les réglages (congratulated_for, starts_at, ends_at, weight, chance_percent, delay_seconds, display_seconds, snooze_days) ; pour now_page : {"now_content": "…"} (texte brut, 5 000 caractères max., mentions acceptées).'),
             'en' => $schema->object()->description('Les mêmes champs en anglais ; les listes (decisions, key_figure_labels, highlights) complètes et dans le même ordre que le français.'),
             'summary' => $schema->string()->description('Ce qui change et pourquoi, en une à trois phrases, pour le développeur.')->required(),
         ];
