@@ -221,9 +221,10 @@ class CommandGuide
             'example' => 'Relis la grille de mon estimateur de projet et dis-moi ce qui te paraît sous-estimé.',
         ],
         'save-estimator-item' => [
-            'usage' => 'Ajouter un type de projet ou une option à la grille de l\'estimateur, ou corriger ses heures.',
+            'usage' => 'Ajouter un type de projet ou une option à la grille de l\'estimateur, ou proposer une correction de ses heures.',
             'tips' => [
                 'Un élément créé reste masqué aux visiteurs : vous l\'activez dans l\'admin après relecture.',
+                'Corriger un élément existant crée une révision : vous voyez l\'avant/après dans « Révisions IA » et l\'appliquez.',
                 'Les heures sont hors marge : le site ajoute lui-même la marge pour imprévus.',
             ],
             'example' => 'Ajoute à mon estimateur une option « Application mobile compagnon ».',
@@ -233,6 +234,7 @@ class CommandGuide
             'tips' => [
                 'Décrivez votre activité et vos tarifs : l\'agent crée la grille complète en un seul appel.',
                 'Rien n\'est enregistré si une partie est invalide ; les éléments créés restent masqués jusqu\'à leur activation.',
+                'Changer les taux, la marge, une grille ou un élément existant devient une révision : rien ne change avant que vous l\'appliquiez.',
             ],
             'example' => 'Configure mon estimateur : sites vitrines, boutiques et apps mobiles, 100 CHF de l\'heure, 20 % de marge.',
         ],

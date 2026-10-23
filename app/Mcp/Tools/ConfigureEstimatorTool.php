@@ -2,6 +2,8 @@
 
 namespace App\Mcp\Tools;
 
+use App\Mcp\Concerns\NamesAiClient;
+use App\Services\Ai\ContentRevisions;
 use App\Services\EstimatorConfigurator;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\JsonSchema\Types\Type;
@@ -13,13 +15,27 @@ use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 
 #[Name('configure-estimator')]
-#[Description('Configure tout l\'estimateur de projet en un seul appel : réglages (taux horaire global par devise, marge, heures par semaine), grilles tarifaires (taux nommés, avec une ref) et autant d\'éléments que nécessaire, créés ou modifiés (avec id). Chaque élément peut porter une ref, pour qu\'une option la vise dans project_types : l\'option est alors réservée à ces types de projet (identifiants existants ou ref de types créés dans le même appel). Une option se chiffre en heures ou en pourcentage des heures du projet. Le taux d\'un élément : ses hourly_rates, sinon sa grille (rate), sinon le taux global. Tout est validé puis appliqué d\'un bloc ; les éléments créés restent masqués jusqu\'à leur activation dans l\'administration. Lis d\'abord get-estimator.')]
+#[Description('Configure tout l\'estimateur de projet en un seul appel : réglages (taux horaire global par devise, marge, heures par semaine), grilles tarifaires (taux nommés, avec une ref) et autant d\'éléments que nécessaire, créés ou modifiés (avec id). Chaque élément peut porter une ref, pour qu\'une option la vise dans project_types : l\'option est alors réservée à ces types de projet (identifiants existants ou ref de types créés dans le même appel). Une option se chiffre en heures ou en pourcentage des heures du projet. Le taux d\'un élément : ses hourly_rates, sinon sa grille (rate), sinon le taux global. Tout est validé d\'un bloc. Créer des éléments s\'applique tout de suite, mais ils restent masqués jusqu\'à leur activation dans l\'administration ; changer les réglages, les grilles tarifaires ou un élément existant devient une révision (avec summary) que le développeur relit et applique : rien ne change avant. Lis d\'abord get-estimator.')]
 class ConfigureEstimatorTool extends Tool
 {
-    public function handle(Request $request, EstimatorConfigurator $configurator): Response
+    use NamesAiClient;
+
+    public function handle(Request $request, EstimatorConfigurator $configurator, ContentRevisions $revisions): Response
     {
+        $input = $request->only(['settings', 'rates', 'items']);
+
         try {
-            $result = $configurator->apply($request->only(['settings', 'rates', 'items']));
+            if ($configurator->needsReview($input)) {
+                if (blank($request->get('summary'))) {
+                    return Response::error('Ce changement touche les réglages, les grilles ou un élément existant : il devient une révision à valider. Ajoute summary (ce qui change et pourquoi).');
+                }
+
+                $revision = $revisions->proposeEstimator($input, $request->get('summary'), $this->aiClient($request));
+
+                return Response::text("Révision #{$revision->id} proposée ; rien n'a changé sur le site (réglages, grilles et éléments existants se valident avant d'être appliqués). Le développeur la relit et l'applique ici : ".route('admin.revisions.show', $revision));
+            }
+
+            $result = $configurator->apply($input);
         } catch (ValidationException $exception) {
             return Response::error('Configuration refusée, rien n\'a été enregistré : '.collect($exception->errors())
                 ->map(fn (array $messages, string $field): string => "{$field} : {$messages[0]}")
@@ -39,6 +55,7 @@ class ConfigureEstimatorTool extends Tool
     public function schema(JsonSchema $schema): array
     {
         return [
+            'summary' => $schema->string()->description('Ce qui change et pourquoi, en une à trois phrases, pour le développeur : obligatoire dès qu\'on touche aux réglages, aux grilles ou à un élément existant (révision à valider).'),
             'settings' => $schema->object([
                 'hourly_rates' => $schema->object([
                     'CHF' => $schema->integer(),
