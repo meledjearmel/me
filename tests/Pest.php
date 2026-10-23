@@ -48,3 +48,23 @@ function something()
 {
     // ..
 }
+
+/**
+ * Bibliothèque de logos isolée, avec les fichiers donnés (ex. « php-light.svg ») : les logos
+ * de public/icons/tech ne sont pas versionnés, donc absents du CI.
+ *
+ * @param  list<string>  $files
+ */
+function fakeTechnologyIcons(array $files): string
+{
+    $directory = sys_get_temp_dir().'/technology-icons-'.Illuminate\Support\Str::random(12);
+    Illuminate\Support\Facades\File::ensureDirectoryExists($directory);
+
+    foreach ($files as $file) {
+        file_put_contents("{$directory}/{$file}", '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"/>');
+    }
+
+    app()->instance(App\Services\TechnologyIconLibrary::class, new App\Services\TechnologyIconLibrary($directory));
+
+    return $directory;
+}

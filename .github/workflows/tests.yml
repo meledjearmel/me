@@ -34,5 +34,9 @@ jobs:
       - name: Setup Application
         run: composer setup
 
+      # Clés OAuth de Passport (connecteur MCP) : non versionnées, absentes d'un poste neuf.
+      - name: Generate Passport keys
+        run: php artisan passport:keys --force
+
       - name: Run CI Checks
         run: composer ci:check

@@ -9,6 +9,7 @@ test('guests are redirected to the login page', function () {
 });
 
 test('authenticated users can create a technology', function () {
+    fakeTechnologyIcons(['laravel.svg']);
     $user = User::factory()->create();
     $category = TechnologyCategory::factory()->create();
 
@@ -63,6 +64,7 @@ test('the icon can be removed from a technology', function () {
 });
 
 test('the forms offer the logos of the library and the categories', function () {
+    fakeTechnologyIcons(['php-light.svg', 'php-dark.svg']);
     $user = User::factory()->create();
     $technology = Technology::factory()->create();
     $category = TechnologyCategory::factory()->create(['label' => ['fr' => 'Ma catégorie', 'en' => 'My category']]);

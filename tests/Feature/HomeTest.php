@@ -72,6 +72,7 @@ test('archived projects never appear on the home page', function () {
 });
 
 test('technologies expose theme icons only when an icon file exists', function () {
+    fakeTechnologyIcons(['php-light.svg', 'php-dark.svg', 'react.svg']);
     Technology::factory()->create(['name' => 'PHP', 'icon' => 'php']);
     Technology::factory()->create(['name' => 'React', 'icon' => 'react']);
     Technology::factory()->create(['name' => 'Inconnue', 'icon' => 'aucune-icone']);
