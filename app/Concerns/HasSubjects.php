@@ -56,10 +56,19 @@ trait HasSubjects
     public function subjectIds(): array
     {
         return [
-            'project_ids' => array_values($this->projects()->get(['projects.id'])->modelKeys()),
-            'experience_ids' => array_values($this->experiences()->get(['experiences.id'])->modelKeys()),
-            'education_ids' => array_values($this->educations()->get(['educations.id'])->modelKeys()),
+            'project_ids' => $this->relatedIds($this->projects(), 'projects.id'),
+            'experience_ids' => $this->relatedIds($this->experiences(), 'experiences.id'),
+            'education_ids' => $this->relatedIds($this->educations(), 'educations.id'),
         ];
+    }
+
+    /**
+     * @param  MorphToMany<covariant \Illuminate\Database\Eloquent\Model, $this>  $relation
+     * @return list<int>
+     */
+    private function relatedIds(MorphToMany $relation, string $column): array
+    {
+        return array_values($relation->pluck($column)->map(fn (mixed $id): int => (int) $id)->all());
     }
 
     /**

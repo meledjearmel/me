@@ -1,4 +1,7 @@
 includes:
+    # Dette existante (513 erreurs au 2026-10-23), à résorber fichier par fichier : toute
+    # nouvelle erreur reste bloquante. Après une correction : composer types:check -- --generate-baseline phpstan-baseline.neon.
+    - phpstan-baseline.neon
     - vendor/larastan/larastan/extension.neon
     - vendor/nesbot/carbon/extension.neon
 

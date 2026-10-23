@@ -1,0 +1,2611 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Using nullsafe property access "\?\-\>published_at" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Concerns/SavesPosts.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Admin\\DistinctionController\:\:contextOptions\(\) should return array\{experience\: list\<array\{id\: int, label\: string\}\>, education\: list\<array\{id\: int, label\: string\}\>, project\: list\<array\{id\: int, label\: string\}\>\} but returns array\{experience\: array\<int, array\{id\: int\<0, max\>, label\: non\-falsy\-string\}\>, education\: array\<int, array\{id\: int\<0, max\>, label\: non\-falsy\-string\}\>, project\: array\<int, array\{id\: int\<0, max\>, label\: mixed\}\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Admin/DistinctionController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),Illuminate\\Database\\Eloquent\\Model\>\:\:transform\(\) expects \(callable\(Illuminate\\Database\\Eloquent\\Model, int\|string\)\: array\<string, mixed\>\)\|\(callable\(mixed, int\)\: array\<string, mixed\>\), Closure\(App\\Models\\Distinction\)\: array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Admin/DistinctionController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Admin\\EstimatorItemController\:\:projectTypeOptions\(\) should return list\<array\{id\: int, label\: string\}\> but returns array\<int, array\{id\: int\<0, max\>, label\: mixed\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Admin/EstimatorItemController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Admin\\EstimatorItemController\:\:rateOptions\(\) should return list\<array\{id\: int, label\: string, rates\: array\<string, int\>\}\> but returns array\<int, array\{id\: int\<0, max\>, label\: mixed, rates\: array\<string, int\>\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Admin/EstimatorItemController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Admin\\JobApplicationController\:\:formOptions\(\) should return array\{jobProfiles\: list\<array\{id\: int, label\: string\}\>, projects\: list\<array\{id\: int, label\: string\}\>\} but returns array\{jobProfiles\: array\<int, array\{id\: int\<0, max\>, label\: mixed\}\>, projects\: array\<int, array\{id\: int\<0, max\>, label\: mixed\}\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Admin/JobApplicationController.php
+
+		-
+			message: '#^Access to an undefined property Laravel\\Passport\\PersonalAccessTokenResult\|Laravel\\Sanctum\\NewAccessToken\:\:\$plainTextToken\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/McpTokenController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Admin\\McpTokenController\:\:connectors\(\) should return Illuminate\\Support\\Collection\<int, array\{id\: string, name\: string, last_connected_at\: string\|null\}\> but returns Illuminate\\Support\\Collection\<int, array\{id\: string, name\: mixed, last_connected_at\: mixed\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Admin/McpTokenController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Controllers/Admin/McpTokenController.php
+
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\FilesystemAdapter\:\:url\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Admin/PostController.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Http/Controllers/Admin/PostController.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Http/Controllers/Admin/PostController.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Http/Controllers/Admin/ProjectController.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Http/Controllers/Admin/ProjectController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Admin\\ServiceController\:\:formOptions\(\) should return array\{projectTypes\: list\<array\{id\: int, label\: string\}\>, projects\: list\<array\{id\: int, label\: string\}\>\} but returns array\{projectTypes\: array\<int, array\{id\: int\<0, max\>, label\: mixed\}\>, projects\: array\<int, array\{id\: int\<0, max\>, label\: mixed\}\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Admin/ServiceController.php
+
+		-
+			message: '#^Parameter \#1 \$svg of method App\\Services\\TechnologyIconLibrary\:\:store\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Admin/TechnologyIconController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$artist\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$author_name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$body\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$degree\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$deleted_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$institution\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$issuer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$label\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 5
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$position\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$role\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$starts_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$subject\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			message: '#^Unable to resolve the template type TFlatMapKey in call to method Illuminate\\Support\\Collection\<string,array\<string, string\>\>\:\:flatMap\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			message: '#^Unable to resolve the template type TFlatMapValue in call to method Illuminate\\Support\\Collection\<string,array\<string, string\>\>\:\:flatMap\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Http/Controllers/Admin/TrashController.php
+
+		-
+			message: '#^Cannot call method toIso8601String\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/V1/AppReleaseController.php
+
+		-
+			message: '#^Parameter \#1 \$stream of function fclose expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/V1/AppReleaseController.php
+
+		-
+			message: '#^Parameter \#2 \$to of function stream_copy_to_stream expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/V1/AppReleaseController.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\User\>\:\:createToken\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Call to an undefined method Laravel\\Passport\\Contracts\\ScopeAuthorizable\|Laravel\\Sanctum\\PersonalAccessToken\:\:delete\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Http\\Controllers\\Api\\V1\\AuthController\:\:consumeValidRecoveryCode\(\) expects App\\Models\\User, App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\User\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Http\\Controllers\\Api\\V1\\AuthController\:\:hasValidCode\(\) expects App\\Models\\User, App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\User\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/V1/AuthController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\AvailabilityController\:\:payload\(\) should return array\{rules\: list\<array\{id\: int, days\: list\<string\>, start\: string, end\: string\}\>, blocked_periods\: list\<array\{id\: int, label\: string\|null, from\: string, to\: string\}\>\} but returns array\{rules\: array\<int, array\{id\: int, days\: list\<string\>, start\: string, end\: string\}\>, blocked_periods\: array\<int, array\{id\: int, label\: string\|null, from\: string, to\: string\}\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Api/V1/AvailabilityController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\GitHubController\:\:payload\(\) should return array\{available\: list\<array\{full_name\: string, name\: string, description\: string\|null, language\: string\|null, stars\: int, url\: string, pushed_at\: string\|null, private\: bool, \.\.\.\}\>, selected\: list\<string\>, calendar\: list\<array\{date\: string, count\: int, level\: int, repositories\: list\<array\{full_name\: string, private\: bool, count\: int\}\>\}\>\|null, synced_at\: string\|null, has_token\: bool\} but returns array\{available\: mixed, selected\: array, calendar\: mixed, synced_at\: mixed, has_token\: bool\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/Api/V1/GitHubController.php
+
+		-
+			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\FilesystemAdapter\:\:url\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/V1/PostController.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Http/Controllers/Api/V1/PostController.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Http/Controllers/Api/V1/PostController.php
+
+		-
+			message: '#^Parameter \#1 \$stream of function fclose expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/V1/SigningKeyBackupController.php
+
+		-
+			message: '#^Parameter \#2 \$to of function stream_copy_to_stream expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/V1/SigningKeyBackupController.php
+
+		-
+			message: '#^Parameter \#1 \$svg of method App\\Services\\TechnologyIconLibrary\:\:store\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/V1/TechnologyIconController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$artist\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$author_name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/V1/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$body\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/V1/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$degree\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$deleted_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/V1/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$institution\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$issuer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$label\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/Api/V1/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$position\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$role\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$starts_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$subject\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/TrashController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Http/Controllers/Api/V1/TrashController.php
+
+		-
+			message: '#^Unable to resolve the template type TFlatMapKey in call to method Illuminate\\Support\\Collection\<string,array\<string, string\>\>\:\:flatMap\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Http/Controllers/Api/V1/TrashController.php
+
+		-
+			message: '#^Unable to resolve the template type TFlatMapValue in call to method Illuminate\\Support\\Collection\<string,array\<string, string\>\>\:\:flatMap\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Http/Controllers/Api/V1/TrashController.php
+
+		-
+			message: '#^Cannot call method isoFormat\(\) on Carbon\\CarbonImmutable\|string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/AppointmentBookingController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:published\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/BlogController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\BlogController\:\:matchingPostIds\(\) should return list\<int\> but returns array\<int, \(int\|string\)\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/BlogController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\BlogController\:\:series\(\) should return array\{name\: string, parts\: list\<array\{slug\: string, title\: string, position\: int\|null, current\: bool\}\>\}\|null but returns array\{name\: mixed, parts\: array\<int, array\{slug\: string, title\: mixed, position\: int\<0, max\>\|null, current\: bool\}\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/BlogController.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\HttpFoundation\\Response\:\:withHeaders\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/CommercialDocumentController.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\HttpFoundation\\Response\:\:withHeaders\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/JobApplicationController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Engagement\:\:\$estimate_label\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/ProjectEstimateController.php
+
+		-
+			message: '#^Parameter \#1 \$projectType of method App\\Services\\ProjectEstimator\:\:estimate\(\) expects App\\Models\\EstimatorItem, App\\Models\\EstimatorItem\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\EstimatorItem\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/ProjectEstimateController.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Http/Controllers/ProjectEstimateController.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Http/Controllers/ProjectEstimateController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\SearchController\:\:match\(\) should return list\<array\{type\: string, title\: string, excerpt\: string\|null, url\: string\}\> but returns array\<int, array\{type\: string, title\: string, excerpt\: string\|null, url\: string\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Controllers/SearchController.php
+
+		-
+			message: '#^Parameter \#1 \$projectIds of method App\\Http\\Controllers\\ServiceController\:\:testimonialsByProject\(\) expects list\<int\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/ServiceController.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\OAuthUser\|App\\Models\\User\:\:hasEnabledTwoFactorAuthentication\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/SecurityController.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\OAuthUser\|App\\Models\\User\:\:passkeys\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Settings/SecurityController.php
+
+		-
+			message: '#^Method App\\Http\\Middleware\\HandleInertiaRequests\:\:playlist\(\) should return list\<array\{id\: int, key\: string, label\: string, tracks\: list\<array\{id\: int, title\: string, artist\: string\|null, url\: string\}\>\}\> but returns array\<int, array\{id\: int\<0, max\>, key\: string, label\: string, tracks\: non\-empty\-array\<int, array\{id\: mixed, title\: mixed, artist\: mixed, url\: mixed\}\>\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Http/Middleware/HandleInertiaRequests.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\MusicGenre\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Http/Middleware/HandleInertiaRequests.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\MusicGenre\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Http/Middleware/HandleInertiaRequests.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Support\\Collection\<int,array\<string, mixed\>\>\:\:all\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Http/Middleware/HandleInertiaRequests.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Support\\Collection\<int,array\<string, mixed\>\>\:\:values\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Http/Middleware/HandleInertiaRequests.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Http/Requests/Admin/CommercialDocumentRequest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Http/Requests/Admin/CommercialDocumentRequest.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Http/Requests/Admin/GitHubSelectionRequest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Http/Requests/Admin/GitHubSelectionRequest.php
+
+		-
+			message: '#^Call to an undefined method \(object\|string\)\:\:getKey\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Requests/Admin/TestimonialRequest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Support\\HigherOrderCollectionProxy\<string, TEnum of UnitEnum, Illuminate\\Support\\Collection\<\(int\|string\), TEnum of UnitEnum\>\>\:\:\$value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/AppointmentTypeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\CertificationResource\:\:\$drafted_by\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/CertificationResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Carbon\\CarbonImmutable\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/CertificationResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/DistinctionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\DomainResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/DomainResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EducationResource\:\:\$drafted_by\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/EducationResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EducationResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/EducationResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/EducationResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EngagementResource\:\:\$budget_label\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/EngagementResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\EngagementResource\:\:\$estimate_label\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/EngagementResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\ExperienceResource\:\:\$drafted_by\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/ExperienceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\ExperienceResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/ExperienceResource.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Http/Resources/Api/V1/ExperienceResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\JobProfileResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/JobProfileResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\PostResource\:\:\$drafted_by\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/PostResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\ProjectResource\:\:\$drafted_by\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/ProjectResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\SkillResource\:\:\$drafted_by\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/SkillResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\SkillResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/SkillResource.php
+
+		-
+			message: '#^PHPDoc tag @mixin contains non\-object type stdClass\.$#'
+			identifier: mixin.nonObject
+			count: 1
+			path: app/Http/Resources/Api/V1/TrashItemResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\Api\\V1\\UsesItemResource\:\:\$drafted_by\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Api/V1/UsesItemResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Support\\HigherOrderCollectionProxy\<string, TEnum of UnitEnum, Illuminate\\Support\\Collection\<\(int\|string\), TEnum of UnitEnum\>\>\:\:\$value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Public/AppointmentTypeResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Education\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Public/DistinctionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Experience\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Public/DistinctionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Education\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Public/TestimonialResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Experience\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/Public/TestimonialResource.php
+
+		-
+			message: '#^Cannot call method isoFormat\(\) on Carbon\\CarbonImmutable\|string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Mail/AppointmentReceivedMail.php
+
+		-
+			message: '#^Cannot call method isoFormat\(\) on Carbon\\CarbonImmutable\|string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Mail/AppointmentVisitorMail.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Mail/AppointmentVisitorMail.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Mail/VisitorAcknowledgementMail.php
+
+		-
+			message: '#^Cannot call method isoFormat\(\) on Illuminate\\Support\\Carbon\|string\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Mail/WeeklyReportMail.php
+
+		-
+			message: '#^Method App\\Mcp\\ActivityLog\:\:filterOptions\(\) should return array\{clients\: list\<string\>, tools\: list\<array\{value\: string, label\: string\}\>\} but returns array\{clients\: array\<mixed\>, tools\: array\<int, array\{value\: string, label\: string\}\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Mcp/ActivityLog.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Carbon\\CarbonImmutable\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Mcp/ActivityLog.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), Laravel\\Passport\\Client\>\|Laravel\\Passport\\Client\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/AiClient.php
+
+		-
+			message: '#^Instanceof between null and Laravel\\Passport\\AccessToken will always evaluate to false\.$#'
+			identifier: instanceof.alwaysFalse
+			count: 1
+			path: app/Mcp/AiClient.php
+
+		-
+			message: '#^Method App\\Mcp\\CommandGuide\:\:all\(\) should return array\{prompts\: list\<array\<string, mixed\>\>, tools\: list\<array\<string, mixed\>\>\} but returns array\{prompts\: array\<array\<string, mixed\>\>, tools\: array\<array\<string, mixed\>\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Mcp/CommandGuide.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\>\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/AddPostImageTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\>\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/AddPostImageTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\>\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/AddPostImageTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\>\:\:addMediaFromString\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/AddPostImageTool.php
+
+		-
+			message: '#^Parameter \#1 \$content of method App\\Services\\Ai\\ContentRevisions\:\:proposeImage\(\) expects App\\Models\\Post\|App\\Models\\Project, App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/AddPostImageTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Mcp/Tools/AddProjectImageTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/AddProjectImageTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/AddProjectImageTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:addMediaFromString\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/AddProjectImageTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:getMedia\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/AddProjectImageTool.php
+
+		-
+			message: '#^Parameter \#1 \$content of method App\\Services\\Ai\\ContentRevisions\:\:proposeImage\(\) expects App\\Models\\Post\|App\\Models\\Project, App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/AddProjectImageTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Appointment\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Appointment\>\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/DecideAppointmentTool.php
+
+		-
+			message: '#^Parameter \#1 \$appointment of method App\\Services\\BookingCalendar\:\:confirm\(\) expects App\\Models\\Appointment, App\\Models\\Appointment\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Appointment\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/DecideAppointmentTool.php
+
+		-
+			message: '#^Parameter \#1 \$appointment of method App\\Services\\BookingCalendar\:\:decline\(\) expects App\\Models\\Appointment, App\\Models\\Appointment\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Appointment\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/DecideAppointmentTool.php
+
+		-
+			message: '#^Parameter \#1 \$engagement of method App\\Services\\CommercialDocuments\:\:draftFromEngagement\(\) expects App\\Models\\Engagement, App\\Models\\Engagement\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Engagement\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/DraftQuoteTool.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Mcp/Tools/GetCatalogTool.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Mcp/Tools/GetCatalogTool.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/GetContentTool.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model\:\:getKey\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/GetContentTool.php
+
+		-
+			message: '#^Parameter \#2 \$content of method App\\Services\\Ai\\ContentDraftWriter\:\:english\(\) expects Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/GetContentTool.php
+
+		-
+			message: '#^Parameter \#2 \$content of method App\\Services\\Ai\\ContentDraftWriter\:\:toInput\(\) expects Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/GetContentTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Engagement\:\:\$budget_label\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/GetInboxTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Engagement\:\:\$estimate_label\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/GetInboxTool.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Engagement\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Mcp/Tools/GetInboxTool.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Engagement\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Mcp/Tools/GetInboxTool.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Support\\Collection\<int,array\<string, mixed\>\>\:\:all\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Mcp/Tools/GetInboxTool.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Carbon\\CarbonImmutable\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Mcp/Tools/GetInboxTool.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type App\\Enums\\AppointmentLocation\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Mcp/Tools/GetInboxTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\>\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/GetPostTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\>\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/GetPostTool.php
+
+		-
+			message: '#^Parameter \#1 \$post of method App\\Services\\Ai\\PostDraftWriter\:\:toInput\(\) expects App\\Models\\Post, App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/GetPostTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/GetProjectTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/GetProjectTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:getMedia\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/GetProjectTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:hasMedia\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/GetProjectTool.php
+
+		-
+			message: '#^Parameter \#1 \$project of method App\\Services\\Ai\\ProjectDraftWriter\:\:toInput\(\) expects App\\Models\\Project, App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/GetProjectTool.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 2
+			path: app/Mcp/Tools/GetStatsTool.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 2
+			path: app/Mcp/Tools/GetStatsTool.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/ListContentsTool.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getTranslation\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/ListContentsTool.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Mcp/Tools/ListContentsTool.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Mcp/Tools/ListContentsTool.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Support\\Collection\<int,array\<string, mixed\>\>\:\:all\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Mcp/Tools/ListContentsTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Engagement\:\:\$estimate_label\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/ListEstimateRequestsTool.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Engagement\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Mcp/Tools/ListEstimateRequestsTool.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Engagement\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Mcp/Tools/ListEstimateRequestsTool.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Support\\Collection\<int,array\<string, mixed\>\>\:\:all\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Mcp/Tools/ListEstimateRequestsTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\JobApplication\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\JobApplication\>\:\:\$cv_tailoring\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/ListJobApplicationsTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\JobApplication\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\JobApplication\>\:\:\$intro\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/ListJobApplicationsTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\JobApplication\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\JobApplication\>\:\:\$job_posting_text\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/ListJobApplicationsTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\JobApplication\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\JobApplication\>\:\:\$job_posting_url\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/ListJobApplicationsTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\JobApplication\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\JobApplication\>\:\:\$locale\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/ListJobApplicationsTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\JobApplication\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\JobApplication\>\:\:\$notes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/ListJobApplicationsTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\JobApplication\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\JobApplication\>\:\:events\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/ListJobApplicationsTool.php
+
+		-
+			message: '#^Parameter \#1 \$application of method App\\Mcp\\Tools\\ListJobApplicationsTool\:\:summary\(\) expects App\\Models\\JobApplication, App\\Models\\JobApplication\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\JobApplication\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/ListJobApplicationsTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Contact\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Contact\>\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/MarkHandledTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Engagement\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Engagement\>\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Mcp/Tools/MarkHandledTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Contact\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Contact\>\:\:update\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/MarkHandledTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Engagement\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Engagement\>\:\:recordOutcome\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/MarkHandledTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Engagement\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Engagement\>\:\:update\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/MarkHandledTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PostComment\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\PostComment\>\:\:\$author_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/ModerateCommentTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\PostComment\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\PostComment\>\:\:update\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/ModerateCommentTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Testimonial\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Testimonial\>\:\:\$author_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/ModerateTestimonialTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Testimonial\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Testimonial\>\:\:update\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/ModerateTestimonialTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AppRelease\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\AppRelease\>\:\:\$build_number\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Mcp/Tools/PublishAppReleaseTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\AppRelease\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\AppRelease\>\:\:\$version_name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Mcp/Tools/PublishAppReleaseTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\AppRelease\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\AppRelease\>\:\:forceFill\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/PublishAppReleaseTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\AppRelease\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\AppRelease\>\:\:hasFile\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/PublishAppReleaseTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\AppRelease\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\AppRelease\>\:\:isPublished\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/PublishAppReleaseTool.php
+
+		-
+			message: '#^Cannot call method item\(\) on DOMNodeList\<DOMNameSpaceNode\|DOMNode\>\|false\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Mcp/Tools/ReadWebPageTool.php
+
+		-
+			message: '#^Parameter \#1 \$node of method App\\Mcp\\Tools\\ReadWebPageTool\:\:text\(\) expects DOMNode, DOMNameSpaceNode\|DOMNode given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/ReadWebPageTool.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model\:\:\$drafted_by\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveContentDraftTool.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model\:\:\$exists\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveContentDraftTool.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveContentDraftTool.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model\:\:getKey\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveContentDraftTool.php
+
+		-
+			message: '#^Parameter \#2 \$content of method App\\Services\\Ai\\ContentDraftWriter\:\:save\(\) expects Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/SaveContentDraftTool.php
+
+		-
+			message: '#^Parameter \#2 \$content of method App\\Services\\Ai\\ContentDraftWriter\:\:toInput\(\) expects Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/SaveContentDraftTool.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Mcp/Tools/SaveContentDraftTool.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Mcp/Tools/SaveContentDraftTool.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveContentTranslationTool.php
+
+		-
+			message: '#^Parameter \#2 \$content of method App\\Services\\Ai\\ContentDraftWriter\:\:saveTranslation\(\) expects Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/SaveContentTranslationTool.php
+
+		-
+			message: '#^Parameter \#1 \$engagement of method App\\Services\\Ai\\EstimateAssistant\:\:saveAnalysis\(\) expects App\\Models\\Engagement, App\\Models\\Engagement\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Engagement\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/SaveEstimateAnalysisTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\JobApplication\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\JobApplication\>\:\:\$company\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveJobApplicationTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\JobApplication\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\JobApplication\>\:\:\$drafted_by\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveJobApplicationTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\JobApplication\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\JobApplication\>\:\:\$locale\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveJobApplicationTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\JobApplication\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\JobApplication\>\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveJobApplicationTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\JobApplication\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\JobApplication\>\:\:\$token\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveJobApplicationTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\JobApplication\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\JobApplication\>\:\:fill\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveJobApplicationTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\JobApplication\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\JobApplication\>\:\:save\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveJobApplicationTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\JobApplication\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\JobApplication\>\:\:syncProjects\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveJobApplicationTool.php
+
+		-
+			message: '#^Parameter \#1 \$application of method App\\Services\\Ai\\CvTailor\:\:save\(\) expects App\\Models\\JobApplication, App\\Models\\JobApplication\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\JobApplication\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/SaveJobApplicationTool.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Mcp/Tools/SaveJobApplicationTool.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Mcp/Tools/SaveJobApplicationTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\>\:\:\$drafted_by\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SavePostDraftTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\>\:\:\$exists\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SavePostDraftTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\>\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SavePostDraftTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\>\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SavePostDraftTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\>\:\:previewUrl\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/SavePostDraftTool.php
+
+		-
+			message: '#^Parameter \#1 \$post of method App\\Services\\Ai\\PostDraftWriter\:\:save\(\) expects App\\Models\\Post, App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\>\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/SavePostDraftTool.php
+
+		-
+			message: '#^Parameter \#1 \$post of method App\\Services\\Ai\\PostDraftWriter\:\:toInput\(\) expects App\\Models\\Post, App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\>\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/SavePostDraftTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\>\:\:refresh\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/SavePostSocialTextsTool.php
+
+		-
+			message: '#^Parameter \#1 \$post of method App\\Services\\Syndication\\SocialKit\:\:save\(\) expects App\\Models\\Post, App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/SavePostSocialTextsTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\>\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SavePostTranslationTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\>\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SavePostTranslationTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\>\:\:previewUrl\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/SavePostTranslationTool.php
+
+		-
+			message: '#^Parameter \#1 \$post of method App\\Services\\Ai\\PostDraftWriter\:\:saveTranslation\(\) expects App\\Models\\Post, App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/SavePostTranslationTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:\$drafted_by\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveProjectDraftTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:\$exists\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveProjectDraftTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveProjectDraftTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveProjectDraftTool.php
+
+		-
+			message: '#^Parameter \#1 \$project of method App\\Services\\Ai\\ProjectDraftWriter\:\:save\(\) expects App\\Models\\Project, App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/SaveProjectDraftTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveProjectTranslationTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveProjectTranslationTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:getTranslation\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveProjectTranslationTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:save\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveProjectTranslationTool.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:setTranslation\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Mcp/Tools/SaveProjectTranslationTool.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 2
+			path: app/Mcp/Tools/SaveProjectTranslationTool.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 2
+			path: app/Mcp/Tools/SaveProjectTranslationTool.php
+
+		-
+			message: '#^Parameter \#1 \$post of method App\\Services\\Syndication\\PostSyndicator\:\:syndicate\(\) expects App\\Models\\Post, App\\Models\\Post\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Post\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/SyndicatePostTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/UpdateProjectDraftTool.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Mcp/Tools/UpdateProjectDraftTool.php
+
+		-
+			message: '#^Parameter \#1 \$project of method App\\Services\\Ai\\ProjectDraftWriter\:\:save\(\) expects App\\Models\\Project, App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/UpdateProjectDraftTool.php
+
+		-
+			message: '#^Parameter \#1 \$project of method App\\Services\\Ai\\ProjectDraftWriter\:\:toInput\(\) expects App\\Models\\Project, App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Mcp/Tools/UpdateProjectDraftTool.php
+
+		-
+			message: '#^Cannot call method toIso8601String\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Models/AppRelease.php
+
+		-
+			message: '#^Parameter \#2 \$resource of method Illuminate\\Filesystem\\FilesystemAdapter\:\:writeStream\(\) expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Models/AppRelease.php
+
+		-
+			message: '#^Property App\\Models\\Appointment\:\:\$schedule_id \(int\<0, max\>\|null\) does not accept int\|string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Models/Appointment.php
+
+		-
+			message: '#^PHPDoc type array\<string, mixed\> of property App\\Models\\AppointmentType\:\:\$casts is not covariant with PHPDoc type array\<string, string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$casts\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: app/Models/AppointmentType.php
+
+		-
+			message: '#^Method App\\Models\\Celebration\:\:showable\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Celebration.php
+
+		-
+			message: '#^Parameter \#1 \$lines of static method App\\Models\\CommercialDocument\:\:totalOf\(\) expects list\<array\{quantity\?\: float\|int\|string, unit_price\?\: float\|int\|string\}\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Models/CommercialDocument.php
+
+		-
+			message: '#^Property App\\Models\\CommercialDocument\:\:\$total \(int\<0, max\>\) does not accept int\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Models/CommercialDocument.php
+
+		-
+			message: '#^Unsafe call to private method App\\Models\\Congratulation\:\:shouldNotify\(\) through static\:\:\.$#'
+			identifier: staticClassAccess.privateMethod
+			count: 1
+			path: app/Models/Congratulation.php
+
+		-
+			message: '#^Parameter \#1 \$value of static method Illuminate\\Database\\Connection\:\:raw\(\) expects float\|int\|literal\-string, non\-falsy\-string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Models/Counter.php
+
+		-
+			message: '#^Method App\\Models\\Engagement\:\:budgetLabel\(\) return type with generic class Illuminate\\Database\\Eloquent\\Casts\\Attribute does not specify its types\: TGet, TSet$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Engagement.php
+
+		-
+			message: '#^Method App\\Models\\Engagement\:\:estimateLabel\(\) return type with generic class Illuminate\\Database\\Eloquent\\Casts\\Attribute does not specify its types\: TGet, TSet$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Engagement.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Models/Engagement.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Models/Engagement.php
+
+		-
+			message: '#^Method App\\Models\\EstimateSimulation\:\:prunable\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/EstimateSimulation.php
+
+		-
+			message: '#^Property App\\Models\\Post\:\:\$reading_minutes \(int\<0, max\>\) does not accept int\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Models/Post.php
+
+		-
+			message: '#^Call to an undefined method Spatie\\Image\\Drivers\\ImageDriver\:\:nonQueued\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Models/Profile.php
+
+		-
+			message: '#^Method App\\Models\\Service\:\:includesList\(\) should return list\<string\> but returns array\<int, non\-falsy\-string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Models/Service.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int\<0, max\>,string\|false\>\:\:map\(\) expects callable\(string\|false, int\<0, max\>\)\: string, Closure\(string\)\: string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Models/Service.php
+
+		-
+			message: '#^Parameter \#1 \$value of function collect expects Illuminate\\Contracts\\Support\\Arrayable\<int\<0, max\>, string\>\|iterable\<int\<0, max\>, string\>\|null, list\<string\>\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Models/Service.php
+
+		-
+			message: '#^Cannot call method toIso8601String\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Models/SigningKeyBackup.php
+
+		-
+			message: '#^Parameter \#2 \$resource of method Illuminate\\Filesystem\\FilesystemAdapter\:\:writeStream\(\) expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Models/SigningKeyBackup.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SiteSetting\:\:\$devto_api_key\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/SiteSetting.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SiteSetting\:\:\$hashnode_api_key\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/SiteSetting.php
+
+		-
+			message: '#^Parameter \#1 \$view of static method Laravel\\Passport\\Passport\:\:authorizationView\(\) expects \(Closure\(array\<string, mixed\>\)\: Symfony\\Component\\HttpFoundation\\Response\)\|string, Closure\(array\)\: Illuminate\\View\\View given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>social_links" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Ai/ContentDraftWriter.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:forgetTranslation\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Services/Ai/ContentDraftWriter.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getTranslation\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: app/Services/Ai/ContentDraftWriter.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:setTranslation\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Services/Ai/ContentDraftWriter.php
+
+		-
+			message: '#^Method App\\Services\\Ai\\ContentDraftWriter\:\:relationValue\(\) should return list\<mixed\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/Ai/ContentDraftWriter.php
+
+		-
+			message: '#^Unable to resolve the template type TMapWithKeysValue in call to method Illuminate\\Support\\Collection\<int,string\>\:\:mapWithKeys\(\)$#'
+			identifier: argument.templateType
+			count: 2
+			path: app/Services/Ai/ContentDraftWriter.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getTranslation\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Services/Ai/ContentRevisions.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Services/Ai/ContentRevisions.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Services/Ai/ContentRevisions.php
+
+		-
+			message: '#^Method App\\Services\\Ai\\CvTailor\:\:material\(\) should return array\{text\: string, experiences\: list\<array\{id\: int, company\: string, role\: string, highlights\: list\<array\{id\: int, text\: string\}\>\}\>, skills\: list\<array\{id\: int, name\: string\}\>\} but returns array\{text\: non\-falsy\-string, experiences\: array\<int, array\{id\: int\<0, max\>, company\: string, role\: mixed, highlights\: array\<int, array\{id\: int\<0, max\>, text\: mixed\}\>\}\>, skills\: array\<int, array\{id\: int\<0, max\>, name\: mixed\}\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/Ai/CvTailor.php
+
+		-
+			message: '#^Parameter \#1 \$key of method Illuminate\\Support\\Collection\<\(int\|string\),mixed\>\:\:get\(\) expects int\|string\|null, int\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/Ai/CvTailor.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Engagement\:\:\$budget_label\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Ai/EstimateAssistant.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Engagement\:\:\$estimate_label\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Ai/EstimateAssistant.php
+
+		-
+			message: '#^Method App\\Services\\Ai\\EstimateAssistant\:\:list\(\) should return list\<string\> but returns array\<int, non\-falsy\-string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/Ai/EstimateAssistant.php
+
+		-
+			message: '#^Method App\\Services\\Ai\\EstimateAssistant\:\:match\(\) should return array\{project_type_id\: int, feature_ids\: list\<int\>\}\|null but returns array\<string, mixed\>\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/Ai/EstimateAssistant.php
+
+		-
+			message: '#^Method App\\Services\\Ai\\EstimateAssistant\:\:proposeGrid\(\) should return array\{settings\: array\<string, mixed\>\|null, items\: list\<array\<string, mixed\>\>, reasoning\: string\|null\}\|null but returns array\<string, mixed\>\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/Ai/EstimateAssistant.php
+
+		-
+			message: '#^Method App\\Services\\Ai\\EstimateAssistant\:\:suggestItem\(\) should return array\{name\: array\{fr\: string, en\: string\}, description\: array\{fr\: string\|null, en\: string\|null\}, hours_min\: int, hours_max\: int, reasoning\: string\|null\}\|null but returns array\<string, mixed\>\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/Ai/EstimateAssistant.php
+
+		-
+			message: '#^Parameter \#1 \$projectTypeId of method App\\Models\\EstimatorItem\:\:isAvailableFor\(\) expects int, int\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/Ai/EstimateAssistant.php
+
+		-
+			message: '#^Parameter \#2 \$analysis of method App\\Services\\Ai\\EstimateAssistant\:\:saveAnalysis\(\) expects array\{summary\: string, risks\: list\<string\>, unclear_points\: list\<string\>, questions\: list\<string\>, hours_min\: int, hours_max\: int, billing\: string, reasoning\: string\|null\}, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/Ai/EstimateAssistant.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>value" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Services/Ai/EstimateAssistant.php
+
+		-
+			message: '#^Method App\\Services\\Ai\\JobApplicationDrafter\:\:draft\(\) should return array\{company\: string, contact_name\: string\|null, position\: string, intro\: string, project_ids\: list\<int\>, job_profile_id\: int\|null, reasoning\: string\|null\}\|null but returns array\<string, mixed\>\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/Ai/JobApplicationDrafter.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 3
+			path: app/Services/Ai/ProjectDraftWriter.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 3
+			path: app/Services/Ai/ProjectDraftWriter.php
+
+		-
+			message: '#^Method App\\Services\\Ai\\TextAssistService\:\:draftService\(\) should return array\{title\: string, slug\: string, tagline\: string\|null, description\: string\|null, includes\: string\|null\}\|null but returns array\<string, mixed\>\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/Ai/TextAssistService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/AppointmentInvite.php
+
+		-
+			message: '#^Method App\\Services\\BookingCalendar\:\:availabilityRules\(\) should return Illuminate\\Support\\Collection\<int, array\{id\: int, days\: list\<string\>, start\: string, end\: string\}\> but returns Illuminate\\Support\\Collection\<int, array\{id\: int\|string, days\: list, start\: string, end\: string\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/BookingCalendar.php
+
+		-
+			message: '#^Method App\\Services\\BookingCalendar\:\:availableStarts\(\) should return list\<Carbon\\CarbonImmutable\> but returns array\<int, Carbon\\CarbonImmutable\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/BookingCalendar.php
+
+		-
+			message: '#^Method App\\Services\\BookingCalendar\:\:blockedPeriods\(\) should return Illuminate\\Support\\Collection\<int, array\{id\: int, label\: string\|null, from\: string, to\: string\}\> but returns Illuminate\\Support\\Collection\<int, array\{id\: int\|string, label\: string\|null, from\: string, to\: string\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/BookingCalendar.php
+
+		-
+			message: '#^Parameter \#1 \$lines of static method App\\Models\\CommercialDocument\:\:totalOf\(\) expects list\<array\{quantity\?\: float\|int\|string, unit_price\?\: float\|int\|string\}\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/CommercialDocuments.php
+
+		-
+			message: '#^Property App\\Models\\CommercialDocument\:\:\$total \(int\<0, max\>\) does not accept int\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Services/CommercialDocuments.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Services/CommercialDocuments.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Services/CommercialDocuments.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_active\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/ContentStatus.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Services/ContentStatus.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getTranslation\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/ContentStatus.php
+
+		-
+			message: '#^Method App\\Services\\CvGenerator\:\:references\(\) should return list\<array\<string, string\>\> but returns array\<int, non\-empty\-array\<string, string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/CvGenerator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PageVisit\:\:\$total\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Method App\\Services\\DashboardReport\:\:agenda\(\) should return list\<array\{id\: int, name\: string, company\: string\|null, type\: string\|null, location\: string\|null, status\: string, starts_at\: string, ends_at\: string\|null\}\> but returns array\<int, array\{id\: int\<0, max\>, name\: string, company\: string\|null, type\: mixed, location\: ''in_person''\|''phone''\|''video''\|''whatsapp'', status\: ''cancelled''\|''confirmed''\|''declined''\|''pending'', starts_at\: string, ends_at\: string\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Method App\\Services\\DashboardReport\:\:appointments\(\) should return array\{period_days\: int\|null, total\: int, by_status\: array\{pending\: int, confirmed\: int, declined\: int, cancelled\: int\}, confirmation_rate\: float\|null, response_hours\: float\|null, by_type\: list\<array\{label\: string, count\: int\}\>, by_location\: list\<array\{label\: string, count\: int\}\>\} but returns array\{period_days\: int\|null, total\: int\<0, max\>, by_status\: array\{pending\: int\<0, max\>, confirmed\: int\<0, max\>, declined\: int\<0, max\>, cancelled\: int\<0, max\>\}, confirmation_rate\: float\|null, response_hours\: float\|null, by_type\: array\<int, array\{label\: string, count\: int\}\>, by_location\: array\<int, array\{label\: string, count\: int\}\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Method App\\Services\\DashboardReport\:\:billing\(\) should return array\{period_days\: int\|null, by_currency\: list\<array\{currency\: string, invoiced\: int, collected\: int, outstanding\: int, overdue\: int\}\>, quotes\: array\{issued\: int, accepted\: int, declined\: int, acceptance_rate\: float\|null\}, overdue_invoices\: list\<array\{id\: int, number\: string\|null, client\: string, total\: int, currency\: string, due_at\: string\|null, days_late\: int\}\>\} but returns array\{period_days\: int\|null, by_currency\: array\<int, array\{currency\: string, invoiced\: int, collected\: int, outstanding\: int, overdue\: int\}\>, quotes\: array\{issued\: int\<0, max\>, accepted\: int\<0, max\>, declined\: int\<0, max\>, acceptance_rate\: float\|null\}, overdue_invoices\: array\<int, array\{id\: int\<0, max\>, number\: string\|null, client\: string, total\: int\<0, max\>, currency\: string, due_at\: string\|null, days_late\: int\}\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Method App\\Services\\DashboardReport\:\:blog\(\) should return array\{period_days\: int\|null, since\: string\|null, views_total\: int, reactions\: array\{total\: int, period\: int, by_type\: list\<array\{label\: string, count\: int\}\>\}, shares\: array\{total\: int, period\: int, by_network\: list\<array\{label\: string, count\: int\}\>\}, comments\: array\{total\: int, period\: int, pending\: int, approved\: int, rejected\: int\}, top_posts\: list\<array\{id\: int, title\: string, url\: string, views\: int, reactions\: int, shares\: int, comments\: int\}\>\} but returns array\{period_days\: int\|null, since\: string\|null, views_total\: int, reactions\: array\{total\: int\<0, max\>, period\: int, by_type\: array\<int, array\{label\: string, count\: int\}\>\}, shares\: array\{total\: int\<0, max\>, period\: int, by_network\: array\<int, array\{label\: string, count\: int\}\>\}, comments\: array\{total\: int\<0, max\>, period\: int\<0, max\>, pending\: int, approved\: int, rejected\: int\}, top_posts\: array\<int, array\{id\: int\<0, max\>, title\: mixed, url\: non\-falsy\-string, views\: int\<0, max\>, reactions\: int, shares\: int, comments\: int\}\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Method App\\Services\\DashboardReport\:\:conversions\(\) should return array\{period_days\: int\|null, since\: string\|null, visitors\: int, goals\: list\<array\{key\: string, count\: int, rate\: float\}\>\} but returns array\{period_days\: int\|null, since\: string\|null, visitors\: int\<0, max\>, goals\: array\<int, array\{key\: string, count\: int, rate\: float\}\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Method App\\Services\\DashboardReport\:\:estimator\(\) should return array\{period_days\: int\|null, since\: string\|null, page_visitors\: int, simulators\: int, simulations\: int, requests\: int, conversion_rate\: float, simulation_rate\: float, \.\.\.\} but returns array\{period_days\: int\|null, since\: string\|null, page_visitors\: int\<0, max\>, simulators\: int\<0, max\>, simulations\: int\<0, max\>, requests\: int\<0, max\>, conversion_rate\: float, simulation_rate\: float, \.\.\.\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Method App\\Services\\DashboardReport\:\:outcomes\(\) should return array\{period_days\: int\|null, won\: int, lost\: int, win_rate\: float\|null, by_currency\: list\<array\{currency\: string, count\: int, amount\: int, average\: int\}\>, estimate_gap\: array\{compared\: int, gap_percent\: float\|null\}\} but returns array\{period_days\: int\|null, won\: int\<0, max\>, lost\: int\<0, max\>, win_rate\: float\|null, by_currency\: array\<int, array\{currency\: string, count\: mixed, amount\: int, average\: int\}\>, estimate_gap\: array\{compared\: int\<0, max\>, gap_percent\: float\|null\}\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Method App\\Services\\DashboardReport\:\:topContent\(\) should return list\<array\{type\: string, title\: string, url\: string, visits\: int, visitors\: int, top_source\: string\}\> but returns array\<int, array\{type\: string, title\: mixed, url\: string, visits\: int, visitors\: int, top_source\: string\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Method App\\Services\\DashboardReport\:\:topCvDownloadsBy\(\) should return list\<array\{label\: string, count\: int\}\> but returns array\<int, array\{label\: string, count\: int\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Method App\\Services\\DashboardReport\:\:topVisitorsBy\(\) should return list\<array\{label\: string, count\: int\}\> but returns array\<int, array\{label\: string, count\: int\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Parameter \#1 \$expression of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\CvDownload\>\:\:selectRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Parameter \#1 \$expression of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PageVisit\>\:\:selectRaw\(\) expects literal\-string, non\-falsy\-string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Carbon\\CarbonImmutable\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type App\\Enums\\AppointmentLocation\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type App\\Models\\Profile\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/DashboardReport.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\EstimatorItem\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\EstimatorItem\>\:\:\$estimator_rate_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\EstimatorItem\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\EstimatorItem\>\:\:\$exists\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\EstimatorItem\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\EstimatorItem\>\:\:\$hourly_rates\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\EstimatorItem\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\EstimatorItem\>\:\:\$hours_max\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\EstimatorItem\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\EstimatorItem\>\:\:\$hours_min\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\EstimatorItem\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\EstimatorItem\>\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\EstimatorItem\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\EstimatorItem\>\:\:\$kind\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\EstimatorRate\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\EstimatorRate\>\:\:\$hourly_rates\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\EstimatorRate\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\EstimatorRate\>\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\EstimatorItem\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\EstimatorItem\>\:\:getTranslation\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\EstimatorItem\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\EstimatorItem\>\:\:projectTypes\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\EstimatorItem\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\EstimatorItem\>\:\:save\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\EstimatorRate\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\EstimatorRate\>\:\:getTranslation\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\EstimatorRate\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\EstimatorRate\>\:\:rates\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\EstimatorRate\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\EstimatorRate\>\:\:save\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Call to an undefined method App\\Models\\EstimatorRate\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\EstimatorRate\>\:\:setTranslation\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Parameter \#1 \$item of method App\\Services\\EstimatorConfigurator\:\:fill\(\) expects App\\Models\\EstimatorItem, App\\Models\\EstimatorItem\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\EstimatorItem\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Parameter \#1 \$items of method App\\Services\\EstimatorConfigurator\:\:checkReferences\(\) expects list\<array\<string, mixed\>\>, array\<array\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Parameter \#2 \$refs of method App\\Services\\EstimatorConfigurator\:\:checkReferences\(\) expects list\<string\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 3
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 3
+			path: app/Services/EstimatorConfigurator.php
+
+		-
+			message: '#^Method App\\Services\\GitHubActivity\:\:calendar\(\) should return list\<array\{date\: string, count\: int, level\: int, repositories\: list\<array\{full_name\: string, private\: bool, count\: int\}\>\}\> but returns array\<int, array\{date\: mixed, count\: int, level\: int, repositories\: array\<int, array\{full_name\: mixed, private\: bool, count\: int\}\>\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/GitHubActivity.php
+
+		-
+			message: '#^Method App\\Services\\GitHubActivity\:\:forDisplay\(\) should return array\{username\: string, profile_url\: string, public_repos\: int, followers\: int, contributions_last_30_days\: int, repositories\: list\<array\<string, mixed\>\>, calendar\: list\<array\{date\: string, count\: int, level\: int, repositories\: list\<array\{name\: string\|null, count\: int, project\: array\{title\: string, url\: string\}\|null\}\>\}\>\|null, synced_at\: string\}\|null but returns array\{username\: mixed, profile_url\: mixed, public_repos\: mixed, followers\: mixed, contributions_last_30_days\: mixed, repositories\: array\<int, non\-empty\-array\>, calendar\: array\<non\-empty\-array\>\|null, synced_at\: mixed\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/GitHubActivity.php
+
+		-
+			message: '#^Method App\\Services\\GitHubActivity\:\:forProject\(\) should return array\{name\: string\|null, url\: string\|null, language\: string\|null, stars\: int, pushed_at\: string\|null, private\: bool, total\: int, weeks\: list\<int\>\|null\}\|null but returns array\{name\: mixed, url\: mixed, language\: mixed, stars\: mixed, pushed_at\: mixed, private\: mixed, total\: int, weeks\: array\<int, int\>\|null\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/GitHubActivity.php
+
+		-
+			message: '#^Method App\\Services\\GitHubActivity\:\:publishedProjects\(\) should return Illuminate\\Support\\Collection\<string, array\{title\: string, url\: string\}\> but returns Illuminate\\Support\\Collection\<lowercase\-string, array\{title\: string, url\: string\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/GitHubActivity.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),mixed\>\:\:sortBy\(\) expects array\<array\{string, ''asc''\|''desc''\|SortDirection\}\|\(callable\(mixed, int\|string\)\: mixed\)\|string\>\|\(callable\(mixed, int\|string\)\: mixed\)\|int\|string, array\{Closure\(array, array\)\: int\<\-1, 1\>, Closure\(array, array\)\: int\<\-1, 1\>\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/GitHubActivity.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 11
+			path: app/Services/GitHubActivity.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 11
+			path: app/Services/GitHubActivity.php
+
+		-
+			message: '#^Cannot call method isoFormat\(\) on Illuminate\\Support\\Carbon\|string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/PortfolioKnowledge.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/PortfolioKnowledge.php
+
+		-
+			message: '#^Access to an undefined property DOMNameSpaceNode\|DOMNode\:\:\$firstChild\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/PostContent.php
+
+		-
+			message: '#^Access to an undefined property DOMNameSpaceNode\|DOMNode\:\:\$textContent\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Services/PostContent.php
+
+		-
+			message: '#^Argument of an invalid type DOMNodeList\<DOMNameSpaceNode\|DOMNode\>\|false supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 2
+			path: app/Services/PostContent.php
+
+		-
+			message: '#^Call to an undefined method DOMNameSpaceNode\|DOMNode\:\:appendChild\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/PostContent.php
+
+		-
+			message: '#^Call to an undefined method DOMNameSpaceNode\|DOMNode\:\:getAttribute\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/PostContent.php
+
+		-
+			message: '#^Call to an undefined method DOMNameSpaceNode\|DOMNode\:\:removeChild\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/PostContent.php
+
+		-
+			message: '#^Call to an undefined method DOMNameSpaceNode\|DOMNode\:\:setAttribute\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/PostContent.php
+
+		-
+			message: '#^Call to an undefined method DOMNode\:\:setAttribute\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/PostContent.php
+
+		-
+			message: '#^Parameter \#1 \$iterator of function iterator_to_array expects iterable, DOMNodeList\<DOMNameSpaceNode\|DOMNode\>\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/PostContent.php
+
+		-
+			message: '#^Parameter \#1 \$references of method App\\Services\\PostMentions\:\:cards\(\) expects list\<array\{kind\: string, id\: int\}\>, non\-empty\-array\<array\{kind\: mixed, id\: int\}\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/PostContent.php
+
+		-
+			message: '#^Method App\\Services\\PostMentions\:\:mentionables\(\) should return Illuminate\\Support\\Collection\<int, array\{kind\: string, id\: int, label\: string, hint\: string\|null\}\> but returns Illuminate\\Support\\Collection\<int, array\{kind\: string, id\: int, label\: mixed, hint\: mixed\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/PostMentions.php
+
+		-
+			message: '#^Method App\\Services\\PostMentions\:\:search\(\) should return list\<array\{kind\: string, id\: int, label\: string, hint\: string\|null\}\> but returns array\<int, array\{kind\: string, id\: int, label\: string, hint\: string\|null\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/PostMentions.php
+
+		-
+			message: '#^Parameter \#1 \$groupBy of method Illuminate\\Support\\Collection\<int,array\<string\>\>\:\:groupBy\(\) expects \(callable\(array\<string\>, int\)\: \(int\|string\|Stringable\|UnitEnum\)\)\|list\<Closure\|string\>\|string, 2 given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/PostMentions.php
+
+		-
+			message: '#^Unable to resolve the template type TGroupKey in call to method Illuminate\\Support\\Collection\<int,array\<string\>\>\:\:groupBy\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Services/PostMentions.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>year" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/PostMentions.php
+
+		-
+			message: '#^Method App\\Services\\PostReactions\:\:summary\(\) should return array\{counts\: array\<string, int\>, mine\: list\<string\>\} but returns array\{counts\: array\<string, int\>, mine\: array\<int, string\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/PostReactions.php
+
+		-
+			message: '#^Method App\\Services\\ProjectEstimator\:\:estimate\(\) should return array\{billing\: string, currency\: string, hourly_rate\: int, risk_percent\: int, project_type\: string, rate_grid\: string\|null, features\: list\<string\>, hours_min\: int, \.\.\.\} but returns array\{billing\: ''fixed''\|''hourly'', currency\: string, hourly_rate\: int, risk_percent\: int\<0, max\>, project_type\: mixed, rate_grid\: mixed, features\: array\<int, string\>, hours_min\: int, \.\.\.\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/ProjectEstimator.php
+
+		-
+			message: '#^Method App\\Services\\ProjectEstimator\:\:lines\(\) should return list\<array\{label\: string, hours_min\: int, hours_max\: int, rate\: int\}\> but returns array\<int, array\{label\: mixed, hours_min\: int, hours_max\: int, rate\: int\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/ProjectEstimator.php
+
+		-
+			message: '#^Method App\\Services\\ProjectEstimator\:\:recurring\(\) should return list\<array\{id\: int, label\: string, period\: string, months\: int, discount_percent\: int, hours_min\: int, hours_max\: int, rate\: int, \.\.\.\}\> but returns array\<int, array\{id\: int, label\: mixed, period\: string, months\: int, discount_percent\: int, hours_min\: int, hours_max\: int, rate\: int, \.\.\.\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/ProjectEstimator.php
+
+		-
+			message: '#^Cannot access offset ''host'' on array\{scheme\?\: string, host\?\: string, port\?\: int\<0, 65535\>, user\?\: string, pass\?\: string, path\?\: string, query\?\: string, fragment\?\: string\}\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Services/PublicUrlFetcher.php
+
+		-
+			message: '#^Cannot access offset ''scheme'' on array\{scheme\?\: string, host\?\: string, port\?\: int\<0, 65535\>, user\?\: string, pass\?\: string, path\?\: string, query\?\: string, fragment\?\: string\}\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Services/PublicUrlFetcher.php
+
+		-
+			message: '#^Parameter \#1 \$data of method Kreait\\Firebase\\Messaging\\CloudMessage\:\:withData\(\) expects array\<non\-empty\-string, string\>\|Kreait\\Firebase\\Messaging\\MessageData, array\<string, string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/PushNotifier.php
+
+		-
+			message: '#^Parameter \#2 \$registrationTokens of method Kreait\\Firebase\\Contract\\Messaging\:\:sendMulticast\(\) expects Kreait\\Firebase\\Messaging\\RegistrationToken\|Kreait\\Firebase\\Messaging\\RegistrationTokens\|list\<Kreait\\Firebase\\Messaging\\RegistrationToken\|string\>\|non\-empty\-string, array\<int, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/PushNotifier.php
+
+		-
+			message: '#^Method App\\Services\\ShareImage\:\:fitTitle\(\) should return array\{int, list\<string\>\} but returns array\{42, non\-empty\-array\<int\<0, max\>, string\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/ShareImage.php
+
+		-
+			message: '#^Parameter \#2 \$red of function imagecolorallocate expects int\<0, 255\>, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/ShareImage.php
+
+		-
+			message: '#^Parameter \#3 \$green of function imagecolorallocate expects int\<0, 255\>, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/ShareImage.php
+
+		-
+			message: '#^Parameter \#4 \$blue of function imagecolorallocate expects int\<0, 255\>, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/ShareImage.php
+
+		-
+			message: '#^Method App\\Services\\Syndication\\HashnodeClient\:\:publications\(\) should return list\<array\{id\: string, title\: string, url\: string\}\> but returns array\<int, array\{id\: non\-empty\-string, title\: string, url\: string\}\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/Syndication/HashnodeClient.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Services/Syndication/HashnodeClient.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Services/Syndication/HashnodeClient.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SiteSetting\:\:\$devto_api_key\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Syndication/PostSyndicator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SiteSetting\:\:\$devto_auto_since\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Syndication/PostSyndicator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SiteSetting\:\:\$devto_locale\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Syndication/PostSyndicator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SiteSetting\:\:\$hashnode_api_key\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Syndication/PostSyndicator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SiteSetting\:\:\$hashnode_auto_since\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Syndication/PostSyndicator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SiteSetting\:\:\$hashnode_locale\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Syndication/PostSyndicator.php
+
+		-
+			message: '#^Method App\\Services\\Syndication\\PostSyndicator\:\:article\(\) should return array\{title\: string, markdown\: string, description\: string\|null, canonical_url\: string, tags\: list\<string\>, cover_url\: string\|null\} but returns array\{title\: mixed, markdown\: string, description\: mixed, canonical_url\: string, tags\: array\<int, string\>, cover_url\: non\-falsy\-string\|null\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/Syndication/PostSyndicator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SiteSetting\:\:\$devto_api_key\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Syndication/SyndicationSettings.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SiteSetting\:\:\$devto_auto_since\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Syndication/SyndicationSettings.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SiteSetting\:\:\$devto_locale\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Syndication/SyndicationSettings.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SiteSetting\:\:\$devto_mode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Syndication/SyndicationSettings.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SiteSetting\:\:\$hashnode_api_key\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Services/Syndication/SyndicationSettings.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SiteSetting\:\:\$hashnode_auto_since\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Syndication/SyndicationSettings.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SiteSetting\:\:\$hashnode_locale\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Syndication/SyndicationSettings.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\SiteSetting\:\:\$hashnode_mode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Syndication/SyndicationSettings.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,App\\Enums\\SyndicationPlatform\:\:DevTo\|App\\Enums\\SyndicationPlatform\:\:Hashnode\>\:\:mapWithKeys\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Services/Syndication/SyndicationSettings.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Support\\Collection\<int,App\\Enums\\SyndicationPlatform\:\:DevTo\|App\\Enums\\SyndicationPlatform\:\:Hashnode\>\:\:mapWithKeys\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Services/Syndication/SyndicationSettings.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Support\\Collection\<string,array\<string, mixed\>\>\:\:all\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Services/Syndication/SyndicationSettings.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(string\|null\)\: mixed\)\|null, Closure\(string\)\: array\{slug\: string, light_url\: string\|null, dark_url\: string\|null\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/TechnologyIconLibrary.php
+
+		-
+			message: '#^Method App\\Services\\Tiptap\\PostMention\:\:addAttributes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Services/Tiptap/PostMention.php
+
+		-
+			message: '#^Method App\\Services\\Tiptap\\PostMention\:\:parseHTML\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Services/Tiptap/PostMention.php
+
+		-
+			message: '#^Method App\\Services\\Tiptap\\PostMention\:\:renderHTML\(\) has parameter \$HTMLAttributes with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Services/Tiptap/PostMention.php
+
+		-
+			message: '#^Method App\\Services\\Tiptap\\PostMention\:\:renderHTML\(\) has parameter \$node with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Services/Tiptap/PostMention.php
+
+		-
+			message: '#^Method App\\Services\\Tiptap\\PostMention\:\:renderHTML\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Services/Tiptap/PostMention.php
+
+		-
+			message: '#^Method App\\Services\\Tiptap\\PostMention\:\:renderText\(\) has parameter \$node with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Services/Tiptap/PostMention.php
+
+		-
+			message: '#^Property App\\Services\\Tiptap\\PostMention\:\:\$name has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Services/Tiptap/PostMention.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Engagement\:\:\$estimate_label\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/WeeklyReport.php
+
+		-
+			message: '#^Method App\\Services\\WeeklyReport\:\:applications\(\) should return array\{created\: int, viewed\: list\<array\{id\: int, company\: string, position\: string, views\: int, cv_downloads\: int, first_time\: bool\}\>\} but returns array\{created\: int\<0, max\>, viewed\: array\<int, array\{id\: int\<0, max\>, company\: string, position\: string, views\: int\<0, max\>, cv_downloads\: int\<0, max\>, first_time\: bool\}\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/WeeklyReport.php
+
+		-
+			message: '#^Method App\\Services\\WeeklyReport\:\:audience\(\) should return array\{visits\: int, visitors\: int, previous_visits\: int, previous_visitors\: int, change\: int\|null, top_content\: list\<array\<string, mixed\>\>, sources\: list\<array\{label\: string, count\: int\}\>\} but returns array\{visits\: mixed, visitors\: mixed, previous_visits\: int\<0, max\>, previous_visitors\: int\<0, max\>, change\: int\|null, top_content\: array\<mixed, mixed\>, sources\: array\<mixed, mixed\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/WeeklyReport.php
+
+		-
+			message: '#^Method App\\Services\\WeeklyReport\:\:requests\(\) should return array\{total\: int, contacts\: int, freelance\: int, hiring\: int, appointments\: int, upcoming_appointments\: int, estimates\: list\<array\{id\: int, subject\: string\|null, estimate\: string\|null, ai_billing\: string\|null, ai_hours\: string\|null\}\>\} but returns array\{total\: int\<0, max\>, contacts\: int\<0, max\>, freelance\: int\<0, max\>, hiring\: int\<0, max\>, appointments\: int\<0, max\>, upcoming_appointments\: int\<0, max\>, estimates\: array\<int, array\{id\: int\<0, max\>, subject\: string\|null, estimate\: mixed, ai_billing\: mixed, ai_hours\: non\-falsy\-string\|null\}\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Services/WeeklyReport.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Engagement\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Services/WeeklyReport.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\Engagement\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Services/WeeklyReport.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Support\\Collection\<int,array\<string, mixed\>\>\:\:all\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Services/WeeklyReport.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Support\\Collection\<int,array\<string, mixed\>\>\:\:values\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Services/WeeklyReport.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 2
+			path: app/Services/WeeklyReport.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 2
+			path: app/Services/WeeklyReport.php
+
+		-
+			message: '#^Parameter \#2 \$string of function explode expects string, bool\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: config/sanctum.php
+
+		-
+			message: '#^Binary operation "\." between ''votre '' and array\|string results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: database/factories/CelebrationFactory.php
+
+		-
+			message: '#^Parameter \#1 \$string of function ucfirst expects string, array\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: database/factories/CertificationFactory.php
+
+		-
+			message: '#^Parameter \#1 \$string of function ucfirst expects string, array\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: database/factories/DistinctionFactory.php
+
+		-
+			message: '#^Parameter \#2 \$array of function implode expects array, array\|string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: database/factories/PostFactory.php
+
+		-
+			message: '#^Parameter \#1 \$string of function ucfirst expects string, array\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: database/factories/PostSeriesFactory.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Console\\Command\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: database/seeders/DatabaseSeeder.php
+
+		-
+			message: '#^Parameter \#2 \$value of method Illuminate\\Support\\Collection\<string,\(int\|string\)\>\:\:put\(\) expects \(int\|string\), true given\.$#'
+			identifier: argument.type
+			count: 1
+			path: database/seeders/UsesItemSeeder.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>key" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: database/seeders/UsesItemSeeder.php

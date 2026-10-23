@@ -1,6 +1,9 @@
 <?php
 
+use App\Services\TechnologyIconLibrary;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 /*
@@ -47,4 +50,24 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+/**
+ * Bibliothèque de logos isolée, avec les fichiers donnés (ex. « php-light.svg ») : les logos
+ * de public/icons/tech ne sont pas versionnés, donc absents du CI.
+ *
+ * @param  list<string>  $files
+ */
+function fakeTechnologyIcons(array $files): string
+{
+    $directory = sys_get_temp_dir().'/technology-icons-'.Str::random(12);
+    File::ensureDirectoryExists($directory);
+
+    foreach ($files as $file) {
+        file_put_contents("{$directory}/{$file}", '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"/>');
+    }
+
+    app()->instance(TechnologyIconLibrary::class, new TechnologyIconLibrary($directory));
+
+    return $directory;
 }
