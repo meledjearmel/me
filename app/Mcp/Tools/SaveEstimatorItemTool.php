@@ -2,6 +2,8 @@
 
 namespace App\Mcp\Tools;
 
+use App\Mcp\Concerns\NamesAiClient;
+use App\Services\Ai\ContentRevisions;
 use App\Services\EstimatorConfigurator;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\JsonSchema\Types\Type;
@@ -13,10 +15,12 @@ use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 
 #[Name('save-estimator-item')]
-#[Description('Crée un élément de la grille de l\'estimateur (type de projet ou option), ou en modifie un avec son id (seuls les champs envoyés changent). Pour plusieurs éléments ou les réglages, préfère configure-estimator. Un élément créé reste masqué aux visiteurs tant que le développeur ne l\'a pas activé dans l\'administration.')]
+#[Description('Crée un élément de la grille de l\'estimateur (type de projet ou option), masqué aux visiteurs tant que le développeur ne l\'a pas activé dans l\'administration. Avec un id, propose une modification de l\'élément (seuls les champs envoyés, avec summary) : c\'est une révision que le développeur relit et applique, rien ne change avant. Pour plusieurs éléments ou les réglages, préfère configure-estimator.')]
 class SaveEstimatorItemTool extends Tool
 {
-    public function handle(Request $request, EstimatorConfigurator $configurator): Response
+    use NamesAiClient;
+
+    public function handle(Request $request, EstimatorConfigurator $configurator, ContentRevisions $revisions): Response
     {
         $entry = $request->only([
             'id', 'kind', 'name_fr', 'name_en', 'description_fr', 'description_en',
@@ -24,6 +28,16 @@ class SaveEstimatorItemTool extends Tool
         ]);
 
         try {
+            if (filled($entry['id'] ?? null)) {
+                if (blank($request->get('summary'))) {
+                    return Response::error('Modifier un élément existant devient une révision à valider : ajoute summary (ce qui change et pourquoi).');
+                }
+
+                $revision = $revisions->proposeEstimator(['items' => [$entry]], $request->get('summary'), $this->aiClient($request));
+
+                return Response::text("Révision #{$revision->id} proposée ; rien n'a changé sur le site. Le développeur la relit et l'applique ici : ".route('admin.revisions.show', $revision));
+            }
+
             $result = $configurator->apply(['items' => [$entry]]);
         } catch (ValidationException $exception) {
             return Response::error(collect($exception->errors())->flatten()->implode(' '));
@@ -41,7 +55,8 @@ class SaveEstimatorItemTool extends Tool
     public function schema(JsonSchema $schema): array
     {
         return [
-            'id' => $schema->integer()->description('Élément à modifier (voir get-estimator) ; absent pour en créer un.'),
+            'id' => $schema->integer()->description('Élément à modifier (voir get-estimator), par révision à valider ; absent pour en créer un.'),
+            'summary' => $schema->string()->description('Avec un id : ce qui change et pourquoi, en une à trois phrases, pour le développeur.'),
             'kind' => $schema->string()->enum(['project_type', 'feature'])->description('project_type : la base d\'un projet complet ; feature : une option qui s\'y ajoute.'),
             'name_fr' => $schema->string()->description('Nom court en français.'),
             'name_en' => $schema->string()->description('Le même en anglais.'),

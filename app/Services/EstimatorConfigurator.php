@@ -25,6 +25,91 @@ use Illuminate\Validation\ValidationException;
 class EstimatorConfigurator
 {
     /**
+     * L'estimateur tel qu'il est : réglages, grilles tarifaires et éléments.
+     *
+     * @return array{settings: array<string, mixed>, rates: array<int, array<string, mixed>>, items: array<int, array<string, mixed>>}
+     */
+    public function snapshot(): array
+    {
+        $settings = SiteSetting::current();
+
+        return [
+            'settings' => [
+                'hourly_rates' => $settings->estimatorRates(),
+                'risk_percent' => $settings->estimator_risk_percent,
+                'hours_per_week' => $settings->estimator_hours_per_week,
+            ],
+            // Grilles tarifaires : une devise absente suit le taux global.
+            'rates' => EstimatorRate::query()->orderBy('sort_order')->get()->map(fn (EstimatorRate $rate): array => [
+                'id' => $rate->id,
+                'name' => $rate->getTranslations('name'),
+                'hourly_rates' => $rate->rates(),
+            ])->values()->all(),
+            'items' => EstimatorItem::query()->with('projectTypes:id')->orderBy('kind', 'desc')->orderBy('sort_order')->get()->map(fn (EstimatorItem $item): array => [
+                'id' => $item->id,
+                'kind' => $item->kind->value,
+                'name' => $item->getTranslations('name'),
+                'description' => $item->getTranslations('description'),
+                'hours_min' => $item->hours_min,
+                'hours_max' => $item->hours_max,
+                'pricing' => $item->pricing->value,
+                'percent' => $item->percent,
+                // Options récurrentes : périodes proposées et leur remise en % (heures par mois).
+                'periods' => $item->periods,
+                'billing' => $item->billing?->value,
+                // Options : types de projet auxquels elles sont réservées (vide : tous).
+                'project_types' => $item->projectTypes->modelKeys(),
+                // Taux : les siens, sinon sa grille, sinon le taux global.
+                'rate' => $item->estimator_rate_id,
+                'hourly_rates' => $item->hourly_rates,
+                'is_active' => $item->is_active,
+            ])->values()->all(),
+        ];
+    }
+
+    /**
+     * Vrai quand l'envoi touche ce que voient les visiteurs (réglages, grilles ou éléments
+     * existants) : il devient alors une révision à valider. Créer des éléments (masqués
+     * jusqu'à leur activation) ou de nouvelles grilles reste direct.
+     *
+     * @param  array<string, mixed>  $input
+     */
+    public function needsReview(array $input): bool
+    {
+        if (filled($input['settings'] ?? null)) {
+            return true;
+        }
+
+        foreach (['rates', 'items'] as $list) {
+            foreach (is_array($input[$list] ?? null) ? $input[$list] : [] as $entry) {
+                if (is_array($entry) && filled($entry['id'] ?? null)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Valide l'envoi comme s'il était appliqué, sans rien garder.
+     *
+     * @param  array<string, mixed>  $input
+     *
+     * @throws ValidationException
+     */
+    public function check(array $input): void
+    {
+        DB::beginTransaction();
+
+        try {
+            $this->apply($input);
+        } finally {
+            DB::rollBack();
+        }
+    }
+
+    /**
      * @param  array<string, mixed>  $input  {settings?: {...}, rates?: list<{...}>, items?: list<{...}>}
      * @return array{settings_updated: bool, rates: list<array{id: int, name: string}>, created: list<array{id: int, name: string}>, updated: list<array{id: int, name: string}>}
      *

@@ -189,8 +189,21 @@ class CommandGuide
             'tips' => ['Pour une expérience, les réalisations sont traduites dans le même ordre.'],
             'example' => 'Traduis le brouillon d\'expérience #3 en anglais.',
         ],
+        'list-celebrations' => [
+            'usage' => 'Voir les surprises qu\'Armi annonce aux visiteurs, et combien de félicitations chacune a reçues.',
+            'tips' => ['Indique aussi celles qui s\'affichent en ce moment (actives et dans leur période).'],
+            'example' => 'Combien de félicitations ont reçu mes surprises ?',
+        ],
+        'save-celebration' => [
+            'usage' => 'Créer une surprise en brouillon, message et bouton en français et en anglais.',
+            'tips' => [
+                'Elle reste désactivée : vous la relisez et l\'activez dans « Surprises ».',
+                'Pour modifier une surprise existante, l\'agent propose une révision : rien ne change avant votre validation.',
+            ],
+            'example' => 'Crée une surprise : je viens d\'obtenir ma certification AWS, jusqu\'à fin décembre.',
+        ],
         'propose-revision' => [
-            'usage' => 'Proposer une modification d\'un contenu déjà en ligne ou de la page « Now » ; rien ne change avant votre validation.',
+            'usage' => 'Proposer une modification d\'un contenu déjà en ligne, d\'une surprise ou de la page « Now » ; rien ne change avant votre validation.',
             'tips' => [
                 'Vous voyez l\'avant/après dans « Révisions IA » et appliquez ou rejetez.',
                 'Le français et l\'anglais sont proposés ensemble, puisque le contenu est en ligne dans les deux langues.',
@@ -208,9 +221,10 @@ class CommandGuide
             'example' => 'Relis la grille de mon estimateur de projet et dis-moi ce qui te paraît sous-estimé.',
         ],
         'save-estimator-item' => [
-            'usage' => 'Ajouter un type de projet ou une option à la grille de l\'estimateur, ou corriger ses heures.',
+            'usage' => 'Ajouter un type de projet ou une option à la grille de l\'estimateur, ou proposer une correction de ses heures.',
             'tips' => [
                 'Un élément créé reste masqué aux visiteurs : vous l\'activez dans l\'admin après relecture.',
+                'Corriger un élément existant crée une révision : vous voyez l\'avant/après dans « Révisions IA » et l\'appliquez.',
                 'Les heures sont hors marge : le site ajoute lui-même la marge pour imprévus.',
             ],
             'example' => 'Ajoute à mon estimateur une option « Application mobile compagnon ».',
@@ -220,6 +234,7 @@ class CommandGuide
             'tips' => [
                 'Décrivez votre activité et vos tarifs : l\'agent crée la grille complète en un seul appel.',
                 'Rien n\'est enregistré si une partie est invalide ; les éléments créés restent masqués jusqu\'à leur activation.',
+                'Changer les taux, la marge, une grille ou un élément existant devient une révision : rien ne change avant que vous l\'appliquiez.',
             ],
             'example' => 'Configure mon estimateur : sites vitrines, boutiques et apps mobiles, 100 CHF de l\'heure, 20 % de marge.',
         ],
@@ -369,6 +384,8 @@ class CommandGuide
         'get-content' => 'Lire un contenu',
         'save-content-draft' => 'Brouillon de contenu',
         'save-content-translation' => 'Traduire un contenu',
+        'list-celebrations' => 'Voir les surprises',
+        'save-celebration' => 'Créer une surprise',
         'propose-revision' => 'Proposer une modification',
         'list-revisions' => 'Révisions en attente',
         'get-estimator' => 'Lire l\'estimateur',

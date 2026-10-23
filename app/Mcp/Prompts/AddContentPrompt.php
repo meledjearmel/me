@@ -10,7 +10,7 @@ use Laravel\Mcp\Server\Prompt;
 use Laravel\Mcp\Server\Prompts\Argument;
 
 #[Name('add-content')]
-#[Description('Ajouter en brouillon une expérience, une formation, une certification, un élément « Uses », une compétence ou une offre (page « Services »), à partir d\'une source (CV, profil, lien, notes).')]
+#[Description('Ajouter en brouillon une expérience, une formation, une certification, une distinction, un élément « Uses », une compétence ou une offre (page « Services »), à partir d\'une source (CV, profil, lien, notes).')]
 class AddContentPrompt extends Prompt
 {
     public function handle(Request $request): Response

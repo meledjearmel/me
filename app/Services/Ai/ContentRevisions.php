@@ -5,11 +5,14 @@ namespace App\Services\Ai;
 use App\Enums\ProjectStatus;
 use App\Enums\PublicationStatus;
 use App\Enums\RevisionStatus;
+use App\Models\Celebration;
 use App\Models\ContentRevision;
 use App\Models\Post;
 use App\Models\Project;
 use App\Models\SiteSetting;
+use App\Services\EstimatorConfigurator;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -28,6 +31,18 @@ class ContentRevisions
 {
     public const string NOW_PAGE = 'now_page';
 
+    /** Surprise (Celebration) : même relecture avant/après qu'un contenu publié. */
+    public const string CELEBRATION = 'celebration';
+
+    /** Réglages, grilles tarifaires ou éléments existants de l'estimateur, changés d'un bloc. */
+    public const string ESTIMATOR = 'estimator';
+
+    /** Champs traduits d'une surprise (fr et en). */
+    private const array CELEBRATION_TRANSLATABLE = ['message', 'button_label'];
+
+    /** Champs simples d'une surprise (dans la partie fr). */
+    private const array CELEBRATION_FIELDS = ['congratulated_for', 'starts_at', 'ends_at', 'weight', 'chance_percent', 'delay_seconds', 'display_seconds', 'snooze_days'];
+
     /**
      * Pour chaque liste traduite, son nom côté anglais (les autres champs gardent leur nom).
      *
@@ -40,20 +55,22 @@ class ContentRevisions
         private readonly PostDraftWriter $posts,
         private readonly ContentDraftWriter $contents,
         private readonly ContentTypes $types,
+        private readonly EstimatorConfigurator $estimator,
     ) {}
 
     /** @return list<string> */
     public function typeNames(): array
     {
-        return ['project', 'post', ...array_keys($this->types->all()), self::NOW_PAGE];
+        return ['project', 'post', ...array_keys($this->types->all()), self::CELEBRATION, self::NOW_PAGE];
     }
 
     public function find(string $type, ?int $id): ?Model
     {
         return match (true) {
-            $type === self::NOW_PAGE => SiteSetting::current(),
+            $type === self::NOW_PAGE, $type === self::ESTIMATOR => SiteSetting::current(),
             $type === 'project' => Project::query()->find($id),
             $type === 'post' => Post::query()->find($id),
+            $type === self::CELEBRATION => Celebration::query()->find($id),
             array_key_exists($type, $this->types->all()) => $this->types->get($type)['model']::query()->find($id),
             default => null,
         };
@@ -68,7 +85,9 @@ class ContentRevisions
 
         return match (true) {
             $type === self::NOW_PAGE => 'Page « Now »',
+            $type === self::ESTIMATOR => 'Grille et réglages',
             $type === 'project', $type === 'post' => $content->getTranslation('title', 'fr'),
+            $type === self::CELEBRATION => (string) $content->getAttribute('congratulated_for'),
             default => (function () use ($type, $content): string {
                 $title = $this->types->get($type)['title'];
 
@@ -82,8 +101,10 @@ class ContentRevisions
         return match (true) {
             $content === null => null,
             $type === self::NOW_PAGE => route('admin.now-page.edit'),
+            $type === self::ESTIMATOR => route('admin.estimator-items.index'),
             $type === 'project' => route('admin.projects.edit', $content),
             $type === 'post' => route('admin.posts.edit', $content),
+            $type === self::CELEBRATION => route('admin.celebrations.edit', $content),
             default => route($this->types->get($type)['route'], $content),
         };
     }
@@ -100,6 +121,15 @@ class ContentRevisions
             $content instanceof SiteSetting => [
                 'fr' => ['now_content' => $content->now_content['fr'] ?? null],
                 'en' => ['now_content' => $content->now_content['en'] ?? null],
+            ],
+            $content instanceof Celebration => [
+                'fr' => [
+                    ...$this->celebrationTranslations($content, 'fr'),
+                    ...collect(self::CELEBRATION_FIELDS)->mapWithKeys(fn (string $field): array => [
+                        $field => $content->getAttribute($field) instanceof Carbon ? $content->getAttribute($field)->toDateString() : $content->getAttribute($field),
+                    ])->all(),
+                ],
+                'en' => $this->celebrationTranslations($content, 'en'),
             ],
             $content instanceof Project => ['fr' => $this->projects->toInput($content), 'en' => $this->projects->english($content)],
             $content instanceof Post => ['fr' => $this->posts->toInput($content), 'en' => $this->posts->english($content)],
@@ -152,6 +182,46 @@ class ContentRevisions
                 'before' => [
                     'fr' => array_intersect_key($current['fr'], $french),
                     'en' => array_intersect_key($current['en'], $english),
+                ],
+            ],
+            'summary' => $summary,
+            'drafted_by' => $draftedBy,
+            'status' => RevisionStatus::Pending,
+        ]);
+    }
+
+    /**
+     * Enregistre en révision un changement de l'estimateur (réglages, grilles, éléments existants),
+     * validé comme s'il était appliqué. L'avant ne garde que ce qui est touché.
+     *
+     * @param  array<string, mixed>  $input  {settings?, rates?, items?} comme pour configure-estimator
+     *
+     * @throws ValidationException
+     */
+    public function proposeEstimator(array $input, string $summary, ?string $draftedBy): ContentRevision
+    {
+        $this->estimator->check($input);
+
+        $current = $this->estimator->snapshot();
+        $changes = array_filter(array_intersect_key($input, array_flip(['settings', 'rates', 'items'])), fn (mixed $value): bool => filled($value));
+        $touched = fn (string $list): array => collect($current[$list])
+            ->whereIn('id', collect($changes[$list] ?? [])->pluck('id')->filter()->all())
+            ->values()
+            ->all();
+
+        return ContentRevision::query()->create([
+            'content_type' => self::ESTIMATOR,
+            'content_id' => null,
+            'changes' => [
+                'fr' => $changes,
+                'en' => [],
+                'before' => [
+                    'fr' => array_filter([
+                        'settings' => isset($changes['settings']) ? $current['settings'] : null,
+                        'rates' => isset($changes['rates']) ? $touched('rates') : null,
+                        'items' => isset($changes['items']) ? $touched('items') : null,
+                    ], fn (mixed $value): bool => $value !== null),
+                    'en' => [],
                 ],
             ],
             'summary' => $summary,
@@ -215,10 +285,22 @@ class ContentRevisions
         $english = $revision->changes['en'] ?? [];
 
         DB::transaction(function () use ($type, $content, $french, $english, $revision): void {
-            if (isset($revision->changes['image']) && $content instanceof HasMedia) {
+            if ($type === self::ESTIMATOR) {
+                $this->estimator->apply($french);
+            } elseif (isset($revision->changes['image']) && $content instanceof HasMedia) {
                 $image = $revision->getFirstMedia('image')
                     ?? throw ValidationException::withMessages(['revision' => __('L\'image de cette révision est introuvable.')]);
                 $image->copy($content, $revision->changes['image']['role']);
+            } elseif ($content instanceof Celebration) {
+                foreach (self::CELEBRATION_TRANSLATABLE as $field) {
+                    foreach (['fr' => $french, 'en' => $english] as $locale => $changes) {
+                        if (array_key_exists($field, $changes)) {
+                            $content->setTranslation($field, $locale, $changes[$field]);
+                        }
+                    }
+                }
+
+                $content->fill(array_intersect_key($french, array_flip(self::CELEBRATION_FIELDS)))->save();
             } elseif ($content instanceof SiteSetting) {
                 $content->updateNowContent([
                     'fr' => $french['now_content'] ?? ($content->now_content['fr'] ?? null),
@@ -288,7 +370,12 @@ class ContentRevisions
             ];
         }
 
-        $current = $content === null ? ['fr' => [], 'en' => []] : $this->snapshot($type, $content);
+        $current = match (true) {
+            $content === null => ['fr' => [], 'en' => []],
+            // L'avant ne garde que les éléments touchés : la grille entière n'aurait pas la même forme.
+            $type === self::ESTIMATOR => ['fr' => $revision->changes['before']['fr'] ?? [], 'en' => []],
+            default => $this->snapshot($type, $content),
+        };
         $fields = [];
 
         foreach (['fr', 'en'] as $locale) {
@@ -324,8 +411,22 @@ class ContentRevisions
         'uses_item' => 'Page « Uses »',
         'skill' => 'Compétence',
         'service' => 'Offre',
+        self::CELEBRATION => 'Surprise',
         self::NOW_PAGE => 'Page « Now »',
+        self::ESTIMATOR => 'Estimateur',
     ];
+
+    /**
+     * Le message et le bouton d'une surprise dans une langue.
+     *
+     * @return array<string, string|null>
+     */
+    private function celebrationTranslations(Celebration $celebration, string $locale): array
+    {
+        return collect(self::CELEBRATION_TRANSLATABLE)
+            ->mapWithKeys(fn (string $field): array => [$field => $celebration->getTranslation($field, $locale, false) ?: null])
+            ->all();
+    }
 
     public function reject(ContentRevision $revision): void
     {
@@ -341,6 +442,7 @@ class ContentRevisions
     {
         $rules = match (true) {
             $content instanceof SiteSetting => ['now_content' => ['nullable', 'string', 'max:5000']],
+            $content instanceof Celebration => Celebration::DRAFT_RULES,
             $content instanceof Project => $this->projects->rules($content),
             $content instanceof Post => $this->posts->rules($content),
             default => $this->contents->rules($type),
