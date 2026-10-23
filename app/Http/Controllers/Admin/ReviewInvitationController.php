@@ -38,9 +38,7 @@ class ReviewInvitationController extends Controller
         $invitations = $this->paginateList($query, $request, ['name', 'email', 'note'], []);
 
         return Inertia::render('admin/review-invitations/index', [
-            'invitations' => $invitations->setCollection(
-                $invitations->getCollection()->map(fn (ReviewInvitation $invitation): array => (new ReviewInvitationResource($invitation))->resolve()),
-            ),
+            'invitations' => $invitations->through(fn (ReviewInvitation $invitation): array => (new ReviewInvitationResource($invitation))->resolve()),
             'filters' => [
                 ...$this->listFilters($request, []),
                 'status' => is_string($status) ? $status : '',

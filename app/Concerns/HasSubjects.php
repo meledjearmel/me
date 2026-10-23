@@ -56,9 +56,9 @@ trait HasSubjects
     public function subjectIds(): array
     {
         return [
-            'project_ids' => $this->projects()->pluck('projects.id')->all(),
-            'experience_ids' => $this->experiences()->pluck('experiences.id')->all(),
-            'education_ids' => $this->educations()->pluck('educations.id')->all(),
+            'project_ids' => array_values($this->projects()->get(['projects.id'])->modelKeys()),
+            'experience_ids' => array_values($this->experiences()->get(['experiences.id'])->modelKeys()),
+            'education_ids' => array_values($this->educations()->get(['educations.id'])->modelKeys()),
         ];
     }
 
