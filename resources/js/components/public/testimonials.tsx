@@ -12,6 +12,7 @@ import ReviewInvite from '@/components/public/review-invite';
 import {
     initials,
     TestimonialExcerpt,
+    TestimonialSubjects,
     useTestimonialReader,
 } from '@/components/public/testimonial-parts';
 import { useLocalizedPath, useTranslations } from '@/lib/i18n';
@@ -69,6 +70,8 @@ function TestimonialCard({
                 quoteClassName="pub-testi__quote"
                 onOpen={onOpen}
             />
+
+            <TestimonialSubjects testimonial={testimonial} limit={2} />
 
             <hr className="pub-testi__divider" />
 

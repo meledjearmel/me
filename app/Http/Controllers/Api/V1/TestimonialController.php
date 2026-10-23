@@ -30,7 +30,7 @@ class TestimonialController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         return TestimonialResource::collection(
-            $this->paginateList(Testimonial::query()->with(['project', 'experience', 'education', 'media'])->latest('submitted_at'), $request, ['author_name', 'author_email', 'author_role', 'content->fr', 'content->en'], ['status', 'is_featured'])
+            $this->paginateList(Testimonial::query()->with([...Testimonial::SUBJECT_RELATIONS, 'media'])->latest('submitted_at'), $request, ['author_name', 'author_email', 'author_role', 'content->fr', 'content->en'], ['status', 'is_featured'])
         );
     }
 
@@ -39,14 +39,18 @@ class TestimonialController extends Controller
      */
     public function show(Testimonial $testimonial): TestimonialResource
     {
-        return new TestimonialResource($testimonial->load(['project', 'experience', 'education']));
+        return new TestimonialResource($testimonial->load(Testimonial::SUBJECT_RELATIONS));
     }
 
     /**
      * Modérer un témoignage
      *
-     * Statut, projet associé, mise à la une (trois témoignages au maximum), accroche,
+     * Statut, rattachements, mise à la une (trois témoignages au maximum), accroche,
      * transcription et vidéo.
+     *
+     * Rattachements : `project_ids`, `experience_ids` et `education_ids` (listes d'identifiants,
+     * plusieurs possibles). Un type absent reste inchangé ; une liste vide le retire. Les anciens
+     * champs uniques `project_id`, `experience_id` et `education_id` restent acceptés.
      *
      * Avec une vidéo, envoyer un `POST` en `multipart/form-data` avec le champ `_method=PUT` :
      * PHP ne lit pas les fichiers d'une requête `PUT` directe. Formats acceptés : MP4, MOV,
@@ -58,13 +62,14 @@ class TestimonialController extends Controller
      */
     public function update(TestimonialRequest $request, Testimonial $testimonial): TestimonialResource
     {
-        $testimonial->update($request->safe()->except('video'));
+        $testimonial->update($request->safe()->except(['video', 'project_ids', 'experience_ids', 'education_ids']));
+        $testimonial->syncSubjects($request->subjects());
 
         if ($request->hasFile('video')) {
             $testimonial->attachVideo($request->file('video'));
         }
 
-        return new TestimonialResource($testimonial->refresh()->load(['project', 'experience', 'education']));
+        return new TestimonialResource($testimonial->refresh()->load(Testimonial::SUBJECT_RELATIONS));
     }
 
     /**
@@ -76,7 +81,7 @@ class TestimonialController extends Controller
     {
         $testimonial->removeVideo();
 
-        return new TestimonialResource($testimonial->refresh()->load(['project', 'experience', 'education']));
+        return new TestimonialResource($testimonial->refresh()->load(Testimonial::SUBJECT_RELATIONS));
     }
 
     /**

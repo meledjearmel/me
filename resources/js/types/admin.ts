@@ -221,12 +221,9 @@ export type Testimonial = {
     content: Translatable;
     highlight: Partial<Translatable> | null;
     video_transcript: Partial<Translatable> | null;
-    project_id: number | null;
-    project?: Project;
-    experience_id: number | null;
-    experience?: Pick<Experience, 'id' | 'company' | 'role'> | null;
-    education_id: number | null;
-    education?: Pick<Education, 'id' | 'institution' | 'degree'> | null;
+    projects?: Pick<Project, 'id' | 'title'>[];
+    experiences?: Pick<Experience, 'id' | 'company' | 'role'>[];
+    educations?: Pick<Education, 'id' | 'institution' | 'degree'>[];
     status: 'pending' | 'approved' | 'rejected';
     is_featured: boolean;
     submitted_at: string;
@@ -316,6 +313,13 @@ export type Subscriber = {
     created_at: string;
 };
 
+export type ReviewSubject = {
+    type: 'project' | 'experience' | 'education';
+    id: number;
+    label: string;
+    slug: string | null;
+};
+
 export type ReviewInvitation = {
     id: number;
     name: string | null;
@@ -324,10 +328,12 @@ export type ReviewInvitation = {
     url: string;
     status: 'pending' | 'used' | 'expired';
     note: string | null;
-    project: Pick<Project, 'id' | 'title'> | null;
-    experience: Pick<Experience, 'id' | 'role' | 'company'> | null;
-    education: Pick<Education, 'id' | 'degree' | 'institution'> | null;
-    testimonial_id: number | null;
+    collective: boolean;
+    max_uses: number | null;
+    uses_count: number;
+    subjects: ReviewSubject[];
+    subject: string | null;
+    testimonial_ids: number[];
     expires_at: string | null;
     used_at: string | null;
     created_at: string;

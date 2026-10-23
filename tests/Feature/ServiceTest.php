@@ -40,7 +40,7 @@ function servicePayload(array $overrides = []): array
 test('the services page shows published offers with their price, projects and testimonial', function () {
     $projectType = EstimatorItem::factory()->create();
     $project = Project::factory()->create();
-    Testimonial::factory()->create(['project_id' => $project->id, 'status' => TestimonialStatus::Approved, 'highlight' => ['fr' => 'Un vrai partenaire.']]);
+    Testimonial::factory()->hasAttached($project, relationship: 'projects')->create(['status' => TestimonialStatus::Approved, 'highlight' => ['fr' => 'Un vrai partenaire.']]);
 
     $estimated = Service::factory()->create(['price_mode' => ServicePriceMode::Estimator, 'estimator_item_id' => $projectType->id, 'sort_order' => 1]);
     $estimated->projects()->attach($project);

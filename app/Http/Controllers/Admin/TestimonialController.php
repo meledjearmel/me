@@ -21,7 +21,7 @@ class TestimonialController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('admin/testimonials/index', [
-            'testimonials' => $this->paginateList(Testimonial::query()->with(['project', 'experience', 'education'])->latest('submitted_at'), $request, ['author_name', 'author_email', 'author_role', 'content->fr', 'content->en'], ['status', 'is_featured']),
+            'testimonials' => $this->paginateList(Testimonial::query()->with(Testimonial::SUBJECT_RELATIONS)->latest('submitted_at'), $request, ['author_name', 'author_email', 'author_role', 'content->fr', 'content->en'], ['status', 'is_featured']),
             'filters' => $this->listFilters($request, ['status', 'is_featured']),
         ]);
     }
@@ -29,7 +29,7 @@ class TestimonialController extends Controller
     public function show(Testimonial $testimonial): Response
     {
         return Inertia::render('admin/testimonials/show', [
-            'testimonial' => $testimonial->load(['project', 'experience', 'education']),
+            'testimonial' => $testimonial->load(Testimonial::SUBJECT_RELATIONS),
             'video' => $testimonial->videoData(),
         ]);
     }
@@ -37,7 +37,7 @@ class TestimonialController extends Controller
     public function edit(Testimonial $testimonial): Response
     {
         return Inertia::render('admin/testimonials/edit', [
-            'testimonial' => $testimonial,
+            'testimonial' => $testimonial->load(Testimonial::SUBJECT_RELATIONS),
             'video' => $testimonial->videoData(),
             'projects' => Project::query()->orderBy('sort_order')->get(['id', 'title', 'slug']),
             'experiences' => Experience::query()->orderByDesc('start_date')->get(['id', 'company', 'role']),
@@ -47,7 +47,8 @@ class TestimonialController extends Controller
 
     public function update(TestimonialRequest $request, Testimonial $testimonial): RedirectResponse
     {
-        $testimonial->update($request->safe()->except('video'));
+        $testimonial->update($request->safe()->except(['video', 'project_ids', 'experience_ids', 'education_ids']));
+        $testimonial->syncSubjects($request->subjects());
 
         if ($request->hasFile('video')) {
             $testimonial->attachVideo($request->file('video'));

@@ -67,13 +67,13 @@ class GetInboxTool extends Tool
                     'message' => $excerpt($appointment->message),
                     'admin_url' => route('admin.appointments.show', $appointment),
                 ])->all(),
-            'testimonials' => Testimonial::query()->with('project')->where('status', TestimonialStatus::Pending)->latest('submitted_at')->limit(self::LIMIT)->get()
+            'testimonials' => Testimonial::query()->with(Testimonial::SUBJECT_RELATIONS)->where('status', TestimonialStatus::Pending)->latest('submitted_at')->limit(self::LIMIT)->get()
                 ->map(fn (Testimonial $testimonial): array => [
                     'id' => $testimonial->id,
                     'author_name' => $testimonial->author_name,
                     'author_role' => $testimonial->author_role,
                     'content' => $excerpt($testimonial->getTranslation('content', 'fr', false) ?: $testimonial->getTranslation('content', 'en', false)),
-                    'project' => $testimonial->project?->getTranslation('title', 'fr'),
+                    'subject' => $testimonial->subjectLabel('fr'),
                     'admin_url' => route('admin.testimonials.show', $testimonial),
                 ])->all(),
             'comments' => PostComment::query()->with('post')->where('status', CommentStatus::Pending)->latest()->limit(self::LIMIT)->get()

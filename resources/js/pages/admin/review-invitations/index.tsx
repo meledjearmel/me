@@ -1,27 +1,36 @@
 import { Form, Head, Link } from '@inertiajs/react';
-import { Copy } from 'lucide-react';
+import { Copy, Plus, Users } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import ReviewInvitationController from '@/actions/App/Http/Controllers/Admin/ReviewInvitationController';
+import ActionTooltip from '@/components/admin/action-tooltip';
 import DeleteButton from '@/components/admin/delete-button';
 import { FilterSelect, ResourceList } from '@/components/admin/data-list';
 import FormSelect from '@/components/admin/form-select';
 import { formatDate } from '@/components/admin/show-page';
+import SubjectFields from '@/components/admin/subject-fields';
+import type { SubjectOptions } from '@/components/admin/subject-fields';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import {
+    Field,
+    FieldDescription,
+    FieldError,
+    FieldLabel,
+} from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { destroy, index as pageIndex } from '@/routes/admin/review-invitations';
 import { show as testimonialShow } from '@/routes/admin/testimonials';
-import type {
-    Education,
-    Experience,
-    ListFilters,
-    Paginated,
-    Project,
-    ReviewInvitation,
-} from '@/types';
-import ActionTooltip from '@/components/admin/action-tooltip';
+import type { ListFilters, Paginated, ReviewInvitation } from '@/types';
 
 const STATUSES: Record<
     ReviewInvitation['status'],
@@ -32,22 +41,6 @@ const STATUSES: Record<
     expired: { label: 'Expiré', variant: 'outline' },
 };
 
-function subjectOf(invitation: ReviewInvitation): string {
-    if (invitation.project) {
-        return invitation.project.title.fr;
-    }
-
-    if (invitation.experience) {
-        return `${invitation.experience.role.fr} — ${invitation.experience.company}`;
-    }
-
-    if (invitation.education) {
-        return `${invitation.education.degree.fr} — ${invitation.education.institution}`;
-    }
-
-    return 'Général';
-}
-
 async function copyLink(url: string): Promise<void> {
     try {
         await navigator.clipboard.writeText(url);
@@ -57,51 +50,115 @@ async function copyLink(url: string): Promise<void> {
     }
 }
 
-/**
- * Demandes d'avis : je crée un lien personnel, je le copie et je l'envoie ; il
- * ouvre le formulaire d'avis prérempli et ne sert qu'une fois.
- */
-export default function ReviewInvitationsIndex({
-    invitations,
-    filters,
-    projects,
-    experiences,
-    educations,
-}: {
-    invitations: Paginated<ReviewInvitation>;
-    filters: ListFilters;
-    projects: Pick<Project, 'id' | 'title'>[];
-    experiences: Pick<Experience, 'id' | 'role' | 'company'>[];
-    educations: Pick<Education, 'id' | 'degree' | 'institution'>[];
-}) {
-    return (
-        <>
-            <Head title="Demandes d’avis" />
+/** « 3 / 10 avis », « 3 avis » (sans limite) ; rien pour un lien personnel. */
+function usage(invitation: ReviewInvitation): string | null {
+    if (!invitation.collective) {
+        return null;
+    }
 
-            <div className="mx-auto w-full max-w-5xl space-y-6 p-4">
-                <Heading
-                    title="Demandes d’avis"
-                    description="Un lien personnel, à usage unique, qui ouvre le formulaire d’avis prérempli"
-                />
+    return invitation.max_uses === null
+        ? `${invitation.uses_count} avis`
+        : `${invitation.uses_count} / ${invitation.max_uses} avis`;
+}
+
+/** Le formulaire de création, dans une fenêtre : la liste garde toute la page. */
+function CreateInvitationDialog({
+    open,
+    onOpenChange,
+    ...options
+}: SubjectOptions & {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+}) {
+    const [collective, setCollective] = useState(false);
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-h-[90dvh] w-[calc(100%-1rem)] overflow-y-auto p-4 sm:max-w-2xl sm:p-6">
+                <DialogHeader>
+                    <DialogTitle>Nouvelle demande d’avis</DialogTitle>
+                    <DialogDescription>
+                        Le lien ouvre le formulaire d’avis prérempli, rattaché
+                        aux projets, expériences et formations choisis.
+                    </DialogDescription>
+                </DialogHeader>
 
                 <Form
                     {...ReviewInvitationController.store.form()}
                     resetOnSuccess
-                    className="grid gap-4 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-3"
+                    onSuccess={() => {
+                        setCollective(false);
+                        onOpenChange(false);
+                    }}
+                    className="grid gap-4 sm:grid-cols-2"
                 >
                     {({ processing, errors }) => (
                         <>
-                            <Field data-invalid={!!errors.name}>
-                                <FieldLabel htmlFor="name">Nom</FieldLabel>
-                                <Input id="name" name="name" />
-                                <FieldError>{errors.name}</FieldError>
+                            <Field
+                                orientation="horizontal"
+                                className="sm:col-span-2"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="collective"
+                                    value={collective ? '1' : '0'}
+                                />
+                                <Checkbox
+                                    id="collective"
+                                    checked={collective}
+                                    onCheckedChange={(checked) =>
+                                        setCollective(checked === true)
+                                    }
+                                />
+                                <div className="grid gap-1">
+                                    <FieldLabel htmlFor="collective">
+                                        Lien collectif
+                                    </FieldLabel>
+                                    <FieldDescription>
+                                        À partager à toute une équipe : chacun
+                                        laisse son avis (un seul par e-mail).
+                                    </FieldDescription>
+                                </div>
                             </Field>
 
-                            <Field data-invalid={!!errors.email}>
-                                <FieldLabel htmlFor="email">Email</FieldLabel>
-                                <Input id="email" name="email" type="email" />
-                                <FieldError>{errors.email}</FieldError>
-                            </Field>
+                            {collective ? (
+                                <Field data-invalid={!!errors.max_uses}>
+                                    <FieldLabel htmlFor="max_uses">
+                                        Nombre d’avis au plus
+                                    </FieldLabel>
+                                    <Input
+                                        id="max_uses"
+                                        name="max_uses"
+                                        type="number"
+                                        min={2}
+                                        max={1000}
+                                        placeholder="Sans limite"
+                                    />
+                                    <FieldError>{errors.max_uses}</FieldError>
+                                </Field>
+                            ) : (
+                                <>
+                                    <Field data-invalid={!!errors.name}>
+                                        <FieldLabel htmlFor="name">
+                                            Nom
+                                        </FieldLabel>
+                                        <Input id="name" name="name" />
+                                        <FieldError>{errors.name}</FieldError>
+                                    </Field>
+
+                                    <Field data-invalid={!!errors.email}>
+                                        <FieldLabel htmlFor="email">
+                                            Email
+                                        </FieldLabel>
+                                        <Input
+                                            id="email"
+                                            name="email"
+                                            type="email"
+                                        />
+                                        <FieldError>{errors.email}</FieldError>
+                                    </Field>
+                                </>
+                            )}
 
                             <Field data-invalid={!!errors.locale}>
                                 <FieldLabel htmlFor="locale">Langue</FieldLabel>
@@ -116,74 +173,6 @@ export default function ReviewInvitationsIndex({
                                 <FieldError>{errors.locale}</FieldError>
                             </Field>
 
-                            <Field data-invalid={!!errors.project_id}>
-                                <FieldLabel htmlFor="project_id">
-                                    Projet lié
-                                </FieldLabel>
-                                <FormSelect
-                                    id="project_id"
-                                    name="project_id"
-                                    defaultValue=""
-                                >
-                                    <option value="">Aucun</option>
-                                    {projects.map((project) => (
-                                        <option
-                                            key={project.id}
-                                            value={project.id}
-                                        >
-                                            {project.title.fr}
-                                        </option>
-                                    ))}
-                                </FormSelect>
-                                <FieldError>{errors.project_id}</FieldError>
-                            </Field>
-
-                            <Field data-invalid={!!errors.experience_id}>
-                                <FieldLabel htmlFor="experience_id">
-                                    Expérience liée
-                                </FieldLabel>
-                                <FormSelect
-                                    id="experience_id"
-                                    name="experience_id"
-                                    defaultValue=""
-                                >
-                                    <option value="">Aucune</option>
-                                    {experiences.map((experience) => (
-                                        <option
-                                            key={experience.id}
-                                            value={experience.id}
-                                        >
-                                            {experience.role.fr} —{' '}
-                                            {experience.company}
-                                        </option>
-                                    ))}
-                                </FormSelect>
-                                <FieldError>{errors.experience_id}</FieldError>
-                            </Field>
-
-                            <Field data-invalid={!!errors.education_id}>
-                                <FieldLabel htmlFor="education_id">
-                                    Formation liée
-                                </FieldLabel>
-                                <FormSelect
-                                    id="education_id"
-                                    name="education_id"
-                                    defaultValue=""
-                                >
-                                    <option value="">Aucune</option>
-                                    {educations.map((education) => (
-                                        <option
-                                            key={education.id}
-                                            value={education.id}
-                                        >
-                                            {education.degree.fr} —{' '}
-                                            {education.institution}
-                                        </option>
-                                    ))}
-                                </FormSelect>
-                                <FieldError>{errors.education_id}</FieldError>
-                            </Field>
-
                             <Field data-invalid={!!errors.expires_at}>
                                 <FieldLabel htmlFor="expires_at">
                                     Expire le (facultatif)
@@ -196,6 +185,10 @@ export default function ReviewInvitationsIndex({
                                 <FieldError>{errors.expires_at}</FieldError>
                             </Field>
 
+                            <div className="grid gap-4 sm:col-span-2">
+                                <SubjectFields {...options} errors={errors} />
+                            </div>
+
                             <Field
                                 data-invalid={!!errors.note}
                                 className="sm:col-span-2"
@@ -207,7 +200,14 @@ export default function ReviewInvitationsIndex({
                                 <FieldError>{errors.note}</FieldError>
                             </Field>
 
-                            <div className="sm:col-span-2 lg:col-span-3">
+                            <div className="flex justify-end gap-2 sm:col-span-2">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => onOpenChange(false)}
+                                >
+                                    Annuler
+                                </Button>
                                 <Button disabled={processing}>
                                     Créer le lien
                                 </Button>
@@ -215,6 +215,47 @@ export default function ReviewInvitationsIndex({
                         </>
                     )}
                 </Form>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+/**
+ * Demandes d'avis : je crée un lien, je le copie et je l'envoie ; il ouvre le
+ * formulaire d'avis prérempli. Personnel, il ne sert qu'une fois ; collectif,
+ * il sert à toute une équipe.
+ */
+export default function ReviewInvitationsIndex({
+    invitations,
+    filters,
+    ...options
+}: SubjectOptions & {
+    invitations: Paginated<ReviewInvitation>;
+    filters: ListFilters;
+}) {
+    const [creating, setCreating] = useState(false);
+
+    return (
+        <>
+            <Head title="Demandes d’avis" />
+
+            <div className="space-y-6 p-4">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                    <Heading
+                        title="Demandes d’avis"
+                        description="Un lien personnel ou collectif qui ouvre le formulaire d’avis prérempli"
+                    />
+                    <Button onClick={() => setCreating(true)}>
+                        <Plus />
+                        Nouvelle demande
+                    </Button>
+                </div>
+
+                <CreateInvitationDialog
+                    open={creating}
+                    onOpenChange={setCreating}
+                    {...options}
+                />
 
                 <ResourceList
                     paginator={invitations}
@@ -225,7 +266,14 @@ export default function ReviewInvitationsIndex({
                             header: 'Personne',
                             cell: (row) => (
                                 <div className="flex flex-col">
-                                    <span>{row.name ?? '—'}</span>
+                                    {row.collective ? (
+                                        <span className="inline-flex items-center gap-1.5">
+                                            <Users className="size-4" />
+                                            Lien collectif
+                                        </span>
+                                    ) : (
+                                        <span>{row.name ?? '—'}</span>
+                                    )}
                                     {row.email && (
                                         <span className="text-xs text-muted-foreground">
                                             {row.email}
@@ -239,7 +287,24 @@ export default function ReviewInvitationsIndex({
                                 </div>
                             ),
                         },
-                        { header: 'Sujet', cell: (row) => subjectOf(row) },
+                        {
+                            header: 'Sujet',
+                            cell: (row) =>
+                                row.subjects.length === 0 ? (
+                                    'Général'
+                                ) : (
+                                    <div className="flex flex-wrap gap-1">
+                                        {row.subjects.map((subject) => (
+                                            <Badge
+                                                key={`${subject.type}-${subject.id}`}
+                                                variant="outline"
+                                            >
+                                                {subject.label}
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                ),
+                        },
                         {
                             header: 'État',
                             cell: (row) => {
@@ -250,17 +315,23 @@ export default function ReviewInvitationsIndex({
                                         {STATUSES[row.status].label}
                                     </Badge>
                                 );
+                                const first = row.testimonial_ids[0];
 
-                                return row.testimonial_id ? (
-                                    <Link
-                                        href={testimonialShow(
-                                            row.testimonial_id,
+                                return (
+                                    <div className="flex flex-col items-start gap-1">
+                                        {first && !row.collective ? (
+                                            <Link href={testimonialShow(first)}>
+                                                {badge}
+                                            </Link>
+                                        ) : (
+                                            badge
                                         )}
-                                    >
-                                        {badge}
-                                    </Link>
-                                ) : (
-                                    badge
+                                        {usage(row) && (
+                                            <span className="text-xs text-muted-foreground">
+                                                {usage(row)}
+                                            </span>
+                                        )}
+                                    </div>
                                 );
                             },
                         },

@@ -26,7 +26,6 @@ class TestimonialFactory extends Factory
                 'fr' => fake()->paragraph(),
                 'en' => fake()->paragraph(),
             ],
-            'project_id' => null,
             'status' => TestimonialStatus::Pending,
             'submitted_at' => fake()->dateTimeBetween('-1 year'),
         ];

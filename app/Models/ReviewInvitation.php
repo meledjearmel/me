@@ -2,34 +2,33 @@
 
 namespace App\Models;
 
+use App\Concerns\HasSubjects;
 use Database\Factories\ReviewInvitationFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 /**
- * Invitation personnelle à laisser un avis : un lien à usage unique, éventuellement
- * rattaché à un projet, une expérience ou une formation, qui ouvre le formulaire
- * d'avis prérempli.
+ * Invitation à laisser un avis : un lien qui ouvre le formulaire d'avis prérempli, rattaché
+ * à aucun, un ou plusieurs projets, expériences et formations. Personnel (une utilisation)
+ * ou collectif (plusieurs personnes, avec ou sans limite : `max_uses` vide).
  */
 class ReviewInvitation extends Model
 {
     /** @use HasFactory<ReviewInvitationFactory> */
-    use HasFactory;
+    use HasFactory, HasSubjects;
 
     /** @var list<string> */
     protected $fillable = [
         'name',
         'email',
         'locale',
-        'project_id',
-        'experience_id',
-        'education_id',
         'note',
+        'max_uses',
         'expires_at',
     ];
 
@@ -43,6 +42,8 @@ class ReviewInvitation extends Model
     protected $casts = [
         'expires_at' => 'datetime',
         'used_at' => 'datetime',
+        'max_uses' => 'integer',
+        'uses_count' => 'integer',
     ];
 
     protected static function booted(): void
@@ -53,7 +54,7 @@ class ReviewInvitation extends Model
     }
 
     /**
-     * Invitations encore utilisables : ni utilisées ni expirées.
+     * Invitations encore utilisables : ni épuisées ni expirées.
      *
      * @param  Builder<ReviewInvitation>  $query
      */
@@ -64,28 +65,10 @@ class ReviewInvitation extends Model
             ->where(fn (Builder $query) => $query->whereNull('expires_at')->orWhere('expires_at', '>', now()));
     }
 
-    /** @return BelongsTo<Project, $this> */
-    public function project(): BelongsTo
+    /** @return HasMany<Testimonial, $this> */
+    public function testimonials(): HasMany
     {
-        return $this->belongsTo(Project::class);
-    }
-
-    /** @return BelongsTo<Experience, $this> */
-    public function experience(): BelongsTo
-    {
-        return $this->belongsTo(Experience::class);
-    }
-
-    /** @return BelongsTo<Education, $this> */
-    public function education(): BelongsTo
-    {
-        return $this->belongsTo(Education::class);
-    }
-
-    /** @return BelongsTo<Testimonial, $this> */
-    public function testimonial(): BelongsTo
-    {
-        return $this->belongsTo(Testimonial::class);
+        return $this->hasMany(Testimonial::class);
     }
 
     public function isUsable(): bool
@@ -93,7 +76,25 @@ class ReviewInvitation extends Model
         return $this->used_at === null && ($this->expires_at === null || $this->expires_at->isFuture());
     }
 
-    /** `pending` (lien valable), `used` (avis reçu) ou `expired`. */
+    /** Lien collectif : plusieurs personnes peuvent laisser leur avis par ce même lien. */
+    public function isCollective(): bool
+    {
+        return $this->max_uses !== 1;
+    }
+
+    /** Compte un avis reçu ; le lien est épuisé (`used_at`) une fois sa limite atteinte. */
+    public function recordUse(): void
+    {
+        $this->uses_count++;
+
+        if ($this->max_uses !== null && $this->uses_count >= $this->max_uses) {
+            $this->used_at = now();
+        }
+
+        $this->save();
+    }
+
+    /** `pending` (lien valable), `used` (avis reçu ou limite atteinte) ou `expired`. */
     protected function status(): Attribute
     {
         return Attribute::get(fn (): string => match (true) {
@@ -107,23 +108,5 @@ class ReviewInvitation extends Model
     protected function url(): Attribute
     {
         return Attribute::get(fn (): string => rtrim((string) config('app.url'), '/')."/{$this->locale}/testimonials?invitation={$this->token}");
-    }
-
-    /** Ce dont parle l'avis, dans la langue donnée, ou null pour un avis général. */
-    public function subjectLabel(string $locale): ?string
-    {
-        if ($this->project) {
-            return $this->project->getTranslation('title', $locale);
-        }
-
-        if ($this->experience) {
-            return $this->experience->getTranslation('role', $locale).' — '.$this->experience->company;
-        }
-
-        if ($this->education) {
-            return $this->education->getTranslation('degree', $locale).' — '.$this->education->institution;
-        }
-
-        return null;
     }
 }

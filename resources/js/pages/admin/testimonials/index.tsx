@@ -52,8 +52,19 @@ export default function TestimonialsIndex({
                     columns={[
                         { header: 'Auteur', cell: (row) => row.author_name },
                         {
-                            header: 'Projet',
-                            cell: (row) => row.project?.title.fr ?? 'Général',
+                            header: 'Sujet',
+                            cell: (row) =>
+                                [
+                                    ...(row.projects ?? []).map(
+                                        (project) => project.title.fr,
+                                    ),
+                                    ...(row.experiences ?? []).map(
+                                        (experience) => experience.company,
+                                    ),
+                                    ...(row.educations ?? []).map(
+                                        (education) => education.institution,
+                                    ),
+                                ].join(' · ') || 'Général',
                         },
                         {
                             header: 'Statut',

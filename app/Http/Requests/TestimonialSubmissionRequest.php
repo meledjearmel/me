@@ -4,8 +4,10 @@ namespace App\Http\Requests;
 
 use App\Enums\ProjectStatus;
 use App\Models\SiteSetting;
+use App\Models\Testimonial;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class TestimonialSubmissionRequest extends FormRequest
 {
@@ -35,6 +37,27 @@ class TestimonialSubmissionRequest extends FormRequest
                 ->where(fn ($query) => $query->whereNull('expires_at')->orWhere('expires_at', '>', now()))],
             // Piège anti-spam : un humain ne le voit ni ne le remplit jamais.
             'website' => ['prohibited'],
+        ];
+    }
+
+    /**
+     * Un lien collectif accepte un seul avis par adresse e-mail.
+     *
+     * @return array<int, callable(Validator): void>
+     */
+    public function after(): array
+    {
+        return [
+            function (Validator $validator): void {
+                $alreadyReviewed = $this->filled('invitation') && Testimonial::query()
+                    ->where('author_email', $this->input('author_email'))
+                    ->whereHas('reviewInvitation', fn ($query) => $query->where('token', $this->input('invitation')))
+                    ->exists();
+
+                if ($alreadyReviewed) {
+                    $validator->errors()->add('author_email', __('Vous avez déjà laissé un avis avec ce lien.'));
+                }
+            },
         ];
     }
 }

@@ -6,6 +6,7 @@ import PublicShell from '@/components/public/public-shell';
 import {
     initials,
     TestimonialExcerpt,
+    TestimonialSubjects,
     testimonialVideosJsonLd,
     useTestimonialReader,
 } from '@/components/public/testimonial-parts';
@@ -140,6 +141,9 @@ export default function Testimonials({
                                                 )}
                                             </span>
                                         </figcaption>
+                                        <TestimonialSubjects
+                                            testimonial={testimonial}
+                                        />
                                     </figure>
                                 </motion.li>
                             ))}

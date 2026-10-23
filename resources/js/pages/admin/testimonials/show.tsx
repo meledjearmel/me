@@ -44,31 +44,44 @@ export default function TestimonialShow({
                         { label: 'Email', value: row.author_email },
                         { label: 'Rôle', value: row.author_role },
                         {
-                            label: 'Projet',
-                            value: row.project ? (
-                                <Link
-                                    href={ProjectController.show(
-                                        row.project.id,
-                                    )}
-                                    className="hover:underline"
-                                >
-                                    {row.project.title.fr}
-                                </Link>
+                            label: 'Projets',
+                            value: row.projects?.length ? (
+                                <span className="flex flex-wrap gap-x-3">
+                                    {row.projects.map((project) => (
+                                        <Link
+                                            key={project.id}
+                                            href={ProjectController.show(
+                                                project.id,
+                                            )}
+                                            className="hover:underline"
+                                        >
+                                            {project.title.fr}
+                                        </Link>
+                                    ))}
+                                </span>
                             ) : (
                                 'Général'
                             ),
                         },
                         {
-                            label: 'Expérience',
-                            value: row.experience
-                                ? `${row.experience.role.fr} — ${row.experience.company}`
-                                : '—',
+                            label: 'Expériences',
+                            value:
+                                row.experiences
+                                    ?.map(
+                                        (experience) =>
+                                            `${experience.role.fr} — ${experience.company}`,
+                                    )
+                                    .join(' · ') || '—',
                         },
                         {
-                            label: 'Formation',
-                            value: row.education
-                                ? `${row.education.degree.fr} — ${row.education.institution}`
-                                : '—',
+                            label: 'Formations',
+                            value:
+                                row.educations
+                                    ?.map(
+                                        (education) =>
+                                            `${education.degree.fr} — ${education.institution}`,
+                                    )
+                                    .join(' · ') || '—',
                         },
                         {
                             label: 'Reçu le',

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Education;
 use App\Models\Experience;
 use App\Models\Profile;
 use App\Models\Project;
@@ -13,18 +14,30 @@ beforeEach(function () {
     Profile::factory()->create();
 });
 
+function reviewPayload(array $overrides = []): array
+{
+    return [
+        'author_name' => 'Sam Client',
+        'author_email' => 'sam@example.test',
+        'content' => 'Un travail sérieux et une communication claire du début à la fin.',
+        ...$overrides,
+    ];
+}
+
 test('guests cannot manage review invitations', function () {
     $this->get(route('admin.review-invitations.index'))->assertRedirect(route('login'));
 });
 
-test('an invitation can be created with or without a subject and expires at the end of the chosen day', function () {
-    $project = Project::factory()->create();
+test('an invitation can be linked to several subjects and expires at the end of the chosen day', function () {
+    $projects = Project::factory()->count(2)->create();
+    $experience = Experience::factory()->create();
 
     $this->actingAs(User::factory()->create())
         ->post(route('admin.review-invitations.store'), [
             'name' => 'Sam Client',
             'locale' => 'en',
-            'project_id' => $project->id,
+            'project_ids' => $projects->modelKeys(),
+            'experience_ids' => [$experience->id],
             'expires_at' => now()->addWeek()->toDateString(),
         ])
         ->assertRedirect(route('admin.review-invitations.index'));
@@ -35,10 +48,31 @@ test('an invitation can be created with or without a subject and expires at the 
 
     $invitation = ReviewInvitation::query()->where('name', 'Sam Client')->firstOrFail();
 
-    expect($invitation->project_id)->toBe($project->id)
+    expect($invitation->projects->modelKeys())->toEqualCanonicalizing($projects->modelKeys())
+        ->and($invitation->experiences->modelKeys())->toBe([$experience->id])
+        ->and($invitation->max_uses)->toBe(1)
         ->and($invitation->expires_at->format('H:i'))->toBe('23:59')
         ->and($invitation->url)->toEndWith("/en/testimonials?invitation={$invitation->token}")
-        ->and(ReviewInvitation::query()->whereNull('project_id')->exists())->toBeTrue();
+        ->and(ReviewInvitation::query()->whereDoesntHave('projects')->exists())->toBeTrue();
+});
+
+test('a collective invitation keeps its limit and prefills no one', function () {
+    $this->actingAs(User::factory()->create())
+        ->post(route('admin.review-invitations.store'), [
+            'name' => 'Équipe',
+            'email' => 'team@example.test',
+            'locale' => 'fr',
+            'collective' => true,
+            'max_uses' => 5,
+        ])
+        ->assertSessionHasNoErrors();
+
+    $invitation = ReviewInvitation::query()->firstOrFail();
+
+    expect($invitation->isCollective())->toBeTrue()
+        ->and($invitation->max_uses)->toBe(5)
+        ->and($invitation->name)->toBeNull()
+        ->and($invitation->email)->toBeNull();
 });
 
 test('the admin list gives the link to copy without exposing the raw token', function () {
@@ -53,9 +87,11 @@ test('the admin list gives the link to copy without exposing the raw token', fun
             ->missing('invitations.data.0.token'));
 });
 
-test('the invitation link prefills the review form', function () {
+test('the invitation link prefills the review form with every subject', function () {
     $experience = Experience::factory()->create(['role' => ['fr' => 'Développeur', 'en' => 'Developer'], 'company' => 'Acme']);
-    $invitation = ReviewInvitation::factory()->create(['name' => 'Sam Client', 'email' => 'sam@example.test', 'experience_id' => $experience->id]);
+    $education = Education::factory()->create(['degree' => ['fr' => 'Master', 'en' => 'Master'], 'institution' => 'ESATIC']);
+    $invitation = ReviewInvitation::factory()->create(['name' => 'Sam Client', 'email' => 'sam@example.test']);
+    $invitation->syncSubjects(['experience_ids' => [$experience->id], 'education_ids' => [$education->id]]);
 
     $this->get("/en/testimonials?invitation={$invitation->token}")
         ->assertOk()
@@ -64,7 +100,7 @@ test('the invitation link prefills the review form', function () {
             ->where('reviewInvitation.token', $invitation->token)
             ->where('reviewInvitation.name', 'Sam Client')
             ->where('reviewInvitation.email', 'sam@example.test')
-            ->where('reviewInvitation.subject', 'Developer — Acme'));
+            ->where('reviewInvitation.subject', 'Developer — Acme · Master — ESATIC'));
 });
 
 test('a used, expired or unknown invitation link is reported as no longer valid', function (?string $state) {
@@ -74,52 +110,75 @@ test('a used, expired or unknown invitation link is reported as no longer valid'
         ->assertInertia(fn ($page) => $page->where('reviewInvitation', ['valid' => false]));
 })->with(['used' => 'used', 'expired' => 'expired', 'unknown' => null]);
 
-test('a review sent from an invitation takes its subject and uses up the link', function () {
+test('a review sent from an invitation takes its subjects and uses up a personal link', function () {
     Queue::fake();
-    $project = Project::factory()->create();
+    $projects = Project::factory()->count(2)->create();
     $otherProject = Project::factory()->create();
-    $invitation = ReviewInvitation::factory()->create(['project_id' => $project->id]);
+    $invitation = ReviewInvitation::factory()->create();
+    $invitation->projects()->attach($projects);
 
-    $this->post('/fr/testimonials', [
-        'author_name' => 'Sam Client',
-        'author_email' => 'sam@example.test',
-        'content' => 'Un travail sérieux et une communication claire du début à la fin.',
+    $this->post('/fr/testimonials', reviewPayload([
         'project_id' => $otherProject->id,
         'invitation' => $invitation->token,
-    ])->assertSessionHasNoErrors();
+    ]))->assertSessionHasNoErrors();
 
     $testimonial = Testimonial::query()->firstOrFail();
     $invitation->refresh();
 
-    expect($testimonial->project_id)->toBe($project->id)
-        ->and($invitation->used_at)->not->toBeNull()
-        ->and($invitation->testimonial_id)->toBe($testimonial->id);
+    expect($testimonial->projects->modelKeys())->toEqualCanonicalizing($projects->modelKeys())
+        ->and($testimonial->review_invitation_id)->toBe($invitation->id)
+        ->and($invitation->status)->toBe('used')
+        ->and($invitation->uses_count)->toBe(1);
 });
 
 test('an invitation link cannot be used twice', function () {
     Queue::fake();
     $invitation = ReviewInvitation::factory()->used()->create();
 
-    $this->post('/fr/testimonials', [
-        'author_name' => 'Sam Client',
-        'author_email' => 'sam@example.test',
-        'content' => 'Un travail sérieux et une communication claire du début à la fin.',
-        'invitation' => $invitation->token,
-    ])->assertSessionHasErrors('invitation');
+    $this->post('/fr/testimonials', reviewPayload(['invitation' => $invitation->token]))
+        ->assertSessionHasErrors('invitation');
 
     expect(Testimonial::query()->count())->toBe(0);
 });
 
+test('a collective link takes one review per person until its limit', function () {
+    Queue::fake();
+    $invitation = ReviewInvitation::factory()->collective(2)->create();
+
+    $this->post('/fr/testimonials', reviewPayload(['invitation' => $invitation->token]))->assertSessionHasNoErrors();
+    expect($invitation->refresh()->status)->toBe('pending');
+
+    $this->post('/fr/testimonials', reviewPayload(['invitation' => $invitation->token]))
+        ->assertSessionHasErrors('author_email');
+
+    $this->post('/fr/testimonials', reviewPayload(['author_email' => 'alex@example.test', 'invitation' => $invitation->token]))
+        ->assertSessionHasNoErrors();
+
+    $this->post('/fr/testimonials', reviewPayload(['author_email' => 'lee@example.test', 'invitation' => $invitation->token]))
+        ->assertSessionHasErrors('invitation');
+
+    expect($invitation->refresh()->status)->toBe('used')
+        ->and($invitation->testimonials()->count())->toBe(2);
+});
+
 test('invitations can be created and listed through the API', function () {
     Sanctum::actingAs(User::factory()->create());
+    $project = Project::factory()->create();
 
     $this->postJson('/api/v1/review-invitations', ['locale' => 'fr', 'email' => 'sam@example.test'])
         ->assertCreated()
         ->assertJsonPath('status', 'pending')
         ->assertJsonPath('subject', null)
+        ->assertJsonPath('collective', false)
         ->assertJsonMissingPath('token');
+
+    $this->postJson('/api/v1/review-invitations', ['locale' => 'fr', 'collective' => true, 'project_id' => $project->id])
+        ->assertCreated()
+        ->assertJsonPath('collective', true)
+        ->assertJsonPath('max_uses', null)
+        ->assertJsonPath('subjects.0.id', $project->id);
 
     $this->getJson('/api/v1/review-invitations?status=pending')
         ->assertOk()
-        ->assertJsonPath('data.0.email', 'sam@example.test');
+        ->assertJsonCount(2, 'data');
 });

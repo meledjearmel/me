@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\HasSubjects;
 use App\Enums\TestimonialStatus;
 use App\Jobs\ProcessTestimonialVideo;
 use Database\Factories\TestimonialFactory;
@@ -18,7 +19,7 @@ use Spatie\Translatable\HasTranslations;
 class Testimonial extends Model implements HasMedia
 {
     /** @use HasFactory<TestimonialFactory> */
-    use HasFactory, HasTranslations, InteractsWithMedia, SoftDeletes;
+    use HasFactory, HasSubjects, HasTranslations, InteractsWithMedia, SoftDeletes;
 
     public const string VIDEO_COLLECTION = 'video';
 
@@ -35,9 +36,7 @@ class Testimonial extends Model implements HasMedia
         'content',
         'highlight',
         'video_transcript',
-        'project_id',
-        'experience_id',
-        'education_id',
+        'review_invitation_id',
         'status',
         'is_featured',
         'submitted_at',
@@ -99,22 +98,14 @@ class Testimonial extends Model implements HasMedia
         ];
     }
 
-    /** @return BelongsTo<Project, $this> */
-    public function project(): BelongsTo
+    /**
+     * Le lien d'invitation par lequel l'avis est arrivé.
+     *
+     * @return BelongsTo<ReviewInvitation, $this>
+     */
+    public function reviewInvitation(): BelongsTo
     {
-        return $this->belongsTo(Project::class);
-    }
-
-    /** @return BelongsTo<Experience, $this> */
-    public function experience(): BelongsTo
-    {
-        return $this->belongsTo(Experience::class);
-    }
-
-    /** @return BelongsTo<Education, $this> */
-    public function education(): BelongsTo
-    {
-        return $this->belongsTo(Education::class);
+        return $this->belongsTo(ReviewInvitation::class);
     }
 
     /** Nombre maximum d'avis « à la une » (et de cartes du paquet de l'accueil). */
@@ -129,7 +120,7 @@ class Testimonial extends Model implements HasMedia
      */
     public static function forHomepage(): Collection
     {
-        $approved = static::query()->with('media')->where('status', TestimonialStatus::Approved);
+        $approved = static::query()->with(['media', ...self::SUBJECT_RELATIONS])->where('status', TestimonialStatus::Approved);
 
         $chosen = (clone $approved)
             ->where('is_featured', true)

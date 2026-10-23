@@ -2,6 +2,8 @@
 
 use App\Enums\TestimonialStatus;
 use App\Jobs\ProcessTestimonialVideo;
+use App\Models\Experience;
+use App\Models\Project;
 use App\Models\Testimonial;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -164,4 +166,28 @@ test('a video heavier than post_max_size returns to the form with an error', fun
         ->call('PUT', route('admin.testimonials.update', $testimonial), server: ['CONTENT_LENGTH' => PHP_INT_MAX])
         ->assertRedirect($edit)
         ->assertSessionHasErrors('video');
+});
+
+test('a testimonial can be linked to several projects and experiences, and unlinked', function () {
+    $user = User::factory()->create();
+    $projects = Project::factory()->count(2)->create();
+    $experience = Experience::factory()->create();
+    $testimonial = Testimonial::factory()->create();
+
+    $this->actingAs($user)->put(route('admin.testimonials.update', $testimonial), [
+        'status' => TestimonialStatus::Approved->value,
+        'project_ids' => $projects->modelKeys(),
+        'experience_ids' => [$experience->id],
+    ])->assertSessionHasNoErrors();
+
+    expect($testimonial->projects()->pluck('projects.id')->all())->toEqualCanonicalizing($projects->modelKeys())
+        ->and($testimonial->experiences()->pluck('experiences.id')->all())->toBe([$experience->id]);
+
+    $this->actingAs($user)->put(route('admin.testimonials.update', $testimonial), [
+        'status' => TestimonialStatus::Approved->value,
+        'project_ids' => [''],
+    ])->assertSessionHasNoErrors();
+
+    expect($testimonial->projects()->count())->toBe(0)
+        ->and($testimonial->experiences()->count())->toBe(1);
 });
