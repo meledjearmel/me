@@ -2,8 +2,11 @@ import { Link } from '@inertiajs/react';
 import { useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import PubDialog from '@/components/public/pub-dialog';
-import { useTranslations } from '@/lib/i18n';
+import { useLocale, useTranslations } from '@/lib/i18n';
 import type { PublicTestimonial } from '@/types';
+
+/** Nom de chaque piste dans le menu du lecteur, écrit dans sa propre langue. */
+const CAPTION_LABELS = { fr: 'Français', en: 'English' } as const;
 
 export function initials(name: string): string {
     return name
@@ -164,6 +167,7 @@ export function TestimonialReader({
     onOpenChange: (open: boolean) => void;
 }) {
     const t = useTranslations();
+    const locale = useLocale();
 
     if (!testimonial) {
         return null;
@@ -195,7 +199,18 @@ export function TestimonialReader({
                     autoPlay
                     playsInline
                     preload="metadata"
-                />
+                >
+                    {video.captions.map((track) => (
+                        <track
+                            key={track.language}
+                            kind="captions"
+                            src={track.url}
+                            srcLang={track.language}
+                            label={CAPTION_LABELS[track.language]}
+                            default={track.language === locale}
+                        />
+                    ))}
+                </video>
             )}
 
             <blockquote className="pub-review-reader__text">

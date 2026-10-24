@@ -32,6 +32,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SkillController;
+use App\Http\Controllers\TestimonialCaptionController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\TestimonialSubmissionController;
 use App\Http\Controllers\UsesController;
@@ -177,6 +178,11 @@ Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, Lo
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
 });
+
+// Sous-titres WebVTT des vidéos d'avis, hors préfixe de langue : la langue est celle de la piste.
+Route::get('testimonials/{testimonial}/captions/{language}.vtt', TestimonialCaptionController::class)
+    ->where('language', implode('|', SetLocale::LOCALES))
+    ->name('testimonials.captions');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/admin.php';

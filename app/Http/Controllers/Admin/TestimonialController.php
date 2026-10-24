@@ -47,11 +47,15 @@ class TestimonialController extends Controller
 
     public function update(TestimonialRequest $request, Testimonial $testimonial): RedirectResponse
     {
-        $testimonial->update($request->safe()->except(['video', 'project_ids', 'experience_ids', 'education_ids']));
+        $testimonial->update($request->safe()->except(['video', 'video_captions_files', 'remove_video_captions', 'project_ids', 'experience_ids', 'education_ids']));
         $testimonial->syncSubjects($request->subjects());
 
         if ($request->hasFile('video')) {
             $testimonial->attachVideo($request->file('video'));
+        }
+
+        if ($request->captionFiles() !== [] || $request->captionLanguagesToRemove() !== []) {
+            $testimonial->syncCaptions($request->captionFiles(), $request->captionLanguagesToRemove());
         }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Avis mis à jour.')]);

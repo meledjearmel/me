@@ -141,6 +141,75 @@ test('the video of a testimonial can be removed', function () {
     expect($testimonial->fresh()->videoData())->toBeNull();
 });
 
+test('an SRT captions file is converted to WebVTT and served as a track', function () {
+    Storage::fake('public');
+    Queue::fake();
+    $user = User::factory()->create();
+    $testimonial = Testimonial::factory()->create(['status' => TestimonialStatus::Approved]);
+    $testimonial->attachVideo(UploadedFile::fake()->create('avis.mp4', 100, 'video/mp4'));
+    $srt = "1\r\n00:00:01,000 --> 00:00:03,500\r\nUn travail remarquable.\r\n";
+
+    $this->actingAs($user)->put(route('admin.testimonials.update', $testimonial), [
+        'status' => 'approved',
+        'video_captions_files' => ['fr' => UploadedFile::fake()->createWithContent('avis.srt', $srt)],
+    ])->assertSessionHasNoErrors();
+
+    $tracks = $testimonial->fresh()->videoData()['captions'];
+    expect($tracks)->toHaveCount(1)->and($tracks[0]['language'])->toBe('fr');
+
+    $this->get($tracks[0]['url'])
+        ->assertOk()
+        ->assertHeader('Content-Type', 'text/vtt; charset=UTF-8')
+        ->assertSee("WEBVTT\n\n1\n00:00:01.000 --> 00:00:03.500", false);
+});
+
+test('a word-timed JSON transcript is split into WebVTT cues', function () {
+    Storage::fake('public');
+    $user = User::factory()->create();
+    $testimonial = Testimonial::factory()->create(['status' => TestimonialStatus::Approved]);
+    $word = fn (string $text, float $start, float $end): array => ['text' => $text, 'start_time' => $start, 'end_time' => $end];
+    $json = json_encode(['segments' => [['words' => [
+        $word('Petite', 1.9, 2.18), $word(' ', 2.18, 2.2), $word('vidéo', 2.2, 2.48), $word(' ', 2.48, 2.52),
+        $word('pour', 2.52, 2.62), $word(' ', 2.62, 2.64), $word('te', 2.66, 2.76), $word(' ', 2.76, 2.8),
+        $word('remercier.', 2.8, 3.12), $word(' ', 3.12, 3.22), $word('Voilà.', 63.0, 63.26),
+    ]]]]);
+
+    $this->actingAs($user)->put(route('admin.testimonials.update', $testimonial), [
+        'status' => 'approved',
+        'video_captions_files' => ['fr' => UploadedFile::fake()->createWithContent('avis.mp4.json', $json)],
+    ])->assertSessionHasNoErrors();
+
+    expect($testimonial->fresh()->getTranslation('video_captions', 'fr'))->toBe(
+        "WEBVTT\n\n00:00:01.900 --> 00:00:03.120\nPetite vidéo pour te remercier.\n\n00:01:03.000 --> 00:01:03.260\nVoilà.\n"
+    );
+});
+
+test('a captions file without timed cues is refused', function () {
+    Storage::fake('public');
+    $user = User::factory()->create();
+    $testimonial = Testimonial::factory()->create();
+
+    $this->actingAs($user)->put(route('admin.testimonials.update', $testimonial), [
+        'status' => 'approved',
+        'video_captions_files' => ['en' => UploadedFile::fake()->createWithContent('avis.vtt', 'Juste du texte.')],
+    ])->assertSessionHasErrors('video_captions_files.en');
+});
+
+test('a captions track can be removed, and captions of unapproved reviews are not served', function () {
+    $user = User::factory()->create();
+    $testimonial = Testimonial::factory()->create(['status' => TestimonialStatus::Pending]);
+    $testimonial->setTranslation('video_captions', 'fr', "WEBVTT\n\n00:00.000 --> 00:01.000\nBonjour\n")->save();
+
+    $this->get(route('testimonials.captions', [$testimonial, 'fr']))->assertNotFound();
+
+    $this->actingAs($user)->put(route('admin.testimonials.update', $testimonial), [
+        'status' => 'pending',
+        'remove_video_captions' => ['fr'],
+    ])->assertSessionHasNoErrors();
+
+    expect($testimonial->fresh()->captionTracks())->toBe([]);
+});
+
 test('processing a video without ffmpeg keeps the original file', function () {
     Storage::fake('public');
     Queue::fake();

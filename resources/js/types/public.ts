@@ -164,6 +164,8 @@ export type TestimonialVideo = {
     width: number | null;
     height: number | null;
     uploaded_at: string | null;
+    /** Pistes de sous-titres WebVTT, une par langue disponible. */
+    captions: { language: 'fr' | 'en'; url: string }[];
 };
 
 export type PublicTestimonial = {
