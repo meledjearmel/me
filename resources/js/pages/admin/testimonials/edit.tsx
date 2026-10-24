@@ -168,6 +168,66 @@ export default function TestimonialEdit({
                             </div>
 
                             {video && (
+                                <div className="grid content-start gap-3">
+                                    <Label>Sous-titres de la vidéo</Label>
+                                    {(['fr', 'en'] as const).map((language) => {
+                                        const hasCaptions = video.captions.some(
+                                            (track) =>
+                                                track.language === language,
+                                        );
+
+                                        return (
+                                            <div
+                                                key={language}
+                                                className="grid gap-1.5"
+                                            >
+                                                <Label
+                                                    htmlFor={`video_captions_files_${language}`}
+                                                    className="text-sm font-normal"
+                                                >
+                                                    {language === 'fr'
+                                                        ? 'Français'
+                                                        : 'Anglais'}
+                                                    {hasCaptions &&
+                                                        ' · piste en ligne'}
+                                                </Label>
+                                                <Input
+                                                    id={`video_captions_files_${language}`}
+                                                    name={`video_captions_files[${language}]`}
+                                                    type="file"
+                                                    accept=".vtt,.srt,.json"
+                                                />
+                                                {hasCaptions && (
+                                                    <label className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                        <Checkbox
+                                                            name="remove_video_captions[]"
+                                                            value={language}
+                                                        />
+                                                        Retirer cette piste
+                                                    </label>
+                                                )}
+                                                <FieldError>
+                                                    {
+                                                        errors[
+                                                            `video_captions_files.${language}`
+                                                        ]
+                                                    }
+                                                </FieldError>
+                                            </div>
+                                        );
+                                    })}
+                                    <p className="text-sm text-muted-foreground">
+                                        Fichier .vtt, .srt ou transcription
+                                        .json minutée au mot (ElevenLabs),
+                                        converti automatiquement, 2 Mo max. Les
+                                        sous-titres s'affichent sur la vidéo
+                                        pour les personnes sourdes ou
+                                        malentendantes.
+                                    </p>
+                                </div>
+                            )}
+
+                            {video && (
                                 <TranslatableField
                                     name="video_transcript"
                                     label="Transcription de la vidéo"

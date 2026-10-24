@@ -59,14 +59,24 @@ class TestimonialController extends Controller
      * `video.poster_url`, `video.duration`, `video.width` et `video.height` restent nuls
      * jusqu'à la fin du traitement (quelques secondes à quelques minutes). Pour retirer la
      * vidéo, utiliser `DELETE /testimonials/{testimonial}/video`.
+     *
+     * Sous-titres (pour les personnes sourdes ou malentendantes) : `video_captions_files[fr]` et
+     * `video_captions_files[en]`, fichiers .vtt, .srt ou transcription .json minutée au mot
+     * (format ElevenLabs), convertis en WebVTT, 2 Mo au plus ;
+     * un nouveau fichier remplace celui de sa langue. `remove_video_captions[]` (fr, en) retire
+     * des pistes. Les pistes disponibles sont listées dans `video.captions` (langue et URL).
      */
     public function update(TestimonialRequest $request, Testimonial $testimonial): TestimonialResource
     {
-        $testimonial->update($request->safe()->except(['video', 'project_ids', 'experience_ids', 'education_ids']));
+        $testimonial->update($request->safe()->except(['video', 'video_captions_files', 'remove_video_captions', 'project_ids', 'experience_ids', 'education_ids']));
         $testimonial->syncSubjects($request->subjects());
 
         if ($request->hasFile('video')) {
             $testimonial->attachVideo($request->file('video'));
+        }
+
+        if ($request->captionFiles() !== [] || $request->captionLanguagesToRemove() !== []) {
+            $testimonial->syncCaptions($request->captionFiles(), $request->captionLanguagesToRemove());
         }
 
         return new TestimonialResource($testimonial->refresh()->load(Testimonial::SUBJECT_RELATIONS));

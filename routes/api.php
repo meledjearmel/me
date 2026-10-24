@@ -41,6 +41,7 @@ use App\Http\Controllers\Api\V1\PostTagController;
 use App\Http\Controllers\Api\V1\ProfessionalReferenceController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\ProjectController;
+use App\Http\Controllers\Api\V1\ProposalController;
 use App\Http\Controllers\Api\V1\PushTokenController;
 use App\Http\Controllers\Api\V1\ReviewInvitationController;
 use App\Http\Controllers\Api\V1\ServiceController;
@@ -208,6 +209,7 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::put('job-applications/{job_application}/cv', [JobApplicationCvController::class, 'update'])->name('job-applications.cv.update');
         Route::delete('job-applications/{job_application}/cv', [JobApplicationCvController::class, 'destroy'])->name('job-applications.cv.destroy');
         Route::apiResource('job-applications', JobApplicationController::class);
+        Route::apiResource('proposals', ProposalController::class);
         Route::apiResource('certifications', CertificationController::class);
         Route::apiResource('distinctions', DistinctionController::class);
         Route::get('github', [GitHubController::class, 'show'])->name('github.show');

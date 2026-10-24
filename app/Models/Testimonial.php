@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Concerns\HasSubjects;
 use App\Enums\TestimonialStatus;
 use App\Jobs\ProcessTestimonialVideo;
+use App\Support\WebVtt;
 use Database\Factories\TestimonialFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,7 +27,10 @@ class Testimonial extends Model implements HasMedia
     public const string POSTER_COLLECTION = 'video_poster';
 
     /** @var array<int, string> */
-    protected $translatable = ['content', 'highlight', 'video_transcript'];
+    protected $translatable = ['content', 'highlight', 'video_transcript', 'video_captions'];
+
+    /** Les sous-titres sont servis par leur propre route, pas dans les props. */
+    protected $hidden = ['video_captions'];
 
     /** @var list<string> */
     protected $fillable = [
@@ -72,13 +76,59 @@ class Testimonial extends Model implements HasMedia
     {
         $this->clearMediaCollection(self::VIDEO_COLLECTION);
         $this->clearMediaCollection(self::POSTER_COLLECTION);
+        $this->update(['video_captions' => null]);
+    }
+
+    /**
+     * Remplace les sous-titres des langues reçues (fichier .vtt ou .srt, converti en
+     * WebVTT) et retire ceux des langues demandées.
+     *
+     * @param  array<string, UploadedFile>  $files
+     * @param  list<string>  $languagesToRemove
+     */
+    public function syncCaptions(array $files, array $languagesToRemove = []): void
+    {
+        foreach ($languagesToRemove as $language) {
+            $this->forgetTranslation('video_captions', $language);
+        }
+
+        foreach ($files as $language => $file) {
+            $captions = WebVtt::fromSubtitles((string) file_get_contents($file->getRealPath()));
+
+            if ($captions !== null) {
+                $this->setTranslation('video_captions', $language, $captions);
+            }
+        }
+
+        $this->save();
+    }
+
+    /**
+     * Les pistes de sous-titres disponibles, pour les balises <track> du lecteur.
+     *
+     * @return list<array{language: string, url: string}>
+     */
+    public function captionTracks(): array
+    {
+        $tracks = [];
+
+        foreach ($this->getTranslations('video_captions') as $language => $captions) {
+            if (filled($captions)) {
+                $tracks[] = [
+                    'language' => $language,
+                    'url' => route('testimonials.captions', ['testimonial' => $this, 'language' => $language]),
+                ];
+            }
+        }
+
+        return $tracks;
     }
 
     /**
      * La vidéo telle que l'affiche le site. La durée et les dimensions ne sont
      * connues qu'une fois la vidéo traitée par ffmpeg.
      *
-     * @return array{url: string, poster_url: string|null, duration: int|null, width: int|null, height: int|null, uploaded_at: string|null}|null
+     * @return array{url: string, poster_url: string|null, duration: int|null, width: int|null, height: int|null, uploaded_at: string|null, captions: list<array{language: string, url: string}>}|null
      */
     public function videoData(): ?array
     {
@@ -95,6 +145,7 @@ class Testimonial extends Model implements HasMedia
             'width' => $video->getCustomProperty('width'),
             'height' => $video->getCustomProperty('height'),
             'uploaded_at' => $video->created_at?->toIso8601String(),
+            'captions' => $this->captionTracks(),
         ];
     }
 

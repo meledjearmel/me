@@ -797,3 +797,23 @@ export type ContentRevisionDetail = ContentRevisionSummary & {
         current_url: string | null;
     } | null;
 };
+
+/** Proposition envoyée sur une plateforme freelance : privée, elle sert d'exemple à l'IA. */
+export type Proposal = {
+    id: number;
+    platform: string;
+    locale: 'fr' | 'en';
+    job_title: string;
+    client_name: string | null;
+    job_url: string | null;
+    job_posting: string | null;
+    body: string;
+    screening_answers: string | null;
+    bid: string | null;
+    connects: number | null;
+    status: 'draft' | 'sent' | 'viewed' | 'interview' | 'hired' | 'declined';
+    notes: string | null;
+    drafted_by: string | null;
+    sent_at: string | null;
+    created_at: string;
+};
