@@ -32,7 +32,7 @@ class ListProposalsTool extends Tool
         ]);
 
         if (isset($data['id'])) {
-            $proposal = Proposal::query()->find($data['id']);
+            $proposal = Proposal::query()->find((int) $data['id']);
 
             if ($proposal === null) {
                 return Response::error('Proposition introuvable.');

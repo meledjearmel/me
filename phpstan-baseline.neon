@@ -943,36 +943,6 @@ parameters:
 			path: app/Mcp/Tools/GetPostTool.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Mcp/Tools/GetProjectTool.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Mcp/Tools/GetProjectTool.php
-
-		-
-			message: '#^Call to an undefined method App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:getMedia\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Mcp/Tools/GetProjectTool.php
-
-		-
-			message: '#^Call to an undefined method App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\>\:\:hasMedia\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Mcp/Tools/GetProjectTool.php
-
-		-
-			message: '#^Parameter \#1 \$project of method App\\Services\\Ai\\ProjectDraftWriter\:\:toInput\(\) expects App\\Models\\Project, App\\Models\\Project\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Project\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Mcp/Tools/GetProjectTool.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 2

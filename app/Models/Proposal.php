@@ -56,14 +56,15 @@ class Proposal extends Model
         });
     }
 
-    /** Les meilleurs exemples d'abord (mission obtenue, entretien…), puis les plus récents. */
+    /**
+     * Les meilleurs exemples d'abord (mission obtenue, entretien, vue, envoyée, brouillon, refusée), puis les plus récents.
+     *
+     * @param  Builder<self>  $query
+     */
     #[Scope]
     protected function bestFirst(Builder $query): void
     {
-        $ranks = collect(ProposalStatus::cases())
-            ->map(fn (ProposalStatus $status): string => "when '{$status->value}' then {$status->rank()}")
-            ->implode(' ');
-
-        $query->orderByRaw("case status {$ranks} else 9 end")->latest();
+        $query->orderByRaw("case status when 'hired' then 0 when 'interview' then 1 when 'viewed' then 2 when 'sent' then 3 when 'draft' then 4 else 5 end")
+            ->latest();
     }
 }
