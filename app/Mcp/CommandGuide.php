@@ -53,6 +53,19 @@ class CommandGuide
                 'Le français du projet #12 est validé, fais la version anglaise.',
             ],
         ],
+        'write-proposal' => [
+            'usage' => 'Rédiger une proposition pour une offre Upwork, Malt ou autre, en français ou en anglais, dans votre style.',
+            'tips' => [
+                'Collez toute l\'annonce, questions du client comprises : l\'agent prépare aussi les réponses à mettre dans les cases dédiées.',
+                'Cherchez le prénom du client dans les avis de son historique (« Thanks John! ») et donnez-le dans client_name.',
+                'Après l\'envoi, mettez le statut à jour : les propositions qui marchent deviennent les modèles des suivantes.',
+            ],
+            'example' => '/mcp__portfolio__write-proposal job_posting="…" platform=upwork locale=en client_name=John',
+            'requests' => [
+                'Rédige ma proposition Upwork pour cette offre : …',
+                'Écris une proposition en anglais pour cette mission Malt, le client s\'appelle John : …',
+            ],
+        ],
         'write-post' => [
             'usage' => 'Écrire un brouillon d\'article du blog sur un sujet, en s\'appuyant sur le code ouvert et, au besoin, sur un article existant.',
             'tips' => [
@@ -265,6 +278,19 @@ class CommandGuide
             ],
             'example' => 'Prépare une page de candidature pour cette offre : https://exemple.com/offre-developpeur',
         ],
+        'list-proposals' => [
+            'usage' => 'Revoir vos propositions freelance (Upwork, Malt…) et leurs résultats.',
+            'tips' => ['Les propositions qui ont mené à une mission ou à un entretien passent en premier : ce sont les exemples que l\'agent imite.'],
+            'example' => 'Quelles propositions Upwork m\'ont valu un entretien ce mois-ci ?',
+        ],
+        'save-proposal' => [
+            'usage' => 'Enregistrer une proposition freelance ou mettre à jour son résultat.',
+            'tips' => [
+                'Après l\'envoi, donnez le statut (envoyée, vue, entretien, mission obtenue, refusée) : l\'agent s\'appuie sur ce qui marche.',
+                'Collez la version finale si vous l\'avez retouchée : c\'est elle qui sert d\'exemple.',
+            ],
+            'example' => 'Ma proposition #4 a décroché un entretien, mets-la à jour.',
+        ],
         'get-weekly-report' => [
             'usage' => 'Le bilan des 7 derniers jours : audience, demandes, estimations, candidatures consultées, blog et ce qui attend une action.',
             'tips' => ['Le même bilan part par email chaque lundi matin (réglable dans l\'admin, Rapport de la semaine).'],
@@ -365,6 +391,7 @@ class CommandGuide
         'draft-project' => 'Rédiger un projet',
         'translate-project' => 'Traduire un projet',
         'write-post' => 'Écrire un article',
+        'write-proposal' => 'Rédiger une proposition freelance',
         'plan-post-images' => 'Images d\'un article',
         'plan-project-images' => 'Images d\'un projet',
         'add-content' => 'Ajouter un contenu',
@@ -395,6 +422,8 @@ class CommandGuide
         'save-estimate-analysis' => 'Analyser une demande',
         'list-job-applications' => 'Pages de candidature',
         'save-job-application' => 'Préparer une candidature',
+        'list-proposals' => 'Propositions freelance',
+        'save-proposal' => 'Enregistrer une proposition',
         'get-weekly-report' => 'Bilan de la semaine',
         'save-post-social-texts' => 'Textes de partage',
         'syndicate-post' => 'Republier un article',

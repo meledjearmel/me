@@ -22,6 +22,7 @@ import {
     ReceiptText,
     ListPlus,
     Store,
+    FileText,
     Send,
     CalendarCheck,
     Share2,
@@ -69,6 +70,7 @@ import { index as engagementsIndex } from '@/routes/admin/engagements';
 import { index as estimatorItemsIndex } from '@/routes/admin/estimator-items';
 import { index as servicesIndex } from '@/routes/admin/services';
 import { index as jobApplicationsIndex } from '@/routes/admin/job-applications';
+import { index as proposalsIndex } from '@/routes/admin/proposals';
 import { show as weeklyReportShow } from '@/routes/admin/weekly-report';
 import { edit as syndicationEdit } from '@/routes/admin/syndication';
 import { index as estimatorOptionsIndex } from '@/routes/admin/estimator-options';
@@ -175,6 +177,11 @@ const inboxNavItems: NavItem[] = [
         icon: ReceiptText,
     },
     { title: 'Candidatures', href: jobApplicationsIndex(), icon: Send },
+    {
+        title: 'Propositions freelance',
+        href: proposalsIndex(),
+        icon: FileText,
+    },
     { title: 'Téléchargements CV', href: cvDownloadsIndex(), icon: FileDown },
     { title: 'Newsletter', href: subscribersIndex(), icon: MailCheck },
     { title: 'Félicitations', href: congratulationsIndex(), icon: Heart },

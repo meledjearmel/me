@@ -64,12 +64,12 @@ test('tools and prompts keep the exact names used in the instructions', function
 
     expect($list('tools/list', 'tools'))->toBe([
         'add-post-image', 'add-project-image', 'configure-estimator', 'create-technology', 'decide-appointment', 'draft-quote', 'get-catalog', 'get-content', 'get-estimator',
-        'get-inbox', 'get-post', 'get-project', 'get-signing-key-backup', 'get-stats', 'get-weekly-report', 'list-app-releases', 'list-celebrations', 'list-commercial-documents', 'list-contents', 'list-estimate-requests', 'list-job-applications', 'list-revisions',
+        'get-inbox', 'get-post', 'get-project', 'get-signing-key-backup', 'get-stats', 'get-weekly-report', 'list-app-releases', 'list-celebrations', 'list-commercial-documents', 'list-contents', 'list-estimate-requests', 'list-job-applications', 'list-proposals', 'list-revisions',
         'mark-handled', 'moderate-comment', 'moderate-testimonial', 'prepare-app-release', 'prepare-signing-key-backup', 'propose-revision', 'publish-app-release', 'read-web-page', 'save-celebration', 'save-content-draft', 'save-content-translation',
         'save-estimate-analysis', 'save-estimator-item', 'save-job-application', 'save-post-draft', 'save-post-social-texts', 'save-post-translation', 'save-project-draft', 'save-project-translation',
-        'syndicate-post', 'update-project-draft',
+        'save-proposal', 'syndicate-post', 'update-project-draft',
     ])->and($list('prompts/list', 'prompts'))->toBe([
-        'add-content', 'draft-project', 'plan-post-images', 'plan-project-images', 'translate-project', 'write-post',
+        'add-content', 'draft-project', 'plan-post-images', 'plan-project-images', 'translate-project', 'write-post', 'write-proposal',
     ]);
 });
 

@@ -7,6 +7,7 @@ use App\Models\Education;
 use App\Models\Experience;
 use App\Models\JobProfile;
 use App\Models\ProfessionalReference;
+use App\Models\Proposal;
 use App\Models\Skill;
 use App\Models\Technology;
 use App\Models\TechnologyCategory;
@@ -256,4 +257,35 @@ test('une surprise se crée, se lit, se modifie et se supprime', function () {
 
     $this->deleteJson(route('api.v1.celebrations.destroy', $id))->assertNoContent();
     expect(Celebration::query()->find($id))->toBeNull();
+});
+
+test('une proposition freelance se crée, se filtre, se modifie et se supprime', function () {
+    $payload = [
+        'platform' => 'upwork',
+        'locale' => 'fr',
+        'job_title' => 'Refonte d’un site Laravel',
+        'body' => 'Votre site doit charger en moins de deux secondes.',
+        'status' => 'draft',
+    ];
+
+    $id = $this->postJson(route('api.v1.proposals.store'), $payload)
+        ->assertCreated()
+        ->assertJsonPath('status', 'draft')
+        ->assertJsonPath('sent_at', null)
+        ->json('id');
+
+    $this->getJson(route('api.v1.proposals.index', ['platform' => 'malt']))->assertOk()->assertJsonCount(0, 'data');
+
+    $this->putJson(route('api.v1.proposals.update', $id), [...$payload, 'status' => 'hired'])
+        ->assertOk()
+        ->assertJsonPath('status', 'hired');
+
+    expect(Proposal::query()->find($id)->sent_at)->not->toBeNull();
+
+    $this->putJson(route('api.v1.proposals.update', $id), [...$payload, 'platform' => 'myspace'])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('platform');
+
+    $this->deleteJson(route('api.v1.proposals.destroy', $id))->assertNoContent();
+    expect(Proposal::query()->find($id))->toBeNull();
 });

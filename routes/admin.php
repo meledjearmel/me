@@ -41,6 +41,7 @@ use App\Http\Controllers\Admin\PostTagController;
 use App\Http\Controllers\Admin\ProfessionalReferenceController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProjectController;
+use App\Http\Controllers\Admin\ProposalController;
 use App\Http\Controllers\Admin\ReviewInvitationController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SiteSettingController;
@@ -119,6 +120,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('music-genres', MusicGenreController::class)->except('show');
     Route::resource('uses-items', UsesItemController::class)->except('show');
     Route::resource('services', ServiceController::class)->except('show');
+    Route::resource('proposals', ProposalController::class)->except('show');
     Route::resource('job-applications', JobApplicationController::class);
     Route::prefix('job-applications/{job_application}/cv')->name('job-applications.cv.')->group(function () {
         Route::get('/', [JobApplicationCvController::class, 'show'])->name('show');

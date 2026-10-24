@@ -8,6 +8,7 @@ use App\Mcp\Prompts\PlanPostImagesPrompt;
 use App\Mcp\Prompts\PlanProjectImagesPrompt;
 use App\Mcp\Prompts\TranslateProjectPrompt;
 use App\Mcp\Prompts\WritePostPrompt;
+use App\Mcp\Prompts\WriteProposalPrompt;
 use App\Mcp\Tools\AddPostImageTool;
 use App\Mcp\Tools\AddProjectImageTool;
 use App\Mcp\Tools\ConfigureEstimatorTool;
@@ -29,6 +30,7 @@ use App\Mcp\Tools\ListCommercialDocumentsTool;
 use App\Mcp\Tools\ListContentsTool;
 use App\Mcp\Tools\ListEstimateRequestsTool;
 use App\Mcp\Tools\ListJobApplicationsTool;
+use App\Mcp\Tools\ListProposalsTool;
 use App\Mcp\Tools\ListRevisionsTool;
 use App\Mcp\Tools\MarkHandledTool;
 use App\Mcp\Tools\ModerateCommentTool;
@@ -49,6 +51,7 @@ use App\Mcp\Tools\SavePostSocialTextsTool;
 use App\Mcp\Tools\SavePostTranslationTool;
 use App\Mcp\Tools\SaveProjectDraftTool;
 use App\Mcp\Tools\SaveProjectTranslationTool;
+use App\Mcp\Tools\SaveProposalTool;
 use App\Mcp\Tools\SyndicatePostTool;
 use App\Mcp\Tools\UpdateProjectDraftTool;
 use Laravel\Mcp\Server;
@@ -83,6 +86,7 @@ Ne traduis en anglais (save-project-translation, save-post-translation, save-con
 Contenu déjà publié (ou page « Now ») : ne le modifie jamais directement. Lis-le, vérifie list-revisions pour ne pas proposer deux fois la même chose, puis propose-revision avec seulement les champs modifiés, en français et en anglais, et un résumé de ce qui change et pourquoi ; le développeur relit l'avant/après et applique. Pour une image d'un projet ou d'un article publié, add-project-image ou add-post-image avec summary : la couverture ou l'image de galerie devient elle aussi une révision à appliquer.
 Estimateur de projet : get-estimator lit la grille (heures de travail hors marge, facturation forfait ou à l'heure) et les réglages (taux horaire par devise, marge pour imprévus, heures par semaine). Pour tout configurer d'un coup (réglages et plusieurs éléments), utilise configure-estimator : donne une ref à chaque nouveau type de projet pour qu'une option le vise dans project_types (option réservée à ces types ; vide = pour tous) ; une option dont le coût grandit avec le projet (multilingue…) se chiffre en pourcentage (pricing « percent ») ; un service payé à chaque période (maintenance, hébergement, support) est une option « recurring » : heures par mois, et periods donne les périodes proposées avec leur remise (ex. {"monthly": 0, "yearly": 15}), hors total du projet. save-estimator-item ajoute un seul élément ou propose d'en corriger un. Les éléments créés restent masqués jusqu'à ce que le développeur les active ; changer les réglages, une grille tarifaire existante ou un élément existant devient une révision (avec summary) qu'il relit et applique : rien ne change avant ; chiffre des heures réalistes pour un développeur expérimenté, cohérentes avec le reste de la grille. Pour une demande reçue : list-estimate-requests, puis save-estimate-analysis ; l'objectif est d'éviter une sous-estimation (ce que les choix ne couvrent pas, points flous, questions à poser au client, heures marge comprise, « hourly » quand le périmètre est trop flou pour un forfait sûr).
 Candidature : pour une offre d'emploi donnée par le développeur, lis-la (read-web-page), regarde list-job-applications (pas de doublon pour la même entreprise), le portfolio (get-catalog, get-project), puis save-job-application : un mot d'accompagnement dans la langue de l'offre, appuyé sur des projets réels cités avec leur jeton de mention de get-catalog (jamais un identifiant seul dans le texte), et 2 à 4 projets du plus pertinent au moins pertinent. Pour un CV adapté à l'offre, relis la page avec list-job-applications (id) pour avoir cv_material, puis envoie cv_title, cv_summary, cv_experiences et cv_skill_ids : uniquement des réalisations et compétences existantes, choisies et ordonnées, jamais de nouvelle. La page reste en brouillon : le développeur la relit et la met en ligne.
+Proposition freelance (Upwork, Malt…) : voir le prompt write-proposal et ses règles. Lis d'abord list-proposals (les propositions passées qui ont le mieux marché viennent en premier) pour reprendre le style du développeur, appuie-toi sur des projets réels (get-catalog, get-project), puis save-proposal en brouillon, avec les réponses aux questions de l'offre s'il y en a. Le développeur l'envoie lui-même ; save-proposal avec un id enregistre la version finale et le statut (sent, viewed, interview, hired, declined). Ces propositions sont privées.
 Faire connaître un article : save-post-social-texts enregistre ses textes de partage (LinkedIn, X, Facebook, statut WhatsApp), que le développeur publie lui-même ; syndicate-post le republie sur dev.to ou Hashnode, mais seulement à sa demande explicite (c'est une publication réelle).
 Suivi du site : get-inbox liste ce qui attend une réponse (messages, demandes, rendez-vous, avis, commentaires), get-stats et get-weekly-report donnent les chiffres. decide-appointment (le visiteur reçoit un email), moderate-testimonial et moderate-comment (publication immédiate) agissent pour de vrai : seulement sur demande explicite, élément par élément ; mark-handled range ce dont le développeur dit s'être occupé, et enregistre qu'une demande est signée (avec le montant qu'il donne) ou perdue.
 Devis et factures : list-commercial-documents suit les devis, proformas et factures (émis, acceptés, à encaisser). draft-quote prépare un devis en brouillon depuis une demande, avec les lignes de son estimation ou celles que le développeur valide ; tu n'émets ni n'envoies jamais un document : il le fait lui-même depuis l'administration.
@@ -123,6 +127,8 @@ class PortfolioServer extends Server
         SaveEstimateAnalysisTool::class,
         ListJobApplicationsTool::class,
         SaveJobApplicationTool::class,
+        ListProposalsTool::class,
+        SaveProposalTool::class,
         GetWeeklyReportTool::class,
         SavePostSocialTextsTool::class,
         SyndicatePostTool::class,
@@ -146,6 +152,7 @@ class PortfolioServer extends Server
         DraftProjectPrompt::class,
         TranslateProjectPrompt::class,
         WritePostPrompt::class,
+        WriteProposalPrompt::class,
         PlanPostImagesPrompt::class,
         PlanProjectImagesPrompt::class,
     ];

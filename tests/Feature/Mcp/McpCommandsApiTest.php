@@ -13,8 +13,8 @@ test('the MCP commands list the server address, prompts and tools', function () 
     $response = $this->getJson('/api/v1/mcp-commands')
         ->assertOk()
         ->assertJsonPath('data.server_url', url('/mcp/portfolio'))
-        ->assertJsonCount(6, 'data.prompts')
-        ->assertJsonCount(43, 'data.tools');
+        ->assertJsonCount(7, 'data.prompts')
+        ->assertJsonCount(45, 'data.tools');
 
     foreach ($response->json('data.prompts') as $prompt) {
         expect($prompt['kind'])->toBe('prompt')
