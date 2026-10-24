@@ -283,9 +283,18 @@ class CommandGuide
             'tips' => ['Les propositions qui ont mené à une mission ou à un entretien passent en premier : ce sont les exemples que l\'agent imite.'],
             'example' => 'Quelles propositions Upwork m\'ont valu un entretien ce mois-ci ?',
         ],
-        'save-proposal' => [
-            'usage' => 'Enregistrer une proposition freelance ou mettre à jour son résultat.',
+        'get-proposal-guide' => [
+            'usage' => 'Donner à l\'agent votre méthode de rédaction des propositions freelance, sans passer par la commande write-proposal.',
             'tips' => [
+                'Demandez simplement une proposition en collant l\'annonce : l\'agent lit la méthode et la suit.',
+                'Rédiger n\'enregistre rien : demandez-le ensuite si la proposition vous convient.',
+            ],
+            'example' => 'Rédige-moi une proposition pour cette offre Upwork : …',
+        ],
+        'save-proposal' => [
+            'usage' => 'Enregistrer une proposition freelance ou mettre à jour son résultat, sur votre demande.',
+            'tips' => [
+                'Rien n\'est enregistré pendant la rédaction : dites « enregistre-la » quand elle vous convient.',
                 'Après l\'envoi, donnez le statut (envoyée, vue, entretien, mission obtenue, refusée) : l\'agent s\'appuie sur ce qui marche.',
                 'Collez la version finale si vous l\'avez retouchée : c\'est elle qui sert d\'exemple.',
             ],
@@ -423,6 +432,7 @@ class CommandGuide
         'list-job-applications' => 'Pages de candidature',
         'save-job-application' => 'Préparer une candidature',
         'list-proposals' => 'Propositions freelance',
+        'get-proposal-guide' => 'Méthode de rédaction',
         'save-proposal' => 'Enregistrer une proposition',
         'get-weekly-report' => 'Bilan de la semaine',
         'save-post-social-texts' => 'Textes de partage',

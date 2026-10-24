@@ -5,6 +5,7 @@ use App\Enums\ProposalStatus;
 use App\Mcp\Prompts\WriteProposalPrompt;
 use App\Mcp\Servers\PortfolioServer;
 use App\Mcp\Tools\GetCatalogTool;
+use App\Mcp\Tools\GetProposalGuideTool;
 use App\Mcp\Tools\ListProposalsTool;
 use App\Mcp\Tools\SaveProposalTool;
 use App\Models\Project;
@@ -67,7 +68,15 @@ test('write-proposal carries the writing rules, the platform and the posting', f
         'job_posting' => 'We need a Flutter developer for a delivery app.',
         'platform' => 'malt',
         'locale' => 'en',
-    ])->assertOk()->assertSee(['list-proposals', 'save-proposal', 'malt', 'in English', 'We need a Flutter developer', 'land an interview', 'Never save anything before I explicitly validate']);
+    ])->assertOk()->assertSee(['list-proposals', 'save-proposal', 'malt', 'in English', 'We need a Flutter developer', 'land an interview', 'do not save the proposal']);
+});
+
+test('get-proposal-guide gives the writing method alone, without saving anything', function () {
+    $this->server->tool(GetProposalGuideTool::class)
+        ->assertOk()
+        ->assertSee(['THINK LIKE THE CLIENT', 'The 4 Pillars', 'list-proposals', 'do not save the proposal', 'FINAL CHECK', 'REPLYING TO A CLIENT MESSAGE']);
+
+    expect(Proposal::query()->exists())->toBeFalse();
 });
 
 test('the catalog gives the public link of published projects only, to cite as proof', function () {
