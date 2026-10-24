@@ -15,7 +15,7 @@ use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Tool;
 
 #[Name('save-proposal')]
-#[Description('Enregistre une proposition freelance (sans id, en brouillon), ou modifie une proposition existante (avec id, seulement les champs envoyés) : texte final réellement envoyé, réponses aux questions, statut (sent, viewed, interview, hired, declined). Privée : rien n\'est publié ni envoyé au client, le développeur la colle lui-même sur la plateforme.')]
+#[Description('Seulement après que le développeur a validé la proposition dans la discussion : enregistre une proposition freelance (sans id, en brouillon), ou modifie une proposition existante (avec id, seulement les champs envoyés) : texte final réellement envoyé, réponses aux questions, statut (sent, viewed, interview, hired, declined). Privée : rien n\'est publié ni envoyé au client, le développeur la colle lui-même sur la plateforme.')]
 class SaveProposalTool extends Tool
 {
     use NamesAiClient;

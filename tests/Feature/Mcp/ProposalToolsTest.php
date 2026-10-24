@@ -64,5 +64,5 @@ test('write-proposal carries the writing rules, the platform and the posting', f
         'job_posting' => 'We need a Flutter developer for a delivery app.',
         'platform' => 'malt',
         'locale' => 'en',
-    ])->assertOk()->assertSee(['list-proposals', 'save-proposal', 'malt', 'in English', 'We need a Flutter developer']);
+    ])->assertOk()->assertSee(['list-proposals', 'save-proposal', 'malt', 'in English', 'We need a Flutter developer', 'land an interview', 'Never save anything before I explicitly validate']);
 });

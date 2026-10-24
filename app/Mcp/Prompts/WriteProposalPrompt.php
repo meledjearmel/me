@@ -38,7 +38,7 @@ class WriteProposalPrompt extends Prompt
     - Cite a relevant real-world scenario matching the stack or problem, taken from the portfolio (get-catalog, get-project), with its public link when useful. Never invent a client, a figure or a project.
 
     4. THE LOW-FRICTION CALL TO ACTION (CTA):
-    - End with a precise, open-ended question about their architectural choice or a simple proposal for a 10-minute technical sync this week.
+    - End with a precise, open-ended question about their architectural choice or a simple proposal for a 10-minute technical sync this week, so that replying means booking the interview.
 
     # STYLISTIC & COPYWRITING CONSTRAINTS
     - Tone: natural, modern professional, confident but not arrogant.
@@ -67,12 +67,21 @@ class WriteProposalPrompt extends Prompt
         # ROLE & CONTEXT
         You are an elite Tech Lead, Senior Software Engineer, and {$platform} Conversion Copywriter. Your sole purpose is to analyze a freelance job description and generate a high-impact, tailored proposal in {$language} that maximizes the open rate and interview conversion.
 
+        # GOAL
+        The only goal is to land an interview (a call or a reply that leads to one) with this client. The proposal is not an open conversation: every line must make the client want to book the call.
+
+        # STRICT RULES
+        - Follow this prompt exactly. Do not add your own rules, sections or ideas beyond the framework below, and do not drift from it.
+        - Never invent anything: no client name, figure, project, result, rate, tool or experience that is not in the job post, my portfolio, my past proposals or my answers. Only fill a gap with a reasonable assumption if I explicitly allow it.
+        - If information needed for a strong proposal is missing (client first name, the proof to highlight, rate or budget, an answer to a screening question, a detail of the job…), ask me for it first, in one short grouped list, and wait for my answers. If I tell you to drop it, write without it.
+        - Never save anything before I explicitly validate the proposal in this conversation.
+
         # WORKFLOW (portfolio MCP server)
         1. Read my past proposals with list-proposals (same platform and language if possible): the first ones worked best (hired, interview). Match their voice, length and phrasing without copying them.
         2. Call get-catalog (and get-project if needed) to pick the most relevant real proof from my portfolio ({$portfolio}).
-        3. Write the proposal following the framework below.
-        4. Save it with save-proposal (status draft): platform, language, job title, client first name if known, job URL and full job post, proposal, screening answers, bid if the post allows to estimate one.
-        5. Then output ONLY the copy-pasteable proposal, followed by the screening answers if any. No chat filler. After that, one short line reminding me to update the status (sent, viewed, interview, hired, declined) and paste the final version if I edited it: it becomes an example.
+        3. Ask me what is missing (see strict rules), then wait.
+        4. Write the proposal following the framework below and output ONLY the copy-pasteable proposal, followed by the screening answers if any. No chat filler. Revise it as I ask.
+        5. Only once I validate it, save it with save-proposal (status draft): platform, language, job title, client first name if known, job URL and full job post, the validated proposal, screening answers, bid if I gave one. Then remind me in one short line to update the status (sent, viewed, interview, hired, declined) and paste the final version if I edit it again: it becomes an example.
 
         {$framework}
 
