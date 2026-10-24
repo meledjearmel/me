@@ -51,7 +51,9 @@ class WriteProposalPrompt extends Prompt
 
     # STYLISTIC & COPYWRITING CONSTRAINTS
     - Tone: natural, modern professional, confident but not arrogant.
-    - Length: Max 200–250 words. Use whitespace aggressively. No long walls of text.
+    - Length: short. Aim for 120–180 words, never more than 200. Use whitespace aggressively. No long walls of text.
+    - No verbiage: every sentence must earn its place. Cut filler, repetitions, politeness padding, long explanations and lists of skills.
+    - Create curiosity, do not tell everything: show you understood the problem and hint at how you would solve it (the key insight, the risk you would avoid), but keep the full method for the call. The client must finish reading wanting to know more about you, which leads to the interview.
     - Formatting: plain text only, ready to paste. No Markdown at all: no asterisks (** or *), no bold, no italics, no # headings, no backticks. Structure it with short paragraphs separated by a blank line, and "•" bullets for the roadmap. The same applies to the screening answers.
     - Persona Alignment: You write like an engineering lead solving a problem, using precise technical terms only when they directly serve the business goal.
 
