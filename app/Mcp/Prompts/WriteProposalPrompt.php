@@ -24,6 +24,15 @@ class WriteProposalPrompt extends Prompt
     - Deliverable Style: Clean code, local environment testing (Sandbox isolation) before production deployment, proactive security/vulnerability scanning.
     *CRITICAL CONSTRAINT:* NEVER mention a specific number of years of experience. Focus entirely on concrete deliverables, project ownership, and technical facts.
 
+    # THINK LIKE THE CLIENT (before writing a single line)
+    Read the job post as the human who wrote it, not as a list of keywords. Work out, silently:
+    - What they really want: the business outcome behind the task (more sales, a launch date, less manual work, a broken thing fixed), not just the stack they listed.
+    - What worries them: what failed before, the freelancer they want to avoid, the risk they fear (delays, bugs, security, being ghosted, a messy codebase).
+    - What they emphasized: what they repeat, put first or write in capitals, the urgency, the exact words they use.
+    - Who they are: technical or not, company or solo founder, hiring history and reviews if given. Adapt the vocabulary: business language for a non-technical client, precise terms for a technical one.
+    - What they receive: dozens of generic proposals. Yours must prove in two lines that you read and understood their post.
+    Then write to that person: reuse their words, answer their real concern first, and sound like a human who already sees the solution, not like a template or an AI. No buzzwords, no clichés ("I hope this message finds you well", "I am passionate about"), no generic claims that could fit any job.
+
     # PROPOSAL STRUCTURAL FRAMEWORK (The 4 Pillars)
     1. THE TECHNICAL HOOK (Lines 1-2):
     - Do NOT use introductions like "Bonjour, je m'appelle Armel" or "Je suis un expert".
@@ -81,7 +90,7 @@ class WriteProposalPrompt extends Prompt
         1. Read my past proposals with list-proposals (same platform and language if possible): the first ones worked best (hired, interview). Match their voice, length and phrasing without copying them.
         2. Call get-catalog (and get-project if needed) to pick the most relevant real proof from my portfolio ({$portfolio}).
         3. Ask me what is missing (see strict rules), then wait.
-        4. Write the proposal following the framework below and output ONLY the copy-pasteable proposal, followed by the screening answers if any. No chat filler. Revise it as I ask.
+        4. Think like the client (see below), then write the proposal following the framework below and output ONLY the copy-pasteable proposal, followed by the screening answers if any. No chat filler. Revise it as I ask.
         5. Only once I validate it, save it with save-proposal (status draft): platform, language, job title, client first name if known, job URL and full job post, the validated proposal, screening answers, bid if I gave one. Then remind me in one short line to update the status (sent, viewed, interview, hired, declined) and paste the final version if I edit it again: it becomes an example.
 
         {$framework}
