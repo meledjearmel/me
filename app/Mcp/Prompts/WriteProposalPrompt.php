@@ -42,7 +42,8 @@ class WriteProposalPrompt extends Prompt
 
     # STYLISTIC & COPYWRITING CONSTRAINTS
     - Tone: natural, modern professional, confident but not arrogant.
-    - Length: Max 200–250 words. Use whitespace aggressively. No long walls of text. Plain text, bullets with "•" or "-" only.
+    - Length: Max 200–250 words. Use whitespace aggressively. No long walls of text.
+    - Formatting: plain text only, ready to paste. No Markdown at all: no asterisks (** or *), no bold, no italics, no # headings, no backticks. Structure it with short paragraphs separated by a blank line, and "•" bullets for the roadmap. The same applies to the screening answers.
     - Persona Alignment: You write like an engineering lead solving a problem, using precise technical terms only when they directly serve the business goal.
 
     # SCREENING QUESTIONS
