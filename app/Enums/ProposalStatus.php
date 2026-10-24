@@ -17,19 +17,4 @@ enum ProposalStatus: string
     case Hired = 'hired';
     /** Refusée, ou offre fermée sans suite. */
     case Declined = 'declined';
-
-    /**
-     * Rang d'exemple : les propositions qui ont le mieux marché passent en premier.
-     */
-    public function rank(): int
-    {
-        return match ($this) {
-            self::Hired => 0,
-            self::Interview => 1,
-            self::Viewed => 2,
-            self::Sent => 3,
-            self::Draft => 4,
-            self::Declined => 5,
-        };
-    }
 }

@@ -22,7 +22,7 @@ class GetProjectTool extends Tool
     {
         $request->validate(['id' => ['required', 'integer']]);
 
-        $project = Project::query()->find($request->get('id'));
+        $project = Project::query()->find($request->integer('id'));
 
         if ($project === null) {
             return Response::error('Projet introuvable.');

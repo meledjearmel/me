@@ -43,7 +43,7 @@ class SaveProposalTool extends Tool
 
         $proposal = $creating
             ? new Proposal(['status' => ProposalStatus::Draft, 'drafted_by' => $this->aiClient($request)])
-            : Proposal::query()->find($data['id']);
+            : Proposal::query()->find((int) $data['id']);
 
         if ($proposal === null) {
             return Response::error('Proposition introuvable.');
