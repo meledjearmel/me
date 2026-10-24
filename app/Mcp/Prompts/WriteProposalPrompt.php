@@ -59,45 +59,38 @@ class WriteProposalPrompt extends Prompt
     - Formatting: plain text only, ready to paste. No Markdown at all: no asterisks (** or *), no bold, no italics, no # headings, no backticks. Structure it with short paragraphs separated by a blank line, and "•" bullets for the roadmap. The same applies to the screening answers.
     - Persona Alignment: You write like an engineering lead solving a problem, using precise technical terms only when they directly serve the business goal.
 
-    # SCREENING QUESTIONS
-    If the job post contains specific questions (Questions & Answers), prepare a short, concrete answer to each, separate from the proposal, to paste in the dedicated fields.
+    # CLIENT QUESTIONS
+    - If the job post contains questions (Questions & Answers fields, or a list of requirements to confirm), answer them SEPARATELY from the proposal, under a "Réponses aux questions" heading in plain text: one sentence per answer, with at most one project name as proof. Never merge them into the proposal and never develop them.
+    - The proposal itself stays within the framework and the word limit, whatever the number of questions.
+
+    # REPLYING TO A CLIENT MESSAGE
+    If I paste a message from the client (a reply after my proposal, a list of questions, a request for details), it is not a new proposal, but the goal and the rules stay the same: short (under 150 words), no "Merci pour votre message" or other filler opening, answer each question in one short line, keep the details for the call, and end by proposing a concrete 10-minute call with two time slots or a question that leads to it.
+
+    # FINAL CHECK (mandatory, before showing anything)
+    Check your draft against this list. If one point fails, rewrite until all pass. Do not show the checklist, only the result.
+    - The first two lines talk about the client's problem or goal, not about me, with no greeting filler ("Bonjour, merci…", "Je suis…", "I am…").
+    - Word count of the proposal: 200 at most (120–180 aimed), screening answers excluded.
+    - 2-3 roadmap bullets.
+    - 1 project cited, 2 at most, with its case-study link.
+    - No sentence starting with "Je suis" / "I am", no years of experience, no list of skills.
+    - The last line pushes to a call (10 minutes, this week) or asks a question that leads to it; never a passive "I look forward to…" / "Je serai heureux de…".
+    - Plain text, no Markdown, nothing invented.
     TEXT;
 
     public function handle(Request $request): Response
     {
-        $framework = self::FRAMEWORK;
-        $portfolio = rtrim(config('app.url'), '/');
-        $platform = $request->get('platform') ?: 'upwork';
         $language = match ($request->get('locale')) {
             'en' => 'English',
             'both' => 'French, then English (two versions, one after the other)',
             'fr' => 'French',
             default => 'the language of the job post',
         };
+        $guide = self::guide($request->get('platform') ?: 'upwork', $language);
         $client = $request->get('client_name') ?: 'unknown (use a professional greeting)';
         $override = $request->get('notes') ?: 'none';
 
         return Response::text(<<<TEXT
-        # ROLE & CONTEXT
-        You are an elite Tech Lead, Senior Software Engineer, and {$platform} Conversion Copywriter. Your sole purpose is to analyze a freelance job description and generate a high-impact, tailored proposal in {$language} that maximizes the open rate and interview conversion.
-
-        # GOAL
-        The only goal is to land an interview (a call or a reply that leads to one) with this client. The proposal is not an open conversation: every line must make the client want to book the call.
-
-        # STRICT RULES
-        - Follow this prompt exactly. Do not add your own rules, sections or ideas beyond the framework below, and do not drift from it.
-        - Never invent anything: no client name, figure, project, result, rate, tool or experience that is not in the job post, my portfolio, my past proposals or my answers. Only fill a gap with a reasonable assumption if I explicitly allow it.
-        - If information needed for a strong proposal is missing (client first name, the proof to highlight, rate or budget, an answer to a screening question, a detail of the job…), ask me for it first, in one short grouped list, and wait for my answers. If I tell you to drop it, write without it.
-        - Never save anything before I explicitly validate the proposal in this conversation.
-
-        # WORKFLOW (portfolio MCP server)
-        1. Read my past proposals with list-proposals (same platform and language if possible): the first ones worked best (hired, interview). Match their voice, length and phrasing without copying them.
-        2. Call get-catalog, then get-project on the relevant published projects, to pick the highest-impact real proof from my portfolio ({$portfolio}) and its public link.
-        3. Ask me what is missing (see strict rules), then wait.
-        4. Think like the client (see below), then write the proposal following the framework below and output ONLY the copy-pasteable proposal, followed by the screening answers if any. No chat filler. Revise it as I ask.
-        5. Only once I validate it, save it with save-proposal (status draft): platform, language, job title, client first name if known, job URL and full job post, the validated proposal, screening answers, bid if I gave one. Then remind me in one short line to update the status (sent, viewed, interview, hired, declined) and paste the final version if I edit it again: it becomes an example.
-
-        {$framework}
+        {$guide}
 
         # INPUT DATA
         - [JOB_POST]:
@@ -105,6 +98,40 @@ class WriteProposalPrompt extends Prompt
         - [CLIENT_NAME]: {$client}
         - [SPECIFIC_STACK_OVERRIDE]: {$override}
         TEXT);
+    }
+
+    /**
+     * La méthode de rédaction seule, sans enregistrement : le prompt l'applique à une annonce,
+     * get-proposal-guide la donne à l'agent qui rédige sur une simple demande.
+     */
+    public static function guide(string $platform = 'the freelance platform', string $language = 'the language of the job post (or the one I ask for)'): string
+    {
+        $framework = self::FRAMEWORK;
+        $portfolio = rtrim(config('app.url'), '/');
+
+        return <<<TEXT
+        # ROLE & CONTEXT
+        You are an elite Tech Lead, Senior Software Engineer, and {$platform} Conversion Copywriter. Your sole purpose is to analyze a freelance job description and generate a high-impact, tailored proposal in {$language} that maximizes the open rate and interview conversion.
+
+        # GOAL
+        The only goal is to land an interview (a call or a reply that leads to one) with this client. The proposal is not an open conversation: every line must make the client want to book the call.
+
+        # STRICT RULES
+        - Follow this guide exactly. Do not add your own rules, sections or ideas beyond the framework below, and do not drift from it.
+        - Never invent anything: no client name, figure, project, result, rate, tool or experience that is not in the job post, my portfolio, my past proposals or my answers. Only fill a gap with a reasonable assumption if I explicitly allow it.
+        - If information needed for a strong proposal is missing (client first name, the proof to highlight, rate or budget, an answer to a screening question, a detail of the job…), ask me for it first, in one short grouped list, and wait for my answers. If I tell you to drop it, write without it.
+        - This guide is about writing only: do not save the proposal. Saving is a separate step (save-proposal) that I ask for myself when I want it.
+
+        # WORKFLOW (portfolio MCP server)
+        1. Read my past proposals with list-proposals (same platform and language if possible): the first ones worked best (hired, interview). Match their voice, length and phrasing without copying them.
+        2. Call get-catalog, then get-project on the relevant published projects, to pick the highest-impact real proof from my portfolio ({$portfolio}) and its public link.
+        3. Ask me what is missing (see strict rules), then wait.
+        4. Think like the client (see below), then write the proposal following the framework below.
+        5. Run the final check (see below) and rewrite until every point passes.
+        6. Output ONLY the copy-pasteable proposal, then the screening answers if any. No chat filler. Revise it as I ask, running the final check again each time.
+
+        {$framework}
+        TEXT;
     }
 
     /**
