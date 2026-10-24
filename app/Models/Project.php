@@ -64,6 +64,23 @@ class Project extends Model implements HasMedia
         'status' => ProjectStatus::class,
     ];
 
+    /**
+     * Liens publics de l'étude de cas, par langue ; null tant que le projet n'est pas publié.
+     *
+     * @return array{fr: string, en: string}|null
+     */
+    public function publicUrls(): ?array
+    {
+        if ($this->status !== ProjectStatus::Published) {
+            return null;
+        }
+
+        return [
+            'fr' => route('projects.show', ['locale' => 'fr', 'project' => $this->slug]),
+            'en' => route('projects.show', ['locale' => 'en', 'project' => $this->slug]),
+        ];
+    }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('cover')->singleFile();

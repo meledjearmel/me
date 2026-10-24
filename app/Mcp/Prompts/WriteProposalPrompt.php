@@ -44,7 +44,9 @@ class WriteProposalPrompt extends Prompt
     - Highlight clean workflow practices (e.g., local package testing, sandbox validation, API environment isolation) to de-risk the project.
 
     3. THE FACTUAL PROOF (Social Proof):
-    - Cite a relevant real-world scenario matching the stack or problem, taken from the portfolio (get-catalog, get-project), with its public link when useful. Never invent a client, a figure or a project.
+    - Cite one (two at most) real project from the portfolio that matches the client's problem and has the strongest impact: a measurable result or key figure, real users or traffic, a known client, money handled, a featured project (is_featured). Read the candidates with get-project (result, key_figures) to choose; never cite a project that is not published.
+    - State its impact in one short sentence with the real figure, then give its public case-study link in the proposal's language (urls.fr or urls.en from get-catalog or get-project) so the client can see the details. Do not explain the project: the link does that.
+    - Never invent a client, a figure or a project.
 
     4. THE LOW-FRICTION CALL TO ACTION (CTA):
     - End with a precise, open-ended question about their architectural choice or a simple proposal for a 10-minute technical sync this week, so that replying means booking the interview.
@@ -90,7 +92,7 @@ class WriteProposalPrompt extends Prompt
 
         # WORKFLOW (portfolio MCP server)
         1. Read my past proposals with list-proposals (same platform and language if possible): the first ones worked best (hired, interview). Match their voice, length and phrasing without copying them.
-        2. Call get-catalog (and get-project if needed) to pick the most relevant real proof from my portfolio ({$portfolio}).
+        2. Call get-catalog, then get-project on the relevant published projects, to pick the highest-impact real proof from my portfolio ({$portfolio}) and its public link.
         3. Ask me what is missing (see strict rules), then wait.
         4. Think like the client (see below), then write the proposal following the framework below and output ONLY the copy-pasteable proposal, followed by the screening answers if any. No chat filler. Revise it as I ask.
         5. Only once I validate it, save it with save-proposal (status draft): platform, language, job title, client first name if known, job URL and full job post, the validated proposal, screening answers, bid if I gave one. Then remind me in one short line to update the status (sent, viewed, interview, hired, declined) and paste the final version if I edit it again: it becomes an example.
