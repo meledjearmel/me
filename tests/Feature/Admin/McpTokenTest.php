@@ -54,8 +54,8 @@ test('the mcp server page lists every command with its guide', function () {
     $this->actingAs(User::factory()->create())->get(route('admin.mcp-server.index'))
         ->assertInertia(fn ($page) => $page->component('admin/mcp-server/index')
             ->where('serverUrl', url('/mcp/portfolio'))
-            ->has('prompts', 6)
-            ->has('tools', 43)
+            ->has('prompts', 7)
+            ->has('tools', 45)
             ->where('prompts', fn ($prompts) => collect($prompts)->every(fn ($prompt) => filled($prompt['usage']) && filled($prompt['example']) && filled($prompt['requests'])))
             ->where('tools', fn ($tools) => collect($tools)->every(fn ($tool) => filled($tool['usage']) && $tool['requests'] === [$tool['example']])));
 });
