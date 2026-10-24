@@ -64,6 +64,8 @@ class GetCatalogTool extends Tool
                     'slug' => $project->slug,
                     'title' => $project->getTranslation('title', 'fr'),
                     'status' => $project->status->value,
+                    'is_featured' => $project->is_featured,
+                    'urls' => $project->publicUrls(),
                 ])
                 ->all(),
             'posts' => Post::query()->latest()->get()

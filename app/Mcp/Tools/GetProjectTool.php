@@ -31,6 +31,7 @@ class GetProjectTool extends Tool
         return Response::json([
             'id' => $project->id,
             'status' => $project->status->value,
+            'urls' => $project->publicUrls(),
             ...$writer->toInput($project),
             'has_cover' => $project->hasMedia('cover'),
             'gallery_count' => $project->getMedia('gallery')->count(),

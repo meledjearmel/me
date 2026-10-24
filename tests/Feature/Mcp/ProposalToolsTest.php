@@ -1,10 +1,13 @@
 <?php
 
+use App\Enums\ProjectStatus;
 use App\Enums\ProposalStatus;
 use App\Mcp\Prompts\WriteProposalPrompt;
 use App\Mcp\Servers\PortfolioServer;
+use App\Mcp\Tools\GetCatalogTool;
 use App\Mcp\Tools\ListProposalsTool;
 use App\Mcp\Tools\SaveProposalTool;
+use App\Models\Project;
 use App\Models\Proposal;
 use App\Models\User;
 
@@ -65,4 +68,14 @@ test('write-proposal carries the writing rules, the platform and the posting', f
         'platform' => 'malt',
         'locale' => 'en',
     ])->assertOk()->assertSee(['list-proposals', 'save-proposal', 'malt', 'in English', 'We need a Flutter developer', 'land an interview', 'Never save anything before I explicitly validate']);
+});
+
+test('the catalog gives the public link of published projects only, to cite as proof', function () {
+    Project::factory()->create(['slug' => 'app-station', 'status' => ProjectStatus::Published]);
+    Project::factory()->create(['slug' => 'brouillon-secret', 'status' => ProjectStatus::Draft]);
+
+    $this->server->tool(GetCatalogTool::class)
+        ->assertOk()
+        ->assertSee(route('projects.show', ['locale' => 'en', 'project' => 'app-station']))
+        ->assertDontSee('/projects/brouillon-secret');
 });
