@@ -44,18 +44,11 @@ import {
     UserCheck,
     Wrench,
 } from 'lucide-react';
-import AppLogo from '@/components/app-logo';
-import { NavMain } from '@/components/nav-main';
-import { NavUser } from '@/components/nav-user';
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-} from '@/components/ui/sidebar';
+import { ArrowUpRight, ChevronRight, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import AppLogoIcon from '@/components/app-logo-icon';
+import { useCurrentUrl } from '@/hooks/use-current-url';
+import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import { index as appointmentTypesIndex } from '@/routes/admin/appointment-types';
 import { index as appointmentsIndex } from '@/routes/admin/appointments';
@@ -208,57 +201,206 @@ const bookingNavItems: NavItem[] = [
     },
 ];
 
-export function AppSidebar() {
+const navigation: { label: string; items: NavItem[] }[] = [
+    { label: 'Échanges', items: inboxNavItems },
+    { label: 'Rendez-vous', items: bookingNavItems },
+    { label: 'Estimateur', items: estimatorNavItems },
+    { label: 'Blog', items: blogNavItems },
+    { label: 'Portfolio', items: portfolioNavItems },
+    { label: 'Parcours', items: careerNavItems },
+    { label: 'Page publique', items: publicPageNavItems },
+    { label: 'Référentiels', items: referenceNavItems },
+    { label: 'Musique', items: musicNavItems },
+];
+
+/**
+ * Barre latérale de la console (référence Donezo, comme la console de Folio) : une carte
+ * fixe, le logo, le menu principal puis les rubriques repliables ; l'entrée active est
+ * marquée par un trait à l'accent de la palette. Tiroir sur mobile.
+ */
+export function AppSidebar({
+    open,
+    onClose,
+}: {
+    open: boolean;
+    onClose: () => void;
+}) {
     return (
-        <Sidebar collapsible="icon" variant="inset">
-            <SidebarHeader>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
-                                <AppLogo />
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarHeader>
+        <>
+            <div
+                className={cn(
+                    'fixed inset-0 z-40 bg-black/40 lg:hidden',
+                    open ? 'block' : 'hidden',
+                )}
+                onClick={onClose}
+            />
+            <aside
+                className={cn(
+                    'console-no-scrollbar fixed inset-y-3 left-3 z-50 flex w-64 shrink-0 flex-col overflow-y-auto rounded-[1.6rem] bg-[var(--card)] px-5 pb-5 transition-transform lg:static lg:translate-x-0',
+                    open ? 'translate-x-0' : '-translate-x-[120%]',
+                )}
+            >
+                <div className="sticky top-0 z-20 -mx-5 flex items-center justify-between bg-[var(--card)] px-5 pt-5 pb-3">
+                    <Link
+                        href={dashboard()}
+                        prefetch
+                        className="flex items-center gap-2.5 text-xl font-extrabold tracking-tight"
+                    >
+                        <span className="grid size-9 place-items-center rounded-full bg-[var(--fg)] text-[var(--bg)]">
+                            <AppLogoIcon className="size-5 fill-current" />
+                        </span>
+                        Console
+                    </Link>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="rounded-full p-1.5 lg:hidden"
+                        aria-label="Fermer le menu"
+                    >
+                        <X className="size-5" />
+                    </button>
+                </div>
 
-            <SidebarContent className="gap-3">
-                <NavMain items={mainNavItems} />
-                <NavMain items={inboxNavItems} label="Échanges" collapsible />
-                <NavMain
-                    items={bookingNavItems}
-                    label="Rendez-vous"
-                    collapsible
+                <NavGroup
+                    title="Menu"
+                    items={mainNavItems}
+                    onNavigate={onClose}
                 />
-                <NavMain
-                    items={estimatorNavItems}
-                    label="Estimateur"
-                    collapsible
-                />
-                <NavMain items={blogNavItems} label="Blog" collapsible />
-                <NavMain
-                    items={portfolioNavItems}
-                    label="Portfolio"
-                    collapsible
-                />
-                <NavMain items={careerNavItems} label="Parcours" collapsible />
-                <NavMain
-                    items={publicPageNavItems}
-                    label="Page publique"
-                    collapsible
-                />
-                <NavMain
-                    items={referenceNavItems}
-                    label="Référentiels"
-                    collapsible
-                />
-                <NavMain items={musicNavItems} label="Musique" collapsible />
-            </SidebarContent>
+                {navigation.map((group) => (
+                    <NavGroup
+                        key={group.label}
+                        title={group.label}
+                        items={group.items}
+                        onNavigate={onClose}
+                        collapsible
+                    />
+                ))}
 
-            <SidebarFooter>
-                <NavUser />
-            </SidebarFooter>
-        </Sidebar>
+                <div className="relative mt-8 shrink-0 overflow-hidden rounded-2xl bg-[var(--nav)] p-4 text-white">
+                    <div
+                        aria-hidden
+                        className="absolute -top-10 -right-10 size-36 rounded-full bg-[radial-gradient(circle,var(--brand),transparent_70%)] opacity-60"
+                    />
+                    <p className="relative text-lg leading-tight font-bold">
+                        Le site public
+                    </p>
+                    <p className="relative mt-1 text-xs text-[var(--nav-icon)]">
+                        Voir le portfolio tel que les visiteurs le voient.
+                    </p>
+                    <a
+                        href="/"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="relative mt-4 flex items-center justify-center gap-2 rounded-full bg-[var(--brand)] py-2.5 text-sm font-semibold text-[var(--on-brand)]"
+                    >
+                        Ouvrir le site
+                        <ArrowUpRight className="size-4" />
+                    </a>
+                </div>
+            </aside>
+        </>
+    );
+}
+
+function readStoredOpen(key: string): boolean {
+    try {
+        return localStorage.getItem(key) === 'open';
+    } catch {
+        return false;
+    }
+}
+
+function NavGroup({
+    title,
+    items,
+    onNavigate,
+    collapsible = false,
+}: {
+    title: string;
+    items: NavItem[];
+    onNavigate: () => void;
+    collapsible?: boolean;
+}) {
+    const { isCurrentUrl } = useCurrentUrl();
+    // Le tableau de bord est la racine de la console : seule l'adresse exacte l'active.
+    const isActive = (item: NavItem) =>
+        isCurrentUrl(item.href, undefined, item.href !== mainNavItems[0].href);
+    const hasActiveItem = items.some(isActive);
+    const storageKey = `admin-nav:${title}`;
+    // Le choix mémorisé n'est lu qu'après l'hydratation : le rendu serveur n'a pas de localStorage.
+    const [open, setOpen] = useState(!collapsible || hasActiveItem);
+
+    useEffect(() => {
+        if (collapsible && (hasActiveItem || readStoredOpen(storageKey))) {
+            setOpen(true);
+        }
+    }, [collapsible, hasActiveItem, storageKey]);
+
+    const toggle = () => {
+        setOpen(!open);
+
+        try {
+            localStorage.setItem(storageKey, open ? 'closed' : 'open');
+        } catch {
+            // Stockage indisponible : l'état reste valable pour la session.
+        }
+    };
+
+    return (
+        <nav className="mt-4 first-of-type:mt-5">
+            {collapsible ? (
+                <button
+                    type="button"
+                    onClick={toggle}
+                    aria-expanded={open}
+                    className="sticky top-[68px] z-10 -mx-5 flex w-[calc(100%+2.5rem)] items-center bg-[color-mix(in_oklab,var(--card)_72%,transparent)] px-8 py-2 text-xs font-medium tracking-wider text-[var(--muted-fg)] uppercase backdrop-blur-md hover:text-[var(--fg)]"
+                >
+                    {title}
+                    <ChevronRight
+                        className={cn(
+                            'ml-auto size-4 transition-transform',
+                            open && 'rotate-90',
+                        )}
+                    />
+                </button>
+            ) : (
+                <p className="sticky top-[68px] z-10 -mx-5 bg-[color-mix(in_oklab,var(--card)_72%,transparent)] px-8 py-2 text-xs font-medium tracking-wider text-[var(--muted-fg)] uppercase backdrop-blur-md">
+                    {title}
+                </p>
+            )}
+            {open && (
+                <ul className="mt-2 space-y-0.5">
+                    {items.map((item) => {
+                        const active = isActive(item);
+
+                        return (
+                            <li key={item.title}>
+                                <Link
+                                    href={item.href}
+                                    prefetch
+                                    onClick={onNavigate}
+                                    className={cn(
+                                        'relative flex items-center gap-3 rounded-xl px-3 py-2 text-[15px] transition',
+                                        active
+                                            ? 'font-semibold text-[var(--fg)]'
+                                            : 'text-[var(--muted-fg)] hover:text-[var(--fg)]',
+                                    )}
+                                >
+                                    {active && (
+                                        <span className="absolute top-1/2 -left-5 h-8 w-1.5 -translate-y-1/2 rounded-r-full bg-[var(--brand)]" />
+                                    )}
+                                    {item.icon && (
+                                        <item.icon className="size-5 shrink-0" />
+                                    )}
+                                    <span className="truncate">
+                                        {item.title}
+                                    </span>
+                                </Link>
+                            </li>
+                        );
+                    })}
+                </ul>
+            )}
+        </nav>
     );
 }

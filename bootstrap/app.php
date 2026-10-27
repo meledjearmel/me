@@ -22,7 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustProxies(at: '*');
 
-        $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
+        $middleware->encryptCookies(except: ['appearance', 'palette', 'sidebar_state']);
 
         // La taille du corps est vérifiée dans les groupes, après le démarrage de la session :
         // en middleware global, l'erreur « fichier trop lourd » renvoyée au formulaire était

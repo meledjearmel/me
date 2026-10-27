@@ -72,7 +72,7 @@ test('an unknown status or type is refused', function () {
         ->assertSessionHasErrors('status');
 
     $this->actingAs(User::factory()->create())
-        ->patch('/admin/status/recipe/'.$project->id, ['status' => 'draft'])
+        ->patch('/console/status/recipe/'.$project->id, ['status' => 'draft'])
         ->assertNotFound();
 });
 
