@@ -350,29 +350,48 @@ const HEALTH = {
     },
 } as const;
 
+/** Chiffre clé (référence Donezo) : la première carte est mise en avant, à l'encre de la palette. */
 function StatCard({
     title,
     value,
     hint,
     icon: Icon,
+    featured = false,
 }: {
     title: string;
     value: string;
     hint?: string;
     icon: ComponentType<{ className?: string }>;
+    featured?: boolean;
 }) {
     return (
-        <Card className="gap-2 py-4">
-            <CardHeader className="flex flex-row items-center justify-between gap-2 px-5">
-                <CardDescription>{title}</CardDescription>
-                <Icon className="size-4 text-muted-foreground" />
+        <Card
+            className={`relative gap-3 overflow-hidden py-5 ${featured ? 'bg-[var(--nav)]! text-white' : ''}`}
+        >
+            {featured && (
+                <div
+                    aria-hidden
+                    className="absolute -right-12 -bottom-16 size-48 rounded-full bg-[radial-gradient(circle,var(--brand),transparent_70%)] opacity-50"
+                />
+            )}
+            <CardHeader className="relative flex flex-row items-center justify-between gap-2 px-5">
+                <p className="text-[15px] font-semibold">{title}</p>
+                <span
+                    className={`grid size-9 shrink-0 place-items-center rounded-full ${featured ? 'bg-[var(--brand)] text-[var(--on-brand)]' : 'border border-[var(--soft-high)]'}`}
+                >
+                    <Icon className="size-4" />
+                </span>
             </CardHeader>
-            <CardContent className="px-5">
-                <p className="text-3xl font-semibold tracking-tight tabular-nums">
+            <CardContent className="relative px-5">
+                <p className="text-5xl font-extrabold tracking-tight tabular-nums">
                     {value}
                 </p>
                 {hint && (
-                    <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
+                    <p
+                        className={`mt-3 text-xs ${featured ? 'text-[var(--nav-icon)]' : 'text-muted-foreground'}`}
+                    >
+                        {hint}
+                    </p>
                 )}
             </CardContent>
         </Card>
@@ -396,19 +415,23 @@ function TodoCard({
     const busy = count > 0;
 
     return (
-        <Link href={href} prefetch>
-            <Card
-                className={`gap-1 py-4 transition-colors hover:bg-muted/40 ${busy ? 'border-primary/40 bg-primary/5' : ''}`}
-            >
+        <Link href={href} prefetch className="group">
+            <Card className="h-full gap-1 py-4 transition-colors group-hover:bg-[var(--soft)]!">
                 <CardHeader className="flex flex-row items-center justify-between px-5">
-                    <CardDescription className={busy ? 'text-foreground' : ''}>
+                    <CardDescription
+                        className={busy ? 'font-semibold text-foreground' : ''}
+                    >
                         {title}
                     </CardDescription>
-                    <Icon className="size-4 text-muted-foreground" />
+                    <span
+                        className={`grid size-8 shrink-0 place-items-center rounded-full ${busy ? 'bg-[var(--brand)] text-[var(--on-brand)]' : 'bg-[var(--soft)] text-muted-foreground'}`}
+                    >
+                        <Icon className="size-4" />
+                    </span>
                 </CardHeader>
                 <CardContent className="px-5">
                     {busy ? (
-                        <p className="text-3xl font-semibold tabular-nums">
+                        <p className="text-3xl font-extrabold tabular-nums">
                             {count}
                         </p>
                     ) : (
@@ -651,14 +674,62 @@ export default function Dashboard({
         <>
             <Head title="Tableau de bord" />
 
-            <div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
-                <div>
-                    <h1 className="text-2xl font-semibold tracking-tight">
-                        Bonjour {firstName}
-                    </h1>
-                    <p className="text-sm text-muted-foreground first-letter:capitalize">
-                        {longDate.format(new Date())}
-                    </p>
+            <div className="console-raised flex flex-1 flex-col gap-6 p-4 sm:p-7">
+                <div className="flex flex-wrap items-end justify-between gap-4">
+                    <div>
+                        <h1 className="text-4xl font-extrabold tracking-tight">
+                            Bonjour {firstName}
+                        </h1>
+                        <p className="mt-1 text-sm text-muted-foreground first-letter:capitalize">
+                            {longDate.format(new Date())} · voici l’état du site
+                            et ce qui vous attend.
+                        </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                        <Link
+                            href={postsIndex()}
+                            prefetch
+                            className="rounded-full bg-[var(--fg)] px-5 py-3 text-sm font-semibold text-[var(--bg)] transition hover:opacity-90"
+                        >
+                            Articles
+                        </Link>
+                        <Link
+                            href={projectsIndex()}
+                            prefetch
+                            className="rounded-full border border-[var(--fg)]/80 px-5 py-3 text-sm font-semibold transition hover:bg-[var(--card)]"
+                        >
+                            Projets
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Chiffres clés */}
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    <StatCard
+                        title="Visites aujourd'hui"
+                        value={number.format(visits.today)}
+                        hint={`${number.format(visits.total)} depuis le début`}
+                        icon={Eye}
+                        featured
+                    />
+                    <StatCard
+                        title={`Visites sur ${visits.period_days} jours`}
+                        value={number.format(visits.period)}
+                        hint={`${number.format(visits.visitors)} visiteurs uniques · ${french} % en français`}
+                        icon={Eye}
+                    />
+                    <StatCard
+                        title="Félicitations reçues"
+                        value={number.format(content.congratulations)}
+                        hint="Distinction du CIAPOL"
+                        icon={PartyPopper}
+                    />
+                    <StatCard
+                        title="Années d'expérience"
+                        value={String(content.years_of_experience)}
+                        hint={`${content.experiences} expériences, ${content.educations} formations`}
+                        icon={Sparkles}
+                    />
                 </div>
 
                 {/* À traiter */}
@@ -730,34 +801,6 @@ export default function Dashboard({
                         href={documentsIndex({ query: { reminder: '1' } })}
                         icon={BellRing}
                         done="Aucune relance en attente"
-                    />
-                </div>
-
-                {/* Chiffres clés */}
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    <StatCard
-                        title="Visites aujourd'hui"
-                        value={number.format(visits.today)}
-                        hint={`${number.format(visits.total)} depuis le début`}
-                        icon={Eye}
-                    />
-                    <StatCard
-                        title={`Visites sur ${visits.period_days} jours`}
-                        value={number.format(visits.period)}
-                        hint={`${number.format(visits.visitors)} visiteurs uniques · ${french} % en français`}
-                        icon={Eye}
-                    />
-                    <StatCard
-                        title="Félicitations reçues"
-                        value={number.format(content.congratulations)}
-                        hint="Distinction du CIAPOL"
-                        icon={PartyPopper}
-                    />
-                    <StatCard
-                        title="Années d'expérience"
-                        value={String(content.years_of_experience)}
-                        hint={`${content.experiences} expériences, ${content.educations} formations`}
-                        icon={Sparkles}
                     />
                 </div>
 

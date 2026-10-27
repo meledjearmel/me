@@ -60,7 +60,7 @@ use App\Models\JobProfile;
 use App\Services\ContentStatus;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'verified'])->prefix('console')->name('admin.')->group(function () {
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('profile/music', [ProfileController::class, 'destroyMusic'])->name('profile.music.destroy');

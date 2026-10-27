@@ -98,7 +98,7 @@ class AppServiceProvider extends ServiceProvider
 
             if (! in_array($status, [403, 404, 429, 500, 503], true)
                 || $request->is(
-                    'admin', 'admin/*', 'settings', 'settings/*', 'api/*', 'dashboard',
+                    'console', 'console/*', 'admin/*', 'settings/*', 'api/*', 'dashboard',
                     'login', 'logout', 'register', 'forgot-password', 'reset-password*',
                     'two-factor*', 'user/*', 'email/*',
                 )

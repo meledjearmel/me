@@ -45,7 +45,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'musicUrl' => fn () => Profile::query()->first()?->getFirstMediaUrl('music') ?: null,
-            'playlist' => fn () => $request->is('admin*') ? [] : $this->playlist(),
+            'playlist' => fn () => $request->is('console*') ? [] : $this->playlist(),
             'locale' => fn () => app()->getLocale(),
         ];
     }

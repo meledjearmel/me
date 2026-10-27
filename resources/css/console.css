@@ -1,0 +1,296 @@
+/*
+ * Console d'administration : les quatre palettes de l'app mobile (me_mobile,
+ * app_palette_variant.dart), chacune en clair et en sombre. La palette est
+ * portée par html[data-palette], le mode par html.dark.
+ *
+ * Jetons de palette : --bg, --card, --soft, --soft-high, --fg, --muted-fg,
+ * --outline, --brand, --on-brand, --second, --on-second, --ok, --nav, --nav-icon.
+ * Ils alimentent ensuite les variables shadcn (--background, --primary…).
+ */
+
+html[data-palette='gold-graphite'],
+html:not([data-palette]) {
+    --bg: #f4f3ef;
+    --card: #ffffff;
+    --soft: #eceae4;
+    --soft-high: #e2dfd8;
+    --fg: #111114;
+    --muted-fg: #6e6c66;
+    --outline: #e4e1da;
+    --brand: #ffd23f;
+    --on-brand: #111114;
+    --second: #e3ecf7;
+    --on-second: #2f5f95;
+    --ok: #23915f;
+    --nav: #111114;
+    --nav-icon: #a9a8a3;
+}
+
+html.dark[data-palette='gold-graphite'],
+html.dark:not([data-palette]) {
+    --bg: #0e0f12;
+    --card: #181a1f;
+    --soft: #22252c;
+    --soft-high: #2b2f37;
+    --fg: #f3f2ee;
+    --muted-fg: #8e919a;
+    --outline: #262930;
+    --brand: #ffd23f;
+    --on-brand: #111114;
+    --second: #1d2a3b;
+    --on-second: #8db6e8;
+    --ok: #4cc38a;
+    --nav: #22252c;
+    --nav-icon: #8e919a;
+}
+
+html[data-palette='sage-amber'] {
+    --bg: #f1f3ee;
+    --card: #ffffff;
+    --soft: #e4e9e0;
+    --soft-high: #d8dfd3;
+    --fg: #15201a;
+    --muted-fg: #66706a;
+    --outline: #dde3d8;
+    --brand: #f5b83d;
+    --on-brand: #1b1606;
+    --second: #ddebe3;
+    --on-second: #2f6b4f;
+    --ok: #2e8f62;
+    --nav: #15201a;
+    --nav-icon: #9faaa3;
+}
+
+html.dark[data-palette='sage-amber'] {
+    --bg: #0c120f;
+    --card: #151d18;
+    --soft: #1f2a23;
+    --soft-high: #28352d;
+    --fg: #eef2ee;
+    --muted-fg: #8b978f;
+    --outline: #1f2a23;
+    --brand: #f5b83d;
+    --on-brand: #1b1606;
+    --second: #1b2e24;
+    --on-second: #8fcbaa;
+    --ok: #58c790;
+    --nav: #1f2a23;
+    --nav-icon: #8b978f;
+}
+
+html[data-palette='lime-charcoal'] {
+    --bg: #efefef;
+    --card: #ffffff;
+    --soft: #e4e4e4;
+    --soft-high: #d9d9d9;
+    --fg: #121212;
+    --muted-fg: #6d6d6d;
+    --outline: #e0e0e0;
+    --brand: #d4f25a;
+    --on-brand: #121212;
+    --second: #e8e8e8;
+    --on-second: #3a3a3a;
+    --ok: #2e9e6a;
+    --nav: #121212;
+    --nav-icon: #9a9a9a;
+}
+
+html.dark[data-palette='lime-charcoal'] {
+    --bg: #0b0b0b;
+    --card: #171717;
+    --soft: #222222;
+    --soft-high: #2c2c2c;
+    --fg: #f2f2f2;
+    --muted-fg: #8c8c8c;
+    --outline: #242424;
+    --brand: #d4f25a;
+    --on-brand: #121212;
+    --second: #232323;
+    --on-second: #c9c9c9;
+    --ok: #5acd8f;
+    --nav: #222222;
+    --nav-icon: #8c8c8c;
+}
+
+html[data-palette='sky-amber'] {
+    --bg: #f3f6fa;
+    --card: #ffffff;
+    --soft: #e6ecf4;
+    --soft-high: #dae2ee;
+    --fg: #0f1a2a;
+    --muted-fg: #627085;
+    --outline: #dfe6f0;
+    --brand: #ffd23f;
+    --on-brand: #0f1a2a;
+    --second: #d8e9fb;
+    --on-second: #2a68a8;
+    --ok: #23915f;
+    --nav: #0f1a2a;
+    --nav-icon: #9daabb;
+}
+
+html.dark[data-palette='sky-amber'] {
+    --bg: #08101f;
+    --card: #111c33;
+    --soft: #1a2744;
+    --soft-high: #223152;
+    --fg: #eef3fa;
+    --muted-fg: #8797b0;
+    --outline: #1a2744;
+    --brand: #ffd23f;
+    --on-brand: #0f1a2a;
+    --second: #16294a;
+    --on-second: #8cc1f2;
+    --ok: #4cc38a;
+    --nav: #1a2744;
+    --nav-icon: #8797b0;
+}
+
+/* Variables shadcn dérivées de la palette, comme le ColorScheme de l'app :
+   bouton principal à l'encre le jour, à l'accent la nuit. */
+html[data-palette],
+html:not([data-palette]) {
+    --background: var(--bg);
+    --foreground: var(--fg);
+    --card-foreground: var(--fg);
+    --popover: var(--card);
+    --popover-foreground: var(--fg);
+    --primary: var(--fg);
+    --primary-foreground: var(--bg);
+    --secondary: var(--soft);
+    --secondary-foreground: var(--fg);
+    --muted: var(--soft);
+    --muted-foreground: var(--muted-fg);
+    --accent: var(--soft);
+    --accent-foreground: var(--fg);
+    --border: var(--outline);
+    --input: var(--soft-high);
+    --ring: var(--brand);
+    --chart-1: var(--brand);
+    --chart-2: var(--on-second);
+    --chart-3: var(--ok);
+    --chart-4: #fc9073;
+    --chart-5: var(--muted-fg);
+    --radius: 1rem;
+    --sidebar: var(--card);
+    --sidebar-foreground: var(--fg);
+    --sidebar-primary: var(--brand);
+    --sidebar-primary-foreground: var(--on-brand);
+    --sidebar-accent: var(--soft);
+    --sidebar-accent-foreground: var(--fg);
+    --sidebar-border: var(--outline);
+    --sidebar-ring: var(--brand);
+}
+
+html.dark[data-palette],
+html.dark:not([data-palette]) {
+    --primary: var(--brand);
+    --primary-foreground: var(--on-brand);
+    --destructive: #ff8a7a;
+}
+
+/* Cartes arrondies sans bordure ni ombre, boutons en pilule, champs pleins
+   (AppTheme de l'app : radius 24, fieldRadius 16, StadiumBorder). */
+.console {
+    font-family:
+        'Plus Jakarta Sans', 'Instrument Sans', ui-sans-serif, system-ui,
+        sans-serif;
+}
+
+.console h1,
+.console h2 {
+    letter-spacing: -0.02em;
+}
+
+.console [data-slot='card'] {
+    border-radius: 1.5rem;
+    border-color: transparent;
+    box-shadow: none;
+    background-color: var(--card);
+}
+
+.console [data-slot='button'] {
+    border-radius: 9999px;
+}
+
+.console [data-slot='input'],
+.console [data-slot='textarea'],
+.console [data-slot='select-trigger'] {
+    border-radius: 1rem;
+    border-color: transparent;
+    background-color: var(--soft);
+    box-shadow: none;
+}
+
+.console [data-slot='input']:focus-visible,
+.console [data-slot='textarea']:focus-visible,
+.console [data-slot='select-trigger']:focus-visible {
+    border-color: var(--brand);
+}
+
+.console [data-slot='table-container'] {
+    border-radius: 1.25rem;
+}
+
+.console [data-slot='badge'] {
+    border-radius: 9999px;
+}
+
+.console-no-scrollbar {
+    scrollbar-width: none;
+}
+
+.console-no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Cartes en relief (tableau de bord) : ombre douce en deux couches, liseré
+   lumineux en haut ; plus marquées au survol. */
+.console-raised [data-slot='card'] {
+    box-shadow:
+        0 1px 2px rgb(16 18 24 / 0.04),
+        0 8px 24px -8px rgb(16 18 24 / 0.1),
+        inset 0 1px 0 rgb(255 255 255 / 0.6);
+    transition:
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.console-raised a:hover [data-slot='card'] {
+    transform: translateY(-2px);
+    box-shadow:
+        0 2px 4px rgb(16 18 24 / 0.05),
+        0 16px 32px -10px rgb(16 18 24 / 0.16),
+        inset 0 1px 0 rgb(255 255 255 / 0.6);
+}
+
+.dark .console-raised [data-slot='card'] {
+    box-shadow:
+        0 1px 2px rgb(0 0 0 / 0.3),
+        0 10px 28px -8px rgb(0 0 0 / 0.5),
+        inset 0 1px 0 rgb(255 255 255 / 0.05);
+}
+
+.dark .console-raised a:hover [data-slot='card'] {
+    box-shadow:
+        0 2px 4px rgb(0 0 0 / 0.35),
+        0 18px 36px -10px rgb(0 0 0 / 0.6),
+        inset 0 1px 0 rgb(255 255 255 / 0.07);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .console-raised a:hover [data-slot='card'] {
+        transform: none;
+    }
+}
+
+/* Aucune barre de défilement visible dans la console : le défilement reste actif. */
+.console,
+.console * {
+    scrollbar-width: none;
+}
+
+.console::-webkit-scrollbar,
+.console *::-webkit-scrollbar {
+    display: none;
+}

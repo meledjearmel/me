@@ -176,8 +176,13 @@ Route::prefix('{locale}')->middleware(['locale', CaptureTrafficSource::class, Lo
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', DashboardController::class)->name('dashboard');
+    Route::get('console', DashboardController::class)->name('dashboard');
 });
+
+// Anciennes adresses de l'administration (favoris, liens d'e-mails déjà envoyés) : renvoyées vers la console.
+Route::permanentRedirect('dashboard', '/console');
+Route::get('admin/{path?}', fn (?string $path = null) => redirect('/console/'.$path, 301))->where('path', '.*');
+Route::get('settings/{path?}', fn (?string $path = null) => redirect('/console/settings/'.$path, 301))->where('path', '.*');
 
 // Sous-titres WebVTT des vidéos d'avis, hors préfixe de langue : la langue est celle de la piste.
 Route::get('testimonials/{testimonial}/captions/{language}.vtt', TestimonialCaptionController::class)

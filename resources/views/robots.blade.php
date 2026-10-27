@@ -1,5 +1,6 @@
 User-agent: *
 Disallow: /admin
+Disallow: /console
 Disallow: /dashboard
 Disallow: /settings
 Disallow: /login
@@ -16,6 +17,7 @@ User-agent: Google-Extended
 User-agent: Applebot-Extended
 Allow: /
 Disallow: /admin
+Disallow: /console
 Disallow: /dashboard
 Disallow: /settings
 Disallow: /login
